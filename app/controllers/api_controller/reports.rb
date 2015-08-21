@@ -14,11 +14,18 @@ class ApiController
       show_generic(:reports)
     end
 
+    def show_results
+      @req[:additional_attributes] = %w(result_set)
+      show_generic(:results)
+    end
+
     def run_resource_reports(_type, id, _data)
       report = MiqReport.find(id)
-      report.queue_generate_table do |task, report_result|
-        return run_report_result(true, "running report #{report.id}", :task_id => task.id, :report_result_id => report_result.id)
-      end
+      report_result = MiqReportResult.find(report.queue_generate_table)
+      run_report_result(true,
+                        "running report #{report.id}",
+                        :task_id          => report_result.miq_task_id,
+                        :report_result_id => report_result.id)
     rescue => err
       run_report_result(false, err.to_s)
     end
@@ -30,12 +37,6 @@ class ApiController
       add_report_result_to_result(res, options[:report_result_id]) if options[:report_result_id].present?
       add_task_to_result(res, options[:task_id]) if options[:task_id].present?
       res
-    end
-
-    def add_report_result_to_result(hash, result_id)
-      hash[:result_id] = result_id
-      hash[:result_href] = "#{@req[:base]}#{@req[:prefix]}/results/#{result_id}"
-      hash
     end
   end
 end
