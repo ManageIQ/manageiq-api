@@ -34,6 +34,14 @@ class ApiController
       raise BadRequestError, "Could not create a new tag - #{err}"
     end
 
+    def tags_delete_resource(_parent, _type, _id, data)
+      tag_id = parse_id(data, :tags) || parse_by_attr(data, :tags, %w(name))
+      raise BadRequestError, "Tag id, href or name needs to be specified for deleting a tag resource" unless tag_id
+      tag = Tag.find_by_id(tag_id)
+      raise BadRequestError, "Failed to find tag resource" unless tag
+      tag.destroy
+    end
+
     def create_resource_tags(_type, _id, data)
       if data.key?("id") || data.key?("href")
         raise BadRequestError,
@@ -70,11 +78,8 @@ class ApiController
     private
 
     def fetch_category(data)
-      if data.key?("id") || data.key?("name")
-        category_id = parse_by_attr(data, :categories, %w(id name))
-      elsif data.key?("href")
-        _, category_id = parse_href(data["href"])
-      else
+      category_id = parse_id(data, :categories) || parse_by_attr(data, :categories, %w(name))
+      unless category_id
         raise BadRequestError, "Category id, href or name needs to be specified for creating a new tag resource"
       end
       Category.find_by_id(category_id)
