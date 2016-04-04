@@ -7,11 +7,9 @@ class ApiController
     #
 
     def quotas_create_resource(object, type, _id, data)
-      bad_attrs = data_includes_invalid_attrs(data)
-      if bad_attrs.present?
-        raise BadRequestError,
-              "Attribute(s) #{bad_attrs} should not be specified for creating a new tenant resource"
-      end
+      bad_attrs = data.keys & INVALID_QUOTA_ATTRS
+      errmsg = "Attributes %s should not be specified for creating a new tenant quota resource"
+      raise(BadRequestError, errmsg % bad_attrs.join(", ")) if bad_attrs.any?
 
       data['tenant_id'] = object.id
       quota = collection_class(type).create(data)
@@ -27,10 +25,10 @@ class ApiController
     end
 
     def quotas_edit_resource(_object, type, id, data)
-      bad_attrs = data_includes_invalid_attrs(data)
-      if bad_attrs.present?
-        raise BadRequestError, "Attributes #{bad_attrs} should not be specified for updating a quota resource"
-      end
+      bad_attrs = data.keys & INVALID_QUOTA_ATTRS
+      errmsg = "Attributes %s should not be specified for updating a quota resource"
+      raise(BadRequestError, errmsg % bad_attrs.join(", ")) if bad_attrs.any?
+
       edit_resource(type, id, data)
     end
 
@@ -40,12 +38,6 @@ class ApiController
 
     def quotas_delete_resource(_object, type, id, data)
       delete_resource(type, id, data)
-    end
-
-    private
-
-    def data_includes_invalid_attrs(data)
-      data.keys.select { |k| INVALID_QUOTA_ATTRS.include?(k) }.compact.join(", ") if data
     end
   end
 end
