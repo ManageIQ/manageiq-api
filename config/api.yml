@@ -866,6 +866,24 @@
         :identifier: rbac_group_tags_edit
       - :name: unassign
         :identifier: rbac_group_tags_edit
+  :guest_devices:
+    :description: Guest Devices
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: GuestDevice
+    :identifier: guest_device
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: guest_device_show_list
+      :post:
+      - :name: query
+        :identifier: guest_device_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: guest_device_show
   :hosts:
     :description: Hosts
     :identifier: host
