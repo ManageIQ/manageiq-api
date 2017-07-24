@@ -20,8 +20,24 @@ module Api
       change_resource_state(:power_off, type, id)
     end
 
+    def power_off_now_resource(type, id, _data)
+      change_resource_state(:power_off_now, type, id)
+    end
+
     def restart_resource(type, id, _data)
       change_resource_state(:restart, type, id)
+    end
+
+    def restart_now_resource(type, id, _data)
+      change_resource_state(:restart_now, type, id)
+    end
+
+    def restart_to_sys_setup_resource(type, id, _data)
+      change_resource_state(:restart_to_sys_setup, type, id)
+    end
+
+    def restart_mgmt_controller_resource(type, id, _data)
+      change_resource_state(:restart_mgmt_controller, type, id)
     end
 
     private
