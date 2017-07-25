@@ -4,7 +4,7 @@ describe 'Middleware Datasources API' do
   # For some reason middleware_datasources_url is not returning the full
   # url, just the path portion. This is a hack, but will do the trick.
   def datasource_url
-    "http://www.example.com#{middleware_datasources_url(datasource.id)}"
+    "http://www.example.com#{middleware_datasources_url(datasource.compressed_id)}"
   end
 
   describe '/' do
@@ -56,10 +56,8 @@ describe 'Middleware Datasources API' do
       run_get middleware_datasources_url(datasource.id)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(
-        'href' => datasource_url,
-        'id'   => datasource.id.to_s,
-      )
+      expect(response.parsed_body['id']).to eq datasource.compressed_id
+      expect(response.parsed_body).to include('href' => datasource_url)
     end
   end
 end

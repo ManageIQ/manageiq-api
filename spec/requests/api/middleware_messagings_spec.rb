@@ -4,7 +4,7 @@ describe 'Middleware Messagings API' do
   # For some reason middleware_messagings_url is not returning the full
   # url, just the path portion. This is a hack, but will do the trick.
   def messaging_url
-    "http://www.example.com#{middleware_messagings_url(messaging.id)}"
+    "http://www.example.com#{middleware_messagings_url(messaging.compressed_id)}"
   end
 
   describe '/' do
@@ -56,10 +56,8 @@ describe 'Middleware Messagings API' do
       run_get middleware_messagings_url(messaging.id)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(
-        'href' => messaging_url,
-        'id'   => messaging.id.to_s,
-      )
+      expect(response.parsed_body['id']).to eq messaging.compressed_id
+      expect(response.parsed_body).to include('href' => messaging_url)
     end
   end
 end

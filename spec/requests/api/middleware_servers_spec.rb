@@ -4,7 +4,7 @@ describe 'Middleware Servers API' do
   # For some reason middleware_servers_url is not returning the full
   # url, just the path portion. This is a hack, but will do the trick.
   def server_url
-    "http://www.example.com#{middleware_servers_url(server.id)}"
+    "http://www.example.com#{middleware_servers_url(server.compressed_id)}"
   end
 
   describe '/' do
@@ -56,9 +56,9 @@ describe 'Middleware Servers API' do
       run_get middleware_servers_url(server.id)
 
       expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['id']).to eq server.compressed_id
       expect(response.parsed_body).to include(
         'href'       => server_url,
-        'id'         => server.id.to_s,
         'name'       => server.name,
         'feed'       => server.feed,
         'properties' => server.properties,

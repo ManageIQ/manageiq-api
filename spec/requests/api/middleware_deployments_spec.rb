@@ -4,7 +4,11 @@ describe 'Middleware Deployments API' do
   # For some reason middleware_deployments_url is not returning the full
   # url, just the path portion. This is a hack, but will do the trick.
   def deployment_url
-    "http://www.example.com#{middleware_deployments_url(deployment.id)}"
+    "http://www.example.com#{middleware_deployments_url(deployment.compressed_id)}"
+  end
+
+  def match_compressed(field)
+    eq ApplicationRecord.compress_id(deployment.send(field)).to_s
   end
 
   describe '/' do
@@ -56,11 +60,11 @@ describe 'Middleware Deployments API' do
       run_get middleware_deployments_url(deployment.id)
 
       expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['id']).to match_compressed(:id)
+      expect(response.parsed_body['ems_id']).to match_compressed(:ems_id)
       expect(response.parsed_body).to include(
-        'href'   => deployment_url,
-        'id'     => deployment.id.to_s,
-        'ems_id' => deployment.ems_id.to_s,
-        'name'   => deployment.name
+        'href' => deployment_url,
+        'name' => deployment.name
       )
     end
   end

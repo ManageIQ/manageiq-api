@@ -4,7 +4,7 @@ describe 'Middleware Domains API' do
   # For some reason middleware_domains_url is not returning the full
   # url, just the path portion. This is a hack, but will do the trick.
   def domain_url
-    "http://www.example.com#{middleware_domains_url(domain.id)}"
+    "http://www.example.com#{middleware_domains_url(domain.compressed_id)}"
   end
 
   describe '/' do
@@ -56,9 +56,9 @@ describe 'Middleware Domains API' do
       run_get middleware_domains_url(domain.id)
 
       expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['id']).to eq domain.compressed_id
       expect(response.parsed_body).to include(
         'href' => domain_url,
-        'id'   => domain.id.to_s,
         'name' => domain.name
       )
     end
