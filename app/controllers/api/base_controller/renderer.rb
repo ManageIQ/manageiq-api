@@ -1,3 +1,5 @@
+require 'jbuilder'
+
 module Api
   class BaseController
     module Renderer
