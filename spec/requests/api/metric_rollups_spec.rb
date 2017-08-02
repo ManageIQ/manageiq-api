@@ -6,27 +6,11 @@ RSpec.describe 'MetricRollups API' do
       FactoryGirl.create(:metric_rollup_host_daily)
     end
 
-    context 'no parameters' do
-      it 'returns all metric_rollups' do
-        api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
-
-        run_get(metric_rollups_url)
-
-        expected = {
-          'name'     => 'metric_rollups',
-          'count'    => 3,
-          'subcount' => 3
-        }
-        expect(response).to have_http_status(:ok)
-        expect(response.parsed_body).to include(expected)
-      end
-    end
-
     context 'parameters' do
       it 'returns metric_rollups for a specific resource_type' do
         api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
-        run_get metric_rollups_url, :resource_type => 'VmOrTemplate'
+        run_get metric_rollups_url, :resource_type => 'VmOrTemplate', :capture_interval => 'hourly', :start_date => Time.zone.today
 
         expected = {
           'count'    => 3,
@@ -41,7 +25,7 @@ RSpec.describe 'MetricRollups API' do
         vm_metric = FactoryGirl.create(:metric_rollup_vm_hr, :resource => vm)
         api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
-        run_get metric_rollups_url, :resource_type => 'VmOrTemplate', :resource_ids => [vm.id]
+        run_get metric_rollups_url, :resource_type => 'VmOrTemplate', :resource_ids => [vm.id], :capture_interval => 'hourly', :start_date => Time.zone.today
 
         expected = {
           'count'     => 4,
@@ -60,7 +44,7 @@ RSpec.describe 'MetricRollups API' do
         vm_daily = FactoryGirl.create(:metric_rollup_vm_daily, :resource => vm)
         api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
-        run_get metric_rollups_url, :resource_type => 'VmOrTemplate', :resource_ids => [vm.id], :capture_interval => 'daily'
+        run_get metric_rollups_url, :resource_type => 'VmOrTemplate', :resource_ids => [vm.id], :capture_interval => 'daily', :start_date => Time.zone.today
 
         expected = {
           'count'     => 5,
