@@ -12,6 +12,7 @@
 # Globals accessible by loaded test scripts
 #
 
+require 'manageiq/api/version'
 require 'uri'
 require 'json'
 require 'trollop'
@@ -20,7 +21,6 @@ require 'faraday_middleware'
 
 module ManageIQ
   module Api
-    VERSION = "3.0.0-pre".freeze
     API_CMD = File.basename($PROGRAM_NAME)
 
     class Cli
