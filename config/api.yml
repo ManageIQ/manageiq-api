@@ -1073,14 +1073,11 @@
     :identifier: widget_generate_content
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *g
     :klass: MetricRollup
     :collection_actions:
       :get:
       - :name: read
-        :identifier: metrics_view
-      :post:
-      - :name: query
         :identifier: metrics_view
   :network_routers:
     :description: Network_Routers

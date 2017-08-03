@@ -7,11 +7,13 @@ module Api
 
       start_date = params[:start_date].to_date
       end_date = params[:end_date].nil? ? Time.zone.today : params[:end_date].to_date
-      interval = start_date - end_date
+      interval = (end_date.year * 12 + end_date.month) - (start_date.year * 12 + start_date.month)
       validate_dates(interval)
 
       resources = MetricRollup.rollups_in_range(params[:resource_type], params[:resource_ids], params[:capture_interval], start_date, end_date)
-      render_resource(:metric_rollups, :count => MetricRollup.count, :subcount => resources.to_a.size, :resources => resources)
+      counts = Api::QueryCounts.new(MetricRollup.count, resources.count)
+
+      render_collection(:metric_rollups, resources, :counts => counts)
     end
 
     private
@@ -29,9 +31,9 @@ module Api
     def validate_dates(interval)
       case params[:capture_interval]
       when 'hourly'
-        raise BadRequestError, "Can only return hourly records in two month intervals" if interval > 2.months
+        raise BadRequestError, "Can only return hourly records in two month intervals" if interval > 2
       when 'daily'
-        raise BadRequestError, "Can only return daily records in 24 month intervals" if interval > 24.months
+        raise BadRequestError, "Can only return daily records in 24 month intervals" if interval > 24
       end
     end
   end
