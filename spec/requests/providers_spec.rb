@@ -1134,4 +1134,14 @@ describe "Providers API" do
       end
     end
   end
+
+  context "OPTIONS /api/providers" do
+    it "returns options for all providers when no query" do
+      run_options(providers_url)
+      expect(response.parsed_body["data"]["provider_settings"].keys.count).to eq(
+        ManageIQ::Providers::BaseManager.leaf_subclasses.count
+      )
+      expect(response.parsed_body["data"]["provider_settings"]["kubernetes"]["proxy_settings"]["settings"]["http_proxy"]["label"]).to eq(N_('HTTP Proxy'))
+    end
+  end
 end
