@@ -49,8 +49,7 @@ module Api
       end
 
       def validate_user_identity(user_obj)
-        @user_validation_service ||= UserValidationService.new(self)
-        missing_feature = @user_validation_service.missing_user_features(user_obj)
+        missing_feature = User.missing_user_features(user_obj)
         if missing_feature
           raise AuthenticationError, "Invalid User #{user_obj.userid} specified, User's #{missing_feature} is missing"
         end
