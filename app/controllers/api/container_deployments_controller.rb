@@ -9,7 +9,12 @@ module Api
       # TODO: this service is rendering resources which (a) require
       # authentication (problematic for CORS compatibility), and (b)
       # are not being properly filtered by RBAC
-      render_options(:container_deployments, ContainerDeploymentService.new.all_data)
+      if [HttpHeaders::MIQ_TOKEN, HttpHeaders::AUTH_TOKEN, "HTTP_AUTHORIZATION"].any? { |header| request.headers.include?(header) }
+        require_api_user_or_token
+        render_options(:container_deployments, ContainerDeploymentService.new.all_data)
+      else
+        super
+      end
     end
   end
 end
