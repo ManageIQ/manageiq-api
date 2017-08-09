@@ -19,7 +19,7 @@ module Api
     include_concern 'Authentication'
     include ActionController::HttpAuthentication::Basic::ControllerMethods
 
-    before_action :log_request_initiated, :only => [:options]
+    before_action :log_request_initiated
     before_action :require_api_user_or_token, :except => [:options]
     before_action :set_gettext_locale
     before_action :set_access_control_headers
