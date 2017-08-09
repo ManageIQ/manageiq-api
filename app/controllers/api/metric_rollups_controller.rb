@@ -2,21 +2,28 @@ module Api
   class MetricRollupsController < BaseController
     REQUIRED_PARAMS = %w(resource_type capture_interval start_date).freeze
 
+    # Default intervals in days
+    HOURLY_INTERVAL = 31 # ~ 1 Month
+    DAILY_INTERVAL = 730 # 2 Years
+
     def index
       validate_params
 
       start_date = params[:start_date].to_date
-      end_date = params[:end_date].nil? ? Time.zone.today : params[:end_date].to_date
-      interval = (end_date.year * 12 + end_date.month) - (start_date.year * 12 + start_date.month)
-      validate_dates(interval)
+      end_date = params[:end_date].nil? ? start_date + default_interval : params[:end_date].to_date
+      validate_dates(start_date, end_date)
 
       resources = MetricRollup.rollups_in_range(params[:resource_type], params[:resource_ids], params[:capture_interval], start_date, end_date)
       counts = Api::QueryCounts.new(MetricRollup.count, resources.count)
 
-      render_collection(:metric_rollups, resources, :counts => counts)
+      render_collection(:metric_rollups, resources, :counts => counts, :expand_resources => @req.expand?(:resources))
     end
 
     private
+
+    def default_interval
+      @default_interval ||= self.class.const_get("#{params[:capture_interval].upcase}_INTERVAL")
+    end
 
     def validate_params
       REQUIRED_PARAMS.each do |key|
@@ -28,12 +35,11 @@ module Api
       end
     end
 
-    def validate_dates(interval)
-      case params[:capture_interval]
-      when 'hourly'
-        raise BadRequestError, "Can only return hourly records in two month intervals" if interval > 2
-      when 'daily'
-        raise BadRequestError, "Can only return daily records in 24 month intervals" if interval > 24
+    def validate_dates(start_date, end_date)
+      # calculate interval in days
+      interval = (end_date - start_date).to_i
+      if interval > default_interval
+        raise BadRequestError, "Cannot return #{params[:capture_interval]} rollups for an interval longer than #{default_interval} days"
       end
     end
   end
