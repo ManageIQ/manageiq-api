@@ -1,4 +1,10 @@
 describe "Container Deployments API" do
+  it "supports OPTIONS requests without authorization" do
+    run_options container_deployments_url
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body["data"]).to be_empty
+  end
+
   it "supports collect-data with OPTIONS" do
     allow_any_instance_of(ContainerDeploymentService).to receive(:cloud_init_template_id).and_return(1)
     api_basic_authorize
