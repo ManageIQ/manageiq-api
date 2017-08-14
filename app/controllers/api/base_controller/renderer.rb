@@ -158,7 +158,10 @@ module Api
           end
 
         res = res.where(public_send("#{type}_search_conditions")) if respond_to?("#{type}_search_conditions")
+        collection_filterer(res, type, klass, is_subcollection)
+      end
 
+      def collection_filterer(res, type, klass, is_subcollection = false)
         miq_expression = filter_param(klass)
 
         if miq_expression

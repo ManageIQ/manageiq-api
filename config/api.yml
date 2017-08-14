@@ -1070,7 +1070,7 @@
     :klass: ChargebackRateDetailMeasure
   :metric_rollups:
     :description: Metric Rollups
-    :identifier: widget_generate_content
+    :identifier: metrics
     :options:
     - :collection
     :verbs: *g

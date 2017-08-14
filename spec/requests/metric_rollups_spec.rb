@@ -4,6 +4,8 @@ RSpec.describe 'MetricRollups API' do
       FactoryGirl.create(:metric_rollup_vm_hr)
       FactoryGirl.create(:metric_rollup_vm_daily)
       FactoryGirl.create(:metric_rollup_host_daily)
+
+      allow(Settings.api).to receive(:metrics_default_limit).and_return(1000)
     end
 
     it 'returns metric_rollups for a specific resource_type' do
@@ -76,40 +78,58 @@ RSpec.describe 'MetricRollups API' do
       expect(response.parsed_body).to include(expected)
     end
 
-    it 'restricts hourly metrics' do
+    it 'pages the request by default' do
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
       run_get metric_rollups_url, :resource_type    => 'VmOrTemplate',
-                                  :resource_ids     => [],
-                                  :capture_interval => 'hourly',
-                                  :start_date       => Time.zone.today - 3.months,
-                                  :end_date         => Time.zone.today
+                                  :capture_interval => 'daily',
+                                  :start_date       => Time.zone.today.to_s
+      expected = {
+        'count'          => 3,
+        'subcount'       => 1,
+        'subquery_count' => 1,
+        'pages'          => 1
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response.parsed_body['links'].keys).to match_array(%w(self first last))
+    end
+
+    it 'validates that the capture interval is valid' do
+      api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
+
+      run_get metric_rollups_url, :resource_type    => 'VmOrTemplate',
+                                  :start_date       => Time.zone.today.to_s,
+                                  :capture_interval => 'bad_interval'
 
       expected = {
         'error' => a_hash_including(
-          'message' => 'Cannot return hourly rollups for an interval longer than 31 days'
+          'kind'    => 'bad_request',
+          'message' => a_string_including('Capture interval must be one of')
         )
       }
       expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
 
-    it 'does not allow daily records in intervals larger than 24 months' do
+    it 'can override the default limit' do
+      vm = FactoryGirl.create(:vm_or_template)
+      FactoryGirl.create_list(:metric_rollup_vm_hr, 3, :resource => vm)
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
       run_get metric_rollups_url, :resource_type    => 'VmOrTemplate',
-                                  :resource_ids     => [],
-                                  :capture_interval => 'daily',
-                                  :start_date       => (Time.zone.today - 3.years).to_s,
-                                  :end_date         => Time.zone.today
+                                  :resource_ids     => [vm.id],
+                                  :capture_interval => 'hourly',
+                                  :start_date       => Time.zone.today.to_s,
+                                  :limit            => 1
 
       expected = {
-        'error' => a_hash_including(
-          'message' => 'Cannot return daily rollups for an interval longer than 730 days'
-        )
+        'count'          => 6,
+        'subcount'       => 1,
+        'subquery_count' => 3,
+        'pages'          => 3
       }
-      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
+      expect(response.parsed_body['links'].keys).to match_array(%w(self next first last))
     end
   end
 end

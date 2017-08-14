@@ -34,7 +34,11 @@ module Api
     end
 
     def format_href(new_offset)
-      href.sub("offset=#{offset}", "offset=#{new_offset}")
+      if href.include?("offset")
+        href.sub("offset=#{offset}", "offset=#{new_offset}")
+      else
+        href + "&offset=#{new_offset}"
+      end
     end
 
     def paging_count
