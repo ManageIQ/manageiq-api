@@ -3,6 +3,14 @@ module Api
     module Results
       private
 
+      def delete_action_handler
+        yield
+      rescue ActiveRecord::RecordNotFound => err
+        @req.method == :delete ? raise(err) : action_result(false, err.to_s)
+      rescue => err
+        action_result(false, err.to_s)
+      end
+
       def action_result(success, message = nil, options = {})
         res = {:success => success}
         res[:message] = message if message.present?
