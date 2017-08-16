@@ -9,17 +9,11 @@ module Api
       if obj.nil?
         raise NotFoundError, "Invalid Workspace #{@req.c_id} specified"
       end
-      res = {}
-      res["id"] = obj.id
-      res["guid"] = obj.guid
-      res["input"] = JSON.parse(obj.input)
-      res["output"] = JSON.parse(obj.output) if obj.output
       
-      render_resource :automate_workspaces, res
+      render_resource :automate_workspaces, obj
     end
 
     def edit_resource(type, id, data = {})
-      klass = collection_class(type)
       obj = AutomateWorkspace.find_by(:guid => id)
       if obj.nil?
         raise NotFoundError, "Invalid Workspace #{id} specified"
@@ -29,8 +23,8 @@ module Api
       if workspace.blank? && state_var.blank?
         raise BadRequestError, "No workspace or state_var specified for edit"
       end
-      current_output = obj.output ? JSON.parse(obj.output) : {}
-      obj.output = current_output.deep_merge(data).to_json
+      current_output = obj.output || {}
+      obj.output = current_output.deep_merge(data)
       obj.save
       obj
     end

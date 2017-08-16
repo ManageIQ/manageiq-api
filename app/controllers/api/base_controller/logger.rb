@@ -21,7 +21,7 @@ module Api
         log_request("Authentication", :type        => auth_type,
                                       :token       => request.headers[HttpHeaders::AUTH_TOKEN],
                                       :x_miq_group => request.headers[HttpHeaders::MIQ_GROUP],
-                                      :user        => User.current_user.try(:userid))
+                                      :user        => User.current_user.userid)
         if User.current_user
           group = User.current_user.current_group
           log_request("Authorization", :user   => User.current_user.userid,
