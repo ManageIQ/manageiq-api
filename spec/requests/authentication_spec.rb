@@ -8,7 +8,7 @@ describe "Authentication API" do
     it "test basic authentication with bad credentials" do
       basic_authorize "baduser", "badpassword"
 
-      run_get entrypoint_url
+      run_get api_entrypoint_url
 
       expect(response).to have_http_status(:unauthorized)
     end
@@ -16,7 +16,7 @@ describe "Authentication API" do
     it "test basic authentication with correct credentials" do
       api_basic_authorize
 
-      run_get entrypoint_url
+      run_get api_entrypoint_url
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(ENTRYPOINT_KEYS)
@@ -28,7 +28,7 @@ describe "Authentication API" do
 
       api_basic_authorize
 
-      run_get entrypoint_url
+      run_get api_entrypoint_url
 
       expect(response).to have_http_status(:unauthorized)
     end
@@ -39,7 +39,7 @@ describe "Authentication API" do
 
       api_basic_authorize
 
-      run_get entrypoint_url
+      run_get api_entrypoint_url
 
       expect(response).to have_http_status(:unauthorized)
     end
@@ -57,7 +57,7 @@ describe "Authentication API" do
     it "test basic authentication with incorrect group" do
       api_basic_authorize
 
-      run_get entrypoint_url, :headers => {Api::HttpHeaders::MIQ_GROUP => "bogus_group"}
+      run_get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_GROUP => "bogus_group"}
 
       expect(response).to have_http_status(:unauthorized)
     end
@@ -65,7 +65,7 @@ describe "Authentication API" do
     it "test basic authentication with a primary group" do
       api_basic_authorize
 
-      run_get entrypoint_url, :headers => {Api::HttpHeaders::MIQ_GROUP => group1.description}
+      run_get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_GROUP => group1.description}
 
       expect(response).to have_http_status(:ok)
     end
@@ -73,7 +73,7 @@ describe "Authentication API" do
     it "test basic authentication with a secondary group" do
       api_basic_authorize
 
-      run_get entrypoint_url, :headers => {Api::HttpHeaders::MIQ_GROUP => group2.description}
+      run_get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_GROUP => group2.description}
 
       expect(response).to have_http_status(:ok)
     end
@@ -91,7 +91,7 @@ describe "Authentication API" do
     it "basic authentication with a secondary group" do
       api_basic_authorize
 
-      run_get entrypoint_url, :headers => {Api::HttpHeaders::MIQ_GROUP => group2.description}
+      run_get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_GROUP => group2.description}
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(ENTRYPOINT_KEYS)
@@ -112,7 +112,7 @@ describe "Authentication API" do
     it "querying user's authorization" do
       api_basic_authorize
 
-      run_get entrypoint_url, :attributes => "authorization"
+      run_get api_entrypoint_url, :attributes => "authorization"
 
       expect(response).to have_http_status(:ok)
       expected = {"authorization" => hash_including("product_features")}
@@ -136,7 +136,7 @@ describe "Authentication API" do
         end
 
         it "authentication using a bad token" do
-          run_get entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => "badtoken"}
+          run_get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => "badtoken"}
 
           expect(response).to have_http_status(:unauthorized)
         end
@@ -151,7 +151,7 @@ describe "Authentication API" do
 
           auth_token = response.parsed_body["auth_token"]
 
-          run_get entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => auth_token}
+          run_get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => auth_token}
 
           expect(response).to have_http_status(:ok)
           expect_result_to_have_keys(ENTRYPOINT_KEYS)
@@ -173,7 +173,7 @@ describe "Authentication API" do
           expect(token_info[:expires_on].utc.iso8601).to eq(token_expires_on)
 
           expect_any_instance_of(TokenManager).to receive(:reset_token).with(auth_token)
-          run_get entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => auth_token}
+          run_get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => auth_token}
 
           expect(response).to have_http_status(:ok)
           expect_result_to_have_keys(ENTRYPOINT_KEYS)
@@ -232,7 +232,7 @@ describe "Authentication API" do
             run_get auth_url, :requester_type => 'ws'
             ws_token = response.parsed_body["auth_token"]
 
-            run_get entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => ws_token}
+            run_get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => ws_token}
 
             expect(response).to have_http_status(:unauthorized)
           end
@@ -249,7 +249,7 @@ describe "Authentication API" do
     end
 
     it "authentication using a bad token" do
-      run_get entrypoint_url,
+      run_get api_entrypoint_url,
               :headers => {Api::HttpHeaders::MIQ_TOKEN => "badtoken"}
 
       expect(response).to have_http_status(:unauthorized)
@@ -259,7 +259,7 @@ describe "Authentication API" do
     end
 
     it "authentication using a token with a bad server guid" do
-      run_get entrypoint_url,
+      run_get api_entrypoint_url,
               :headers => {Api::HttpHeaders::MIQ_TOKEN => systoken("bad_server_guid", api_config(:user), Time.now.utc)}
 
       expect(response).to have_http_status(:unauthorized)
@@ -269,7 +269,7 @@ describe "Authentication API" do
     end
 
     it "authentication using a token with bad user" do
-      run_get entrypoint_url,
+      run_get api_entrypoint_url,
               :headers => {Api::HttpHeaders::MIQ_TOKEN => systoken(MiqServer.first.guid, "bad_user_id", Time.now.utc)}
 
       expect(response).to have_http_status(:unauthorized)
@@ -281,7 +281,7 @@ describe "Authentication API" do
     it "authentication using a token with an old timestamp" do
       miq_token = systoken(MiqServer.first.guid, api_config(:user), 10.minutes.ago.utc)
 
-      run_get entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
+      run_get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
 
       expect(response).to have_http_status(:unauthorized)
       expect(response.parsed_body).to include(
@@ -292,7 +292,7 @@ describe "Authentication API" do
     it "authentication using a valid token succeeds" do
       miq_token = systoken(MiqServer.first.guid, api_config(:user), Time.now.utc)
 
-      run_get entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
+      run_get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(ENTRYPOINT_KEYS)

@@ -68,10 +68,6 @@ module Spec
         define_user
       end
 
-      def entrypoint_url
-        api_config(:entrypoint)
-      end
-
       def auth_url
         "#{api_config(:entrypoint)}/auth"
       end

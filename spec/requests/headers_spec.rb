@@ -3,7 +3,7 @@ RSpec.describe "Headers" do
     it "returns JSON when set to application/json" do
       api_basic_authorize
 
-      get entrypoint_url, :headers => headers.merge("Accept" => "application/json")
+      get api_entrypoint_url, :headers => headers.merge("Accept" => "application/json")
 
       expect(response.parsed_body).to include("name" => "API", "description" => "REST API")
       expect(response).to have_http_status(:ok)
@@ -12,7 +12,7 @@ RSpec.describe "Headers" do
     it "returns JSON when not provided" do
       api_basic_authorize
 
-      get entrypoint_url, :headers => headers
+      get api_entrypoint_url, :headers => headers
 
       expect(response.parsed_body).to include("name" => "API", "description" => "REST API")
       expect(response).to have_http_status(:ok)
@@ -21,7 +21,7 @@ RSpec.describe "Headers" do
     it "responds with an error for unsupported mime-types" do
       api_basic_authorize
 
-      get entrypoint_url, :headers => headers.merge("Accept" => "application/xml")
+      get api_entrypoint_url, :headers => headers.merge("Accept" => "application/xml")
 
       expected = {
         "error" => a_hash_including(
@@ -69,7 +69,7 @@ RSpec.describe "Headers" do
     it "returns some headers related to security" do
       api_basic_authorize
 
-      run_get(entrypoint_url)
+      run_get(api_entrypoint_url)
 
       expected = {
         "X-Content-Type-Options"            => "nosniff",

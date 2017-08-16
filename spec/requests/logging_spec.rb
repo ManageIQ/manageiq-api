@@ -25,7 +25,7 @@ describe "Logging" do
     it "logs all hash entries about the request" do
       api_basic_authorize
 
-      run_get entrypoint_url
+      run_get api_entrypoint_url
 
       @log.rewind
       request_log_line = @log.readlines.detect { |l| l =~ /MIQ\(.*\) Request:/ }
@@ -54,7 +54,7 @@ describe "Logging" do
 
         miq_token = MiqPassword.encrypt({:server_guid => server_guid, :userid => userid, :timestamp => timestamp}.to_yaml)
 
-        run_get entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
+        run_get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
 
         expect(@log.string).to include(
           "System Auth:    {:x_miq_token=>\"#{miq_token}\", :server_guid=>\"#{server_guid}\", " \
