@@ -9,11 +9,11 @@ module Api
       if obj.nil?
         raise NotFoundError, "Invalid Workspace #{@req.c_id} specified"
       end
-      
-      render_resource :automate_workspaces, obj
+
+      render_resource(:automate_workspaces, obj)
     end
 
-    def edit_resource(type, id, data = {})
+    def edit_resource(_type, id, data = {})
       obj = AutomateWorkspace.find_by(:guid => id)
       if obj.nil?
         raise NotFoundError, "Invalid Workspace #{id} specified"
