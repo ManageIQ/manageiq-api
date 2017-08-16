@@ -23,6 +23,7 @@ module Api
             User.current_user = auth_user_obj
           else
             request_http_basic_authentication
+            return
           end
         end
         log_api_auth
