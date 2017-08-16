@@ -5,17 +5,6 @@ Rails.application.routes.draw do
     root :to => "api#index"
     match "/", :to => "api#options", :via => :options
 
-    unless defined?(API_ACTIONS)
-      API_ACTIONS = {
-        :get     => "show",
-        :post    => "update",
-        :put     => "update",
-        :patch   => "update",
-        :delete  => "destroy",
-        :options => "options"
-      }.freeze
-    end
-
     # Redirect of /tasks subcollections to /request_tasks
     [:automation_requests, :provision_requests, :requests, :service_requests].each do |collection_name|
       get "/#{collection_name}/:c_id/tasks", :to => redirect { |path_params, _req| "/api/#{collection_name}/#{path_params[:c_id]}/request_tasks" }
@@ -28,7 +17,7 @@ Rails.application.routes.draw do
 
       scope collection_name, :controller => collection_name do
         collection.verbs.each do |verb|
-          root :action => API_ACTIONS[verb], :via => verb if collection.options.include?(:primary)
+          root :action => Api::VERBS_ACTIONS_MAP[verb], :via => verb if collection.options.include?(:primary)
 
           next unless collection.options.include?(:collection)
 
@@ -38,7 +27,7 @@ Rails.application.routes.draw do
               root :action => :index
               get "/*c_suffix", :action => :show
             else
-              match "(/*c_suffix)", :action => API_ACTIONS[verb], :via => verb
+              match "(/*c_suffix)", :action => Api::VERBS_ACTIONS_MAP[verb], :via => verb
             end
           else
             case verb
