@@ -1,4 +1,7 @@
 module Api
+  # Semantic Versioning Regex for API, i.e. vMajor.minor.patch[-pre]
+  VERSION_REGEX = /v[\d]+(\.[\da-zA-Z]+)*(\-[\da-zA-Z]+)?/
+
   ApiError = Class.new(StandardError)
   AuthenticationError = Class.new(ApiError)
   ForbiddenError = Class.new(ApiError)

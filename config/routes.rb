@@ -1,10 +1,7 @@
 Rails.application.routes.draw do
   # Enablement for the REST API
 
-  # Semantic Versioning Regex for API, i.e. vMajor.minor.patch[-pre]
-  API_VERSION_REGEX = /v[\d]+(\.[\da-zA-Z]+)*(\-[\da-zA-Z]+)?/ unless defined?(API_VERSION_REGEX)
-
-  namespace :api, :path => "api(/:version)", :version => API_VERSION_REGEX, :defaults => {:format => "json"} do
+  namespace :api, :path => "api(/:version)", :version => Api::VERSION_REGEX, :defaults => {:format => "json"} do
     root :to => "api#index"
     match "/", :to => "api#options", :via => :options
 
