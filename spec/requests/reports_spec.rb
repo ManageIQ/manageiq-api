@@ -43,97 +43,71 @@ RSpec.describe "reports API" do
     expect(response).to have_http_status(:ok)
   end
 
-  context 'authorized to see its own report results' do
-    let(:group) { FactoryGirl.create(:miq_group) }
-    let(:user) do
-      @user.current_group ||= group
-      @user
-    end
-    let(:report) { FactoryGirl.create(:miq_report_with_results, :miq_group => user.current_group) }
+  it "can fetch a report's results" do
+    report = FactoryGirl.create(:miq_report_with_results)
+    report_result = report.miq_report_results.first
 
-    it "can fetch a report's results" do
-      report_result = report.miq_report_results.first
+    api_basic_authorize
+    run_get "#{reports_url(report.id)}/results"
 
-      api_basic_authorize
-      run_get "#{reports_url(report.id)}/results"
+    expect_result_resources_to_include_hrefs(
+      "resources",
+      [
+        "#{reports_url(report.compressed_id)}/results/#{report_result.compressed_id}"
+      ]
+    )
+    expect(response.parsed_body["resources"]).not_to be_any { |resource| resource.key?("result_set") }
+    expect(response).to have_http_status(:ok)
+  end
 
-      expect_result_resources_to_include_hrefs(
-        "resources",
-        [
-          "#{reports_url(report.compressed_id)}/results/#{report_result.compressed_id}"
-        ]
-      )
-      expect(response.parsed_body["resources"]).not_to be_any { |resource| resource.key?("result_set") }
-      expect(response).to have_http_status(:ok)
-    end
+  it "can fetch a report's result" do
+    report = FactoryGirl.create(:miq_report_with_results)
+    report_result = report.miq_report_results.first
+    table = Ruport::Data::Table.new(
+      :column_names => %w(foo),
+      :data         => [%w(bar), %w(baz)]
+    )
+    allow(report).to receive(:table).and_return(table)
+    allow_any_instance_of(MiqReportResult).to receive(:report_results).and_return(report)
 
-    it "can fetch a report's result" do
-      report_result = report.miq_report_results.first
-      table = Ruport::Data::Table.new(
-        :column_names => %w(foo),
-        :data         => [%w(bar), %w(baz)]
-      )
-      allow(report).to receive(:table).and_return(table)
-      allow_any_instance_of(MiqReportResult).to receive(:report_results).and_return(report)
+    api_basic_authorize
+    run_get "#{reports_url(report.id)}/results/#{report_result.to_param}"
 
-      api_basic_authorize
-      run_get "#{reports_url(report.id)}/results/#{report_result.to_param}"
+    expect_result_to_match_hash(response.parsed_body, "result_set" => [{"foo" => "bar"}, {"foo" => "baz"}])
+    expect(response).to have_http_status(:ok)
+  end
 
-      expect_result_to_match_hash(response.parsed_body, "result_set" => [{"foo" => "bar"}, {"foo" => "baz"}])
-      expect(response).to have_http_status(:ok)
-    end
+  it "can fetch all the results" do
+    report = FactoryGirl.create(:miq_report_with_results)
+    result = report.miq_report_results.first
 
-    it "can fetch all the results" do
-      result = report.miq_report_results.first
+    api_basic_authorize collection_action_identifier(:results, :read, :get)
+    run_get results_url
 
-      api_basic_authorize collection_action_identifier(:results, :read, :get)
-      run_get results_url
+    expect_result_resources_to_include_hrefs(
+      "resources",
+      [
+        results_url(result.compressed_id).to_s
+      ]
+    )
+    expect(response).to have_http_status(:ok)
+  end
 
-      expect_result_resources_to_include_hrefs(
-        "resources",
-        [
-          results_url(result.compressed_id).to_s
-        ]
-      )
-      expect(response).to have_http_status(:ok)
-    end
+  it "can fetch a specific result as a primary collection" do
+    report = FactoryGirl.create(:miq_report_with_results)
+    report_result = report.miq_report_results.first
+    table = Ruport::Data::Table.new(
+      :column_names => %w(foo),
+      :data         => [%w(bar), %w(baz)]
+    )
+    allow(report).to receive(:table).and_return(table)
+    allow_any_instance_of(MiqReportResult).to receive(:report_results).and_return(report)
 
-    it "can fetch a specific result as a primary collection" do
-      report_result = report.miq_report_results.first
-      table = Ruport::Data::Table.new(
-        :column_names => %w(foo),
-        :data         => [%w(bar), %w(baz)]
-      )
-      allow(report).to receive(:table).and_return(table)
-      allow_any_instance_of(MiqReportResult).to receive(:report_results).and_return(report)
+    api_basic_authorize action_identifier(:results, :read, :resource_actions, :get)
+    run_get results_url(report_result.id)
 
-      api_basic_authorize action_identifier(:results, :read, :resource_actions, :get)
-      run_get results_url(report_result.id)
-
-      expect_result_to_match_hash(response.parsed_body, "result_set" => [{"foo" => "bar"}, {"foo" => "baz"}])
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "returns an empty result set if none has been run" do
-      report_result = report.miq_report_results.first
-
-      api_basic_authorize
-      run_get "#{reports_url(report.id)}/results/#{report_result.id}"
-
-      expect_result_to_match_hash(response.parsed_body, "result_set" => [])
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "returns an empty result set if none has been run" do
-      report = FactoryGirl.create(:miq_report_with_results, :miq_group => user.current_group)
-      report_result = report.miq_report_results.first
-
-      api_basic_authorize
-      run_get "#{reports_url(report.id)}/results/#{report_result.id}"
-
-      expect_result_to_match_hash(response.parsed_body, "result_set" => [])
-      expect(response).to have_http_status(:ok)
-    end
+    expect_result_to_match_hash(response.parsed_body, "result_set" => [{"foo" => "bar"}, {"foo" => "baz"}])
+    expect(response).to have_http_status(:ok)
   end
 
   it "can fetch all the schedule" do
@@ -200,6 +174,17 @@ RSpec.describe "reports API" do
     run_get("#{reports_url(report.id)}/schedules/#{schedule.id}")
 
     expect(response).to have_http_status(:forbidden)
+  end
+
+  it "returns an empty result set if none has been run" do
+    report = FactoryGirl.create(:miq_report_with_results)
+    report_result = report.miq_report_results.first
+
+    api_basic_authorize
+    run_get "#{reports_url(report.id)}/results/#{report_result.id}"
+
+    expect_result_to_match_hash(response.parsed_body, "result_set" => [])
+    expect(response).to have_http_status(:ok)
   end
 
   context "with an appropriate role" do
