@@ -34,7 +34,10 @@ module Api
 
     def fetch_generic_object_definition(id)
       klass = collection_class(:generic_object_definitions)
-      klass.find_by(:name => id) || klass.find(id)
+      go_def = klass.find_by(:name => id) || klass.find(id)
+      go_def = Rbac.filtered_object(go_def, :user => User.current_user, :class => klass)
+      raise ForbiddenError, "Access to Generic Object Definition id: #{id} is forbidden" unless go_def
+      go_def
     end
   end
 end
