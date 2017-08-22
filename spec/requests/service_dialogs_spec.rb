@@ -137,9 +137,12 @@ describe "Service Dialogs API" do
         }
 
         expected = {
-          'href'  => a_string_including(api_service_dialog_url(nil, dialog.compressed_id)),
-          'id'    => dialog.compressed_id,
-          'label' => 'updated label'
+          'href'        => a_string_including(api_service_dialog_url(nil, dialog.compressed_id)),
+          'id'          => dialog.compressed_id,
+          'label'       => 'updated label',
+          'dialog_tabs' => a_collection_including(
+            a_hash_including('label' => 'updated tab label')
+          )
         }
 
         expect do
@@ -402,7 +405,8 @@ describe "Service Dialogs API" do
         "results" => [
           a_hash_including(
             "description" => "Dialog",
-            "label"       => "dialog_label"
+            "label"       => "dialog_label",
+            "dialog_tabs" => a_collection_including(a_hash_including("description" => "Dialog tab"))
           )
         ]
       }
