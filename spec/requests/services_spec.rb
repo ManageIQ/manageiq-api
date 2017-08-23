@@ -1005,4 +1005,39 @@ describe "Services API" do
       expect(svc.reload.service_resources).to eq([])
     end
   end
+
+  describe "Metric Rollups subcollection" do
+    let(:url) { "#{services_url(svc.id)}/metric_rollups" }
+
+    before do
+      FactoryGirl.create_list(:metric_rollup_vm_hr, 3, :resource => svc)
+      FactoryGirl.create_list(:metric_rollup_vm_daily, 1, :resource => svc)
+      FactoryGirl.create_list(:metric_rollup_vm_hr, 1, :resource => svc1)
+
+      allow(Settings.api).to receive(:metrics_default_limit).and_return(1000)
+    end
+
+    it 'returns the metric rollups for the service' do
+      api_basic_authorize subcollection_action_identifier(:services, :metric_rollups, :read, :get)
+
+      run_get(url, :capture_interval => 'hourly', :start_date => Time.zone.today.to_s)
+
+      expected = {
+        'count'    => 5,
+        'subcount' => 3,
+        'pages'    => 1
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+      expect(response.parsed_body['links'].keys).to match_array(%w(self first last))
+    end
+
+    it 'will not return metric rollups without an appropriate role' do
+      api_basic_authorize
+
+      run_get(url, :capture_interval => 'hourly', :start_date => Time.zone.today.to_s)
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
 end

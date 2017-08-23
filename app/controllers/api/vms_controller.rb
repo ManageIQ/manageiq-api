@@ -7,6 +7,7 @@ module Api
     include Subcollections::CustomAttributes
     include Subcollections::Software
     include Subcollections::Snapshots
+    include Subcollections::MetricRollups
 
     VALID_EDIT_ATTRS = %w(description child_resources parent_resource).freeze
     RELATIONSHIP_COLLECTIONS = [:vms, :templates].freeze
