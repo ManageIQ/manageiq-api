@@ -1073,9 +1073,14 @@
     :identifier: metrics
     :options:
     - :collection
+    - :subcollection
     :verbs: *g
     :klass: MetricRollup
     :collection_actions:
+      :get:
+      - :name: read
+        :identifier: metrics_view
+    :subcollection_actions:
       :get:
       - :name: read
         :identifier: metrics_view
@@ -2047,6 +2052,7 @@
     - :service_dialogs
     - :vms
     - :orchestration_stacks
+    - :metric_rollups
     :collection_actions:
       :get:
       - :name: read
@@ -2389,6 +2395,7 @@
     - :custom_attributes
     - :software
     - :snapshots
+    - :metric_rollups
     :collection_actions:
       :get:
       - :name: read

@@ -4,8 +4,6 @@ RSpec.describe 'MetricRollups API' do
       FactoryGirl.create(:metric_rollup_vm_hr)
       FactoryGirl.create(:metric_rollup_vm_daily)
       FactoryGirl.create(:metric_rollup_host_daily)
-
-      allow(Settings.api).to receive(:metrics_default_limit).and_return(1000)
     end
 
     it 'returns metric_rollups for a specific resource_type' do
