@@ -1,23 +1,9 @@
 Rails.application.routes.draw do
   # Enablement for the REST API
 
-  # Semantic Versioning Regex for API, i.e. vMajor.minor.patch[-pre]
-  API_VERSION_REGEX = /v[\d]+(\.[\da-zA-Z]+)*(\-[\da-zA-Z]+)?/ unless defined?(API_VERSION_REGEX)
-
-  namespace :api, :path => "api(/:version)", :version => API_VERSION_REGEX, :defaults => {:format => "json"} do
+  namespace :api, :path => "api(/:version)", :version => Api::VERSION_REGEX, :defaults => {:format => "json"} do
     root :to => "api#index"
     match "/", :to => "api#options", :via => :options
-
-    unless defined?(API_ACTIONS)
-      API_ACTIONS = {
-        :get     => "show",
-        :post    => "update",
-        :put     => "update",
-        :patch   => "update",
-        :delete  => "destroy",
-        :options => "options"
-      }.freeze
-    end
 
     # Redirect of /tasks subcollections to /request_tasks
     [:automation_requests, :provision_requests, :requests, :service_requests].each do |collection_name|
@@ -31,7 +17,7 @@ Rails.application.routes.draw do
 
       scope collection_name, :controller => collection_name do
         collection.verbs.each do |verb|
-          root :action => API_ACTIONS[verb], :via => verb if collection.options.include?(:primary)
+          root :action => Api::VERBS_ACTIONS_MAP[verb], :via => verb if collection.options.include?(:primary)
 
           next unless collection.options.include?(:collection)
 
@@ -41,7 +27,7 @@ Rails.application.routes.draw do
               root :action => :index
               get "/*c_suffix", :action => :show
             else
-              match "(/*c_suffix)", :action => API_ACTIONS[verb], :via => verb
+              match "(/*c_suffix)", :action => Api::VERBS_ACTIONS_MAP[verb], :via => verb
             end
           else
             case verb
