@@ -5,7 +5,7 @@ RSpec.describe "Custom Attributes API" do
       custom_attribute = FactoryGirl.create(:custom_attribute, :resource => vm)
       api_basic_authorize
 
-      run_get("#{vms_url(vm.id)}/custom_attributes/#{custom_attribute.id}")
+      run_get(api_vm_custom_attribute_url(nil, vm, custom_attribute))
 
       expected = {
         "actions" => a_collection_including(
@@ -24,7 +24,7 @@ RSpec.describe "Custom Attributes API" do
     api_basic_authorize
 
     expect do
-      run_delete("#{vms_url(vm.id)}/custom_attributes/#{custom_attribute.id}")
+      run_delete(api_vm_custom_attribute_url(nil, vm, custom_attribute))
     end.to change(CustomAttribute, :count).by(-1)
 
     expect(response).to have_http_status(:no_content)
@@ -33,12 +33,11 @@ RSpec.describe "Custom Attributes API" do
   it 'returns the correct href' do
     provider = FactoryGirl.create(:ext_management_system)
     custom_attribute = FactoryGirl.create(:custom_attribute, :resource => provider, :name => 'foo', :value => 'bar')
-    url = "#{providers_url(provider.id)}/custom_attributes/#{custom_attribute.id}"
     api_basic_authorize subcollection_action_identifier(:providers, :custom_attributes, :edit, :post)
 
-    run_post(url, :action => :edit, :name => 'name1')
+    run_post(api_provider_custom_attribute_url(nil, provider, custom_attribute), :action => :edit, :name => 'name1')
 
     expect(response).to have_http_status(:ok)
-    expect(response.parsed_body['href']).to include("#{providers_url(provider.compressed_id)}/custom_attributes/#{custom_attribute.compressed_id}")
+    expect(response.parsed_body['href']).to include(api_provider_custom_attribute_url(nil, provider.compressed_id, custom_attribute.compressed_id))
   end
 end

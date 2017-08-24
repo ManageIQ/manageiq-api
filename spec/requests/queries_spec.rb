@@ -7,7 +7,7 @@ describe "Queries API" do
   let(:host)       { FactoryGirl.create(:host) }
 
   let(:vm1)        { FactoryGirl.create(:vm_vmware, :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
-  let(:vm1_url)    { vms_url(vm1.id) }
+  let(:vm1_url)    { api_vm_url(nil, vm1) }
 
   let(:vm_href_pattern) { %r{^http://.*/api/vms/[0-9r]+$} }
 
@@ -20,7 +20,7 @@ describe "Queries API" do
       api_basic_authorize collection_action_identifier(:vms, :read, :get)
       create_vms(3)
 
-      run_get vms_url
+      run_get api_vms_url
 
       expect_query_result(:vms, 3, 3)
       expect(response.parsed_body).to include("resources" => all(match("href" => a_string_matching(vm_href_pattern))))
@@ -30,7 +30,7 @@ describe "Queries API" do
       api_basic_authorize collection_action_identifier(:vms, :read, :get)
       create_vms(3)
 
-      run_get vms_url, :expand => "resources"
+      run_get api_vms_url, :expand => "resources"
 
       expect_query_result(:vms, 3, 3)
       expected = {
@@ -45,10 +45,10 @@ describe "Queries API" do
       api_basic_authorize collection_action_identifier(:vms, :read, :get)
       vm1   # create resource
 
-      run_get vms_url, :expand => "resources", :attributes => "guid"
+      run_get api_vms_url, :expand => "resources", :attributes => "guid"
 
       expect_query_result(:vms, 1, 1)
-      expect_result_resources_to_match_hash([{"id" => vm1.compressed_id, "href" => vms_url(vm1.compressed_id), "guid" => vm1.guid}])
+      expect_result_resources_to_match_hash([{"id" => vm1.compressed_id, "href" => api_vm_url(nil, vm1.compressed_id), "guid" => vm1.guid}])
     end
   end
 
@@ -59,15 +59,15 @@ describe "Queries API" do
 
       run_get vm1_url
 
-      expect_single_resource_query("id" => vm1.compressed_id, "href" => vms_url(vm1.compressed_id), "guid" => vm1.guid)
+      expect_single_resource_query("id" => vm1.compressed_id, "href" => api_vm_url(nil, vm1.compressed_id), "guid" => vm1.guid)
     end
 
     it 'supports compressed ids' do
       api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
 
-      run_get vms_url(ApplicationRecord.compress_id(vm1.id))
+      run_get api_vm_url(nil, vm1.compressed_id)
 
-      expect_single_resource_query("id" => vm1.compressed_id, "href" => vms_url(vm1.compressed_id), "guid" => vm1.guid)
+      expect_single_resource_query("id" => vm1.compressed_id, "href" => api_vm_url(nil, vm1.compressed_id), "guid" => vm1.guid)
     end
 
     it 'returns 404 on url with trailing garbage' do
@@ -83,9 +83,9 @@ describe "Queries API" do
   describe "Query subcollections" do
     let(:acct1) { FactoryGirl.create(:account, :vm_or_template_id => vm1.id, :name => "John") }
     let(:acct2) { FactoryGirl.create(:account, :vm_or_template_id => vm1.id, :name => "Jane") }
-    let(:vm1_accounts_url) { "#{vm1_url}/accounts" }
-    let(:acct1_url)        { "#{vm1_accounts_url}/#{acct1.id}" }
-    let(:acct2_url)        { "#{vm1_accounts_url}/#{acct2.id}" }
+    let(:vm1_accounts_url) { api_vm_accounts_url(nil, vm1) }
+    let(:acct1_url)        { api_vm_account_url(nil, vm1, acct1) }
+    let(:acct2_url)        { api_vm_account_url(nil, vm1, acct2) }
     let(:vm1_accounts_url_list) { [acct1_url, acct2_url] }
 
     it "returns just href when not expanded" do
@@ -98,8 +98,8 @@ describe "Queries API" do
 
       expect_query_result(:accounts, 2)
       expect_result_resources_to_include_hrefs("resources",
-                                               ["#{vms_url(vm1.compressed_id)}/accounts/#{acct1.compressed_id}",
-                                                "#{vms_url(vm1.compressed_id)}/accounts/#{acct2.compressed_id}"])
+                                               [api_vm_account_url(nil, vm1.compressed_id, acct1.compressed_id),
+                                                api_vm_account_url(nil, vm1.compressed_id, acct2.compressed_id)])
     end
 
     it "includes both id and href when getting a single resource" do
@@ -109,7 +109,7 @@ describe "Queries API" do
 
       expect_single_resource_query(
         "id"   => acct1.compressed_id,
-        "href" => "#{vms_url(vm1.compressed_id)}/accounts/#{acct1.compressed_id}",
+        "href" => api_vm_account_url(nil, vm1.compressed_id, acct1.compressed_id),
         "name" => acct1.name
       )
     end
@@ -125,17 +125,21 @@ describe "Queries API" do
       expect_query_result(:accounts, 2)
       expect_result_resources_to_include_keys("resources", %w(id href))
       expect_result_resources_to_include_hrefs("resources",
-                                               ["#{vms_url(vm1.compressed_id)}/accounts/#{acct1.compressed_id}",
-                                                "#{vms_url(vm1.compressed_id)}/accounts/#{acct2.compressed_id}"])
+                                               [api_vm_account_url(nil, vm1.compressed_id, acct1.compressed_id),
+                                                api_vm_account_url(nil, vm1.compressed_id, acct2.compressed_id)])
       expect_result_resources_to_include_data("resources", "id" => [acct1.compressed_id, acct2.compressed_id])
     end
 
     it 'supports compressed ids' do
       api_basic_authorize
 
-      run_get vms_url(ApplicationRecord.compress_id(vm1.id)) + "/accounts/#{acct1.id}"
+      run_get(api_vm_account_url(nil, vm1.compressed_id, acct1))
 
-      expect_single_resource_query("id" => acct1.compressed_id, "href" => vms_url(vm1.compressed_id) + "/accounts/#{acct1.compressed_id}", "name" => acct1.name)
+      expect_single_resource_query(
+        "id"   => acct1.compressed_id,
+        "href" => api_vm_account_url(nil, vm1.compressed_id, acct1.compressed_id),
+        "name" => acct1.name
+      )
     end
 
     it 'returns 404 on url with trailing garbage' do
@@ -155,7 +159,7 @@ describe "Queries API" do
       provider = FactoryGirl.create(:ext_management_system, :name => "sample", :hostname => "sample.com")
       provider.update_authentication(:default => credentials)
 
-      run_get(providers_url(provider.id), :attributes => "authentications")
+      run_get(api_provider_url(nil, provider), :attributes => "authentications")
 
       expect(response).to have_http_status(:ok)
       expect_result_to_match_hash(response.parsed_body, "name" => "sample")
@@ -178,7 +182,7 @@ describe "Queries API" do
                                     :src_vm_id   => template.id,
                                     :options     => options)
 
-      run_get provision_requests_url(request.id)
+      run_get api_provision_request_url(nil, request)
 
       expect(response).to have_http_status(:ok)
       expect_result_to_match_hash(response.parsed_body, "description" => "sample provision")

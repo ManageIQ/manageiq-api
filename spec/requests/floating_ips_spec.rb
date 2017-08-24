@@ -3,14 +3,14 @@ RSpec.describe 'FloatingIp API' do
     it 'lists all cloud subnets with an appropriate role' do
       floating_ip = FactoryGirl.create(:floating_ip)
       api_basic_authorize collection_action_identifier(:floating_ips, :read, :get)
-      run_get(floating_ips_url)
+      run_get(api_floating_ips_url)
 
       expected = {
         'count'     => 1,
         'subcount'  => 1,
         'name'      => 'floating_ips',
         'resources' => [
-          hash_including('href' => a_string_matching(floating_ips_url(floating_ip.compressed_id)))
+          hash_including('href' => api_floating_ip_url(nil, floating_ip.compressed_id))
         ]
       }
       expect(response).to have_http_status(:ok)
@@ -20,7 +20,7 @@ RSpec.describe 'FloatingIp API' do
     it 'forbids access to cloud subnets without an appropriate role' do
       api_basic_authorize
 
-      run_get(floating_ips_url)
+      run_get(api_floating_ips_url)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -31,9 +31,9 @@ RSpec.describe 'FloatingIp API' do
       floating_ip = FactoryGirl.create(:floating_ip)
       api_basic_authorize action_identifier(:floating_ips, :read, :resource_actions, :get)
 
-      run_get(floating_ips_url(floating_ip.id))
+      run_get(api_floating_ip_url(nil, floating_ip))
 
-      expect(response.parsed_body).to include('href' => a_string_matching(floating_ips_url(floating_ip.compressed_id)))
+      expect(response.parsed_body).to include('href' => api_floating_ip_url(nil, floating_ip.compressed_id))
       expect(response).to have_http_status(:ok)
     end
 
@@ -41,7 +41,7 @@ RSpec.describe 'FloatingIp API' do
       floating_ip = FactoryGirl.create(:floating_ip)
       api_basic_authorize
 
-      run_get(floating_ips_url(floating_ip.id))
+      run_get(api_floating_ip_url(nil, floating_ip))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -50,7 +50,7 @@ RSpec.describe 'FloatingIp API' do
   describe 'POST /api/floating_ips' do
     it 'forbids access to floating ips without an appropriate role' do
       api_basic_authorize
-      run_post(floating_ips_url, gen_request(:query, ""))
+      run_post(api_floating_ips_url, gen_request(:query, ""))
       expect(response).to have_http_status(:forbidden)
     end
   end

@@ -3,7 +3,7 @@ RSpec.describe 'Clusters API' do
     it 'returns clusters node_types' do
       expected_data = {"node_types" => EmsCluster.node_types.to_s}
 
-      run_options(clusters_url)
+      run_options(api_clusters_url)
       expect_options_results(:clusters, expected_data)
     end
   end

@@ -12,7 +12,7 @@ describe "Regions API" do
   it "forbids access to regions without an appropriate role" do
     api_basic_authorize
 
-    run_get(regions_url)
+    run_get(api_regions_url)
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -22,7 +22,7 @@ describe "Regions API" do
 
     region = FactoryGirl.create(:miq_region, :region => "2")
 
-    run_get(regions_url(region.id))
+    run_get(api_region_url(nil, region))
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -32,11 +32,11 @@ describe "Regions API" do
 
     region = FactoryGirl.create(:miq_region, :region => "2")
 
-    run_get(regions_url(region.id))
+    run_get(api_region_url(nil, region))
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
-      "href" => a_string_matching(regions_url(region.compressed_id)),
+      "href" => api_region_url(nil, region.compressed_id),
       "id"   => region.compressed_id
     )
   end

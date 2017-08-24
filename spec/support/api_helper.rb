@@ -68,17 +68,6 @@ module Spec
         define_user
       end
 
-      def auth_url
-        "#{api_config(:entrypoint)}/auth"
-      end
-
-      (Api::ApiConfig.collections.keys - [:auth]).each do |collection|
-        define_method("#{collection}_url".to_sym) do |id = nil|
-          path = "#{api_config(:entrypoint)}/#{collection}"
-          id.nil? ? path : "#{path}/#{id}"
-        end
-      end
-
       def api_basic_authorize(*identifiers)
         update_user_role(@role, *identifiers)
         basic_authorize api_config(:user), api_config(:password)

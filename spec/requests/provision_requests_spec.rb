@@ -87,7 +87,7 @@ describe "Provision Requests API" do
         }
       )
 
-      run_post(provision_requests_url, body)
+      run_post(api_provision_requests_url, body)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_provreq_attributes)
@@ -119,7 +119,7 @@ describe "Provision Requests API" do
         }
       )
 
-      run_post(provision_requests_url, body)
+      run_post(api_provision_requests_url, body)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_provreq_attributes)
@@ -148,7 +148,7 @@ describe "Provision Requests API" do
         }
       )
 
-      run_post(provision_requests_url, body)
+      run_post(api_provision_requests_url, body)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_provreq_attributes)
@@ -208,13 +208,13 @@ describe "Provision Requests API" do
       provision_request2 = FactoryGirl.create(:miq_provision_request, :requester => @user)
       api_basic_authorize collection_action_identifier(:provision_requests, :read, :get)
 
-      run_get provision_requests_url
+      run_get api_provision_requests_url
 
       expected = {
         "count"     => 2,
         "subcount"  => 1,
         "resources" => a_collection_containing_exactly(
-          "href" => a_string_matching(provision_requests_url(provision_request2.compressed_id)),
+          "href" => api_provision_request_url(nil, provision_request2.compressed_id),
         )
       }
       expect(response).to have_http_status(:ok)
@@ -228,14 +228,14 @@ describe "Provision Requests API" do
       provision_request2 = FactoryGirl.create(:miq_provision_request, :requester => @user)
       api_basic_authorize collection_action_identifier(:provision_requests, :read, :get)
 
-      run_get provision_requests_url
+      run_get api_provision_requests_url
 
       expected = {
         "count"     => 2,
         "subcount"  => 2,
         "resources" => a_collection_containing_exactly(
-          {"href" => a_string_matching(provision_requests_url(provision_request1.compressed_id))},
-          {"href" => a_string_matching(provision_requests_url(provision_request2.compressed_id))},
+          {"href" => api_provision_request_url(nil, provision_request1.compressed_id)},
+          {"href" => api_provision_request_url(nil, provision_request2.compressed_id)},
         )
       }
       expect(response).to have_http_status(:ok)
@@ -247,7 +247,7 @@ describe "Provision Requests API" do
       provision_request = FactoryGirl.create(:miq_provision_request, :requester => other_user)
       api_basic_authorize action_identifier(:provision_requests, :read, :resource_actions, :get)
 
-      run_get provision_requests_url(provision_request.id)
+      run_get api_provision_request_url(nil, provision_request)
 
       expect(response).to have_http_status(:not_found)
     end
@@ -258,11 +258,11 @@ describe "Provision Requests API" do
       provision_request = FactoryGirl.create(:miq_provision_request, :requester => other_user)
       api_basic_authorize action_identifier(:provision_requests, :read, :resource_actions, :get)
 
-      run_get provision_requests_url(provision_request.id)
+      run_get api_provision_request_url(nil, provision_request)
 
       expected = {
         "id"   => provision_request.compressed_id,
-        "href" => a_string_matching(provision_requests_url(provision_request.compressed_id))
+        "href" => api_provision_request_url(nil, provision_request.compressed_id)
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -271,7 +271,7 @@ describe "Provision Requests API" do
     it "rejects requests without appropriate role" do
       api_basic_authorize
 
-      run_post(provision_requests_url, single_provision_request)
+      run_post(api_provision_requests_url, single_provision_request)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -280,7 +280,7 @@ describe "Provision Requests API" do
       api_basic_authorize collection_action_identifier(:provision_requests, :create)
 
       dialog  # Create the Provisioning dialog
-      run_post(provision_requests_url, single_provision_request)
+      run_post(api_provision_requests_url, single_provision_request)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -294,7 +294,7 @@ describe "Provision Requests API" do
       api_basic_authorize collection_action_identifier(:provision_requests, :create)
 
       dialog  # Create the Provisioning dialog
-      run_post(provision_requests_url, gen_request(:create, single_provision_request))
+      run_post(api_provision_requests_url, gen_request(:create, single_provision_request))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -308,7 +308,7 @@ describe "Provision Requests API" do
       api_basic_authorize collection_action_identifier(:provision_requests, :create)
 
       dialog  # Create the Provisioning dialog
-      run_post(provision_requests_url, gen_request(:create, [single_provision_request, single_provision_request]))
+      run_post(api_provision_requests_url, gen_request(:create, [single_provision_request, single_provision_request]))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -324,7 +324,7 @@ describe "Provision Requests API" do
         provision_request = FactoryGirl.create(:miq_provision_request, :requester => @user, :options => {:foo => "bar"})
         api_basic_authorize
 
-        run_post(provision_requests_url(provision_request.id), :action => "edit", :options => {:baz => "qux"})
+        run_post(api_provision_request_url(nil, provision_request), :action => "edit", :options => {:baz => "qux"})
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -333,7 +333,7 @@ describe "Provision Requests API" do
         provision_request = FactoryGirl.create(:miq_provision_request, :requester => @user, :options => {:foo => "bar"})
         api_basic_authorize(action_identifier(:provision_requests, :edit))
 
-        run_post(provision_requests_url(provision_request.id), :action => "edit", :options => {:baz => "qux"})
+        run_post(api_provision_request_url(nil, provision_request), :action => "edit", :options => {:baz => "qux"})
 
         expected = {
           "id"      => provision_request.compressed_id,
@@ -351,7 +351,7 @@ describe "Provision Requests API" do
         api_basic_authorize collection_action_identifier(:service_requests, :edit)
 
         run_post(
-          provision_requests_url,
+          api_provision_requests_url,
           :action    => "edit",
           :resources => [
             {:id => provision_request.id, :options => {:baz => "qux"}},
@@ -377,8 +377,8 @@ describe "Provision Requests API" do
     let(:provreqbody)   { {:requester => user, :source_type => 'VmOrTemplate', :source_id => template.id} }
     let(:provreq1)      { FactoryGirl.create(:miq_provision_request, provreqbody) }
     let(:provreq2)      { FactoryGirl.create(:miq_provision_request, provreqbody) }
-    let(:provreq1_url)  { provision_requests_url(provreq1.id) }
-    let(:provreq2_url)  { provision_requests_url(provreq2.id) }
+    let(:provreq1_url)  { api_provision_request_url(nil, provreq1) }
+    let(:provreq2_url)  { api_provision_request_url(nil, provreq2) }
 
     before do
       @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :role => "administrator")
@@ -390,7 +390,7 @@ describe "Provision Requests API" do
       run_post(provreq1_url, gen_request(:approve))
 
       expected_msg = "Provision request #{provreq1.id} approved"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => provision_requests_url(provreq1.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq1.compressed_id))
     end
 
     it "supports denying a request" do
@@ -399,25 +399,25 @@ describe "Provision Requests API" do
       run_post(provreq2_url, gen_request(:deny))
 
       expected_msg = "Provision request #{provreq2.id} denied"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => provision_requests_url(provreq2.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq2.compressed_id))
     end
 
     it "supports approving multiple requests" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      run_post(provision_requests_url, gen_request(:approve, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
+      run_post(api_provision_requests_url, gen_request(:approve, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
           {
             "message" => a_string_matching(/Provision request #{provreq1.id} approved/i),
             "success" => true,
-            "href"    => a_string_matching(provision_requests_url(provreq1.compressed_id))
+            "href"    => api_provision_request_url(nil, provreq1.compressed_id)
           },
           {
             "message" => a_string_matching(/Provision request #{provreq2.id} approved/i),
             "success" => true,
-            "href"    => a_string_matching(provision_requests_url(provreq2.compressed_id))
+            "href"    => api_provision_request_url(nil, provreq2.compressed_id)
           }
         )
       }
@@ -428,19 +428,19 @@ describe "Provision Requests API" do
     it "supports denying multiple requests" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      run_post(provision_requests_url, gen_request(:deny, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
+      run_post(api_provision_requests_url, gen_request(:deny, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
           {
             "message" => a_string_matching(/Provision request #{provreq1.id} denied/i),
             "success" => true,
-            "href"    => a_string_matching(provision_requests_url(provreq1.compressed_id))
+            "href"    => api_provision_request_url(nil, provreq1.compressed_id)
           },
           {
             "message" => a_string_matching(/Provision request #{provreq2.id} denied/i),
             "success" => true,
-            "href"    => a_string_matching(provision_requests_url(provreq2.compressed_id))
+            "href"    => api_provision_request_url(nil, provreq2.compressed_id)
           }
         )
       }
@@ -456,20 +456,20 @@ describe "Provision Requests API" do
       FactoryGirl.create(:miq_request_task, :miq_request_id => provision_request.id)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      run_get("#{provision_requests_url(provision_request.id)}/tasks")
+      run_get("#{api_provision_request_url(nil, provision_request)}/tasks")
 
       expect(response).to have_http_status(:moved_permanently)
-      expect(response.redirect_url).to include("#{provision_requests_url(provision_request.id)}/request_tasks")
+      expect(response.redirect_url).to include("#{api_provision_request_url(nil, provision_request)}/request_tasks")
     end
 
     it 'redirects to request_tasks subresources' do
       task = FactoryGirl.create(:miq_request_task, :miq_request_id => provision_request.id)
       api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
 
-      run_get("#{provision_requests_url(provision_request.id)}/tasks/#{task.id}")
+      run_get("#{api_provision_request_url(nil, provision_request)}/tasks/#{task.id}")
 
       expect(response).to have_http_status(:moved_permanently)
-      expect(response.redirect_url).to include("#{provision_requests_url(provision_request.id)}/request_tasks/#{task.id}")
+      expect(response.redirect_url).to include("#{api_provision_request_url(nil, provision_request)}/request_tasks/#{task.id}")
     end
   end
 end

@@ -18,7 +18,7 @@ describe "Service Dialogs API" do
 
     it "query only returns href" do
       api_basic_authorize collection_action_identifier(:service_dialogs, :read, :get)
-      run_get service_dialogs_url
+      run_get api_service_dialogs_url
 
       expected = {
         "name"      => "service_dialogs",
@@ -32,7 +32,7 @@ describe "Service Dialogs API" do
 
     it "query with expanded resources to include content" do
       api_basic_authorize collection_action_identifier(:service_dialogs, :read, :get)
-      run_get service_dialogs_url, :expand => "resources"
+      run_get api_service_dialogs_url, :expand => "resources"
 
       expect_query_result(:service_dialogs, Dialog.count, Dialog.count)
       expect_result_resources_to_include_keys("resources", %w(id href label content))
@@ -40,11 +40,11 @@ describe "Service Dialogs API" do
 
     it "query single dialog to include content" do
       api_basic_authorize action_identifier(:service_dialogs, :read, :resource_actions, :get)
-      run_get service_dialogs_url(dialog1.id)
+      run_get api_service_dialog_url(nil, dialog1)
 
       expect_single_resource_query(
         "id"    => dialog1.compressed_id,
-        "href"  => service_dialogs_url(dialog1.compressed_id),
+        "href"  => api_service_dialog_url(nil, dialog1.compressed_id),
         "label" => dialog1.label
       )
       expect_result_to_have_keys(%w(content))
@@ -53,7 +53,7 @@ describe "Service Dialogs API" do
     it "query single dialog to exclude content when attributes are asked for" do
       api_basic_authorize action_identifier(:service_dialogs, :read, :resource_actions, :get)
 
-      run_get service_dialogs_url(dialog1.id), :attributes => "id,label"
+      run_get api_service_dialog_url(nil, dialog1), :attributes => "id,label"
 
       expect_result_to_have_only_keys(%w(href id label))
     end
@@ -64,7 +64,7 @@ describe "Service Dialogs API" do
         api_basic_authorize collection_action_identifier(:service_dialogs, :delete)
 
         expect do
-          run_delete(service_dialogs_url(dialog.id))
+          run_delete(api_service_dialog_url(nil, dialog))
         end.to change(Dialog, :count).by(-1)
         expect(response).to have_http_status(:no_content)
       end
@@ -74,7 +74,7 @@ describe "Service Dialogs API" do
         api_basic_authorize collection_action_identifier(:service_dialogs, :delete)
 
         expect do
-          run_post(service_dialogs_url(dialog.id), 'action' => 'delete')
+          run_post(api_service_dialog_url(nil, dialog), 'action' => 'delete')
         end.to change(Dialog, :count).by(-1)
         expect(response).to have_http_status(:ok)
       end
@@ -84,7 +84,7 @@ describe "Service Dialogs API" do
         api_basic_authorize collection_action_identifier(:service_dialogs, :delete)
 
         expect do
-          run_post(service_dialogs_url, 'action' => 'delete', 'resources' => [{ 'id' => dialog.id }])
+          run_post(api_service_dialogs_url, 'action' => 'delete', 'resources' => [{ 'id' => dialog.id }])
         end.to change(Dialog, :count).by(-1)
         expect(response).to have_http_status(:ok)
       end
@@ -94,7 +94,7 @@ describe "Service Dialogs API" do
         api_basic_authorize collection_action_identifier(:service_dialogs, :delete)
 
         expect do
-          run_post(service_dialogs_url, 'action'    => 'delete',
+          run_post(api_service_dialogs_url, 'action'    => 'delete',
                                         'resources' => [{'id' => dialog_a.id}, {'id' => dialog_b.id}])
         end.to change(Dialog, :count).by(-2)
         expect(response).to have_http_status(:ok)
@@ -107,7 +107,7 @@ describe "Service Dialogs API" do
       it 'POST /api/service_dialogs/:id rejects a request without appropriate role' do
         api_basic_authorize
 
-        run_post(service_dialogs_url(dialog.id), gen_request(:edit, :label => 'updated label'))
+        run_post(api_service_dialog_url(nil, dialog), gen_request(:edit, :label => 'updated label'))
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -137,13 +137,13 @@ describe "Service Dialogs API" do
         }
 
         expected = {
-          'href'  => a_string_including(service_dialogs_url(dialog.compressed_id)),
+          'href'  => a_string_including(api_service_dialog_url(nil, dialog.compressed_id)),
           'id'    => dialog.compressed_id,
           'label' => 'updated label'
         }
 
         expect do
-          run_post(service_dialogs_url(dialog.id), gen_request(:edit, updated_dialog))
+          run_post(api_service_dialog_url(nil, dialog), gen_request(:edit, updated_dialog))
           dialog.reload
         end.to change(dialog, :content)
         expect(response).to have_http_status(:ok)
@@ -155,7 +155,7 @@ describe "Service Dialogs API" do
 
         api_basic_authorize collection_action_identifier(:service_dialogs, :edit)
 
-        run_post(service_dialogs_url, :action => 'edit', :resources => [{:id => dialog.id, 'label' => 'foo bar'},
+        run_post(api_service_dialogs_url, :action => 'edit', :resources => [{:id => dialog.id, 'label' => 'foo bar'},
                                                                         {:id => dialog2.id, :label => 'bar'}
         ])
 
@@ -182,7 +182,7 @@ describe "Service Dialogs API" do
         dialog = FactoryGirl.create(:dialog_with_tab_and_group_and_field)
         api_basic_authorize
 
-        run_post(service_dialogs_url(dialog.id), :action => 'copy')
+        run_post(api_service_dialog_url(nil, dialog), :action => 'copy')
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -204,7 +204,7 @@ describe "Service Dialogs API" do
         }
 
         expect do
-          run_post(service_dialogs_url, :action => 'copy', :resources => [{:id => dialog1.id},
+          run_post(api_service_dialogs_url, :action => 'copy', :resources => [{:id => dialog1.id},
                                                                           {:id => dialog2.id}])
         end.to change(Dialog, :count).by(2)
         expect(response.parsed_body).to include(expected)
@@ -220,7 +220,7 @@ describe "Service Dialogs API" do
         }
 
         expect do
-          run_post(service_dialogs_url(dialog.id), :action => 'copy')
+          run_post(api_service_dialog_url(nil, dialog), :action => 'copy')
         end.to change(Dialog, :count).by(1)
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)
@@ -235,7 +235,7 @@ describe "Service Dialogs API" do
         }
 
         expect do
-          run_post(service_dialogs_url(dialog.id), :action => 'copy', 'label' => 'foo')
+          run_post(api_service_dialog_url(nil, dialog), :action => 'copy', 'label' => 'foo')
         end.to change(Dialog, :count).by(1)
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)
@@ -250,7 +250,7 @@ describe "Service Dialogs API" do
     end
 
     it "query all service dialogs of a Service Template" do
-      run_get "#{service_templates_url(template.id)}/service_dialogs", :expand => "resources"
+      run_get(api_service_template_service_dialogs_url(nil, template), :expand => "resources")
 
       dialogs = template.dialogs
       expect_query_result(:service_dialogs, dialogs.count, dialogs.count)
@@ -260,7 +260,7 @@ describe "Service Dialogs API" do
     it "query all service dialogs of a Service" do
       service.update_attributes!(:service_template_id => template.id)
 
-      run_get "#{services_url(service.id)}/service_dialogs", :expand => "resources"
+      run_get(api_service_service_dialogs_url(nil, service), :expand => "resources")
 
       dialogs = service.dialogs
       expect_query_result(:service_dialogs, dialogs.count, dialogs.count)
@@ -268,7 +268,7 @@ describe "Service Dialogs API" do
     end
 
     it "queries service dialogs content with the template and related resource action specified and returns IDs" do
-      run_get "#{service_templates_url(template.id)}/service_dialogs/#{dialog1.id}", :attributes => "content"
+      run_get(api_service_template_service_dialog_url(nil, template, dialog1), :attributes => "content")
       expected = {
         'content' => a_collection_including(
           a_hash_including('id' => dialog1.compressed_id)
@@ -294,7 +294,7 @@ describe "Service Dialogs API" do
     it "rejects refresh dialog fields requests without appropriate role" do
       api_basic_authorize
 
-      run_post(service_dialogs_url(dialog1.id), gen_request(:refresh_dialog_fields, "fields" => %w(test1)))
+      run_post(api_service_dialog_url(nil, dialog1), gen_request(:refresh_dialog_fields, "fields" => %w(test1)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -303,7 +303,7 @@ describe "Service Dialogs API" do
       api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
       init_dialog
 
-      run_post(service_dialogs_url(dialog1.id), gen_request(:refresh_dialog_fields))
+      run_post(api_service_dialog_url(nil, dialog1), gen_request(:refresh_dialog_fields))
 
       expect_single_action_result(:success => false, :message => /must specify fields/i)
     end
@@ -312,7 +312,7 @@ describe "Service Dialogs API" do
       api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
       init_dialog
 
-      run_post(service_dialogs_url(dialog1.id), gen_request(:refresh_dialog_fields, "fields" => %w(bad_field)))
+      run_post(api_service_dialog_url(nil, dialog1), gen_request(:refresh_dialog_fields, "fields" => %w(bad_field)))
 
       expect_single_action_result(:success => false, :message => /unknown dialog field bad_field/i)
     end
@@ -321,12 +321,12 @@ describe "Service Dialogs API" do
       api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
       init_dialog
 
-      run_post(service_dialogs_url(dialog1.id), gen_request(:refresh_dialog_fields, "fields" => %w(text1)))
+      run_post(api_service_dialog_url(nil, dialog1), gen_request(:refresh_dialog_fields, "fields" => %w(text1)))
 
       expect(response.parsed_body).to include(
         "success" => true,
         "message" => a_string_matching(/refreshing dialog fields/i),
-        "href"    => a_string_matching(service_dialogs_url(dialog1.compressed_id)),
+        "href"    => api_service_dialog_url(nil, dialog1.compressed_id),
         "result"  => hash_including("text1")
       )
     end
@@ -362,7 +362,7 @@ describe "Service Dialogs API" do
     it 'rejects service dialog creation without appropriate role' do
       api_basic_authorize
 
-      run_post(service_dialogs_url, dialog_request)
+      run_post(api_service_dialogs_url, dialog_request)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -370,7 +370,7 @@ describe "Service Dialogs API" do
     it 'rejects service dialog creation with an href specified' do
       api_basic_authorize collection_action_identifier(:service_dialogs, :create)
 
-      run_post(service_dialogs_url, dialog_request.merge!("href" => service_dialogs_url(123)))
+      run_post(api_service_dialogs_url, dialog_request.merge!("href" => api_service_dialog_url(nil, 123)))
       expected = {
         "error" => a_hash_including(
           "kind"    => "bad_request",
@@ -384,7 +384,7 @@ describe "Service Dialogs API" do
     it 'rejects service dialog creation with an id specified' do
       api_basic_authorize collection_action_identifier(:service_dialogs, :create)
 
-      run_post(service_dialogs_url, dialog_request.merge!("id" => 123))
+      run_post(api_service_dialogs_url, dialog_request.merge!("id" => 123))
       expected = {
         "error" => a_hash_including(
           "kind"    => "bad_request",
@@ -408,7 +408,7 @@ describe "Service Dialogs API" do
       }
 
       expect do
-        run_post(service_dialogs_url, dialog_request)
+        run_post(api_service_dialogs_url, dialog_request)
       end.to change(Dialog, :count).by(1)
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -454,7 +454,7 @@ describe "Service Dialogs API" do
       }
 
       expect do
-        run_post(service_dialogs_url, gen_request(:create, [dialog_request, dialog_request_2]))
+        run_post(api_service_dialogs_url, gen_request(:create, [dialog_request, dialog_request_2]))
       end.to change(Dialog, :count).by(2)
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -476,7 +476,7 @@ describe "Service Dialogs API" do
       }
 
       expect do
-        run_post(service_dialogs_url, invalid_request)
+        run_post(api_service_dialogs_url, invalid_request)
       end.to change(Dialog, :count).by(0)
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:bad_request)

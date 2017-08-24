@@ -47,9 +47,9 @@ RSpec.describe "API entrypoint" do
         "version"     => Vmdb::Appliance.VERSION,
         "build"       => Vmdb::Appliance.BUILD,
         "appliance"   => MiqServer.my_server.name,
-        "server_href" => a_string_matching(servers_url(MiqServer.my_server.id)),
-        "zone_href"   => a_string_matching(zones_url(MiqServer.my_server.zone.id)),
-        "region_href" => a_string_matching(regions_url(MiqRegion.my_region.id))
+        "server_href" => api_server_url(nil, MiqServer.my_server),
+        "zone_href"   => api_zone_url(nil, MiqServer.my_server.zone),
+        "region_href" => api_region_url(nil, MiqRegion.my_region)
       )
     )
   end

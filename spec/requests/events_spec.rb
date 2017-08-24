@@ -18,7 +18,7 @@ describe "Events API" do
     it "query invalid event" do
       api_basic_authorize action_identifier(:events, :read, :resource_actions, :get)
 
-      run_get events_url(999_999)
+      run_get api_event_url(nil, 999_999)
 
       expect(response).to have_http_status(:not_found)
     end
@@ -26,7 +26,7 @@ describe "Events API" do
     it "query events with no events defined" do
       api_basic_authorize collection_action_identifier(:events, :read, :get)
 
-      run_get events_url
+      run_get api_events_url
 
       expect_empty_query_result(:events)
     end
@@ -35,12 +35,12 @@ describe "Events API" do
       api_basic_authorize collection_action_identifier(:events, :read, :get)
       create_events(3)
 
-      run_get events_url
+      run_get api_events_url
 
       expect_query_result(:events, 3, 3)
       expect_result_resources_to_include_hrefs(
         "resources",
-        MiqEventDefinition.select(:id).collect { |med| /^.*#{events_url(med.compressed_id)}$/ }
+        MiqEventDefinition.select(:id).collect { |med| api_event_url(nil, med.compressed_id) }
       )
     end
 
@@ -48,7 +48,7 @@ describe "Events API" do
       api_basic_authorize collection_action_identifier(:events, :read, :get)
       create_events(3)
 
-      run_get events_url, :expand => "resources"
+      run_get api_events_url, :expand => "resources"
 
       expect_query_result(:events, 3, 3)
       expect_result_resources_to_include_data("resources", "guid" => miq_event_guid_list)
@@ -57,8 +57,6 @@ describe "Events API" do
 
   context "Event subcollection" do
     let(:policy)             { FactoryGirl.create(:miq_policy, :name => "Policy 1") }
-    let(:policy_url)         { policies_url(policy.id) }
-    let(:policy_events_url)  { "#{policy_url}/events" }
 
     def relate_events_to(policy)
       MiqEventDefinition.all.collect(&:id).each do |event_id|
@@ -69,7 +67,7 @@ describe "Events API" do
     it "query events with no events defined" do
       api_basic_authorize
 
-      run_get policy_events_url
+      run_get api_policy_events_url(nil, policy)
 
       expect_empty_query_result(:events)
     end
@@ -79,7 +77,7 @@ describe "Events API" do
       create_events(3)
       relate_events_to(policy)
 
-      run_get policy_events_url, :expand => "resources"
+      run_get api_policy_events_url(nil, policy), :expand => "resources"
 
       expect_query_result(:events, 3, 3)
       expect_result_resources_to_include_data("resources", "guid" => miq_event_guid_list)
@@ -90,7 +88,7 @@ describe "Events API" do
       create_events(3)
       relate_events_to(policy)
 
-      run_get policy_url, :expand => "events"
+      run_get api_policy_url(nil, policy), :expand => "events"
 
       expect_single_resource_query("name" => policy.name, "description" => policy.description, "guid" => policy.guid)
       expect_result_resources_to_include_data("events", "guid" => miq_event_guid_list)

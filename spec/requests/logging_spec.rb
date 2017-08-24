@@ -14,7 +14,7 @@ describe "Logging" do
     it "logs hashed details about the request" do
       api_basic_authorize collection_action_identifier(:users, :read, :get)
 
-      run_get users_url
+      run_get api_users_url
 
       @log.rewind
       request_log_line = @log.readlines.detect { |l| l =~ /MIQ\(.*\) Request:/ }
@@ -37,7 +37,7 @@ describe "Logging" do
     it "filters password attributes in nested parameters" do
       api_basic_authorize collection_action_identifier(:services, :create)
 
-      run_post(services_url, gen_request(:create, "name" => "new_service_1", "options" => { "password" => "SECRET" }))
+      run_post(api_services_url, gen_request(:create, "name" => "new_service_1", "options" => { "password" => "SECRET" }))
 
       expect(@log.string).to include(
         'Parameters:     {"action"=>"update", "controller"=>"api/services", "format"=>"json", ' \

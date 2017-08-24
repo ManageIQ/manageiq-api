@@ -29,13 +29,13 @@ describe "Conditions API" do
       }
     end
     let(:condition) { FactoryGirl.create(:condition) }
-    let(:condition_url) { conditions_url(condition.id) }
+    let(:condition_url) { api_condition_url(nil, condition) }
     let(:conditions) { FactoryGirl.create_list(:condition, 2) }
 
     it "forbids access to create condition without an appropriate role" do
       api_basic_authorize
 
-      run_post(conditions_url, sample_condition)
+      run_post(api_conditions_url, sample_condition)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -43,7 +43,7 @@ describe "Conditions API" do
     it "forbids access to edit condition without an appropriate role" do
       api_basic_authorize
 
-      run_post(conditions_url(condition.id), gen_request(:edit, "description" => "change"))
+      run_post(api_condition_url(nil, condition), gen_request(:edit, "description" => "change"))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -52,7 +52,7 @@ describe "Conditions API" do
       condition
       api_basic_authorize
 
-      run_post(conditions_url, gen_request(:delete, "name" => condition.name, "href" => condition_url))
+      run_post(api_conditions_url, gen_request(:delete, "name" => condition.name, "href" => condition_url))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -61,14 +61,14 @@ describe "Conditions API" do
       condition
       api_basic_authorize
 
-      run_get conditions_url
+      run_get api_conditions_url
 
       expect(response).to have_http_status(:forbidden)
     end
 
     it "creates new condition" do
       api_basic_authorize collection_action_identifier(:conditions, :create)
-      run_post(conditions_url, sample_condition)
+      run_post(api_conditions_url, sample_condition)
 
       expect(response).to have_http_status(:ok)
 
@@ -79,7 +79,7 @@ describe "Conditions API" do
 
     it "creates new conditions" do
       api_basic_authorize collection_action_identifier(:conditions, :create)
-      run_post(conditions_url, gen_request(:create, [sample_condition,
+      run_post(api_conditions_url, gen_request(:create, [sample_condition,
                                                      sample_condition.merge(:name => "foo", :description => "bar")]))
       expect(response).to have_http_status(:ok)
 
@@ -88,7 +88,7 @@ describe "Conditions API" do
 
     it "deletes condition" do
       api_basic_authorize collection_action_identifier(:conditions, :delete)
-      run_post(conditions_url, gen_request(:delete, "name" => condition.name, "href" => condition_url))
+      run_post(api_conditions_url, gen_request(:delete, "name" => condition.name, "href" => condition_url))
 
       expect(response).to have_http_status(:ok)
 
@@ -97,10 +97,10 @@ describe "Conditions API" do
 
     it "deletes conditions" do
       api_basic_authorize collection_action_identifier(:conditions, :delete)
-      run_post(conditions_url, gen_request(:delete, [{"name" => conditions.first.name,
-                                                      "href" => conditions_url(conditions.first.id)},
-                                                     {"name" => conditions.second.name,
-                                                      "href" => conditions_url(conditions.second.id)}]))
+      run_post(api_conditions_url, gen_request(:delete, [{"name" => conditions.first.name,
+                                                          "href" => api_condition_url(nil, conditions.first)},
+                                                         {"name" => conditions.second.name,
+                                                          "href" => api_condition_url(nil, conditions.second)}]))
 
       expect(response).to have_http_status(:ok)
 
@@ -110,7 +110,7 @@ describe "Conditions API" do
     it "deletes condition via DELETE" do
       api_basic_authorize collection_action_identifier(:conditions, :delete)
 
-      run_delete(conditions_url(condition.id))
+      run_delete(api_condition_url(nil, condition))
 
       expect(response).to have_http_status(:no_content)
       expect(Condition.exists?(condition.id)).to be_falsey
@@ -118,7 +118,7 @@ describe "Conditions API" do
 
     it "edits condition" do
       api_basic_authorize collection_action_identifier(:conditions, :edit)
-      run_post(conditions_url(condition.id), gen_request(:edit, "description" => "change"))
+      run_post(api_condition_url(nil, condition), gen_request(:edit, "description" => "change"))
 
       expect(response).to have_http_status(:ok)
 
@@ -128,7 +128,7 @@ describe "Conditions API" do
 
     it "edits conditions" do
       api_basic_authorize collection_action_identifier(:conditions, :edit)
-      run_post(conditions_url, gen_request(:edit, [{"id" => conditions.first.id, "description" => "change"},
+      run_post(api_conditions_url, gen_request(:edit, [{"id" => conditions.first.id, "description" => "change"},
                                                    {"id" => conditions.second.id, "description" => "change2"}]))
       expect(response).to have_http_status(:ok)
 
@@ -142,7 +142,7 @@ describe "Conditions API" do
     it "query invalid collection" do
       api_basic_authorize collection_action_identifier(:conditions, :read, :get)
 
-      run_get conditions_url(999_999)
+      run_get api_condition_url(nil, 999_999)
 
       expect(response).to have_http_status(:not_found)
     end
@@ -150,7 +150,7 @@ describe "Conditions API" do
     it "query conditions with no conditions defined" do
       api_basic_authorize collection_action_identifier(:conditions, :read, :get)
 
-      run_get conditions_url
+      run_get api_conditions_url
 
       expect_empty_query_result(:conditions)
     end
@@ -159,12 +159,12 @@ describe "Conditions API" do
       api_basic_authorize collection_action_identifier(:conditions, :read, :get)
       create_conditions(3)
 
-      run_get conditions_url
+      run_get api_conditions_url
 
       expect_query_result(:conditions, 3, 3)
       expect_result_resources_to_include_hrefs(
         "resources",
-        Condition.select(:id).collect { |c| /^.*#{conditions_url(c.compressed_id)}$/ }
+        Condition.select(:id).collect { |c| api_condition_url(nil, c.compressed_id) }
       )
     end
 
@@ -172,7 +172,7 @@ describe "Conditions API" do
       api_basic_authorize collection_action_identifier(:conditions, :read, :get)
       create_conditions(3)
 
-      run_get conditions_url, :expand => "resources"
+      run_get api_conditions_url, :expand => "resources"
 
       expect_query_result(:conditions, 3, 3)
       expect_result_resources_to_include_data("resources", "guid" => condition_guid_list)
@@ -181,13 +181,11 @@ describe "Conditions API" do
 
   context "Condition subcollection" do
     let(:policy)                { FactoryGirl.create(:miq_policy, :name => "Policy 1") }
-    let(:policy_url)            { policies_url(policy.id) }
-    let(:policy_conditions_url) { "#{policy_url}/conditions" }
 
     it "query conditions with no conditions defined" do
       api_basic_authorize
 
-      run_get policy_conditions_url
+      run_get(api_policy_conditions_url(nil, policy))
 
       expect_empty_query_result(:conditions)
     end
@@ -197,7 +195,7 @@ describe "Conditions API" do
       create_conditions(3)
       assign_conditions_to(policy)
 
-      run_get policy_conditions_url, :expand => "resources"
+      run_get(api_policy_conditions_url(nil, policy), :expand => "resources")
 
       expect_query_result(:conditions, 3, 3)
       expect_result_resources_to_include_data("resources", "guid" => condition_guid_list)
@@ -208,7 +206,7 @@ describe "Conditions API" do
       create_conditions(3)
       assign_conditions_to(policy)
 
-      run_get policy_url, :expand => "conditions"
+      run_get(api_policy_url(nil, policy), :expand => "conditions")
 
       expect_single_resource_query("name" => policy.name, "description" => policy.description, "guid" => policy.guid)
       expect_result_resources_to_include_data("conditions", "guid" => condition_guid_list)

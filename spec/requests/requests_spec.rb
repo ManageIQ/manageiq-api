@@ -5,7 +5,7 @@ RSpec.describe "Requests API" do
     it "is forbidden for a user without appropriate role" do
       api_basic_authorize
 
-      run_get requests_url
+      run_get api_requests_url
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -18,7 +18,7 @@ RSpec.describe "Requests API" do
                          :source_type => template.class.name)
       api_basic_authorize collection_action_identifier(:requests, :read, :get)
 
-      run_get requests_url
+      run_get api_requests_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include("name" => "requests", "count" => 1, "subcount" => 0)
@@ -32,7 +32,7 @@ RSpec.describe "Requests API" do
                                            :source_type => template.class.name)
       api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
 
-      run_get requests_url(service_request.id)
+      run_get api_request_url(nil, service_request)
 
       expected = {
         "error" => a_hash_including(
@@ -50,7 +50,7 @@ RSpec.describe "Requests API" do
                                             :source_type => template.class.name)
       api_basic_authorize collection_action_identifier(:requests, :read, :get)
 
-      run_get requests_url
+      run_get api_requests_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include("name" => "requests", "count" => 1, "subcount" => 1)
@@ -63,11 +63,11 @@ RSpec.describe "Requests API" do
                                            :source_type => template.class.name)
       api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
 
-      run_get requests_url(service_request.id)
+      run_get api_request_url(nil, service_request)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include("id"   => service_request.compressed_id,
-                                              "href" => a_string_matching(requests_url(service_request.compressed_id)))
+                                              "href" => api_request_url(nil, service_request.compressed_id))
     end
 
     it "lists all the service requests if you are admin" do
@@ -83,14 +83,14 @@ RSpec.describe "Requests API" do
                                              :source_type => template.class.name)
       api_basic_authorize collection_action_identifier(:requests, :read, :get)
 
-      run_get requests_url
+      run_get api_requests_url
 
       expected = {
         "count"     => 2,
         "subcount"  => 2,
         "resources" => a_collection_containing_exactly(
-          {"href" => a_string_matching(requests_url(service_request_1.compressed_id))},
-          {"href" => a_string_matching(requests_url(service_request_2.compressed_id))},
+          {"href" => api_request_url(nil, service_request_1.compressed_id)},
+          {"href" => api_request_url(nil, service_request_2.compressed_id)},
         )
       }
       expect(response).to have_http_status(:ok)
@@ -106,11 +106,11 @@ RSpec.describe "Requests API" do
                                            :source_type => template.class.name)
       api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
 
-      run_get requests_url(service_request.id)
+      run_get api_request_url(nil, service_request)
 
       expected = {
         "id"   => service_request.compressed_id,
-        "href" => a_string_matching(requests_url(service_request.compressed_id))
+        "href" => api_request_url(nil, service_request.compressed_id)
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -121,7 +121,7 @@ RSpec.describe "Requests API" do
     it "is forbidden for a user to create a request without appropriate role" do
       api_basic_authorize
 
-      run_post(requests_url, gen_request(:create, :options => { :request_type => "service_reconfigure" }))
+      run_post(api_requests_url, gen_request(:create, :options => { :request_type => "service_reconfigure" }))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -129,7 +129,7 @@ RSpec.describe "Requests API" do
     it "is forbidden for a user to create a request with a different request role" do
       api_basic_authorize :vm_reconfigure
 
-      run_post(requests_url, gen_request(:create, :options => { :request_type => "service_reconfigure" }))
+      run_post(api_requests_url, gen_request(:create, :options => { :request_type => "service_reconfigure" }))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -137,7 +137,7 @@ RSpec.describe "Requests API" do
     it "fails if the request_type is missing" do
       api_basic_authorize
 
-      run_post(requests_url, gen_request(:create, :options => { :src_id => 4 }))
+      run_post(api_requests_url, gen_request(:create, :options => { :src_id => 4 }))
 
       expect_bad_request(/Invalid request - /)
     end
@@ -145,7 +145,7 @@ RSpec.describe "Requests API" do
     it "fails if the request_type is unknown" do
       api_basic_authorize
 
-      run_post(requests_url, gen_request(:create,
+      run_post(api_requests_url, gen_request(:create,
                                          :options => {
                                            :request_type => "invalid_request"
                                          }))
@@ -156,7 +156,7 @@ RSpec.describe "Requests API" do
     it "fails if the request is missing a src_id" do
       api_basic_authorize :service_reconfigure
 
-      run_post(requests_url, gen_request(:create, :options => { :request_type => "service_reconfigure" }))
+      run_post(api_requests_url, gen_request(:create, :options => { :request_type => "service_reconfigure" }))
 
       expect_bad_request(/Could not create the request - /)
     end
@@ -164,7 +164,7 @@ RSpec.describe "Requests API" do
     it "fails if the requester is invalid" do
       api_basic_authorize :service_reconfigure
 
-      run_post(requests_url, gen_request(:create,
+      run_post(api_requests_url, gen_request(:create,
                                          :options   => {
                                            :request_type => "service_reconfigure",
                                            :src_id       => 4
@@ -178,7 +178,7 @@ RSpec.describe "Requests API" do
       api_basic_authorize :service_reconfigure
 
       service = FactoryGirl.create(:service, :name => "service1")
-      run_post(requests_url, gen_request(:create,
+      run_post(api_requests_url, gen_request(:create,
                                          :options      => {
                                            :request_type => "service_reconfigure",
                                            :src_id       => service.id
@@ -205,7 +205,7 @@ RSpec.describe "Requests API" do
 
       approver = FactoryGirl.create(:user_miq_request_approver)
       service = FactoryGirl.create(:service, :name => "service1")
-      run_post(requests_url, gen_request(:create,
+      run_post(api_requests_url, gen_request(:create,
                                          :options      => {
                                            :request_type => "service_reconfigure",
                                            :src_id       => service.id,
@@ -246,7 +246,7 @@ RSpec.describe "Requests API" do
       request.add_tag(t.name, t.children.first.name)
 
       api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
-      run_get requests_url(request.id), :attributes => "workflow,v_allowed_tags,v_workflow_class"
+      run_get api_request_url(nil, request), :attributes => "workflow,v_allowed_tags,v_workflow_class"
 
       expected_response = a_hash_including(
         "id"               => request.compressed_id,
@@ -277,7 +277,7 @@ RSpec.describe "Requests API" do
       request.add_tag(t.name, t.children.first.name)
 
       api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
-      run_get requests_url(request.id), :attributes => "workflow.values"
+      run_get api_request_url(nil, request), :attributes => "workflow.values"
 
       expected_response = a_hash_including(
         "id"       => request.compressed_id,
@@ -297,7 +297,7 @@ RSpec.describe "Requests API" do
                                    :source_type => vm_template.class.name)
 
       api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
-      run_get requests_url(request.id), :attributes => "workflow,v_allowed_tags,v_workflow_class"
+      run_get api_request_url(nil, request), :attributes => "workflow,v_allowed_tags,v_workflow_class"
 
       expected_response = a_hash_including(
         "id"               => request.compressed_id,
@@ -315,7 +315,7 @@ RSpec.describe "Requests API" do
     it "is forbidden for a user without appropriate role" do
       api_basic_authorize
 
-      run_post(requests_url, gen_request(:edit))
+      run_post(api_requests_url, gen_request(:edit))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -323,7 +323,7 @@ RSpec.describe "Requests API" do
     it "fails with an invalid request id" do
       api_basic_authorize collection_action_identifier(:requests, :edit)
 
-      run_post(requests_url(999_999), gen_request(:edit, :options => { :some_option => "some_value" }))
+      run_post(api_request_url(nil, 999_999), gen_request(:edit, :options => { :some_option => "some_value" }))
 
       expected = {
         "error" => a_hash_including(
@@ -340,7 +340,7 @@ RSpec.describe "Requests API" do
       service = FactoryGirl.create(:service, :name => "service1")
       request = ServiceReconfigureRequest.create_request({ :src_id => service.id }, @user, false)
 
-      run_post(requests_url(request.id), gen_request(:edit, :options => { :some_option => "some_value" }))
+      run_post(api_request_url(nil, request), gen_request(:edit, :options => { :some_option => "some_value" }))
 
       expected = {
         "id"      => request.compressed_id,
@@ -356,7 +356,7 @@ RSpec.describe "Requests API" do
       service = FactoryGirl.create(:service, :name => "service1")
       ServiceReconfigureRequest.create_request({:src_id => service.id}, @user, false)
 
-      run_post(requests_url, gen_request(:edit, :options => {:some_option => "some_value"}))
+      run_post(api_requests_url, gen_request(:edit, :options => {:some_option => "some_value"}))
 
       expect(response.parsed_body).to include_error_with_message(/Must specify a id/)
       expect(response).to have_http_status(:bad_request)
@@ -366,11 +366,11 @@ RSpec.describe "Requests API" do
   context "Requests approval" do
     let(:service1)      { FactoryGirl.create(:service, :name => "service1") }
     let(:request1)      { ServiceReconfigureRequest.create_request({ :src_id => service1.id }, @user, false) }
-    let(:request1_url)  { requests_url(request1.id) }
+    let(:request1_url)  { api_request_url(nil, request1) }
 
     let(:service2)      { FactoryGirl.create(:service, :name => "service2") }
     let(:request2)      { ServiceReconfigureRequest.create_request({ :src_id => service2.id }, @user, false) }
-    let(:request2_url)  { requests_url(request2.id) }
+    let(:request2_url)  { api_request_url(nil, request2) }
 
     it "supports approving a request" do
       api_basic_authorize collection_action_identifier(:requests, :approve)
@@ -378,7 +378,7 @@ RSpec.describe "Requests API" do
       run_post(request1_url, gen_request(:approve, :reason => "approval reason"))
 
       expected_msg = "Request #{request1.id} approved"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => requests_url(request1.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_request_url(nil, request1.compressed_id))
     end
 
     it "fails approving a request if the reason is missing" do
@@ -396,7 +396,7 @@ RSpec.describe "Requests API" do
       run_post(request1_url, gen_request(:deny, :reason => "denial reason"))
 
       expected_msg = "Request #{request1.id} denied"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => requests_url(request1.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_request_url(nil, request1.compressed_id))
     end
 
     it "fails denying a request if the reason is missing" do
@@ -411,7 +411,7 @@ RSpec.describe "Requests API" do
     it "supports approving multiple requests" do
       api_basic_authorize collection_action_identifier(:requests, :approve)
 
-      run_post(requests_url, gen_request(:approve, [{:href => request1_url, :reason => "approval reason"},
+      run_post(api_requests_url, gen_request(:approve, [{:href => request1_url, :reason => "approval reason"},
                                                     {:href => request2_url, :reason => "approval reason"}]))
 
       expected = {
@@ -419,12 +419,12 @@ RSpec.describe "Requests API" do
           {
             "message" => a_string_matching(/Request #{request1.id} approved/i),
             "success" => true,
-            "href"    => a_string_matching(requests_url(request1.compressed_id))
+            "href"    => api_request_url(nil, request1.compressed_id)
           },
           {
             "message" => a_string_matching(/Request #{request2.id} approved/i),
             "success" => true,
-            "href"    => a_string_matching(requests_url(request2.compressed_id))
+            "href"    => api_request_url(nil, request2.compressed_id)
           }
         )
       }
@@ -435,7 +435,7 @@ RSpec.describe "Requests API" do
     it "supports denying multiple requests" do
       api_basic_authorize collection_action_identifier(:requests, :approve)
 
-      run_post(requests_url, gen_request(:deny, [{:href => request1_url, :reason => "denial reason"},
+      run_post(api_requests_url, gen_request(:deny, [{:href => request1_url, :reason => "denial reason"},
                                                  {:href => request2_url, :reason => "denial reason"}]))
 
       expected = {
@@ -443,12 +443,12 @@ RSpec.describe "Requests API" do
           {
             "message" => a_string_matching(/Request #{request1.id} denied/i),
             "success" => true,
-            "href"    => a_string_matching(requests_url(request1.compressed_id))
+            "href"    => api_request_url(nil, request1.compressed_id)
           },
           {
             "message" => a_string_matching(/Request #{request2.id} denied/i),
             "success" => true,
-            "href"    => a_string_matching(requests_url(request2.compressed_id))
+            "href"    => api_request_url(nil, request2.compressed_id)
           }
         )
       }
@@ -463,11 +463,11 @@ RSpec.describe "Requests API" do
       automation_request = FactoryGirl.create(:automation_request, :requester => @user)
       api_basic_authorize collection_action_identifier(:requests, :read, :get)
 
-      run_get requests_url, :expand => :resources
+      run_get api_requests_url, :expand => :resources
 
       expected = [
-        a_hash_including('href' => a_string_including(requests_url(provision_request.compressed_id))),
-        a_hash_including('href' => a_string_including(requests_url(automation_request.compressed_id)))
+        a_hash_including('href' => a_string_including(api_request_url(nil, provision_request.compressed_id))),
+        a_hash_including('href' => a_string_including(api_request_url(nil, automation_request.compressed_id)))
       ]
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['resources']).to match_array(expected)
@@ -486,20 +486,20 @@ RSpec.describe "Requests API" do
       FactoryGirl.create(:miq_request_task, :miq_request_id => request.id)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      run_get("#{requests_url(request.id)}/tasks")
+      run_get("#{api_request_url(nil, request)}/tasks")
 
       expect(response).to have_http_status(:moved_permanently)
-      expect(response.redirect_url).to include("#{requests_url(request.id)}/request_tasks")
+      expect(response.redirect_url).to include("#{api_request_url(nil, request)}/request_tasks")
     end
 
     it 'redirects to request_tasks subresources' do
       task = FactoryGirl.create(:miq_request_task, :miq_request_id => request.id)
       api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
 
-      run_get("#{requests_url(request.id)}/tasks/#{task.id}")
+      run_get("#{api_request_url(nil, request)}/tasks/#{task.id}")
 
       expect(response).to have_http_status(:moved_permanently)
-      expect(response.redirect_url).to include("#{requests_url(request.id)}/request_tasks/#{task.id}")
+      expect(response.redirect_url).to include("#{api_request_url(nil, request)}/request_tasks/#{task.id}")
     end
   end
 end

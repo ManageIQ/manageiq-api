@@ -47,14 +47,14 @@ describe "Service Requests API" do
     end
 
     it "can return the provision_dialog" do
-      run_get service_requests_url(service_request.id), :attributes => "provision_dialog"
+      run_get api_service_request_url(nil, service_request), :attributes => "provision_dialog"
 
       expect_result_to_have_provision_dialog
     end
 
     it "can return the request's user.email" do
       @user.update_attributes!(:email => "admin@api.net")
-      run_get service_requests_url(service_request.id), :attributes => "user.email"
+      run_get api_service_request_url(nil, service_request), :attributes => "user.email"
 
       expect_result_to_have_user_email(@user.email)
     end
@@ -67,14 +67,14 @@ describe "Service Requests API" do
     end
 
     it "can return the provision_dialog" do
-      run_get services_url(service.id), :attributes => "provision_dialog"
+      run_get api_service_url(nil, service), :attributes => "provision_dialog"
 
       expect_result_to_have_provision_dialog
     end
 
     it "can return the request's user.email" do
       @user.update_attributes!(:email => "admin@api.net")
-      run_get services_url(service.id), :attributes => "user.email"
+      run_get api_service_url(nil, service), :attributes => "user.email"
 
       expect_result_to_have_user_email(@user.email)
     end
@@ -93,8 +93,8 @@ describe "Service Requests API" do
                          :source_id   => template.id,
                          :source_type => template.class.name)
     end
-    let(:svcreq1_url)  { service_requests_url(svcreq1.id) }
-    let(:svcreq2_url)  { service_requests_url(svcreq2.id) }
+    let(:svcreq1_url)  { api_service_request_url(nil, svcreq1) }
+    let(:svcreq2_url)  { api_service_request_url(nil, svcreq2) }
 
     it "supports approving a request" do
       api_basic_authorize collection_action_identifier(:service_requests, :approve)
@@ -102,7 +102,7 @@ describe "Service Requests API" do
       run_post(svcreq1_url, gen_request(:approve, :reason => "approve reason"))
 
       expected_msg = "Service request #{svcreq1.id} approved"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => service_requests_url(svcreq1.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_service_request_url(nil, svcreq1.compressed_id))
     end
 
     it "supports denying a request" do
@@ -111,13 +111,13 @@ describe "Service Requests API" do
       run_post(svcreq2_url, gen_request(:deny, :reason => "deny reason"))
 
       expected_msg = "Service request #{svcreq2.id} denied"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => service_requests_url(svcreq2.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_service_request_url(nil, svcreq2.compressed_id))
     end
 
     it "supports approving multiple requests" do
       api_basic_authorize collection_action_identifier(:service_requests, :approve)
 
-      run_post(service_requests_url, gen_request(:approve, [{"href" => svcreq1_url, "reason" => "approve reason"},
+      run_post(api_service_requests_url, gen_request(:approve, [{"href" => svcreq1_url, "reason" => "approve reason"},
                                                             {"href" => svcreq2_url, "reason" => "approve reason"}]))
 
       expected = {
@@ -125,12 +125,12 @@ describe "Service Requests API" do
           {
             "message" => a_string_matching(/Service request #{svcreq1.id} approved/i),
             "success" => true,
-            "href"    => a_string_matching(service_requests_url(svcreq1.compressed_id))
+            "href"    => api_service_request_url(nil, svcreq1.compressed_id)
           },
           {
             "message" => a_string_matching(/Service request #{svcreq2.id} approved/i),
             "success" => true,
-            "href"    => a_string_matching(service_requests_url(svcreq2.compressed_id))
+            "href"    => api_service_request_url(nil, svcreq2.compressed_id)
           }
         )
       }
@@ -141,7 +141,7 @@ describe "Service Requests API" do
     it "supports denying multiple requests" do
       api_basic_authorize collection_action_identifier(:service_requests, :approve)
 
-      run_post(service_requests_url, gen_request(:deny, [{"href" => svcreq1_url, "reason" => "deny reason"},
+      run_post(api_service_requests_url, gen_request(:deny, [{"href" => svcreq1_url, "reason" => "deny reason"},
                                                          {"href" => svcreq2_url, "reason" => "deny reason"}]))
 
       expected = {
@@ -149,12 +149,12 @@ describe "Service Requests API" do
           {
             "message" => a_string_matching(/Service request #{svcreq1.id} denied/i),
             "success" => true,
-            "href"    => a_string_matching(service_requests_url(svcreq1.compressed_id))
+            "href"    => api_service_request_url(nil, svcreq1.compressed_id)
           },
           {
             "message" => a_string_matching(/Service request #{svcreq2.id} denied/i),
             "success" => true,
-            "href"    => a_string_matching(service_requests_url(svcreq2.compressed_id))
+            "href"    => api_service_request_url(nil, svcreq2.compressed_id)
           }
         )
       }
@@ -167,7 +167,7 @@ describe "Service Requests API" do
     it "is forbidden for a user without appropriate role" do
       api_basic_authorize
 
-      run_get service_requests_url
+      run_get api_service_requests_url
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -180,7 +180,7 @@ describe "Service Requests API" do
                          :source_type => template.class.name)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      run_get service_requests_url
+      run_get api_service_requests_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include("name" => "service_requests", "count" => 1, "subcount" => 0)
@@ -194,7 +194,7 @@ describe "Service Requests API" do
                                            :source_type => template.class.name)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      run_get service_requests_url(service_request.id)
+      run_get api_service_request_url(nil, service_request)
 
       expected = {
         "error" => a_hash_including(
@@ -212,7 +212,7 @@ describe "Service Requests API" do
                                             :source_type => template.class.name)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      run_get service_requests_url
+      run_get api_service_requests_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include("name" => "service_requests", "count" => 1, "subcount" => 1)
@@ -225,11 +225,11 @@ describe "Service Requests API" do
                                            :source_type => template.class.name)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      run_get service_requests_url(service_request.id)
+      run_get api_service_request_url(nil, service_request)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include("id"   => service_request.compressed_id,
-                                              "href" => a_string_matching(service_requests_url(service_request.compressed_id)))
+                                              "href" => api_service_request_url(nil, service_request.compressed_id))
     end
 
     it "lists all the service requests if you are admin" do
@@ -245,14 +245,14 @@ describe "Service Requests API" do
                                              :source_type => template.class.name)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      run_get service_requests_url
+      run_get api_service_requests_url
 
       expected = {
         "count"     => 2,
         "subcount"  => 2,
         "resources" => a_collection_containing_exactly(
-          {"href" => a_string_matching(service_requests_url(service_request_1.compressed_id))},
-          {"href" => a_string_matching(service_requests_url(service_request_2.compressed_id))},
+          {"href" => api_service_request_url(nil, service_request_1.compressed_id)},
+          {"href" => api_service_request_url(nil, service_request_2.compressed_id)},
         )
       }
       expect(response).to have_http_status(:ok)
@@ -268,11 +268,11 @@ describe "Service Requests API" do
                                            :source_type => template.class.name)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      run_get service_requests_url(service_request.id)
+      run_get api_service_request_url(nil, service_request)
 
       expected = {
         "id"   => service_request.compressed_id,
-        "href" => a_string_matching(service_requests_url(service_request.compressed_id))
+        "href" => api_service_request_url(nil, service_request.compressed_id)
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -283,7 +283,7 @@ describe "Service Requests API" do
     it 'forbids deletion without an appropriate role' do
       api_basic_authorize
 
-      run_post(service_requests_url(service_request.id), :action => 'delete')
+      run_post(api_service_request_url(nil, service_request), :action => 'delete')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -291,7 +291,7 @@ describe "Service Requests API" do
     it 'can delete a single service request resource' do
       api_basic_authorize collection_action_identifier(:service_requests, :delete)
 
-      run_post(service_requests_url(service_request.id), :action => 'delete')
+      run_post(api_service_request_url(nil, service_request), :action => 'delete')
 
       expected = {
         'success' => true,
@@ -309,7 +309,7 @@ describe "Service Requests API" do
                                              :source_type => template.class.name)
       api_basic_authorize collection_action_identifier(:service_requests, :delete)
 
-      run_post(service_requests_url, :action => 'delete', :resources => [
+      run_post(api_service_requests_url, :action => 'delete', :resources => [
                  { :id => service_request.id }, { :id => service_request_2.id }
                ])
 
@@ -329,7 +329,7 @@ describe "Service Requests API" do
     it 'can delete a service request via DELETE' do
       api_basic_authorize collection_action_identifier(:service_requests, :delete)
 
-      run_delete(service_requests_url(service_request.id))
+      run_delete(api_service_request_url(nil, service_request))
 
       expect(response).to have_http_status(:no_content)
     end
@@ -337,7 +337,7 @@ describe "Service Requests API" do
     it 'forbids service request DELETE without an appropriate role' do
       api_basic_authorize
 
-      run_delete(service_requests_url(service_request.id))
+      run_delete(api_service_request_url(nil, service_request))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -350,7 +350,7 @@ describe "Service Requests API" do
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expect do
-        run_post(service_requests_url(service_request.id), :action => 'add_approver', :user_id => user.id)
+        run_post(api_service_request_url(nil, service_request), :action => 'add_approver', :user_id => user.id)
       end.to change(MiqApproval, :count).by(1)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include('id' => service_request.compressed_id)
@@ -373,7 +373,7 @@ describe "Service Requests API" do
         )
       }
       expect do
-        run_post(service_requests_url, :action => 'add_approver', :resources => [
+        run_post(api_service_requests_url, :action => 'add_approver', :resources => [
                    { :id => service_request.id, :user_id => user.id },
                    { :id => service_request_2.id, :user_id => user.id }
                  ])
@@ -385,7 +385,7 @@ describe "Service Requests API" do
     it 'forbids adding an approver without an appropriate role' do
       api_basic_authorize
 
-      run_post(service_requests_url, :action => 'add_approver')
+      run_post(api_service_requests_url, :action => 'add_approver')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -396,7 +396,7 @@ describe "Service Requests API" do
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expect do
-        run_post(service_requests_url(service_request.id), :action => 'add_approver', :user => { :id => user.id})
+        run_post(api_service_request_url(nil, service_request), :action => 'add_approver', :user => { :id => user.id })
       end.to change(MiqApproval, :count).by(1)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include('id' => service_request.compressed_id)
@@ -408,8 +408,8 @@ describe "Service Requests API" do
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expect do
-        run_post(service_requests_url(service_request.id),
-                 :action => 'add_approver', :user => { :href => users_url(user.id)})
+        run_post(api_service_request_url(nil, service_request),
+                 :action => 'add_approver', :user => { :href => api_user_url(nil, user)})
       end.to change(MiqApproval, :count).by(1)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include('id' => service_request.compressed_id)
@@ -424,7 +424,7 @@ describe "Service Requests API" do
           'message' => 'Cannot add approver - Must specify a valid user_id or user'
         )
       }
-      run_post(service_requests_url(service_request.id), :action => 'add_approver')
+      run_post(api_service_request_url(nil, service_request), :action => 'add_approver')
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:bad_request)
     end
@@ -437,7 +437,7 @@ describe "Service Requests API" do
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expect do
-        run_post(service_requests_url(service_request.id), :action => 'remove_approver', :user_id => user.id)
+        run_post(api_service_request_url(nil, service_request), :action => 'remove_approver', :user_id => user.id)
       end.to change(MiqApproval, :count).by(-1)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include('id' => service_request.compressed_id)
@@ -461,7 +461,7 @@ describe "Service Requests API" do
       }
       expect do
         run_post(
-          service_requests_url,
+          api_service_requests_url,
           :action    => 'remove_approver',
           :resources => [
             { :id => service_request.id, :user_id => user.id },
@@ -476,7 +476,7 @@ describe "Service Requests API" do
     it 'forbids adding an approver without an appropriate role' do
       api_basic_authorize
 
-      run_post(service_requests_url, :action => 'remove_approver')
+      run_post(api_service_requests_url, :action => 'remove_approver')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -487,9 +487,9 @@ describe "Service Requests API" do
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expect do
-        run_post(service_requests_url(service_request.id),
+        run_post(api_service_request_url(nil, service_request),
                  :action => 'remove_approver',
-                 :user   => { :href => users_url(user.id)})
+                 :user   => { :href => api_user_url(nil, user)})
       end.to change(MiqApproval, :count).by(-1)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include('id' => service_request.compressed_id)
@@ -504,7 +504,7 @@ describe "Service Requests API" do
           'message' => 'Cannot remove approver - Must specify a valid user_id or user'
         )
       }
-      run_post(service_requests_url(service_request.id), :action => 'remove_approver')
+      run_post(api_service_request_url(nil, service_request), :action => 'remove_approver')
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:bad_request)
     end
@@ -514,7 +514,7 @@ describe "Service Requests API" do
       service_request.miq_approvals << FactoryGirl.create(:miq_approval)
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
-      run_post(service_requests_url(service_request.id), :action => 'remove_approver', :user_id => user.id)
+      run_post(api_service_request_url(nil, service_request), :action => 'remove_approver', :user_id => user.id)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include('id' => service_request.compressed_id)
     end
@@ -527,7 +527,7 @@ describe "Service Requests API" do
                                            :options   => {:foo => "bar"})
       api_basic_authorize
 
-      run_post(service_requests_url(service_request.id), :action => "edit", :options => {:baz => "qux"})
+      run_post(api_service_request_url(nil, service_request), :action => "edit", :options => {:baz => "qux"})
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -538,7 +538,7 @@ describe "Service Requests API" do
                                            :options   => {:foo => "bar"})
       api_basic_authorize(action_identifier(:service_requests, :edit))
 
-      run_post(service_requests_url(service_request.id), :action => "edit", :options => {:baz => "qux"})
+      run_post(api_service_request_url(nil, service_request), :action => "edit", :options => {:baz => "qux"})
 
       expected = {
         "id"      => service_request.compressed_id,
@@ -556,7 +556,7 @@ describe "Service Requests API" do
       api_basic_authorize collection_action_identifier(:service_requests, :edit)
 
       run_post(
-        service_requests_url,
+        api_service_requests_url,
         :action    => "edit",
         :resources => [
           {:id => service_request.id, :options => {:baz => "qux"}},
@@ -580,20 +580,20 @@ describe "Service Requests API" do
       FactoryGirl.create(:miq_request_task, :miq_request_id => service_request.id)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      run_get("#{service_requests_url(service_request.id)}/tasks")
+      run_get("#{api_service_request_url(nil, service_request)}/tasks")
 
       expect(response).to have_http_status(:moved_permanently)
-      expect(response.redirect_url).to include("#{service_requests_url(service_request.id)}/request_tasks")
+      expect(response.redirect_url).to include("#{api_service_request_url(nil, service_request)}/request_tasks")
     end
 
     it 'redirects to request_tasks subresources' do
       task = FactoryGirl.create(:miq_request_task, :miq_request_id => service_request.id)
       api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
 
-      run_get("#{service_requests_url(service_request.id)}/tasks/#{task.id}")
+      run_get("#{api_service_request_url(nil, service_request)}/tasks/#{task.id}")
 
       expect(response).to have_http_status(:moved_permanently)
-      expect(response.redirect_url).to include("#{service_requests_url(service_request.id)}/request_tasks/#{task.id}")
+      expect(response.redirect_url).to include("#{api_service_request_url(nil, service_request)}/request_tasks/#{task.id}")
     end
   end
 end

@@ -32,14 +32,12 @@ describe "Tag Collections API" do
 
   context "Provider Tag subcollection" do
     let(:provider)          { ems }
-    let(:provider_url)      { providers_url(provider.id) }
-    let(:provider_tags_url) { "#{provider_url}/tags" }
 
     it "query all tags of a Provider and verify tag category and names" do
       api_basic_authorize
       classify_resource(provider)
 
-      run_get provider_tags_url, :expand => "resources"
+      run_get api_provider_tags_url(nil, provider), :expand => "resources"
 
       expect_query_result(:tags, 2, Tag.count)
       expect_result_resources_to_include_data("resources", "name" => tag_paths)
@@ -48,7 +46,7 @@ describe "Tag Collections API" do
     it "does not assign a tag to a Provider without appropriate role" do
       api_basic_authorize
 
-      run_post(provider_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_provider_tags_url(nil, provider), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -56,15 +54,15 @@ describe "Tag Collections API" do
     it "assigns a tag to a Provider" do
       api_basic_authorize subcollection_action_identifier(:providers, :tags, :assign)
 
-      run_post(provider_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_provider_tags_url(nil, provider), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(providers_url(provider.compressed_id)))
+      expect_tagging_result(tag1_results(api_provider_url(nil, provider.compressed_id)))
     end
 
     it "does not unassign a tag from a Provider without appropriate role" do
       api_basic_authorize
 
-      run_post(provider_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_provider_tags_url(nil, provider), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -73,22 +71,19 @@ describe "Tag Collections API" do
       api_basic_authorize subcollection_action_identifier(:providers, :tags, :unassign)
       classify_resource(provider)
 
-      run_post(provider_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_provider_tags_url(nil, provider), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(providers_url(provider.compressed_id)))
+      expect_tagging_result(tag1_results(api_provider_url(nil, provider.compressed_id)))
       expect_resource_has_tags(provider, tag2[:path])
     end
   end
 
   context "Host Tag subcollection" do
-    let(:host_url)      { hosts_url(host.id) }
-    let(:host_tags_url) { "#{host_url}/tags" }
-
     it "query all tags of a Host and verify tag category and names" do
       api_basic_authorize
       classify_resource(host)
 
-      run_get host_tags_url, :expand => "resources"
+      run_get api_host_tags_url(nil, host), :expand => "resources"
 
       expect_query_result(:tags, 2, Tag.count)
       expect_result_resources_to_include_data("resources", "name" => tag_paths)
@@ -97,7 +92,7 @@ describe "Tag Collections API" do
     it "does not assign a tag to a Host without appropriate role" do
       api_basic_authorize
 
-      run_post(host_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_host_tags_url(nil, host), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -105,15 +100,15 @@ describe "Tag Collections API" do
     it "assigns a tag to a Host" do
       api_basic_authorize subcollection_action_identifier(:hosts, :tags, :assign)
 
-      run_post(host_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_host_tags_url(nil, host), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(hosts_url(host.compressed_id)))
+      expect_tagging_result(tag1_results(api_host_url(nil, host.compressed_id)))
     end
 
     it "does not unassign a tag from a Host without appropriate role" do
       api_basic_authorize
 
-      run_post(host_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_host_tags_url(nil, host), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -122,23 +117,21 @@ describe "Tag Collections API" do
       api_basic_authorize subcollection_action_identifier(:hosts, :tags, :unassign)
       classify_resource(host)
 
-      run_post(host_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_host_tags_url(nil, host), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(hosts_url(host.compressed_id)))
+      expect_tagging_result(tag1_results(api_host_url(nil, host.compressed_id)))
       expect_resource_has_tags(host, tag2[:path])
     end
   end
 
   context "Data Store Tag subcollection" do
     let(:ds)          { FactoryGirl.create(:storage, :name => "Storage 1", :store_type => "VMFS") }
-    let(:ds_url)      { data_stores_url(ds.id) }
-    let(:ds_tags_url) { "#{ds_url}/tags" }
 
     it "query all tags of a Data Store and verify tag category and names" do
       api_basic_authorize
       classify_resource(ds)
 
-      run_get ds_tags_url, :expand => "resources"
+      run_get api_data_store_tags_url(nil, ds), :expand => "resources"
 
       expect_query_result(:tags, 2, Tag.count)
       expect_result_resources_to_include_data("resources", "name" => tag_paths)
@@ -147,7 +140,7 @@ describe "Tag Collections API" do
     it "does not assign a tag to a Data Store without appropriate role" do
       api_basic_authorize
 
-      run_post(ds_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_data_store_tags_url(nil, ds), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -155,15 +148,15 @@ describe "Tag Collections API" do
     it "assigns a tag to a Data Store" do
       api_basic_authorize subcollection_action_identifier(:data_stores, :tags, :assign)
 
-      run_post(ds_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_data_store_tags_url(nil, ds), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(data_stores_url(ds.compressed_id)))
+      expect_tagging_result(tag1_results(api_data_store_url(nil, ds.compressed_id)))
     end
 
     it "does not unassign a tag from a Data Store without appropriate role" do
       api_basic_authorize
 
-      run_post(ds_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_data_store_tags_url(nil, ds), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -172,23 +165,21 @@ describe "Tag Collections API" do
       api_basic_authorize subcollection_action_identifier(:data_stores, :tags, :unassign)
       classify_resource(ds)
 
-      run_post(ds_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_data_store_tags_url(nil, ds), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(data_stores_url(ds.compressed_id)))
+      expect_tagging_result(tag1_results(api_data_store_url(nil, ds.compressed_id)))
       expect_resource_has_tags(ds, tag2[:path])
     end
   end
 
   context "Resource Pool Tag subcollection" do
     let(:rp)          { FactoryGirl.create(:resource_pool, :name => "Resource Pool 1") }
-    let(:rp_url)      { resource_pools_url(rp.id) }
-    let(:rp_tags_url) { "#{rp_url}/tags" }
 
     it "query all tags of a Resource Pool and verify tag category and names" do
       api_basic_authorize
       classify_resource(rp)
 
-      run_get rp_tags_url, :expand => "resources"
+      run_get api_resource_pool_tags_url(nil, rp), :expand => "resources"
 
       expect_query_result(:tags, 2, Tag.count)
       expect_result_resources_to_include_data("resources", "name" => tag_paths)
@@ -197,7 +188,7 @@ describe "Tag Collections API" do
     it "does not assign a tag to a Resource Pool without appropriate role" do
       api_basic_authorize
 
-      run_post(rp_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_resource_pool_tags_url(nil, rp), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -205,15 +196,15 @@ describe "Tag Collections API" do
     it "assigns a tag to a Resource Pool" do
       api_basic_authorize subcollection_action_identifier(:resource_pools, :tags, :assign)
 
-      run_post(rp_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_resource_pool_tags_url(nil, rp), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(resource_pools_url(rp.compressed_id)))
+      expect_tagging_result(tag1_results(api_resource_pool_url(nil, rp.compressed_id)))
     end
 
     it "does not unassign a tag from a Resource Pool without appropriate role" do
       api_basic_authorize
 
-      run_post(rp_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_resource_pool_tags_url(nil, rp), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -222,9 +213,9 @@ describe "Tag Collections API" do
       api_basic_authorize subcollection_action_identifier(:resource_pools, :tags, :unassign)
       classify_resource(rp)
 
-      run_post(rp_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_resource_pool_tags_url(nil, rp), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(resource_pools_url(rp.compressed_id)))
+      expect_tagging_result(tag1_results(api_resource_pool_url(nil, rp.compressed_id)))
       expect_resource_has_tags(rp, tag2[:path])
     end
   end
@@ -238,14 +229,11 @@ describe "Tag Collections API" do
                          :vms                   => [])
     end
 
-    let(:cluster_url)      { clusters_url(cluster.id) }
-    let(:cluster_tags_url) { "#{cluster_url}/tags" }
-
     it "query all tags of a Cluster and verify tag category and names" do
       api_basic_authorize
       classify_resource(cluster)
 
-      run_get cluster_tags_url, :expand => "resources"
+      run_get api_cluster_tags_url(nil, cluster), :expand => "resources"
 
       expect_query_result(:tags, 2, Tag.count)
       expect_result_resources_to_include_data("resources", "name" => tag_paths)
@@ -254,7 +242,7 @@ describe "Tag Collections API" do
     it "does not assign a tag to a Cluster without appropriate role" do
       api_basic_authorize
 
-      run_post(cluster_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_cluster_tags_url(nil, cluster), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -262,15 +250,15 @@ describe "Tag Collections API" do
     it "assigns a tag to a Cluster" do
       api_basic_authorize subcollection_action_identifier(:clusters, :tags, :assign)
 
-      run_post(cluster_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_cluster_tags_url(nil, cluster), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(clusters_url(cluster.compressed_id)))
+      expect_tagging_result(tag1_results(api_cluster_url(nil, cluster.compressed_id)))
     end
 
     it "does not unassign a tag from a Cluster without appropriate role" do
       api_basic_authorize
 
-      run_post(cluster_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_cluster_tags_url(nil, cluster), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -279,23 +267,21 @@ describe "Tag Collections API" do
       api_basic_authorize subcollection_action_identifier(:clusters, :tags, :unassign)
       classify_resource(cluster)
 
-      run_post(cluster_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_cluster_tags_url(nil, cluster), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(clusters_url(cluster.compressed_id)))
+      expect_tagging_result(tag1_results(api_cluster_url(nil, cluster.compressed_id)))
       expect_resource_has_tags(cluster, tag2[:path])
     end
   end
 
   context "Service Tag subcollection" do
     let(:service)          { FactoryGirl.create(:service) }
-    let(:service_url)      { services_url(service.id) }
-    let(:service_tags_url) { "#{service_url}/tags" }
 
     it "query all tags of a Service and verify tag category and names" do
       api_basic_authorize
       classify_resource(service)
 
-      run_get service_tags_url, :expand => "resources"
+      run_get api_service_tags_url(nil, service), :expand => "resources"
 
       expect_query_result(:tags, 2, Tag.count)
       expect_result_resources_to_include_data("resources", "name" => tag_paths)
@@ -304,7 +290,7 @@ describe "Tag Collections API" do
     it "does not assign a tag to a Service without appropriate role" do
       api_basic_authorize
 
-      run_post(service_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_service_tags_url(nil, service), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -312,15 +298,15 @@ describe "Tag Collections API" do
     it "assigns a tag to a Service" do
       api_basic_authorize subcollection_action_identifier(:services, :tags, :assign)
 
-      run_post(service_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_service_tags_url(nil, service), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(services_url(service.compressed_id)))
+      expect_tagging_result(tag1_results(api_service_url(nil, service.compressed_id)))
     end
 
     it "does not unassign a tag from a Service without appropriate role" do
       api_basic_authorize
 
-      run_post(service_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_service_tags_url(nil, service), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -329,23 +315,21 @@ describe "Tag Collections API" do
       api_basic_authorize subcollection_action_identifier(:services, :tags, :unassign)
       classify_resource(service)
 
-      run_post(service_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_service_tags_url(nil, service), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(services_url(service.compressed_id)))
+      expect_tagging_result(tag1_results(api_service_url(nil, service.compressed_id)))
       expect_resource_has_tags(service, tag2[:path])
     end
   end
 
   context "Service Template Tag subcollection" do
     let(:service_template)          { FactoryGirl.create(:service_template) }
-    let(:service_template_url)      { service_templates_url(service_template.id) }
-    let(:service_template_tags_url) { "#{service_template_url}/tags" }
 
     it "query all tags of a Service Template and verify tag category and names" do
       api_basic_authorize
       classify_resource(service_template)
 
-      run_get service_template_tags_url, :expand => "resources"
+      run_get api_service_template_tags_url(nil, service_template), :expand => "resources"
 
       expect_query_result(:tags, 2, Tag.count)
       expect_result_resources_to_include_data("resources", "name" => tag_paths)
@@ -354,7 +338,7 @@ describe "Tag Collections API" do
     it "does not assign a tag to a Service Template without appropriate role" do
       api_basic_authorize
 
-      run_post(service_template_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_service_template_tags_url(nil, service_template), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -362,15 +346,15 @@ describe "Tag Collections API" do
     it "assigns a tag to a Service Template" do
       api_basic_authorize subcollection_action_identifier(:service_templates, :tags, :assign)
 
-      run_post(service_template_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_service_template_tags_url(nil, service_template), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(service_templates_url(service_template.compressed_id)))
+      expect_tagging_result(tag1_results(api_service_template_url(nil, service_template.compressed_id)))
     end
 
     it "does not unassign a tag from a Service Template without appropriate role" do
       api_basic_authorize
 
-      run_post(service_template_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_service_template_tags_url(nil, service_template), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -379,23 +363,21 @@ describe "Tag Collections API" do
       api_basic_authorize subcollection_action_identifier(:service_templates, :tags, :unassign)
       classify_resource(service_template)
 
-      run_post(service_template_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_service_template_tags_url(nil, service_template), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(service_templates_url(service_template.compressed_id)))
+      expect_tagging_result(tag1_results(api_service_template_url(nil, service_template.compressed_id)))
       expect_resource_has_tags(service_template, tag2[:path])
     end
   end
 
   context "Tenant Tag subcollection" do
     let(:tenant)          { FactoryGirl.create(:tenant, :name => "Tenant A", :description => "Tenant A Description") }
-    let(:tenant_url)      { tenants_url(tenant.id) }
-    let(:tenant_tags_url) { "#{tenant_url}/tags" }
 
     it "query all tags of a Tenant and verify tag category and names" do
       api_basic_authorize
       classify_resource(tenant)
 
-      run_get tenant_tags_url, :expand => "resources"
+      run_get api_tenant_tags_url(nil, tenant), :expand => "resources"
 
       expect_query_result(:tags, 2, Tag.count)
       expect_result_resources_to_include_data("resources", "name" => tag_paths)
@@ -404,7 +386,7 @@ describe "Tag Collections API" do
     it "does not assign a tag to a Tenant without appropriate role" do
       api_basic_authorize
 
-      run_post(tenant_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_tenant_tags_url(nil, tenant), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -412,15 +394,15 @@ describe "Tag Collections API" do
     it "assigns a tag to a Tenant" do
       api_basic_authorize subcollection_action_identifier(:tenants, :tags, :assign)
 
-      run_post(tenant_tags_url, gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_tenant_tags_url(nil, tenant), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(tenants_url(tenant.compressed_id)))
+      expect_tagging_result(tag1_results(api_tenant_url(nil, tenant.compressed_id)))
     end
 
     it "does not unassign a tag from a Tenant without appropriate role" do
       api_basic_authorize
 
-      run_post(tenant_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_tenant_tags_url(nil, tenant), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -429,9 +411,9 @@ describe "Tag Collections API" do
       api_basic_authorize subcollection_action_identifier(:tenants, :tags, :unassign)
       classify_resource(tenant)
 
-      run_post(tenant_tags_url, gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      run_post(api_tenant_tags_url(nil, tenant), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(tenants_url(tenant.compressed_id)))
+      expect_tagging_result(tag1_results(api_tenant_url(nil, tenant.compressed_id)))
       expect_resource_has_tags(tenant, tag2[:path])
     end
   end
@@ -441,7 +423,7 @@ describe "Tag Collections API" do
       api_basic_authorize
       blueprint = FactoryGirl.create(:blueprint)
 
-      run_get("#{blueprints_url(blueprint.id)}/tags")
+      run_get(api_blueprint_tags_url(nil, blueprint))
 
       expect(response).to have_http_status(:ok)
     end
@@ -450,7 +432,7 @@ describe "Tag Collections API" do
       api_basic_authorize subcollection_action_identifier(:blueprints, :tags, :assign)
       blueprint = FactoryGirl.create(:blueprint)
 
-      run_post("#{blueprints_url(blueprint.id)}/tags",
+      run_post(api_blueprint_tags_url(nil, blueprint),
                :action   => "assign",
                :category => tag1[:category],
                :name     => tag1[:name])
@@ -463,7 +445,7 @@ describe "Tag Collections API" do
       blueprint = FactoryGirl.create(:blueprint)
       classify_resource(blueprint)
 
-      run_post("#{blueprints_url(blueprint.id)}/tags",
+      run_post(api_blueprint_tags_url(nil, blueprint),
                :action   => "unassign",
                :category => tag1[:category],
                :name     => tag1[:name])
@@ -475,7 +457,7 @@ describe "Tag Collections API" do
       api_basic_authorize
       blueprint = FactoryGirl.create(:blueprint)
 
-      run_post("#{blueprints_url(blueprint.id)}/tags",
+      run_post(api_blueprint_tags_url(nil, blueprint),
                :action   => "assign",
                :category => tag1[:category],
                :name     => tag1[:name])
@@ -488,7 +470,7 @@ describe "Tag Collections API" do
       blueprint = FactoryGirl.create(:blueprint)
       classify_resource(blueprint)
 
-      run_post("#{blueprints_url(blueprint.id)}/tags",
+      run_post(api_blueprint_tags_url(nil, blueprint),
                :action   => "unassign",
                :category => tag1[:category],
                :name     => tag1[:name])
@@ -512,7 +494,7 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(vms_url, request_body)
+      run_post(api_vms_url, request_body)
 
       expected = {
         'results' => [
@@ -533,21 +515,21 @@ describe "Tag Collections API" do
       request_body = {
         'action'    => 'assign_tags',
         'resources' => [
-          { 'href' => vms_url(vm1.id), 'tags' => [{ 'category' => tag1[:category], 'name' => tag1[:name] }] },
-          { 'href' => vms_url(vm2.id), 'tags' => [{ 'category' => tag2[:category], 'name' => tag2[:name] }] }
+          { 'href' => api_vm_url(nil, vm1), 'tags' => [{ 'category' => tag1[:category], 'name' => tag1[:name] }] },
+          { 'href' => api_vm_url(nil, vm2), 'tags' => [{ 'category' => tag2[:category], 'name' => tag2[:name] }] }
         ]
       }
 
-      run_post(vms_url, request_body)
+      run_post(api_vms_url, request_body)
 
       expected = {
         'results' => [
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(vms_url(vm1.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm1.compressed_id)),
                            'tag_category' => tag1[:category],
                            'tag_name'     => tag1[:name]),
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(vms_url(vm2.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm2.compressed_id)),
                            'tag_category' => tag2[:category],
                            'tag_name'     => tag2[:name])
         ]
@@ -569,17 +551,17 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(vms_url, request_body)
+      run_post(api_vms_url, request_body)
 
       expected = {
         'results' => [
           a_hash_including('success' => false, 'message' => a_string_including("Couldn't find Vm")),
           a_hash_including('success'      => false,
-                           'href'         => a_string_including(vms_url(vm2.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm2.compressed_id)),
                            'tag_category' => bad_tag[:category],
                            'tag_name'     => bad_tag[:name]),
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(vms_url(vm2.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm2.compressed_id)),
                            'tag_category' => tag1[:category],
                            'tag_name'     => tag1[:name])
         ]
@@ -591,7 +573,7 @@ describe "Tag Collections API" do
     it 'fails without an appropriate role' do
       api_basic_authorize
 
-      run_post(vms_url, :action => 'assign_tags')
+      run_post(api_vms_url, :action => 'assign_tags')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -601,21 +583,21 @@ describe "Tag Collections API" do
       request_body = {
         'action'    => 'assign_tags',
         'resources' => [
-          { 'id' => vm1.id, 'tags' => [{'href' => tags_url(Tag.find_by(:name => tag1[:path]).id)}] },
-          { 'id' => vm2.id, 'tags' => [{'href' => tags_url(Tag.find_by(:name => tag2[:path]).id)}] }
+          { 'id' => vm1.id, 'tags' => [{'href' => api_tag_url(nil, Tag.find_by(:name => tag1[:path]))}] },
+          { 'id' => vm2.id, 'tags' => [{'href' => api_tag_url(nil, Tag.find_by(:name => tag2[:path]))}] }
         ]
       }
 
-      run_post(vms_url, request_body)
+      run_post(api_vms_url, request_body)
 
       expected = {
         'results' => [
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(vms_url(vm1.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm1.compressed_id)),
                            'tag_category' => tag1[:category],
                            'tag_name'     => tag1[:name]),
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(vms_url(vm2.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm2.compressed_id)),
                            'tag_category' => tag2[:category],
                            'tag_name'     => tag2[:name])
         ]
@@ -634,7 +616,7 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(vms_url, request_body)
+      run_post(api_vms_url, request_body)
 
       expected = {
         'results' => [
@@ -666,7 +648,7 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(services_url, request_body)
+      run_post(api_services_url, request_body)
 
       expected = {
         'results' => [
@@ -687,12 +669,12 @@ describe "Tag Collections API" do
       request_body = {
         'action'    => 'assign_tags',
         'resources' => [
-          { 'href' => services_url(service1.id), 'tags' => [{ 'category' => tag1[:category], 'name' => tag1[:name] }] },
-          { 'href' => services_url(service2.id), 'tags' => [{ 'category' => tag2[:category], 'name' => tag2[:name] }] }
+          { 'href' => api_service_url(nil, service1), 'tags' => [{ 'category' => tag1[:category], 'name' => tag1[:name] }] },
+          { 'href' => api_service_url(nil, service2), 'tags' => [{ 'category' => tag2[:category], 'name' => tag2[:name] }] }
         ]
       }
 
-      run_post(services_url, request_body)
+      run_post(api_services_url, request_body)
 
       expected = {
         'results' => [
@@ -721,7 +703,7 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(services_url, request_body)
+      run_post(api_services_url, request_body)
 
       expected = {
         'results' => [
@@ -741,7 +723,7 @@ describe "Tag Collections API" do
     it 'fails without an appropriate role' do
       api_basic_authorize
 
-      run_post(services_url, :action => 'assign_tags')
+      run_post(api_services_url, :action => 'assign_tags')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -751,12 +733,12 @@ describe "Tag Collections API" do
       request_body = {
         'action'    => 'assign_tags',
         'resources' => [
-          { 'id' => service1.id, 'tags' => [{'href' => tags_url(Tag.find_by(:name => tag1[:path]).id)}] },
-          { 'id' => service2.id, 'tags' => [{'href' => tags_url(Tag.find_by(:name => tag2[:path]).id)}] }
+          { 'id' => service1.id, 'tags' => [{'href' => api_tag_url(nil, Tag.find_by(:name => tag1[:path]))}] },
+          { 'id' => service2.id, 'tags' => [{'href' => api_tag_url(nil, Tag.find_by(:name => tag2[:path]))}] }
         ]
       }
 
-      run_post(services_url, request_body)
+      run_post(api_services_url, request_body)
 
       expected = {
         'results' => [
@@ -782,7 +764,7 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(services_url, request_body)
+      run_post(api_services_url, request_body)
 
       expected = {
         'results' => [
@@ -819,16 +801,16 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(services_url, request_body)
+      run_post(api_services_url, request_body)
 
       expected = {
         'results' => [
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(services_url(service1.compressed_id)),
+                           'href'         => a_string_including(api_service_url(nil, service1.compressed_id)),
                            'tag_category' => tag1[:category],
                            'tag_name'     => tag1[:name]),
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(services_url(service2.compressed_id)),
+                           'href'         => a_string_including(api_service_url(nil, service2.compressed_id)),
                            'tag_category' => tag2[:category],
                            'tag_name'     => tag2[:name])
         ]
@@ -842,21 +824,21 @@ describe "Tag Collections API" do
       request_body = {
         'action'    => 'unassign_tags',
         'resources' => [
-          { 'href' => services_url(service1.id), 'tags' => [{ 'category' => tag1[:category], 'name' => tag1[:name] }] },
-          { 'href' => services_url(service2.id), 'tags' => [{ 'category' => tag2[:category], 'name' => tag2[:name] }] }
+          { 'href' => api_service_url(nil, service1), 'tags' => [{ 'category' => tag1[:category], 'name' => tag1[:name] }] },
+          { 'href' => api_service_url(nil, service2), 'tags' => [{ 'category' => tag2[:category], 'name' => tag2[:name] }] }
         ]
       }
 
-      run_post(services_url, request_body)
+      run_post(api_services_url, request_body)
 
       expected = {
         'results' => [
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(services_url(service1.compressed_id)),
+                           'href'         => a_string_including(api_service_url(nil, service1.compressed_id)),
                            'tag_category' => tag1[:category],
                            'tag_name'     => tag1[:name]),
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(services_url(service2.compressed_id)),
+                           'href'         => a_string_including(api_service_url(nil, service2.compressed_id)),
                            'tag_category' => tag2[:category],
                            'tag_name'     => tag2[:name])
         ]
@@ -878,7 +860,7 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(services_url, request_body)
+      run_post(api_services_url, request_body)
 
       expected = {
         'results' => [
@@ -899,7 +881,7 @@ describe "Tag Collections API" do
     it 'fails without an appropriate role' do
       api_basic_authorize
 
-      run_post(services_url, :action => 'unassign_tags')
+      run_post(api_services_url, :action => 'unassign_tags')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -909,12 +891,12 @@ describe "Tag Collections API" do
       request_body = {
         'action'    => 'unassign_tags',
         'resources' => [
-          { 'id' => service1.id, 'tags' => [{'href' => tags_url(Tag.find_by(:name => tag1[:path]).id)}] },
-          { 'id' => service2.id, 'tags' => [{'href' => tags_url(Tag.find_by(:name => tag2[:path]).id)}] }
+          { 'id' => service1.id, 'tags' => [{'href' => api_tag_url(nil, Tag.find_by(:name => tag1[:path]))}] },
+          { 'id' => service2.id, 'tags' => [{'href' => api_tag_url(nil, Tag.find_by(:name => tag2[:path]))}] }
         ]
       }
 
-      run_post(services_url, request_body)
+      run_post(api_services_url, request_body)
 
       expected = {
         'results' => [
@@ -940,7 +922,7 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(services_url, request_body)
+      run_post(api_services_url, request_body)
 
       expected = {
         'results' => [
@@ -977,7 +959,7 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(vms_url, request_body)
+      run_post(api_vms_url, request_body)
 
       expected = {
         'results' => [
@@ -998,12 +980,12 @@ describe "Tag Collections API" do
       request_body = {
         'action'    => 'unassign_tags',
         'resources' => [
-          { 'href' => vms_url(vm1.id), 'tags' => [{ 'category' => tag1[:category], 'name' => tag1[:name] }] },
-          { 'href' => vms_url(vm2.id), 'tags' => [{ 'category' => tag2[:category], 'name' => tag2[:name] }] }
+          { 'href' => api_vm_url(nil, vm1), 'tags' => [{ 'category' => tag1[:category], 'name' => tag1[:name] }] },
+          { 'href' => api_vm_url(nil, vm2), 'tags' => [{ 'category' => tag2[:category], 'name' => tag2[:name] }] }
         ]
       }
 
-      run_post(vms_url, request_body)
+      run_post(api_vms_url, request_body)
 
       expected = {
         'results' => [
@@ -1032,7 +1014,7 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(vms_url, request_body)
+      run_post(api_vms_url, request_body)
 
       expected = {
         'results' => [
@@ -1053,7 +1035,7 @@ describe "Tag Collections API" do
     it 'fails without an appropriate role' do
       api_basic_authorize
 
-      run_post(vms_url, :action => 'unassign_tags')
+      run_post(api_vms_url, :action => 'unassign_tags')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -1063,12 +1045,12 @@ describe "Tag Collections API" do
       request_body = {
         'action'    => 'unassign_tags',
         'resources' => [
-          { 'id' => vm1.id, 'tags' => [{'href' => tags_url(Tag.find_by(:name => tag1[:path]).id)}] },
-          { 'id' => vm2.id, 'tags' => [{'href' => tags_url(Tag.find_by(:name => tag2[:path]).id)}] }
+          { 'id' => vm1.id, 'tags' => [{'href' => api_tag_url(nil, Tag.find_by(:name => tag1[:path]))}] },
+          { 'id' => vm2.id, 'tags' => [{'href' => api_tag_url(nil, Tag.find_by(:name => tag2[:path]))}] }
         ]
       }
 
-      run_post(vms_url, request_body)
+      run_post(api_vms_url, request_body)
 
       expected = {
         'results' => [
@@ -1094,7 +1076,7 @@ describe "Tag Collections API" do
         ]
       }
 
-      run_post(vms_url, request_body)
+      run_post(api_vms_url, request_body)
 
       expected = {
         'results' => [

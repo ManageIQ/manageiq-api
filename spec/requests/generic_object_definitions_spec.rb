@@ -6,16 +6,16 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'does not list object definitions without an appropriate role' do
       api_basic_authorize
 
-      run_get(generic_object_definitions_url)
+      run_get(api_generic_object_definitions_url)
 
       expect(response).to have_http_status(:forbidden)
     end
 
     it 'lists all generic object definitions with an appropriate role' do
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :read, :get)
-      object_def_href = generic_object_definitions_url(object_def.compressed_id)
+      object_def_href = api_generic_object_definition_url(nil, object_def.compressed_id)
 
-      run_get(generic_object_definitions_url)
+      run_get(api_generic_object_definitions_url)
 
       expected = {
         'count'     => 1,
@@ -34,7 +34,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'does not let you query object definitions without an appropriate role' do
       api_basic_authorize
 
-      run_get(generic_object_definitions_url(object_def.compressed_id))
+      run_get(api_generic_object_definition_url(nil, object_def.compressed_id))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -42,7 +42,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'can query an object definition by its id' do
       api_basic_authorize action_identifier(:generic_object_definitions, :read, :resource_actions, :get)
 
-      run_get(generic_object_definitions_url(object_def.id))
+      run_get(api_generic_object_definition_url(nil, object_def))
 
       expected = {
         'id'   => object_def.compressed_id,
@@ -55,7 +55,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'can query an object definition by its name' do
       api_basic_authorize action_identifier(:generic_object_definitions, :read, :resource_actions, :get)
 
-      run_get(generic_object_definitions_url(object_def.name))
+      run_get(api_generic_object_definition_url(nil, object_def.name))
 
       expected = {
         'id'   => object_def.compressed_id,
@@ -68,7 +68,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'raises a record not found error if no object definition is found' do
       api_basic_authorize action_identifier(:generic_object_definitions, :read, :resource_actions, :get)
 
-      run_get(generic_object_definitions_url('bar'))
+      run_get(api_generic_object_definitions_url('bar'))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -96,7 +96,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           ]
         }
       }
-      run_post(generic_object_definitions_url, object_definition)
+      run_post(api_generic_object_definitions_url, object_definition)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['results'].first).to include(object_definition)
@@ -114,7 +114,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      run_post(generic_object_definitions_url, request)
+      run_post(api_generic_object_definitions_url, request)
 
       expected = {
         'error' => a_hash_including(
@@ -136,10 +136,10 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'resources' => [
           { 'name' => object_def.name, 'resource' => { 'name' => 'updated 1' } },
           { 'id' => object_def2.compressed_id, 'resource' => { 'name' => 'updated 2' }},
-          { 'href' => generic_object_definitions_url(object_def3.compressed_id), 'resource' => { 'name' => 'updated 3' }}
+          { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id), 'resource' => { 'name' => 'updated 3' }}
         ]
       }
-      run_post(generic_object_definitions_url, request)
+      run_post(api_generic_object_definitions_url, request)
 
       expected = {
         'results' => a_collection_including(
@@ -176,7 +176,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           ]
         }
       }
-      run_post(generic_object_definitions_url(object_def.name), request)
+      run_post(api_generic_object_definition_url(nil, object_def.name), request)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(request.except('action'))
@@ -204,7 +204,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           ]
         }
       }
-      run_post(generic_object_definitions_url(object_def.compressed_id), request)
+      run_post(api_generic_object_definition_url(nil, object_def.compressed_id), request)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(request.except('action'))
@@ -221,7 +221,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      run_post(generic_object_definitions_url(object_def.compressed_id), request)
+      run_post(api_generic_object_definition_url(nil, object_def.compressed_id), request)
 
       expected = {
         'error' => a_hash_including(
@@ -236,7 +236,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'can delete an object definition by name' do
       api_basic_authorize action_identifier(:generic_object_definitions, :delete)
 
-      run_post(generic_object_definitions_url(object_def.name), :action => 'delete')
+      run_post(api_generic_object_definition_url(nil, object_def.name), :action => 'delete')
 
       expect(response).to have_http_status(:ok)
     end
@@ -244,7 +244,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'can delete an object definition by id' do
       api_basic_authorize action_identifier(:generic_object_definitions, :delete)
 
-      run_post(generic_object_definitions_url(object_def.compressed_id), :action => 'delete')
+      run_post(api_generic_object_definition_url(nil, object_def.compressed_id), :action => 'delete')
 
       expect(response).to have_http_status(:ok)
     end
@@ -253,7 +253,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
       api_basic_authorize action_identifier(:generic_object_definitions, :delete, :resource_actions, :delete)
       object_def.create_object(:name => 'foo object')
 
-      run_post(generic_object_definitions_url(object_def.name), :action => 'delete')
+      run_post(api_generic_object_definition_url(nil, object_def.name), :action => 'delete')
 
       expected = {
         'error' => a_hash_including(
@@ -275,10 +275,10 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'resources' => [
           { 'name' => object_def.name },
           { 'id' => object_def2.compressed_id},
-          { 'href' => generic_object_definitions_url(object_def3.compressed_id)}
+          { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id)}
         ]
       }
-      run_post(generic_object_definitions_url, request)
+      run_post(api_generic_object_definitions_url, request)
 
       expected = {
         'results' => a_collection_including(
@@ -296,7 +296,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'can delete a generic_object_definition by id' do
       api_basic_authorize action_identifier(:generic_object_definitions, :delete, :resource_actions, :delete)
 
-      run_delete(generic_object_definitions_url(object_def.compressed_id))
+      run_delete(api_generic_object_definition_url(nil, object_def.compressed_id))
 
       expect(response).to have_http_status(:no_content)
     end
@@ -304,7 +304,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'can delete a generic_object_definition by name' do
       api_basic_authorize action_identifier(:generic_object_definitions, :delete, :resource_actions, :delete)
 
-      run_delete(generic_object_definitions_url(object_def.name))
+      run_delete(api_generic_object_definition_url(nil, object_def.name))
 
       expect(response).to have_http_status(:no_content)
     end
