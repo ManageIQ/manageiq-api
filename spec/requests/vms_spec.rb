@@ -1608,8 +1608,6 @@ describe "Vms API" do
       FactoryGirl.create_list(:metric_rollup_vm_hr, 3, :resource => vm)
       FactoryGirl.create_list(:metric_rollup_vm_daily, 1, :resource => vm)
       FactoryGirl.create_list(:metric_rollup_vm_hr, 1, :resource => vm1)
-
-      allow(Settings.api).to receive(:metrics_default_limit).and_return(1000)
     end
 
     it 'returns the metric rollups for the vm' do

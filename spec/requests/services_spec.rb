@@ -1013,8 +1013,6 @@ describe "Services API" do
       FactoryGirl.create_list(:metric_rollup_vm_hr, 3, :resource => svc)
       FactoryGirl.create_list(:metric_rollup_vm_daily, 1, :resource => svc)
       FactoryGirl.create_list(:metric_rollup_vm_hr, 1, :resource => svc1)
-
-      allow(Settings.api).to receive(:metrics_default_limit).and_return(1000)
     end
 
     it 'returns the metric rollups for the service' do

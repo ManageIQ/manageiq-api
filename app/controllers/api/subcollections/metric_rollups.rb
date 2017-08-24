@@ -6,10 +6,13 @@ module Api
       }.freeze
 
       def metric_rollups_query_resource(object)
+        params[:offset] ||= 0
+        params[:limit] ||= Settings.api.metrics_default_limit
         params[:resource_type] = RESOURCE_TYPES[@req.collection] || object.class.to_s
         params[:resource_ids] ||= [object.id]
 
-        MetricRollupsService.query_metric_rollups(params)
+        rollups_service = MetricRollupsService.new(params)
+        rollups_service.query_metric_rollups
       end
     end
   end

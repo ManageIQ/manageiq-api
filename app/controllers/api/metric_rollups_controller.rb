@@ -1,7 +1,11 @@
 module Api
   class MetricRollupsController < BaseController
     def index
-      resources = MetricRollupsService.query_metric_rollups(params)
+      params[:offset] ||= 0
+      params[:limit] ||= Settings.api.metrics_default_limit
+
+      rollups_service = MetricRollupsService.new(params)
+      resources = rollups_service.query_metric_rollups
       res = collection_filterer(resources, :metric_rollups, MetricRollup).flatten
       counts = Api::QueryCounts.new(MetricRollup.count, res.count, resources.count)
 
