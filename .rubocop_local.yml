@@ -1,3 +1,4 @@
 GlobalVars:
   AllowedVariables:
   - $evm
+  - $api_log
