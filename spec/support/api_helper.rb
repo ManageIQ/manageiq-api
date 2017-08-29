@@ -5,33 +5,29 @@
 module Spec
   module Support
     module ApiHelper
-      def headers
-        @headers ||= {}
-      end
-
       def run_get(url, options = {})
         headers = options.delete(:headers) || {}
-        get url, :params => options, :headers => self.headers.merge!(headers)
+        get url, :params => options, :headers => headers
       end
 
       def run_post(url, body = {}, headers = {})
-        post url, :params => body.to_json, :headers => self.headers.merge!(headers)
+        post url, :params => body.to_json, :headers => headers
       end
 
       def run_put(url, body = {}, headers = {})
-        put url, :params => body.to_json, :headers => self.headers.merge!(headers)
+        put url, :params => body.to_json, :headers => headers
       end
 
       def run_patch(url, body = {}, headers = {})
-        patch url, :params => body.to_json, :headers => self.headers.merge!(headers)
+        patch url, :params => body.to_json, :headers => headers
       end
 
       def run_delete(url, headers = {})
-        delete url, :headers => self.headers.merge!(headers)
+        delete url, :headers => headers
       end
 
       def run_options(url, headers = {})
-        options url, self.headers.merge!(headers)
+        options url, headers
       end
 
       def resources_include_suffix?(resources, key, suffix)
@@ -74,7 +70,7 @@ module Spec
       end
 
       def basic_authorize(user, password)
-        headers["HTTP_AUTHORIZATION"] = ActionController::HttpAuthentication::Basic.encode_credentials(user, password)
+        request_headers["HTTP_AUTHORIZATION"] = ActionController::HttpAuthentication::Basic.encode_credentials(user, password)
       end
 
       def update_user_role(role, *identifiers)
