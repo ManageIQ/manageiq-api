@@ -18,15 +18,7 @@ module Api
       if obj.nil?
         raise NotFoundError, "Invalid Workspace #{id} specified"
       end
-      workspace = data["workspace"]
-      state_var = data["state_var"]
-      if workspace.blank? && state_var.blank?
-        raise BadRequestError, "No workspace or state_var specified for edit"
-      end
-      current_output = obj.output || {}
-      obj.output = current_output.deep_merge(data)
-      obj.save
-      obj
+      obj.update_output(data)
     end
   end
 end
