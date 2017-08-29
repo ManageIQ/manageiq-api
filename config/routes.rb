@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # Enablement for the REST API
 
   namespace :api, :path => "api(/:version)", :version => Api::VERSION_REGEX, :defaults => {:format => "json"} do
-    root :to => "api#index"
+    root :to => "api#index", :as => :entrypoint
     match "/", :to => "api#options", :via => :options
 
     # Redirect of /tasks subcollections to /request_tasks
