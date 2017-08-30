@@ -18,7 +18,7 @@ module Api
       if obj.nil?
         raise NotFoundError, "Invalid Workspace #{id} specified"
       end
-      obj.update_output(data)
+      obj.output = data
     end
   end
 end
