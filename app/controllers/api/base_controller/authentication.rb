@@ -5,7 +5,6 @@ module Api
       # REST APIs Authenticator and Redirector
       #
       def require_api_user_or_token
-        log_request_initiated
         if request.headers[HttpHeaders::MIQ_TOKEN]
           authenticate_with_system_token(request.headers[HttpHeaders::MIQ_TOKEN])
         elsif request.headers[HttpHeaders::AUTH_TOKEN]
