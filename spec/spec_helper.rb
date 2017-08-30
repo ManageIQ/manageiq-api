@@ -10,7 +10,6 @@ Dir[Rails.root.join("spec/shared/**/*.rb")].each { |f| require f }
 
 RSpec.configure do |config|
   config.include Spec::Support::ApiHelper, :type => :request
-  config.include Spec::Support::AuthRequestHelper, :type => :request
   config.define_derived_metadata(:type => :request) do |metadata|
     metadata[:aggregate_failures] = true
   end
