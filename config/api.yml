@@ -829,7 +829,7 @@
     :description: Generic Object Definitions
     :options:
     - :collection
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: GenericObjectDefinition
     :collection_actions:
       :get:
@@ -851,6 +851,9 @@
         :identifier: generic_object_definition_edit
       - :name: delete
         :identifier: generic_object_definition_delete
+      :put:
+      - :name: edit
+        :identifier: generic_object_definition_edit
       :delete:
       - :name: delete
         :identifier: generic_object_definition_delete
