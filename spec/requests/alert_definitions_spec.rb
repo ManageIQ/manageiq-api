@@ -65,11 +65,11 @@ describe "Alerts Definitions API" do
 
   it "creates an alert definition" do
     sample_alert_definition = {
-      "description" => "Test Alert Definition",
-      "db"          => "ContainerNode",
-      "expression"  => { "eval_method" => "dwh_generic", "mode" => "internal", "options" => {} },
-      "options"     => { "notifications" => {"delay_next_evaluation" => 600, "evm_event" => {} } },
-      "enabled"     => true
+      "description"     => "Test Alert Definition",
+      "db"              => "ContainerNode",
+      "hash_expression" => { "eval_method" => "dwh_generic", "mode" => "internal", "options" => {} },
+      "options"         => { "notifications" => {"delay_next_evaluation" => 600, "evm_event" => {} } },
+      "enabled"         => true
     }
     api_basic_authorize collection_action_identifier(:alert_definitions, :create)
     run_post(alert_definitions_url, sample_alert_definition)
@@ -116,11 +116,11 @@ describe "Alerts Definitions API" do
 
   it "edits an alert definition" do
     sample_alert_definition = {
-      :description => "Test Alert Definition",
-      :db          => "ContainerNode",
-      :expression  => { :eval_method => "mw_heap_used", :mode => "internal", :options => {} },
-      :options     => { :notifications => {:delay_next_evaluation => 0, :evm_event => {} } },
-      :enabled     => true
+      :description     => "Test Alert Definition",
+      :db              => "ContainerNode",
+      :hash_expression => { :eval_method => "mw_heap_used", :mode => "internal", :options => {} },
+      :options         => { :notifications => {:delay_next_evaluation => 0, :evm_event => {} } },
+      :enabled         => true
     }
     updated_options = { :notifications => {:delay_next_evaluation => 60, :evm_event => {} } }
     api_basic_authorize action_identifier(:alert_definitions, :edit, :resource_actions, :post)
