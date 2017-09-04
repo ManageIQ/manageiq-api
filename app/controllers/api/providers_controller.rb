@@ -86,6 +86,13 @@ module Api
       end
     end
 
+    def options
+      providers_options = ManageIQ::Providers::BaseManager.leaf_subclasses.inject({}) do |po, ems|
+        po.merge(ems.ems_type => ems.options_description)
+      end
+      render_options(:providers, {"provider_settings" => providers_options})
+    end
+
     private
 
     def format_provider_custom_attributes(attribute)
