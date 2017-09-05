@@ -2427,6 +2427,8 @@
         :identifier: rbac_user_edit
       - :name: delete
         :identifier: rbac_user_delete
+      - :name: add_miq_groups
+        :identifier: rbac_user_edit
     :resource_actions:
       :get:
       - :name: read
@@ -2436,6 +2438,8 @@
         :identifier: rbac_user_edit
       - :name: delete
         :identifier: rbac_user_delete
+      - :name: add_miq_groups
+        :identifier: rbac_user_edit
       :delete:
       - :name: delete
         :identifier: rbac_user_delete

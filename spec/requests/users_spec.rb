@@ -186,6 +186,49 @@ RSpec.describe "users API" do
     end
   end
 
+  describe "users add_miq_groups" do
+    it "does not add miq groups without an appropriate role" do
+      api_basic_authorize
+
+      run_post(users_url(user1.compressed_id), :action => "add_miq_groups")
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "adds miq groups via resource action" do
+      api_basic_authorize collection_action_identifier(:users, :add_miq_groups)
+
+      request = {
+        "action"     => "add_miq_groups",
+        "miq_groups" => [
+          { "href" => groups_url(group2.compressed_id) }
+        ]
+      }
+      run_post(users_url(user1.compressed_id), request)
+
+      expect(response).to have_http_status(:ok)
+      expect(user1.reload.miq_groups).to include(group2)
+    end
+
+    it "adds miq groups via collection action" do
+      api_basic_authorize collection_action_identifier(:users, :add_miq_groups)
+
+      request = {
+        "action"    => "add_miq_groups",
+        "resources" => [{
+          "href"       => users_url(user1.compressed_id),
+          "miq_groups" => [
+            { "id" => group2.compressed_id }
+          ]
+        }]
+      }
+      run_post(users_url, request)
+
+      expect(response).to have_http_status(:ok)
+      expect(user1.reload.miq_groups).to include(group2)
+    end
+  end
+
   describe "users edit" do
     it "rejects user edits without appropriate role" do
       api_basic_authorize
@@ -210,6 +253,16 @@ RSpec.describe "users API" do
 
       expect_single_resource_query("id" => user1.compressed_id, "name" => "updated name")
       expect(user1.reload.name).to eq("updated name")
+    end
+
+    it "can set a user's current group" do
+      api_basic_authorize collection_action_identifier(:users, :edit)
+      user1.miq_groups << group2
+
+      run_post(users_url(user1.id), gen_request(:edit, "current_group" => { "href" => groups_url(group2.compressed_id) }))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["current_group_id"]).to eq(group2.compressed_id)
     end
 
     it "supports single user edit of other attributes including group change" do

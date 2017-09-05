@@ -2,6 +2,7 @@ module Api
   class UsersController < BaseController
     INVALID_USER_ATTRS = %w(id href current_group_id settings).freeze # Cannot update other people's settings
     INVALID_SELF_USER_ATTRS = %w(id href current_group_id).freeze
+    EDITABLE_ATTRS = %w(password email settings group current_group).freeze
 
     include Subcollections::Tags
 
@@ -10,10 +11,9 @@ module Api
     def update
       aname = @req.action
       if aname == "edit" && !api_user_role_allows?(aname) && update_target_is_api_user?
-        editable_attrs = %w(password email settings)
-        if (Array(json_body_resource.try(:keys)) - editable_attrs).present?
+        if (Array(json_body_resource.try(:keys)) - EDITABLE_ATTRS).present?
           raise BadRequestError,
-                "Cannot update attributes other than #{editable_attrs.join(', ')} for the authenticated user"
+                "Cannot update attributes other than #{EDITABLE_ATTRS.join(', ')} for the authenticated user"
         end
         render_normal_update :users, update_collection(:users, @req.c_id)
       else
@@ -37,6 +37,7 @@ module Api
     def edit_resource(type, id, data)
       id == User.current_user.id ? validate_self_user_data(data) : validate_user_data(data)
       parse_set_group(data)
+      parse_set_current_group(data)
       parse_set_settings(data, resource_search(id, type, collection_class(type)))
       super
     end
@@ -45,6 +46,17 @@ module Api
       raise BadRequestError, "Must specify an id for deleting a user" unless id
       raise BadRequestError, "Cannot delete user of current request" if id.to_i == User.current_user.id
       super
+    end
+
+    def add_miq_groups_resource(type, id, data)
+      user = resource_search(id, type, collection_class(type))
+      data["miq_groups"].each do |group|
+        miq_group = parse_fetch_group(group)
+        user.miq_groups << miq_group if miq_group
+      end
+      user
+    rescue => err
+      raise BadRequestError, "Cannot add to miq_groups - #{err}"
     end
 
     private
@@ -56,6 +68,11 @@ module Api
     def parse_set_group(data)
       group = parse_fetch_group(data.delete("group"))
       data["miq_groups"] = Array(group) if group
+    end
+
+    def parse_set_current_group(data)
+      current_group = parse_fetch_group(data.delete("current_group"))
+      data["current_group"] = current_group if current_group
     end
 
     def parse_set_settings(data, user = nil)
