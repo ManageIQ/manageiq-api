@@ -1,7 +1,16 @@
 module Api
   class AutomateWorkspacesController < BaseController
     def index
-      raise BadRequestError, "Fetches of collection is not allowed"
+      klass = collection_class(@req.subject)
+      res, subquery_count = collection_search(@req.subcollection?, @req.subject, klass)
+      opts = {
+        :name             => @req.subject,
+        :is_subcollection => @req.subcollection?,
+        :expand_actions   => true,
+        :expand_resources => @req.expand?(:resources),
+        :counts           => Api::QueryCounts.new(klass.count, res.count, subquery_count)
+      }
+      render_collection(:automate_workspaces, res, opts)
     end
 
     def show
@@ -9,7 +18,6 @@ module Api
       if obj.nil?
         raise NotFoundError, "Invalid Workspace #{@req.c_id} specified"
       end
-
       render_resource(:automate_workspaces, obj)
     end
 
@@ -18,7 +26,7 @@ module Api
       if obj.nil?
         raise NotFoundError, "Invalid Workspace #{id} specified"
       end
-      obj.output = data
+      obj.merge_output!(data)
     end
   end
 end
