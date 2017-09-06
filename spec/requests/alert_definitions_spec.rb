@@ -42,14 +42,18 @@ describe "Alerts Definitions API" do
 
   it "reads an alert as a resource" do
     api_basic_authorize action_identifier(:alert_definitions, :read, :resource_actions, :get)
-    alert_definition = FactoryGirl.create(:miq_alert)
+    alert_definition = FactoryGirl.create(
+      :miq_alert,
+      :miq_expression => MiqExpression.new("=" => {"field" => "Vm-name", "value" => "foo"})
+    )
     run_get(alert_definitions_url(alert_definition.id))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
       "href"        => a_string_matching(alert_definitions_url(alert_definition.compressed_id)),
       "id"          => alert_definition.compressed_id,
       "description" => alert_definition.description,
-      "guid"        => alert_definition.guid
+      "guid"        => alert_definition.guid,
+      "expression"  => {"exp" => {"=" => {"field" => "Vm-name", "value" => "foo"}}, "context_type" => nil}
     )
   end
 
@@ -115,19 +119,34 @@ describe "Alerts Definitions API" do
   end
 
   it "edits an alert definition" do
-    sample_alert_definition = {
-      :description => "Test Alert Definition",
-      :db          => "ContainerNode",
-      :expression  => { :eval_method => "mw_heap_used", :mode => "internal", :options => {} },
-      :options     => { :notifications => {:delay_next_evaluation => 0, :evm_event => {} } },
-      :enabled     => true
+    api_basic_authorize(action_identifier(:alert_definitions, :edit, :resource_actions, :post))
+    alert_definition = FactoryGirl.create(
+      :miq_alert,
+      :expression => { :eval_method => "mw_heap_used", :mode => "internal", :options => {} },
+      :options    => { :notifications => {:delay_next_evaluation => 0, :evm_event => {} } }
+    )
+
+    run_post(
+      alert_definitions_url(alert_definition.id),
+      :action  => "edit",
+      :options => { :notifications => {:delay_next_evaluation => 60, :evm_event => {} } }
+    )
+
+    expected = {
+      "expression" => {
+        "eval_method" => "mw_heap_used",
+        "mode"        => "internal",
+        "options"     => {}
+      },
+      "options"    => {
+        "notifications" => {
+          "delay_next_evaluation" => 60,
+          "evm_event"             => {}
+        }
+      }
     }
-    updated_options = { :notifications => {:delay_next_evaluation => 60, :evm_event => {} } }
-    api_basic_authorize action_identifier(:alert_definitions, :edit, :resource_actions, :post)
-    alert_definition = FactoryGirl.create(:miq_alert, sample_alert_definition)
-    run_post(alert_definitions_url(alert_definition.id), gen_request(:edit, :options => updated_options))
     expect(response).to have_http_status(:ok)
-    expect(response.parsed_body["options"]).to eq(updated_options.deep_stringify_keys)
+    expect(response.parsed_body).to include(expected)
   end
 
   it "edits alert definitions" do
