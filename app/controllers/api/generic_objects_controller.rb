@@ -2,6 +2,8 @@ module Api
   class GenericObjectsController < BaseController
     EXCEPTION_ATTRS = %w(generic_object_definition associations).freeze
 
+    before_action :set_additional_attributes, :only => [:index, :show]
+
     def create_resource(_type, _id, data)
       object_def = retrieve_generic_object_definition(data)
       generic_object = object_def.create_object(data.except(*EXCEPTION_ATTRS))
@@ -11,6 +13,10 @@ module Api
     end
 
     private
+
+    def set_additional_attributes
+      @additional_attributes = %w(property_attributes)
+    end
 
     def retrieve_generic_object_definition(data)
       definition_id = parse_id(data['generic_object_definition'], :generic_object_definitions)

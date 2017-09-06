@@ -3,6 +3,7 @@ RSpec.describe 'GenericObjects API' do
   let(:vm) { FactoryGirl.create(:vm_amazon) }
   let(:vm2) { FactoryGirl.create(:vm_amazon) }
   let(:service) { FactoryGirl.create(:service) }
+  let(:object) { FactoryGirl.create(:generic_object, :name => 'object 1', :generic_object_definition => object_definition) }
 
   before do
     object_definition.add_property_attribute('widget', 'string')
@@ -10,6 +11,34 @@ RSpec.describe 'GenericObjects API' do
 
     object_definition.add_property_association('services', 'Service')
     object_definition.add_property_association('vms', 'Vm')
+
+    object_definition.add_property_method('method_a')
+    object_definition.add_property_method('method_b')
+  end
+
+  describe 'GET /api/generic_objects' do
+
+  end
+
+  describe 'GET /api/generic_objects/:id' do
+    before do
+      object.widget = 'a widget string'
+      object.is_something = true
+      object.save!
+    end
+
+    it 'returns a generic object with property_attributes' do
+      api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get)
+
+      run_get(generic_objects_url(object.compressed_id))
+
+      expected = {
+        'name' => 'object 1',
+        'property_attributes' => { 'widget' => 'a widget string', 'is_something' => true }
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
   end
 
   describe 'POST /api/generic_objects' do
