@@ -825,6 +825,36 @@
       :get:
       - :name: read
         :identifier: floating_ip_show
+  :generic_objects:
+    :description: Generic Objects
+    :options:
+    - :collection
+    - :subcollection
+    :verbs: *gpd
+    :klass: GenericObject
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: generic_object_show_list
+      :post:
+      - :name: create
+        :identifier: generic_object_new
+      - :name: edit
+        :identifier: generic_object_edit
+      - :name: delete
+        :identifier: generic_object_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: generic_object_show
+      :post:
+      - :name: edit
+        :identifier: generic_object_edit
+      - :name: delete
+        :identifier: generic_object_delete
+      :delete:
+      - :name: delete
+        :identifier: generic_object_delete
   :generic_object_definitions:
     :description: Generic Object Definitions
     :options:
