@@ -309,4 +309,23 @@ RSpec.describe 'GenericObjectDefinitions API' do
       expect(response).to have_http_status(:no_content)
     end
   end
+
+  describe 'PUT /api/generic_object_definitions/:id' do
+    it 'can edit a generic object definition' do
+      api_basic_authorize action_identifier(:generic_object_definitions, :edit)
+
+      request = {
+        'name'        => 'LoadBalancer Updated',
+        'description' => 'LoadBalancer description Updated'
+      }
+      run_put(generic_object_definitions_url(object_def.name), request)
+
+      expected = {
+        'name'        => 'LoadBalancer Updated',
+        'description' => 'LoadBalancer description Updated'
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
 end
