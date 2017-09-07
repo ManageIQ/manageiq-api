@@ -17,7 +17,45 @@ RSpec.describe 'GenericObjects API' do
   end
 
   describe 'GET /api/generic_objects' do
+    it 'will return all generic objects' do
+      object = FactoryGirl.create(:generic_object, :generic_object_definition => object_definition)
+      api_basic_authorize collection_action_identifier(:generic_objects, :read, :get)
 
+      run_get(api_generic_objects_url)
+
+      expected = {
+        'count'     => 1,
+        'subcount'  => 1,
+        'name'      => 'generic_objects',
+        'resources' => [
+          a_hash_including('href' => api_generic_object_url(nil, object.compressed_id))
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'allows specifying attributes' do
+      object = FactoryGirl.create(:generic_object, :generic_object_definition => object_definition)
+      object.add_to_property_association('vms', [vm, vm2])
+      object.add_to_property_association('services', service)
+      api_basic_authorize collection_action_identifier(:generic_objects, :read, :get)
+
+      run_get(api_generic_objects_url, :expand => :resources, :property_associations => 'vms,services')
+
+      expected = {
+        'resources' => [
+          a_hash_including(
+            'id'                  => object.compressed_id,
+            'property_attributes' => {},
+            'vms'                 => a_collection_including(a_hash_including('id' => vm.compressed_id), a_hash_including('id' => vm2.compressed_id)),
+            'services'            => [a_hash_including('id' => service.compressed_id)]
+          )
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
   end
 
   describe 'GET /api/generic_objects/:id' do
@@ -25,16 +63,38 @@ RSpec.describe 'GenericObjects API' do
       object.widget = 'a widget string'
       object.is_something = true
       object.save!
+
+      object.add_to_property_association('vms', [vm, vm2])
+      object.add_to_property_association('services', service)
     end
 
     it 'returns a generic object with property_attributes' do
       api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get)
 
-      run_get(generic_objects_url(object.compressed_id))
+      run_get(api_generic_object_url(nil, object.compressed_id))
 
       expected = {
-        'name' => 'object 1',
+        'name'                => 'object 1',
         'property_attributes' => { 'widget' => 'a widget string', 'is_something' => true }
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'allows specification of property_associations and returns them accordingly' do
+      api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get)
+
+      run_get(api_generic_object_url(nil, object.compressed_id), :property_associations => 'vms,services')
+
+      # TODO: add test to ensure the hrefs correctly align with the collection
+      expected = {
+        'name'                => 'object 1',
+        'property_attributes' => { 'widget' => 'a widget string', 'is_something' => true },
+        'services'            => a_collection_containing_exactly(a_hash_including('id' => service.compressed_id)),
+        'vms'                 => a_collection_containing_exactly(
+          a_hash_including('id' => vm.compressed_id),
+          a_hash_including('id' => vm2.compressed_id)
+        )
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -45,7 +105,7 @@ RSpec.describe 'GenericObjects API' do
     it 'does not allow creation of a generic object without appropriate role' do
       api_basic_authorize
 
-      run_post(generic_objects_url)
+      run_post(api_generic_objects_url)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -54,7 +114,7 @@ RSpec.describe 'GenericObjects API' do
       api_basic_authorize collection_action_identifier(:generic_objects, :create)
 
       generic_object = {
-        'generic_object_definition' => { 'href' => generic_object_definitions_url(object_definition.compressed_id) },
+        'generic_object_definition' => { 'href' => api_generic_object_definition_url(nil, object_definition.compressed_id) },
         'name'                      => 'go_name1',
         'uid'                       => 'optional_uid',
         'property_attributes'       => {
@@ -63,15 +123,15 @@ RSpec.describe 'GenericObjects API' do
         },
         'associations'              => {
           'vms'      => [
-            { 'href' => vms_url(vm.compressed_id) },
-            { 'href' => vms_url(vm2.compressed_id) }
+            { 'href' => api_vm_url(nil, vm.compressed_id) },
+            { 'href' => api_vm_url(nil, vm2.compressed_id) }
           ],
           'services' => [
-            { 'href' => services_url(service.compressed_id) }
+            { 'href' => api_service_url(nil, service.compressed_id) }
           ]
         }
       }
-      run_post(generic_objects_url, generic_object)
+      run_post(api_generic_objects_url, generic_object)
 
       expected = {
         'results' => [

@@ -16,6 +16,10 @@ module Api
 
     def set_additional_attributes
       @additional_attributes = %w(property_attributes)
+      return unless params[:property_associations]
+      params[:property_associations].split(',').each do |prop|
+        @additional_attributes << prop
+      end
     end
 
     def retrieve_generic_object_definition(data)
