@@ -186,50 +186,27 @@ RSpec.describe "users API" do
     end
   end
 
-  describe "users add_miq_groups" do
-    it "does not add miq groups without an appropriate role" do
-      api_basic_authorize
-
-      run_post(users_url(user1.compressed_id), :action => "add_miq_groups")
-
-      expect(response).to have_http_status(:forbidden)
-    end
-
-    it "adds miq groups via resource action" do
-      api_basic_authorize collection_action_identifier(:users, :add_miq_groups)
+  describe "users edit" do
+    it "allows for setting of multiple miq_groups" do
+      group3 = FactoryGirl.create(:miq_group)
+      api_basic_authorize collection_action_identifier(:users, :edit)
 
       request = {
-        "action"     => "add_miq_groups",
-        "miq_groups" => [
-          { "href" => groups_url(group2.compressed_id) }
-        ]
-      }
-      run_post(users_url(user1.compressed_id), request)
-
-      expect(response).to have_http_status(:ok)
-      expect(user1.reload.miq_groups).to include(group2)
-    end
-
-    it "adds miq groups via collection action" do
-      api_basic_authorize collection_action_identifier(:users, :add_miq_groups)
-
-      request = {
-        "action"    => "add_miq_groups",
+        "action"    => "edit",
         "resources" => [{
-          "href"       => users_url(user1.compressed_id),
+          "href"       => api_user_url(nil, user1.compressed_id),
           "miq_groups" => [
-            { "id" => group2.compressed_id }
+            { "id" => group2.compressed_id },
+            { "href" => api_group_url(nil, group3.compressed_id) }
           ]
         }]
       }
-      run_post(users_url, request)
+      run_post(api_users_url, request)
 
       expect(response).to have_http_status(:ok)
-      expect(user1.reload.miq_groups).to include(group2)
+      expect(user1.reload.miq_groups).to match_array([group2, group3])
     end
-  end
 
-  describe "users edit" do
     it "rejects user edits without appropriate role" do
       api_basic_authorize
 
@@ -259,7 +236,7 @@ RSpec.describe "users API" do
       api_basic_authorize collection_action_identifier(:users, :edit)
       user1.miq_groups << group2
 
-      run_post(users_url(user1.id), gen_request(:edit, "current_group" => { "href" => groups_url(group2.compressed_id) }))
+      run_post(api_user_url(nil, user1.id), gen_request(:edit, "current_group" => { "href" => api_group_url(nil, group2.compressed_id) }))
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["current_group_id"]).to eq(group2.compressed_id)

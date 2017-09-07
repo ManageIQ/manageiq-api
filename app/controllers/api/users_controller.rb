@@ -48,17 +48,6 @@ module Api
       super
     end
 
-    def add_miq_groups_resource(type, id, data)
-      user = resource_search(id, type, collection_class(type))
-      data["miq_groups"].each do |group|
-        miq_group = parse_fetch_group(group)
-        user.miq_groups << miq_group if miq_group
-      end
-      user
-    rescue => err
-      raise BadRequestError, "Cannot add to miq_groups - #{err}"
-    end
-
     private
 
     def update_target_is_api_user?
@@ -66,8 +55,15 @@ module Api
     end
 
     def parse_set_group(data)
-      group = parse_fetch_group(data.delete("group"))
-      data["miq_groups"] = Array(group) if group
+      groups = if data.key?("group")
+                 group = parse_fetch_group(data.delete("group"))
+                 Array(group) if group
+               elsif data.key?("miq_groups")
+                 data["miq_groups"].collect do |miq_group|
+                   parse_fetch_group(miq_group)
+                 end
+               end
+      data["miq_groups"] = groups if groups
     end
 
     def parse_set_current_group(data)
