@@ -318,7 +318,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'name'        => 'LoadBalancer Updated',
         'description' => 'LoadBalancer description Updated'
       }
-      run_put(generic_object_definitions_url(object_def.name), request)
+      run_put(api_generic_object_definition_url(nil, object_def.name), request)
 
       expected = {
         'name'        => 'LoadBalancer Updated',
