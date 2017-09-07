@@ -9,7 +9,7 @@ RSpec.describe "guest devices API" do
 
         api_basic_authorize action_identifier(:guest_devices, :read, :resource_actions, :get)
 
-        run_get(guest_devices_url(device.id))
+        run_get(api_guest_device_url(nil, device))
 
         expect_single_resource_query("device_name" => "Broadcom 2-port 1GbE NIC Card",
                                      "device_type" => "ethernet",
@@ -23,7 +23,7 @@ RSpec.describe "guest devices API" do
 
         api_basic_authorize
 
-        run_get(guest_devices_url(device.id))
+        run_get(api_guest_device_url(nil, device))
 
         expect(response).to have_http_status(:forbidden)
       end

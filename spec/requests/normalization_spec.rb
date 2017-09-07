@@ -3,7 +3,7 @@ RSpec.describe "Normalization of objects API" do
     api_basic_authorize action_identifier(:hosts, :read, :resource_actions, :get)
     host = FactoryGirl.create(:host)
 
-    run_get(hosts_url(host.id))
+    run_get(api_host_url(nil, host))
 
     expect(response.parsed_body).to include("created_on" => host.created_on.iso8601)
   end

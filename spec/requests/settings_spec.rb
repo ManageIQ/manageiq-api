@@ -8,7 +8,7 @@ describe "Settings API" do
     it "tests queries of all exposed settings" do
       api_basic_authorize action_identifier(:settings, :read, :collection_actions, :get)
 
-      run_get settings_url
+      run_get api_settings_url
 
       expect_result_to_have_only_keys(api_settings)
     end
@@ -17,7 +17,7 @@ describe "Settings API" do
       api_basic_authorize action_identifier(:settings, :read, :resource_actions, :get)
 
       category = api_settings.first
-      run_get settings_url(category)
+      run_get api_setting_url(nil, category)
 
       expect_result_to_have_only_keys(category)
     end
@@ -26,7 +26,7 @@ describe "Settings API" do
       api_basic_authorize action_identifier(:settings, :read, :resource_actions, :get)
 
       category = api_settings.first
-      run_get settings_url(category)
+      run_get api_setting_url(nil, category)
 
       expect(response.parsed_body[category]).to eq(Settings[category].to_hash.stringify_keys)
     end
@@ -34,7 +34,7 @@ describe "Settings API" do
     it "rejects query for an invalid setting category " do
       api_basic_authorize action_identifier(:settings, :read, :resource_actions, :get)
 
-      run_get settings_url("invalid_setting")
+      run_get api_setting_url(nil, "invalid_setting")
 
       expect(response).to have_http_status(:not_found)
     end
@@ -94,7 +94,7 @@ describe "Settings API" do
       stub_api_settings_categories(%w(product authentication server))
       api_basic_authorize action_identifier(:settings, :read, :resource_actions, :get)
 
-      run_get settings_url
+      run_get api_settings_url
 
       expect(response.parsed_body).to match(
         "product"        => sample_settings["product"],
@@ -107,7 +107,7 @@ describe "Settings API" do
       stub_api_settings_categories(%w(product server/role))
       api_basic_authorize action_identifier(:settings, :read, :resource_actions, :get)
 
-      run_get settings_url
+      run_get api_settings_url
 
       expect(response.parsed_body).to match(
         "product" => sample_settings["product"],
@@ -119,7 +119,7 @@ describe "Settings API" do
       stub_api_settings_categories(%w(product server/role server/worker_monitor/sync_interval))
       api_basic_authorize action_identifier(:settings, :read, :resource_actions, :get)
 
-      run_get settings_url
+      run_get api_settings_url
 
       expect(response.parsed_body).to match(
         "product" => sample_settings["product"],
@@ -134,7 +134,7 @@ describe "Settings API" do
       stub_api_settings_categories(%w(product server/role server/worker_monitor authentication))
       api_basic_authorize action_identifier(:settings, :read, :resource_actions, :get)
 
-      run_get settings_url
+      run_get api_settings_url
 
       expect(response.parsed_body).to match(
         "product"        => sample_settings["product"],

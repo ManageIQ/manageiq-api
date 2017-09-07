@@ -5,11 +5,11 @@ RSpec.describe "Templates API" do
       template = FactoryGirl.create(:template)
 
       expect do
-        run_post(templates_url(template.id), :action => "delete")
+        run_post(api_template_url(nil, template), :action => "delete")
       end.to change(MiqTemplate, :count).by(-1)
 
       expected = {
-        "href"    => a_string_matching(templates_url(template.compressed_id)),
+        "href"    => api_template_url(nil, template.compressed_id),
         "message" => "templates id: #{template.id} deleting",
         "success" => true
       }
@@ -22,7 +22,7 @@ RSpec.describe "Templates API" do
       template = FactoryGirl.create(:template)
 
       expect do
-        run_post(templates_url(template.id), :action => "delete")
+        run_post(api_template_url(nil, template), :action => "delete")
       end.not_to change(MiqTemplate, :count)
 
       expect(response).to have_http_status(:forbidden)
@@ -36,7 +36,7 @@ RSpec.describe "Templates API" do
       Classification.classify(template, "department", "finance")
       api_basic_authorize
 
-      run_get("#{templates_url(template.id)}/tags")
+      run_get(api_template_tags_url(nil, template))
 
       expect(response.parsed_body).to include("subcount" => 1)
       expect(response).to have_http_status(:ok)
@@ -47,7 +47,7 @@ RSpec.describe "Templates API" do
       FactoryGirl.create(:classification_department_with_tags)
       api_basic_authorize(subcollection_action_identifier(:templates, :tags, :assign))
 
-      run_post("#{templates_url(template.id)}/tags", :action => "assign", :category => "department", :name => "finance")
+      run_post(api_template_tags_url(nil, template), :action => "assign", :category => "department", :name => "finance")
 
       expected = {
         "results" => [
@@ -69,7 +69,7 @@ RSpec.describe "Templates API" do
       Classification.classify(template, "department", "finance")
       api_basic_authorize(subcollection_action_identifier(:templates, :tags, :unassign))
 
-      run_post("#{templates_url(template.id)}/tags",
+      run_post(api_template_tags_url(nil, template),
                :action   => "unassign",
                :category => "department",
                :name     => "finance")

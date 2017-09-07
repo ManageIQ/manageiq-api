@@ -1,14 +1,14 @@
 describe "Alerts API" do
   it "forbids access to alerts list without an appropriate role" do
     api_basic_authorize
-    run_get(alerts_url)
+    run_get(api_alerts_url)
     expect(response).to have_http_status(:forbidden)
   end
 
   it "reads 2 alerts as a collection" do
     api_basic_authorize collection_action_identifier(:alerts, :read, :get)
     alert_statuses = FactoryGirl.create_list(:miq_alert_status, 2)
-    run_get(alerts_url)
+    run_get(api_alerts_url)
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
       "name"      => "alerts",
@@ -16,10 +16,10 @@ describe "Alerts API" do
       "subcount"  => 2,
       "resources" => [
         {
-          "href" => a_string_matching(alerts_url(alert_statuses[0].compressed_id))
+          "href" => api_alert_url(nil, alert_statuses[0].compressed_id)
         },
         {
-          "href" => a_string_matching(alerts_url(alert_statuses[1].compressed_id))
+          "href" => api_alert_url(nil, alert_statuses[1].compressed_id)
         }
       ]
     )
@@ -28,24 +28,23 @@ describe "Alerts API" do
   it "forbids access to an alert resource without an appropriate role" do
     api_basic_authorize
     alert_status = FactoryGirl.create(:miq_alert_status)
-    run_get(alerts_url(alert_status.id))
+    run_get(api_alert_url(nil, alert_status))
     expect(response).to have_http_status(:forbidden)
   end
 
   it "reads an alert as a resource" do
     api_basic_authorize action_identifier(:alerts, :read, :resource_actions, :get)
     alert_status = FactoryGirl.create(:miq_alert_status)
-    run_get(alerts_url(alert_status.id))
+    run_get(api_alert_url(nil, alert_status))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
-      "href" => a_string_matching(alerts_url(alert_status.compressed_id)),
+      "href" => api_alert_url(nil, alert_status.compressed_id),
       "id"   => alert_status.compressed_id
     )
   end
 
   context "alert_actions subcollection" do
     let(:alert) { FactoryGirl.create(:miq_alert_status) }
-    let(:actions_subcollection_url) { "#{alerts_url(alert.id)}/alert_actions" }
     let(:assignee) { FactoryGirl.create(:user) }
     let(:expected_assignee) do
       {
@@ -62,7 +61,7 @@ describe "Alerts API" do
         :user             => FactoryGirl.create(:user)
       )
       api_basic_authorize
-      run_get(actions_subcollection_url)
+      run_get(api_alert_alert_actions_url(nil, alert))
       expect(response).to have_http_status(:forbidden)
     end
 
@@ -73,7 +72,7 @@ describe "Alerts API" do
         :miq_alert_status => alert,
         :user             => FactoryGirl.create(:user)
       )
-      run_get(actions_subcollection_url)
+      run_get(api_alert_alert_actions_url(nil, alert))
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(
         "name"      => "alert_actions",
@@ -81,7 +80,7 @@ describe "Alerts API" do
         "subcount"  => 1,
         "resources" => [
           {
-            "href" => a_string_matching("#{alerts_url(alert.compressed_id)}/alert_actions/#{alert_action.compressed_id}")
+            "href" => api_alert_alert_action_url(nil, alert.compressed_id, alert_action.compressed_id)
           }
         ]
       )
@@ -90,7 +89,7 @@ describe "Alerts API" do
     it "forbids creation of an alert action under alerts without an appropriate role" do
       api_basic_authorize
       run_post(
-        actions_subcollection_url,
+        api_alert_alert_actions_url(nil, alert),
         "action_type" => "comment",
         "comment"     => "comment text",
       )
@@ -103,7 +102,7 @@ describe "Alerts API" do
         "comment"     => "comment text",
       }
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
-      run_post(actions_subcollection_url, attributes)
+      run_post(api_alert_alert_actions_url(nil, alert), attributes)
       expect(response).to have_http_status(:ok)
       expected = {
         "results" => [
@@ -121,7 +120,7 @@ describe "Alerts API" do
         "user_id"     => user.id # should be ignored
       }
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
-      run_post(actions_subcollection_url, attributes)
+      run_post(api_alert_alert_actions_url(nil, alert), attributes)
       expect(response).to have_http_status(:ok)
       expected = {
         "results" => [
@@ -138,7 +137,7 @@ describe "Alerts API" do
         "assignee"    => { "id" => assignee.compressed_id }
       }
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
-      run_post(actions_subcollection_url, attributes)
+      run_post(api_alert_alert_actions_url(nil, alert), attributes)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected_assignee)
     end
@@ -146,10 +145,10 @@ describe "Alerts API" do
     it "create an assignment alert action reference by href" do
       attributes = {
         "action_type" => "assign",
-        "assignee"    => { "href" => users_url(assignee.compressed_id) }
+        "assignee"    => { "href" => api_user_url(nil, assignee.compressed_id) }
       }
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
-      run_post(actions_subcollection_url, attributes)
+      run_post(api_alert_alert_actions_url(nil, alert), attributes)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected_assignee)
     end
@@ -157,7 +156,7 @@ describe "Alerts API" do
     it "returns errors when creating an invalid alert" do
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
       run_post(
-        actions_subcollection_url,
+        api_alert_alert_actions_url(nil, alert),
         "action_type" => "assign",
       )
       expect(response).to have_http_status(:bad_request)
@@ -174,10 +173,10 @@ describe "Alerts API" do
         :miq_alert_status => alert,
         :user             => user
       )
-      run_get("#{actions_subcollection_url}/#{alert_action.id}")
+      run_get(api_alert_alert_action_url(nil, alert, alert_action))
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(
-        "href"        => a_string_matching("#{alerts_url(alert.compressed_id)}/alert_actions/#{alert_action.compressed_id}"),
+        "href"        => api_alert_alert_action_url(nil, alert.compressed_id, alert_action.compressed_id),
         "id"          => alert_action.compressed_id,
         "action_type" => alert_action.action_type,
         "user_id"     => user.compressed_id,

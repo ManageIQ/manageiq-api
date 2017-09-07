@@ -129,7 +129,7 @@ describe "Authentication API" do
         it "gets a token based identifier" do
           api_basic_authorize
 
-          run_get auth_url
+          run_get api_auth_url
 
           expect(response).to have_http_status(:ok)
           expect_result_to_have_keys(%w(auth_token token_ttl expires_on))
@@ -144,7 +144,7 @@ describe "Authentication API" do
         it "authentication using a valid token" do
           api_basic_authorize
 
-          run_get auth_url
+          run_get api_auth_url
 
           expect(response).to have_http_status(:ok)
           expect_result_to_have_keys(%w(auth_token))
@@ -160,7 +160,7 @@ describe "Authentication API" do
         it "authentication using a valid token updates the token's expiration time" do
           api_basic_authorize
 
-          run_get auth_url
+          run_get api_auth_url
 
           expect(response).to have_http_status(:ok)
           expect_result_to_have_keys(%w(auth_token token_ttl expires_on))
@@ -181,7 +181,7 @@ describe "Authentication API" do
 
         it "gets a token based identifier with the default API based token_ttl" do
           api_basic_authorize
-          run_get auth_url
+          run_get api_auth_url
 
           expect(response).to have_http_status(:ok)
           expect_result_to_have_keys(%w(auth_token token_ttl expires_on))
@@ -191,7 +191,7 @@ describe "Authentication API" do
         it "gets a token based identifier with an invalid requester_type" do
           api_basic_authorize
 
-          run_get auth_url, :requester_type => "bogus_type"
+          run_get api_auth_url, :requester_type => "bogus_type"
 
           expect_bad_request(/invalid requester_type/i)
         end
@@ -199,7 +199,7 @@ describe "Authentication API" do
         it "gets a token based identifier with a UI based token_ttl" do
           api_basic_authorize
 
-          run_get auth_url, :requester_type => "ui"
+          run_get api_auth_url, :requester_type => "ui"
 
           expect(response).to have_http_status(:ok)
           expect_result_to_have_keys(%w(auth_token token_ttl expires_on))
@@ -209,19 +209,19 @@ describe "Authentication API" do
         it "forgets the current token when asked to" do
           api_basic_authorize
 
-          run_get auth_url
+          run_get api_auth_url
 
           auth_token = response.parsed_body["auth_token"]
 
           expect_any_instance_of(TokenManager).to receive(:invalidate_token).with(auth_token)
-          run_delete auth_url, Api::HttpHeaders::AUTH_TOKEN => auth_token
+          run_delete api_auth_url, Api::HttpHeaders::AUTH_TOKEN => auth_token
         end
 
         context 'Tokens for Web Sockets' do
           it 'gets a UI based token_ttl when requesting token for web sockets' do
             api_basic_authorize
 
-            run_get auth_url, :requester_type => 'ws'
+            run_get api_auth_url, :requester_type => 'ws'
             expect(response).to have_http_status(:ok)
             expect_result_to_have_keys(%w(auth_token token_ttl expires_on))
             expect(response.parsed_body["token_ttl"]).to eq(::Settings.session.timeout.to_i_with_method)
@@ -229,7 +229,7 @@ describe "Authentication API" do
 
           it 'cannot authorize user to api based on token that is dedicated for web sockets' do
             api_basic_authorize
-            run_get auth_url, :requester_type => 'ws'
+            run_get api_auth_url, :requester_type => 'ws'
             ws_token = response.parsed_body["auth_token"]
 
             run_get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => ws_token}
@@ -309,7 +309,7 @@ describe "Authentication API" do
         stub_api_action_role(:vms, :collection_actions, :get, :read, "vm_view_role1")
         api_basic_authorize
 
-        run_get vms_url
+        run_get api_vms_url
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -318,7 +318,7 @@ describe "Authentication API" do
         stub_api_action_role(:vms, :collection_actions, :get, :read, "vm_view_role1")
         api_basic_authorize "vm_view_role1"
 
-        run_get vms_url
+        run_get api_vms_url
 
         expect_query_result(:vms, 1, 1)
       end
@@ -329,7 +329,7 @@ describe "Authentication API" do
         stub_api_action_role(:vms, :collection_actions, :get, :read, %w(vm_view_role1 vm_view_role2))
         api_basic_authorize
 
-        run_get vms_url
+        run_get api_vms_url
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -338,7 +338,7 @@ describe "Authentication API" do
         stub_api_action_role(:vms, :collection_actions, :get, :read, %w(vm_view_role1 vm_view_role2))
         api_basic_authorize "vm_view_role2"
 
-        run_get vms_url
+        run_get api_vms_url
 
         expect_query_result(:vms, 1, 1)
       end
