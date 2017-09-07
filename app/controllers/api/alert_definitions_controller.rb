@@ -29,7 +29,7 @@ module Api
     private
 
     def set_additional_attributes
-      @additional_attributes = %w(expression notify_email)
+      @additional_attributes = %w(expression)
     end
   end
 end
