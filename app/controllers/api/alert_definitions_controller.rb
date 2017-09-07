@@ -2,13 +2,15 @@ module Api
   class AlertDefinitionsController < BaseController
     REQUIRED_FIELDS = %w(description db expression options).freeze
 
+    before_action :set_additional_attributes
+
     def create_resource(type, id, data = {})
       assert_id_not_specified(data, type)
       assert_all_required_fields_exists(data, type, REQUIRED_FIELDS)
       begin
         data["expression"] = MiqExpression.new(data["expression"])
         data["enabled"] = true if data["enabled"].nil?
-        super(type, id, data)
+        super(type, id, data).serializable_hash.merge("expression" => data["expression"])
       rescue => err
         raise BadRequestError, "Failed to create a new alert definition - #{err}"
       end
@@ -22,6 +24,12 @@ module Api
       rescue => err
         raise BadRequestError, "Failed to update alert definition - #{err}"
       end
+    end
+
+    private
+
+    def set_additional_attributes
+      @additional_attributes = %w(expression notify_email)
     end
   end
 end
