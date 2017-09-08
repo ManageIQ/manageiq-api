@@ -143,5 +143,101 @@ RSpec.describe 'GenericObjects API' do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
     end
+
+    it 'can edit a generic object' do
+      api_basic_authorize collection_action_identifier(:generic_objects, :edit)
+
+      request = {
+        'action'    => 'edit',
+        'resources' => [
+          { 'href' => api_generic_object_url(nil, object.compressed_id), 'name' => 'updated name', 'property_attributes' => {'widget' => 'updated widget'} }
+        ]
+      }
+      run_post(api_generic_objects_url, request)
+
+      expected = {
+        'results' => [
+          a_hash_including('id' => object.compressed_id, 'name' => 'updated name')
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'can delete a generic object' do
+      api_basic_authorize collection_action_identifier(:generic_objects, :delete)
+
+      request = {
+        'action'    => 'delete',
+        'resources' => [
+          { 'href' => api_generic_object_url(nil, object.compressed_id) }
+        ]
+      }
+      run_post(api_generic_objects_url, request)
+
+      expected = {
+        'results' => [a_hash_including('success' => true, 'message' => a_string_including('deleting'))]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
+
+  describe 'POST /api/generic_objects/:id' do
+    it 'edits a generic object' do
+      vm3 = FactoryGirl.create(:vm_amazon)
+      api_basic_authorize action_identifier(:generic_objects, :edit)
+
+      request = {
+        'action'   => 'edit',
+        'resource' => {
+          'name'                => 'updated object',
+          'property_attributes' => {
+            'widget'       => 'updated widget val',
+            'is_something' => false
+          },
+          'associations'        => {
+            'vms'      => [{'href' => api_vm_url(nil, vm3.compressed_id)}],
+            'services' => []
+          }
+        }
+      }
+      run_post(api_generic_object_url(nil, object.compressed_id), request)
+
+      expected = {
+        'name'                => 'updated object',
+        'property_attributes' => {
+          'widget'       => 'updated widget val',
+          'is_something' => false
+        }
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+      expect(object.reload.services).to be_empty
+      expect(object.vms).to eq([vm3])
+    end
+
+    it 'deletes a generic object' do
+      api_basic_authorize action_identifier(:generic_objects, :delete)
+
+      run_post(api_generic_object_url(nil, object.compressed_id), :action => 'delete')
+
+      expected = {
+        'success' => true,
+        'message' => a_string_including("generic_objects id: #{object.id} deleting")
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
+
+  describe 'DELETE /api/generic_objects/:id' do
+    it 'can delete a generic object' do
+      api_basic_authorize action_identifier(:generic_objects, :delete, :resource_actions, :delete)
+
+      run_delete(api_generic_object_url(nil, object.compressed_id))
+
+      expect(response).to have_http_status(:no_content)
+    end
   end
 end

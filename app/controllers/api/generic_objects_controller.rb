@@ -1,15 +1,27 @@
 module Api
   class GenericObjectsController < BaseController
-    EXCEPTION_ATTRS = %w(generic_object_definition associations).freeze
+    ADDITIONAL_ATTRS = %w(generic_object_definition associations).freeze
 
-    before_action :set_additional_attributes, :only => [:index, :show]
+    before_action :set_additional_attributes
 
     def create_resource(_type, _id, data)
       object_def = retrieve_generic_object_definition(data)
-      generic_object = object_def.create_object(data.except(*EXCEPTION_ATTRS))
-      add_associations(generic_object, data)
+      object_def.create_object(data.except(*ADDITIONAL_ATTRS)).tap do |generic_object|
+        add_associations(generic_object, data)
+        generic_object.save!
+      end
     rescue => err
       raise BadRequestError, "Failed to create new generic object - #{err}"
+    end
+
+    def edit_resource(type, id, data)
+      resource_search(id, type, collection_class(type)).tap do |generic_object|
+        generic_object.update_attributes!(data.except(*ADDITIONAL_ATTRS))
+        add_associations(generic_object, data)
+        generic_object.save!
+      end
+    rescue => err
+      raise BadRequestError, "Failed to update generic object - #{err}"
     end
 
     private
@@ -28,14 +40,14 @@ module Api
     end
 
     def add_associations(generic_object, data)
+      return unless data.key?('associations')
       data['associations'].each do |association, resource_refs|
         resources = resource_refs.collect do |ref|
           collection, id = parse_href(ref['href'])
           resource_search(id, collection, collection_class(collection))
         end
-        generic_object.add_to_property_association(association, resources)
+        generic_object.send("#{association}=", resources)
       end
-      generic_object
     end
   end
 end
