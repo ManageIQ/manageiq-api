@@ -187,6 +187,26 @@ RSpec.describe "users API" do
   end
 
   describe "users edit" do
+    it "allows for setting of multiple miq_groups" do
+      group3 = FactoryGirl.create(:miq_group)
+      api_basic_authorize collection_action_identifier(:users, :edit)
+
+      request = {
+        "action"    => "edit",
+        "resources" => [{
+          "href"       => api_user_url(nil, user1.compressed_id),
+          "miq_groups" => [
+            { "id" => group2.compressed_id },
+            { "href" => api_group_url(nil, group3.compressed_id) }
+          ]
+        }]
+      }
+      run_post(api_users_url, request)
+
+      expect(response).to have_http_status(:ok)
+      expect(user1.reload.miq_groups).to match_array([group2, group3])
+    end
+
     it "rejects user edits without appropriate role" do
       api_basic_authorize
 
@@ -210,6 +230,16 @@ RSpec.describe "users API" do
 
       expect_single_resource_query("id" => user1.compressed_id, "name" => "updated name")
       expect(user1.reload.name).to eq("updated name")
+    end
+
+    it "can set a user's current group" do
+      api_basic_authorize collection_action_identifier(:users, :edit)
+      user1.miq_groups << group2
+
+      run_post(api_user_url(nil, user1.id), gen_request(:edit, "current_group" => { "href" => api_group_url(nil, group2.compressed_id) }))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["current_group_id"]).to eq(group2.compressed_id)
     end
 
     it "supports single user edit of other attributes including group change" do
