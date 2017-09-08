@@ -5,6 +5,8 @@ Rails.application.routes.draw do
     root :to => "api#index", :as => :entrypoint
     match "/", :to => "api#options", :via => :options
 
+    get "/ping" => "ping#index"
+
     # Redirect of /tasks subcollections to /request_tasks
     [:automation_requests, :provision_requests, :requests, :service_requests].each do |collection_name|
       get "/#{collection_name}/:c_id/tasks", :to => redirect { |path_params, _req| "/api/#{collection_name}/#{path_params[:c_id]}/request_tasks" }
