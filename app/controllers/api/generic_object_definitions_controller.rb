@@ -25,14 +25,26 @@ module Api
       raise BadRequestError, "Failed to delete generic object definition - #{err}"
     end
 
+    def self.allowed_association_types
+      GenericObjectDefinition::ALLOWED_ASSOCIATION_TYPES.collect do |association_type|
+        [Dictionary.gettext(association_type, :type => :model, :notfound => :titleize, :plural => false), association_type]
+      end.sort
+    end
+
+    def self.allowed_types
+      GenericObjectDefinition::TYPE_MAP.keys.collect do |type|
+        [Dictionary.gettext(type.to_s, :type => :data_type, :notfound => :titleize, :plural => false), type.to_s]
+      end.sort
+    end
+
     def options
       render_options(:generic_object_definitions, build_generic_object_definition_options)
     end
 
     def build_generic_object_definition_options
       {
-        :allowed_association_types => allowed_association_types,
-        :allowed_types             => allowed_types
+        :allowed_association_types => GenericObjectDefinitionsController.allowed_association_types,
+        :allowed_types             => GenericObjectDefinitionsController.allowed_types
       }
     end
     private
@@ -44,18 +56,6 @@ module Api
         go_def = klass.find_by!(:name => id)
         filter_resource(go_def, type, klass)
       end
-    end
-
-    def allowed_association_types
-      GenericObjectDefinition::ALLOWED_ASSOCIATION_TYPES.collect do |association_type|
-        [Dictionary.gettext(association_type, :type => :model, :notfound => :titleize, :plural => false), association_type]
-      end.sort
-    end
-
-    def allowed_types
-      GenericObjectDefinition::TYPE_MAP.keys.collect do |type|
-        [Dictionary.gettext(type.to_s, :type => :data_type, :notfound => :titleize, :plural => false), type]
-      end.sort
     end
   end
 end
