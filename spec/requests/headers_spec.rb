@@ -39,7 +39,7 @@ RSpec.describe "Headers" do
     it "accepts JSON by default" do
       api_basic_authorize(collection_action_identifier(:groups, :create))
 
-      post api_groups_url, :params => '{"description": "foo"}'
+      post api_groups_url, :params => {:description => "foo"}
 
       expect(response).to have_http_status(:ok)
     end
@@ -48,7 +48,7 @@ RSpec.describe "Headers" do
       api_basic_authorize(collection_action_identifier(:groups, :create))
 
       post(api_groups_url,
-           :params  => '{"description": "foo"}',
+           :params  => {:description => "foo"},
            :headers => {"Content-Type" => "application/json"})
 
       expect(response).to have_http_status(:ok)
@@ -58,7 +58,7 @@ RSpec.describe "Headers" do
       api_basic_authorize(collection_action_identifier(:groups, :create))
 
       post(api_groups_url,
-           :params  => '{"description": "foo"}',
+           :params  => {:description => "foo"},
            :headers => {"Content-Type" => "application/xml"})
 
       expect(response).to have_http_status(:ok)

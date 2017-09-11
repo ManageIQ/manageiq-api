@@ -10,15 +10,15 @@ module Spec
       end
 
       def run_post(url, body = {}, headers = {})
-        post url, :params => body, :headers => headers, :as => :json
+        post url, :params => body, :headers => headers
       end
 
       def run_put(url, body = {}, headers = {})
-        put url, :params => body, :headers => headers, :as => :json
+        put url, :params => body, :headers => headers
       end
 
       def run_patch(url, body = {}, headers = {})
-        patch url, :params => body, :headers => headers, :as => :json
+        patch url, :params => body, :headers => headers
       end
 
       def run_delete(url, headers = {})
