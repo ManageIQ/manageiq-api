@@ -69,7 +69,7 @@ RSpec.describe "Headers" do
     it "returns some headers related to security" do
       api_basic_authorize
 
-      run_get(api_entrypoint_url)
+      get(api_entrypoint_url)
 
       expected = {
         "X-Content-Type-Options"            => "nosniff",

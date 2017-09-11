@@ -3,7 +3,7 @@ RSpec.describe 'Cloud Networks API' do
     it 'rejects request without appropriate role' do
       api_basic_authorize
 
-      run_get api_cloud_networks_url
+      get api_cloud_networks_url
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -12,7 +12,7 @@ RSpec.describe 'Cloud Networks API' do
       FactoryGirl.create_list(:cloud_network, 2)
       api_basic_authorize collection_action_identifier(:cloud_networks, :read, :get)
 
-      run_get api_cloud_networks_url
+      get api_cloud_networks_url
 
       expect_query_result(:cloud_networks, 2)
       expect(response).to have_http_status(:ok)
@@ -26,7 +26,7 @@ RSpec.describe 'Cloud Networks API' do
       cloud_network_ids = provider.cloud_networks.select(:id).collect(&:compressed_id)
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
 
-      run_get api_provider_cloud_networks_url(nil, provider), :expand => 'resources'
+      get api_provider_cloud_networks_url(nil, provider), :expand => 'resources'
 
       expect_query_result(:cloud_networks, 2)
       expect_result_resources_to_include_data('resources', 'id' => cloud_network_ids)
@@ -35,7 +35,7 @@ RSpec.describe 'Cloud Networks API' do
     it "will not list cloud networks of a provider without the appropriate role" do
       api_basic_authorize
 
-      run_get api_provider_cloud_networks_url(nil, provider)
+      get api_provider_cloud_networks_url(nil, provider)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -44,7 +44,7 @@ RSpec.describe 'Cloud Networks API' do
       api_basic_authorize(action_identifier(:cloud_networks, :read, :subresource_actions, :get))
       network = provider.cloud_networks.first
 
-      run_get(api_provider_cloud_network_url(nil, provider, network))
+      get(api_provider_cloud_network_url(nil, provider, network))
 
       expect_single_resource_query('name' => network.name, 'id' => network.compressed_id, 'ems_ref' => network.ems_ref)
     end
@@ -53,7 +53,7 @@ RSpec.describe 'Cloud Networks API' do
       api_basic_authorize
       network = provider.cloud_networks.first
 
-      run_get(api_provider_cloud_network_url(nil, provider, network))
+      get(api_provider_cloud_network_url(nil, provider, network))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -63,7 +63,7 @@ RSpec.describe 'Cloud Networks API' do
       FactoryGirl.create(:ems_amazon_with_cloud_networks) # Provider with cloud networks
       api_basic_authorize collection_action_identifier(:providers, :read, :get)
 
-      run_get api_providers_url, :expand => 'resources,cloud_networks'
+      get api_providers_url, :expand => 'resources,cloud_networks'
 
       expected = {
         'resources' => a_collection_including(
@@ -84,7 +84,7 @@ RSpec.describe 'Cloud Networks API' do
       openshift = FactoryGirl.create(:ems_openshift)
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
 
-      run_get(api_provider_cloud_networks_url(nil, openshift), :expand => 'resources')
+      get(api_provider_cloud_networks_url(nil, openshift), :expand => 'resources')
 
       expected = {
         'name'      => 'cloud_networks',

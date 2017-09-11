@@ -39,7 +39,7 @@ describe "Vms API" do
     it 'cannot edit a VM without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_vm_url(nil, vm), :action => 'edit')
+      post(api_vm_url(nil, vm), :action => 'edit')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -50,7 +50,7 @@ describe "Vms API" do
         { 'href' => api_vm_url(nil, vm.compressed_id) }
       end
 
-      run_post(
+      post(
         api_vm_url(nil, vm),
         :action          => 'edit',
         :description     => 'bar',
@@ -74,7 +74,7 @@ describe "Vms API" do
     it 'only allows edit of custom_1, description, parent, and children' do
       api_basic_authorize collection_action_identifier(:vms, :edit)
 
-      run_post(api_vm_url(nil, vm), :action => 'edit', :name => 'foo', :autostart => true, :power_state => 'off')
+      post(api_vm_url(nil, vm), :action => 'edit', :name => 'foo', :autostart => true, :power_state => 'off')
 
       expected = {
         'error' => a_hash_including(
@@ -89,7 +89,7 @@ describe "Vms API" do
     it 'can edit multiple vms' do
       api_basic_authorize collection_action_identifier(:vms, :edit)
 
-      run_post(api_vms_url, :action => 'edit', :resources => [{ :id => vm.id, :description => 'foo' }, { :id => vm_openstack.id, :description => 'bar'}])
+      post(api_vms_url, :action => 'edit', :resources => [{ :id => vm.id, :description => 'foo' }, { :id => vm_openstack.id, :description => 'bar'}])
 
       expected = {
         'results' => [
@@ -104,7 +104,7 @@ describe "Vms API" do
     it 'requires a valid child/parent relationship ' do
       api_basic_authorize collection_action_identifier(:vms, :edit)
 
-      run_post(api_vm_url(nil, vm), :action => 'edit', :parent_resource => { :href => api_user_url(nil, 10) })
+      post(api_vm_url(nil, vm), :action => 'edit', :parent_resource => { :href => api_user_url(nil, 10) })
 
       expected = {
         'error' => a_hash_including(
@@ -126,7 +126,7 @@ describe "Vms API" do
     it "query VM accounts subcollection with no related accounts" do
       api_basic_authorize
 
-      run_get api_vm_accounts_url(nil, vm)
+      get api_vm_accounts_url(nil, vm)
 
       expect_empty_query_result(:accounts)
     end
@@ -137,7 +137,7 @@ describe "Vms API" do
       acct1
       acct2
 
-      run_get api_vm_accounts_url(nil, vm)
+      get api_vm_accounts_url(nil, vm)
 
       expect_query_result(:accounts, 2)
       expect_result_resources_to_include_hrefs("resources",
@@ -148,7 +148,7 @@ describe "Vms API" do
     it "query VM accounts subcollection with a valid Account Id" do
       api_basic_authorize
 
-      run_get acct1_url
+      get acct1_url
 
       expect_single_resource_query("name" => "John")
     end
@@ -156,7 +156,7 @@ describe "Vms API" do
     it "query VM accounts subcollection with an invalid Account Id" do
       api_basic_authorize
 
-      run_get(api_vm_account_url(nil, vm, 999_999))
+      get(api_vm_account_url(nil, vm, 999_999))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -167,7 +167,7 @@ describe "Vms API" do
       acct1
       acct2
 
-      run_get vm_url, :expand => "accounts"
+      get vm_url, :expand => "accounts"
 
       expect_single_resource_query("guid" => vm_guid)
       expect_result_resources_to_include_hrefs("accounts",
@@ -185,7 +185,7 @@ describe "Vms API" do
     it "query VM software subcollection with no related software" do
       api_basic_authorize
 
-      run_get api_vm_softwares_url(nil, vm)
+      get api_vm_softwares_url(nil, vm)
 
       expect_empty_query_result(:software)
     end
@@ -196,7 +196,7 @@ describe "Vms API" do
       sw1
       sw2
 
-      run_get api_vm_softwares_url(nil, vm)
+      get api_vm_softwares_url(nil, vm)
 
       expect_query_result(:software, 2)
       expect_result_resources_to_include_hrefs("resources",
@@ -207,7 +207,7 @@ describe "Vms API" do
     it "query VM software subcollection with a valid Software Id" do
       api_basic_authorize
 
-      run_get sw1_url
+      get sw1_url
 
       expect_single_resource_query("name" => "Word")
     end
@@ -215,7 +215,7 @@ describe "Vms API" do
     it "query VM software subcollection with an invalid Software Id" do
       api_basic_authorize
 
-      run_get(api_vm_software_url(nil, vm, 999_999))
+      get(api_vm_software_url(nil, vm, 999_999))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -226,7 +226,7 @@ describe "Vms API" do
       sw1
       sw2
 
-      run_get api_vm_url(nil, vm), :expand => "software"
+      get api_vm_url(nil, vm), :expand => "software"
 
       expect_single_resource_query("guid" => vm_guid)
       expect_result_resources_to_include_hrefs("software",
@@ -239,7 +239,7 @@ describe "Vms API" do
     it "starts an invalid vm" do
       api_basic_authorize action_identifier(:vms, :start)
 
-      run_post(invalid_vm_url, gen_request(:start))
+      post(invalid_vm_url, gen_request(:start))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -247,7 +247,7 @@ describe "Vms API" do
     it "starts an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:start))
+      post(invalid_vm_url, gen_request(:start))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -255,7 +255,7 @@ describe "Vms API" do
     it "starts a powered on vm" do
       api_basic_authorize action_identifier(:vms, :start)
 
-      run_post(vm_url, gen_request(:start))
+      post(vm_url, gen_request(:start))
 
       expect_single_action_result(:success => false, :message => "is powered on", :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -264,7 +264,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :start)
       update_raw_power_state("poweredOff", vm)
 
-      run_post(vm_url, gen_request(:start))
+      post(vm_url, gen_request(:start))
 
       expect_single_action_result(:success => true, :message => "starting", :href => api_vm_url(nil, vm.compressed_id), :task => true)
     end
@@ -273,7 +273,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :start)
       update_raw_power_state("poweredOff", vm)
 
-      run_post(vm_url, gen_request(:start))
+      post(vm_url, gen_request(:start))
 
       expect_single_action_result(:success => true, :message => "starting", :href => api_vm_url(nil, vm.compressed_id), :task => true)
       expect(MiqQueue.where(:class_name  => vm.class.name,
@@ -286,7 +286,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :start)
       update_raw_power_state("poweredOff", vm1, vm2)
 
-      run_post(api_vms_url, gen_request(:start, nil, vm1_url, vm2_url))
+      post(api_vms_url, gen_request(:start, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
@@ -297,7 +297,7 @@ describe "Vms API" do
     it "stops an invalid vm" do
       api_basic_authorize action_identifier(:vms, :stop)
 
-      run_post(invalid_vm_url, gen_request(:stop))
+      post(invalid_vm_url, gen_request(:stop))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -305,7 +305,7 @@ describe "Vms API" do
     it "stops an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:stop))
+      post(invalid_vm_url, gen_request(:stop))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -314,7 +314,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :stop)
       update_raw_power_state("poweredOff", vm)
 
-      run_post(vm_url, gen_request(:stop))
+      post(vm_url, gen_request(:stop))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -322,7 +322,7 @@ describe "Vms API" do
     it "stops a vm" do
       api_basic_authorize action_identifier(:vms, :stop)
 
-      run_post(vm_url, gen_request(:stop))
+      post(vm_url, gen_request(:stop))
 
       expect_single_action_result(:success => true, :message => "stopping", :href => api_vm_url(nil, vm.compressed_id), :task => true)
     end
@@ -330,7 +330,7 @@ describe "Vms API" do
     it "stops multiple vms" do
       api_basic_authorize action_identifier(:vms, :stop)
 
-      run_post(api_vms_url, gen_request(:stop, nil, vm1_url, vm2_url))
+      post(api_vms_url, gen_request(:stop, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
@@ -341,7 +341,7 @@ describe "Vms API" do
     it "suspends an invalid vm" do
       api_basic_authorize action_identifier(:vms, :suspend)
 
-      run_post(invalid_vm_url, gen_request(:suspend))
+      post(invalid_vm_url, gen_request(:suspend))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -349,7 +349,7 @@ describe "Vms API" do
     it "suspends an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:suspend))
+      post(invalid_vm_url, gen_request(:suspend))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -358,7 +358,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :suspend)
       update_raw_power_state("poweredOff", vm)
 
-      run_post(vm_url, gen_request(:suspend))
+      post(vm_url, gen_request(:suspend))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -367,7 +367,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :suspend)
       update_raw_power_state("suspended", vm)
 
-      run_post(vm_url, gen_request(:suspend))
+      post(vm_url, gen_request(:suspend))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -375,7 +375,7 @@ describe "Vms API" do
     it "suspends a vm" do
       api_basic_authorize action_identifier(:vms, :suspend)
 
-      run_post(vm_url, gen_request(:suspend))
+      post(vm_url, gen_request(:suspend))
 
       expect_single_action_result(:success => true, :message => "suspending", :href => api_vm_url(nil, vm.compressed_id), :task => true)
     end
@@ -383,7 +383,7 @@ describe "Vms API" do
     it "suspends multiple vms" do
       api_basic_authorize action_identifier(:vms, :suspend)
 
-      run_post(api_vms_url, gen_request(:suspend, nil, vm1_url, vm2_url))
+      post(api_vms_url, gen_request(:suspend, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
@@ -394,7 +394,7 @@ describe "Vms API" do
     it "pauses an invalid vm" do
       api_basic_authorize action_identifier(:vms, :pause)
 
-      run_post(invalid_vm_url, gen_request(:pause))
+      post(invalid_vm_url, gen_request(:pause))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -402,7 +402,7 @@ describe "Vms API" do
     it "pauses an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:pause))
+      post(invalid_vm_url, gen_request(:pause))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -411,7 +411,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :pause)
       update_raw_power_state("off", vm)
 
-      run_post(vm_url, gen_request(:pause))
+      post(vm_url, gen_request(:pause))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -420,7 +420,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :pause)
       update_raw_power_state("paused", vm)
 
-      run_post(vm_url, gen_request(:pause))
+      post(vm_url, gen_request(:pause))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -428,7 +428,7 @@ describe "Vms API" do
     it "pauses a vm" do
       api_basic_authorize action_identifier(:vms, :pause)
 
-      run_post(vm_url, gen_request(:pause))
+      post(vm_url, gen_request(:pause))
 
       expect_single_action_result(:success => true, :message => "pausing", :href => api_vm_url(nil, vm.compressed_id), :task => true)
     end
@@ -436,7 +436,7 @@ describe "Vms API" do
     it "pauses multiple vms" do
       api_basic_authorize action_identifier(:vms, :pause)
 
-      run_post(api_vms_url, gen_request(:pause, nil, vm1_url, vm2_url))
+      post(api_vms_url, gen_request(:pause, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
@@ -447,7 +447,7 @@ describe "Vms API" do
     it "shelves an invalid vm" do
       api_basic_authorize action_identifier(:vms, :shelve)
 
-      run_post(invalid_vm_url, gen_request(:shelve))
+      post(invalid_vm_url, gen_request(:shelve))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -455,7 +455,7 @@ describe "Vms API" do
     it "shelves an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:shelve))
+      post(invalid_vm_url, gen_request(:shelve))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -464,7 +464,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :shelve)
       update_raw_power_state("SHUTOFF", vm_openstack)
 
-      run_post(vm_openstack_url, gen_request(:shelve))
+      post(vm_openstack_url, gen_request(:shelve))
 
       expect_single_action_result(:success => true, :message => 'shelving', :href => api_vm_url(nil, vm_openstack.compressed_id))
     end
@@ -473,7 +473,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :shelve)
       update_raw_power_state("SUSPENDED", vm_openstack)
 
-      run_post(vm_openstack_url, gen_request(:shelve))
+      post(vm_openstack_url, gen_request(:shelve))
 
       expect_single_action_result(:success => true, :message => 'shelving', :href => api_vm_url(nil, vm_openstack.compressed_id))
     end
@@ -482,7 +482,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :shelve)
       update_raw_power_state("PAUSED", vm_openstack)
 
-      run_post(vm_openstack_url, gen_request(:shelve))
+      post(vm_openstack_url, gen_request(:shelve))
 
       expect_single_action_result(:success => true, :message => 'shelving', :href => api_vm_url(nil, vm_openstack.compressed_id))
     end
@@ -491,7 +491,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :shelve)
       update_raw_power_state("SHELVED", vm_openstack)
 
-      run_post(vm_openstack_url, gen_request(:shelve))
+      post(vm_openstack_url, gen_request(:shelve))
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved, current state has to be powered on, off, suspended or paused",
@@ -501,7 +501,7 @@ describe "Vms API" do
     it "shelves a vm" do
       api_basic_authorize action_identifier(:vms, :shelve)
 
-      run_post(vm_openstack_url, gen_request(:shelve))
+      post(vm_openstack_url, gen_request(:shelve))
 
       expect_single_action_result(:success => true, :message => "shelving", :href => api_vm_url(nil, vm_openstack.compressed_id), :task => true)
     end
@@ -509,7 +509,7 @@ describe "Vms API" do
     it "shelve for a VMWare vm is not supported" do
       api_basic_authorize action_identifier(:vms, :shelve)
 
-      run_post(vm_url, gen_request(:shelve))
+      post(vm_url, gen_request(:shelve))
 
       expect_single_action_result(:success => false,
                                   :message => "Shelve Operation is not available for Vmware VM.",
@@ -520,7 +520,7 @@ describe "Vms API" do
     it "shelves multiple vms" do
       api_basic_authorize action_identifier(:vms, :shelve)
 
-      run_post(api_vms_url, gen_request(:shelve, nil, vm_openstack1_url, vm_openstack2_url))
+      post(api_vms_url, gen_request(:shelve, nil, vm_openstack1_url, vm_openstack2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm_openstack1.compressed_id), api_vm_url(nil, vm_openstack2.compressed_id)])
@@ -531,7 +531,7 @@ describe "Vms API" do
     it "shelve_offloads an invalid vm" do
       api_basic_authorize action_identifier(:vms, :shelve_offload)
 
-      run_post(invalid_vm_url, gen_request(:shelve_offload))
+      post(invalid_vm_url, gen_request(:shelve_offload))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -539,7 +539,7 @@ describe "Vms API" do
     it "shelve_offloads an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:shelve_offload))
+      post(invalid_vm_url, gen_request(:shelve_offload))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -547,7 +547,7 @@ describe "Vms API" do
     it "shelve_offloads a active vm" do
       api_basic_authorize action_identifier(:vms, :shelve_offload)
 
-      run_post(vm_openstack_url, gen_request(:shelve_offload))
+      post(vm_openstack_url, gen_request(:shelve_offload))
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved offload, current state has to be shelved",
@@ -558,7 +558,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :shelve_offload)
       update_raw_power_state("SHUTOFF", vm_openstack)
 
-      run_post(vm_openstack_url, gen_request(:shelve_offload))
+      post(vm_openstack_url, gen_request(:shelve_offload))
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved offload, current state has to be shelved",
@@ -569,7 +569,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :shelve_offload)
       update_raw_power_state("SUSPENDED", vm_openstack)
 
-      run_post(vm_openstack_url, gen_request(:shelve_offload))
+      post(vm_openstack_url, gen_request(:shelve_offload))
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved offload, current state has to be shelved",
@@ -580,7 +580,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :shelve_offload)
       update_raw_power_state("PAUSED", vm_openstack)
 
-      run_post(vm_openstack_url, gen_request(:shelve_offload))
+      post(vm_openstack_url, gen_request(:shelve_offload))
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved offload, current state has to be shelved",
@@ -591,7 +591,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :shelve_offload)
       update_raw_power_state("SHELVED_OFFLOADED", vm_openstack)
 
-      run_post(vm_openstack_url, gen_request(:shelve_offload))
+      post(vm_openstack_url, gen_request(:shelve_offload))
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved offload, current state has to be shelved",
@@ -602,7 +602,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :shelve_offload)
       update_raw_power_state("SHELVED", vm_openstack)
 
-      run_post(vm_openstack_url, gen_request(:shelve_offload))
+      post(vm_openstack_url, gen_request(:shelve_offload))
 
       expect_single_action_result(:success => true,
                                   :message => "shelve-offloading",
@@ -612,7 +612,7 @@ describe "Vms API" do
     it "shelve_offload for a VMWare vm is not supported" do
       api_basic_authorize action_identifier(:vms, :shelve_offload)
 
-      run_post(vm_url, gen_request(:shelve_offload))
+      post(vm_url, gen_request(:shelve_offload))
 
       expect_single_action_result(:success => false,
                                   :message => "Shelve Offload Operation is not available for Vmware VM.",
@@ -626,7 +626,7 @@ describe "Vms API" do
       update_raw_power_state("SHELVED", vm_openstack1)
       update_raw_power_state("SHELVED", vm_openstack2)
 
-      run_post(api_vms_url, gen_request(:shelve_offload, nil, vm_openstack1_url, vm_openstack2_url))
+      post(api_vms_url, gen_request(:shelve_offload, nil, vm_openstack1_url, vm_openstack2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm_openstack1.compressed_id), api_vm_url(nil, vm_openstack2.compressed_id)])
@@ -637,7 +637,7 @@ describe "Vms API" do
     it "deletes an invalid vm" do
       api_basic_authorize action_identifier(:vms, :delete)
 
-      run_post(invalid_vm_url, gen_request(:delete))
+      post(invalid_vm_url, gen_request(:delete))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -645,7 +645,7 @@ describe "Vms API" do
     it "deletes a vm via a resource POST without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:delete))
+      post(invalid_vm_url, gen_request(:delete))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -653,7 +653,7 @@ describe "Vms API" do
     it "deletes a vm via a resource DELETE without appropriate role" do
       api_basic_authorize
 
-      run_delete(invalid_vm_url)
+      delete(invalid_vm_url)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -661,7 +661,7 @@ describe "Vms API" do
     it "deletes a vm via a resource POST" do
       api_basic_authorize action_identifier(:vms, :delete)
 
-      run_post(vm_url, gen_request(:delete))
+      post(vm_url, gen_request(:delete))
 
       expect_single_action_result(:success => true, :message => "deleting", :href => api_vm_url(nil, vm.compressed_id), :task => true)
     end
@@ -669,7 +669,7 @@ describe "Vms API" do
     it "deletes a vm via a resource DELETE" do
       api_basic_authorize action_identifier(:vms, :delete)
 
-      run_delete(vm_url)
+      delete(vm_url)
 
       expect(response).to have_http_status(:no_content)
     end
@@ -677,7 +677,7 @@ describe "Vms API" do
     it "deletes multiple vms" do
       api_basic_authorize action_identifier(:vms, :delete)
 
-      run_post(api_vms_url, gen_request(:delete, nil, vm1_url, vm2_url))
+      post(api_vms_url, gen_request(:delete, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
     end
@@ -687,7 +687,7 @@ describe "Vms API" do
     it "set_owner to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :set_owner)
 
-      run_post(invalid_vm_url, gen_request(:set_owner, "owner" => "admin"))
+      post(invalid_vm_url, gen_request(:set_owner, "owner" => "admin"))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -695,7 +695,7 @@ describe "Vms API" do
     it "set_owner without appropriate action role" do
       api_basic_authorize
 
-      run_post(vm_url, gen_request(:set_owner, "owner" => "admin"))
+      post(vm_url, gen_request(:set_owner, "owner" => "admin"))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -703,7 +703,7 @@ describe "Vms API" do
     it "set_owner with missing owner" do
       api_basic_authorize action_identifier(:vms, :set_owner)
 
-      run_post(vm_url, gen_request(:set_owner))
+      post(vm_url, gen_request(:set_owner))
 
       expect_bad_request("Must specify an owner")
     end
@@ -711,7 +711,7 @@ describe "Vms API" do
     it "set_owner with invalid owner" do
       api_basic_authorize action_identifier(:vms, :set_owner)
 
-      run_post(vm_url, gen_request(:set_owner, "owner" => "bad_user"))
+      post(vm_url, gen_request(:set_owner, "owner" => "bad_user"))
 
       expect_single_action_result(:success => false, :message => /.*/, :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -719,7 +719,7 @@ describe "Vms API" do
     it "set_owner to a vm" do
       api_basic_authorize action_identifier(:vms, :set_owner)
 
-      run_post(vm_url, gen_request(:set_owner, "owner" => api_config(:user)))
+      post(vm_url, gen_request(:set_owner, "owner" => api_config(:user)))
 
       expect_single_action_result(:success => true, :message => "setting owner", :href => api_vm_url(nil, vm.compressed_id))
       expect(vm.reload.evm_owner).to eq(@user)
@@ -728,7 +728,7 @@ describe "Vms API" do
     it "set_owner to multiple vms" do
       api_basic_authorize action_identifier(:vms, :set_owner)
 
-      run_post(api_vms_url, gen_request(:set_owner, {"owner" => api_config(:user)}, vm1_url, vm2_url))
+      post(api_vms_url, gen_request(:set_owner, {"owner" => api_config(:user)}, vm1_url, vm2_url))
 
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
@@ -746,7 +746,7 @@ describe "Vms API" do
     it "getting custom_attributes from a vm with no custom_attributes" do
       api_basic_authorize
 
-      run_get(api_vm_custom_attributes_url(nil, vm))
+      get(api_vm_custom_attributes_url(nil, vm))
 
       expect_empty_query_result(:custom_attributes)
     end
@@ -755,7 +755,7 @@ describe "Vms API" do
       api_basic_authorize
       vm.custom_attributes = [ca1, ca2]
 
-      run_get api_vm_custom_attributes_url(nil, vm)
+      get api_vm_custom_attributes_url(nil, vm)
 
       expect_query_result(:custom_attributes, 2)
       expect_result_resources_to_include_hrefs("resources",
@@ -767,7 +767,7 @@ describe "Vms API" do
       api_basic_authorize
       vm.custom_attributes = [ca1, ca2]
 
-      run_get api_vm_custom_attributes_url(nil, vm), :expand => "resources"
+      get api_vm_custom_attributes_url(nil, vm), :expand => "resources"
 
       expect_query_result(:custom_attributes, 2)
       expect_result_resources_to_include_data("resources", "name" => %w(name1 name2))
@@ -777,7 +777,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
       vm.custom_attributes = [ca1, ca2]
 
-      run_get vm_url, :expand => "custom_attributes"
+      get vm_url, :expand => "custom_attributes"
 
       expect_single_resource_query("guid" => vm_guid)
       expect_result_resources_to_include_data("custom_attributes", "name" => %w(name1 name2))
@@ -787,7 +787,7 @@ describe "Vms API" do
       api_basic_authorize
       vm.custom_attributes = [ca1]
 
-      run_post(api_vm_custom_attributes_url(nil, vm), gen_request(:delete, nil, vm_url))
+      post(api_vm_custom_attributes_url(nil, vm), gen_request(:delete, nil, vm_url))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -796,7 +796,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :edit)
       vm.custom_attributes = [ca1]
 
-      run_post(api_vm_custom_attributes_url(nil, vm), gen_request(:delete, nil, ca1_url))
+      post(api_vm_custom_attributes_url(nil, vm), gen_request(:delete, nil, ca1_url))
 
       expect(response).to have_http_status(:ok)
       expect(vm.reload.custom_attributes).to be_empty
@@ -805,7 +805,7 @@ describe "Vms API" do
     it "add custom attribute to a vm without a name" do
       api_basic_authorize action_identifier(:vms, :edit)
 
-      run_post(api_vm_custom_attributes_url(nil, vm), gen_request(:add, "value" => "value1"))
+      post(api_vm_custom_attributes_url(nil, vm), gen_request(:add, "value" => "value1"))
 
       expect_bad_request("Must specify a name")
     end
@@ -813,7 +813,7 @@ describe "Vms API" do
     it "add custom attributes to a vm" do
       api_basic_authorize action_identifier(:vms, :edit)
 
-      run_post(api_vm_custom_attributes_url(nil, vm), gen_request(:add, [{"name" => "name1", "value" => "value1"},
+      post(api_vm_custom_attributes_url(nil, vm), gen_request(:add, [{"name" => "name1", "value" => "value1"},
                                              {"name" => "name2", "value" => "value2"}]))
 
       expect(response).to have_http_status(:ok)
@@ -826,7 +826,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :edit)
       vm.custom_attributes = [ca1]
 
-      run_post(api_vm_custom_attributes_url(nil, vm), gen_request(:edit, "name" => "name1", "value" => "value one"))
+      post(api_vm_custom_attributes_url(nil, vm), gen_request(:edit, "name" => "name1", "value" => "value one"))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_data("results", "value" => ["value one"])
@@ -837,7 +837,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :edit)
       vm.custom_attributes = [ca1]
 
-      run_post(api_vm_custom_attributes_url(nil, vm), gen_request(:edit, "href" => ca1_url, "value" => "new value1"))
+      post(api_vm_custom_attributes_url(nil, vm), gen_request(:edit, "href" => ca1_url, "value" => "new value1"))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_data("results", "value" => ["new value1"])
@@ -848,7 +848,7 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :edit)
       vm.custom_attributes = [ca1, ca2]
 
-      run_post(api_vm_custom_attributes_url(nil, vm), gen_request(:edit, [{"name" => "name1", "value" => "new value1"},
+      post(api_vm_custom_attributes_url(nil, vm), gen_request(:edit, [{"name" => "name1", "value" => "new value1"},
                                               {"name" => "name2", "value" => "new value2"}]))
 
       expect(response).to have_http_status(:ok)
@@ -867,7 +867,7 @@ describe "Vms API" do
     it "add_lifecycle_event to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :add_lifecycle_event)
 
-      run_post(invalid_vm_url, gen_request(:add_lifecycle_event, :event => "event 1"))
+      post(invalid_vm_url, gen_request(:add_lifecycle_event, :event => "event 1"))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -875,7 +875,7 @@ describe "Vms API" do
     it "add_lifecycle_event without appropriate action role" do
       api_basic_authorize
 
-      run_post(vm_url, gen_request(:add_lifecycle_event, :event => "event 1"))
+      post(vm_url, gen_request(:add_lifecycle_event, :event => "event 1"))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -883,7 +883,7 @@ describe "Vms API" do
     it "add_lifecycle_event to a vm" do
       api_basic_authorize action_identifier(:vms, :add_lifecycle_event)
 
-      run_post(vm_url, gen_request(:add_lifecycle_event, events[0]))
+      post(vm_url, gen_request(:add_lifecycle_event, events[0]))
 
       expect_single_action_result(:success => true, :message => /adding lifecycle event/i, :href => api_vm_url(nil, vm.compressed_id))
       expect(vm.lifecycle_events.size).to eq(1)
@@ -893,7 +893,7 @@ describe "Vms API" do
     it "add_lifecycle_event to multiple vms" do
       api_basic_authorize action_identifier(:vms, :add_lifecycle_event)
 
-      run_post(api_vms_url, gen_request(:add_lifecycle_event,
+      post(api_vms_url, gen_request(:add_lifecycle_event,
                                     events.collect { |e| {:href => vm_url}.merge(e) }))
 
       expect_multiple_action_result(3)
@@ -906,7 +906,7 @@ describe "Vms API" do
     it "scans an invalid vm" do
       api_basic_authorize action_identifier(:vms, :scan)
 
-      run_post(invalid_vm_url, gen_request(:scan))
+      post(invalid_vm_url, gen_request(:scan))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -914,7 +914,7 @@ describe "Vms API" do
     it "scans an invalid Vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:scan))
+      post(invalid_vm_url, gen_request(:scan))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -922,7 +922,7 @@ describe "Vms API" do
     it "scan a Vm" do
       api_basic_authorize action_identifier(:vms, :scan)
 
-      run_post(vm_url, gen_request(:scan))
+      post(vm_url, gen_request(:scan))
 
       expect_single_action_result(:success => true, :message => "scanning", :href => api_vm_url(nil, vm.compressed_id), :task => true)
     end
@@ -930,7 +930,7 @@ describe "Vms API" do
     it "scan multiple Vms" do
       api_basic_authorize action_identifier(:vms, :scan)
 
-      run_post(api_vms_url, gen_request(:scan, nil, vm1_url, vm2_url))
+      post(api_vms_url, gen_request(:scan, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
@@ -941,7 +941,7 @@ describe "Vms API" do
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :add_event)
 
-      run_post(invalid_vm_url, gen_request(:add_event))
+      post(invalid_vm_url, gen_request(:add_event))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -949,7 +949,7 @@ describe "Vms API" do
     it "to an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:add_event))
+      post(invalid_vm_url, gen_request(:add_event))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -957,7 +957,7 @@ describe "Vms API" do
     it "to a single Vm" do
       api_basic_authorize collection_action_identifier(:vms, :add_event)
 
-      run_post(vm_url, gen_request(:add_event, :event_type => "special", :event_message => "message"))
+      post(vm_url, gen_request(:add_event, :event_type => "special", :event_message => "message"))
 
       expect_single_action_result(:success => true, :message => /adding event/i, :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -965,7 +965,7 @@ describe "Vms API" do
     it "to multiple Vms" do
       api_basic_authorize collection_action_identifier(:vms, :add_event)
 
-      run_post(api_vms_url,
+      post(api_vms_url,
                gen_request(:add_event,
                            [{"href" => vm1_url, "event_type" => "etype1", "event_message" => "emsg1"},
                             {"href" => vm2_url, "event_type" => "etype2", "event_message" => "emsg2"}]))
@@ -993,7 +993,7 @@ describe "Vms API" do
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :retire)
 
-      run_post(invalid_vm_url, gen_request(:retire))
+      post(invalid_vm_url, gen_request(:retire))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -1001,7 +1001,7 @@ describe "Vms API" do
     it "to an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:retire))
+      post(invalid_vm_url, gen_request(:retire))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -1009,7 +1009,7 @@ describe "Vms API" do
     it "to a single Vm" do
       api_basic_authorize action_identifier(:vms, :retire)
 
-      run_post(vm_url, gen_request(:retire))
+      post(vm_url, gen_request(:retire))
 
       expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -1017,7 +1017,7 @@ describe "Vms API" do
     it "to multiple Vms" do
       api_basic_authorize collection_action_identifier(:vms, :retire)
 
-      run_post(api_vms_url, gen_request(:retire, [{"href" => vm1_url}, {"href" => vm2_url}]))
+      post(api_vms_url, gen_request(:retire, [{"href" => vm1_url}, {"href" => vm2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
@@ -1040,7 +1040,7 @@ describe "Vms API" do
     it "in the future" do
       api_basic_authorize action_identifier(:vms, :retire)
       date = 2.weeks.from_now
-      run_post(vm_url, gen_request(:retire, :date => date.iso8601))
+      post(vm_url, gen_request(:retire, :date => date.iso8601))
 
       expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -1050,7 +1050,7 @@ describe "Vms API" do
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :reset)
 
-      run_post(invalid_vm_url, gen_request(:reset))
+      post(invalid_vm_url, gen_request(:reset))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -1058,7 +1058,7 @@ describe "Vms API" do
     it "to an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:reset))
+      post(invalid_vm_url, gen_request(:reset))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -1066,7 +1066,7 @@ describe "Vms API" do
     it "to a single Vm" do
       api_basic_authorize action_identifier(:vms, :reset)
 
-      run_post(vm_url, gen_request(:reset))
+      post(vm_url, gen_request(:reset))
 
       expect_single_action_result(:success => true, :message => /#{vm.id}.* resetting/i, :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -1074,7 +1074,7 @@ describe "Vms API" do
     it "to multiple Vms" do
       api_basic_authorize collection_action_identifier(:vms, :reset)
 
-      run_post(api_vms_url, gen_request(:reset, [{"href" => vm1_url}, {"href" => vm2_url}]))
+      post(api_vms_url, gen_request(:reset, [{"href" => vm1_url}, {"href" => vm2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
@@ -1099,7 +1099,7 @@ describe "Vms API" do
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :shutdown_guest)
 
-      run_post(invalid_vm_url, gen_request(:shutdown_guest))
+      post(invalid_vm_url, gen_request(:shutdown_guest))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -1107,7 +1107,7 @@ describe "Vms API" do
     it "to an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:shutdown_guest))
+      post(invalid_vm_url, gen_request(:shutdown_guest))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -1115,7 +1115,7 @@ describe "Vms API" do
     it "to a single Vm" do
       api_basic_authorize action_identifier(:vms, :shutdown_guest)
 
-      run_post(vm_url, gen_request(:shutdown_guest))
+      post(vm_url, gen_request(:shutdown_guest))
 
       expect_single_action_result(:success => true, :message => /#{vm.id}.* shutting down/i, :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -1123,7 +1123,7 @@ describe "Vms API" do
     it "to multiple Vms" do
       api_basic_authorize collection_action_identifier(:vms, :shutdown_guest)
 
-      run_post(api_vms_url, gen_request(:shutdown_guest, [{"href" => vm1_url}, {"href" => vm2_url}]))
+      post(api_vms_url, gen_request(:shutdown_guest, [{"href" => vm1_url}, {"href" => vm2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
@@ -1148,7 +1148,7 @@ describe "Vms API" do
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :refresh)
 
-      run_post(invalid_vm_url, gen_request(:refresh))
+      post(invalid_vm_url, gen_request(:refresh))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -1156,7 +1156,7 @@ describe "Vms API" do
     it "to an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:refresh))
+      post(invalid_vm_url, gen_request(:refresh))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -1164,7 +1164,7 @@ describe "Vms API" do
     it "to a single Vm" do
       api_basic_authorize action_identifier(:vms, :refresh)
 
-      run_post(vm_url, gen_request(:refresh))
+      post(vm_url, gen_request(:refresh))
 
       expect_single_action_result(:success => true, :message => /#{vm.id}.* refreshing/i, :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -1172,7 +1172,7 @@ describe "Vms API" do
     it "to multiple Vms" do
       api_basic_authorize collection_action_identifier(:vms, :refresh)
 
-      run_post(api_vms_url, gen_request(:refresh, [{"href" => vm1_url}, {"href" => vm2_url}]))
+      post(api_vms_url, gen_request(:refresh, [{"href" => vm1_url}, {"href" => vm2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
@@ -1197,7 +1197,7 @@ describe "Vms API" do
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :reboot_guest)
 
-      run_post(invalid_vm_url, gen_request(:reboot_guest))
+      post(invalid_vm_url, gen_request(:reboot_guest))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -1205,7 +1205,7 @@ describe "Vms API" do
     it "to an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:reboot_guest))
+      post(invalid_vm_url, gen_request(:reboot_guest))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -1213,7 +1213,7 @@ describe "Vms API" do
     it "to a single Vm" do
       api_basic_authorize action_identifier(:vms, :reboot_guest)
 
-      run_post(vm_url, gen_request(:reboot_guest))
+      post(vm_url, gen_request(:reboot_guest))
 
       expect_single_action_result(:success => true, :message => /#{vm.id}.* rebooting/i, :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -1221,7 +1221,7 @@ describe "Vms API" do
     it "to multiple Vms" do
       api_basic_authorize collection_action_identifier(:vms, :reboot_guest)
 
-      run_post(api_vms_url, gen_request(:reboot_guest, [{"href" => vm1_url}, {"href" => vm2_url}]))
+      post(api_vms_url, gen_request(:reboot_guest, [{"href" => vm1_url}, {"href" => vm2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
@@ -1246,7 +1246,7 @@ describe "Vms API" do
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :request_console)
 
-      run_post(invalid_vm_url, gen_request(:request_console))
+      post(invalid_vm_url, gen_request(:request_console))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -1254,7 +1254,7 @@ describe "Vms API" do
     it "to an invalid vm without appropriate role" do
       api_basic_authorize
 
-      run_post(invalid_vm_url, gen_request(:request_console))
+      post(invalid_vm_url, gen_request(:request_console))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -1262,7 +1262,7 @@ describe "Vms API" do
     it "to a single Vm" do
       api_basic_authorize action_identifier(:vms, :request_console)
 
-      run_post(vm_url, gen_request(:request_console))
+      post(vm_url, gen_request(:request_console))
 
       expect_single_action_result(:success => true, :message => /#{vm.id}.* requesting console/i, :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -1290,7 +1290,7 @@ describe "Vms API" do
     it "query all tags of a Vm with no tags" do
       api_basic_authorize
 
-      run_get api_vm_tags_url(nil, vm1)
+      get api_vm_tags_url(nil, vm1)
 
       expect_empty_query_result(:tags)
     end
@@ -1298,7 +1298,7 @@ describe "Vms API" do
     it "query all tags of a Vm" do
       api_basic_authorize
 
-      run_get api_vm_tags_url(nil, vm2)
+      get api_vm_tags_url(nil, vm2)
 
       expect_query_result(:tags, 2, Tag.count)
     end
@@ -1306,7 +1306,7 @@ describe "Vms API" do
     it "query all tags of a Vm and verify tag category and names" do
       api_basic_authorize
 
-      run_get api_vm_tags_url(nil, vm2), :expand => "resources"
+      get api_vm_tags_url(nil, vm2), :expand => "resources"
 
       expect_query_result(:tags, 2, Tag.count)
       expect_result_resources_to_include_data("resources", "name" => [tag1[:path], tag2[:path]])
@@ -1318,7 +1318,7 @@ describe "Vms API" do
       vm1
       vm2
 
-      run_get api_vms_url, :expand => "resources", :filter => ["tags.name='#{tag2[:path]}'"]
+      get api_vms_url, :expand => "resources", :filter => ["tags.name='#{tag2[:path]}'"]
 
       expect_query_result(:vms, 1, 2)
       expect_result_resources_to_include_hrefs("resources", [api_vm_url(nil, vm2.compressed_id)])
@@ -1327,7 +1327,7 @@ describe "Vms API" do
     it "assigns a tag to a Vm without appropriate role" do
       api_basic_authorize
 
-      run_post(api_vm_tags_url(nil, vm1), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      post(api_vm_tags_url(nil, vm1), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -1335,7 +1335,7 @@ describe "Vms API" do
     it "assigns a tag to a Vm" do
       api_basic_authorize subcollection_action_identifier(:vms, :tags, :assign)
 
-      run_post(api_vm_tags_url(nil, vm1), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      post(api_vm_tags_url(nil, vm1), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect_tagging_result(
         [{:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
@@ -1345,7 +1345,7 @@ describe "Vms API" do
     it "assigns a tag to a Vm by name path" do
       api_basic_authorize subcollection_action_identifier(:vms, :tags, :assign)
 
-      run_post(api_vm_tags_url(nil, vm1), gen_request(:assign, :name => tag1[:path]))
+      post(api_vm_tags_url(nil, vm1), gen_request(:assign, :name => tag1[:path]))
 
       expect_tagging_result(
         [{:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
@@ -1355,7 +1355,7 @@ describe "Vms API" do
     it "assigns a tag to a Vm by href" do
       api_basic_authorize subcollection_action_identifier(:vms, :tags, :assign)
 
-      run_post(api_vm_tags_url(nil, vm1), gen_request(:assign, :href => api_tag_url(nil, Tag.find_by(:name => tag1[:path]))))
+      post(api_vm_tags_url(nil, vm1), gen_request(:assign, :href => api_tag_url(nil, Tag.find_by(:name => tag1[:path]))))
 
       expect_tagging_result(
         [{:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
@@ -1365,7 +1365,7 @@ describe "Vms API" do
     it "assigns an invalid tag by href to a Vm" do
       api_basic_authorize subcollection_action_identifier(:vms, :tags, :assign)
 
-      run_post(api_vm_tags_url(nil, vm1), gen_request(:assign, :href => invalid_tag_url))
+      post(api_vm_tags_url(nil, vm1), gen_request(:assign, :href => invalid_tag_url))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -1373,7 +1373,7 @@ describe "Vms API" do
     it "assigns an invalid tag to a Vm" do
       api_basic_authorize subcollection_action_identifier(:vms, :tags, :assign)
 
-      run_post(api_vm_tags_url(nil, vm1), gen_request(:assign, :name => "/managed/bad_category/bad_name"))
+      post(api_vm_tags_url(nil, vm1), gen_request(:assign, :name => "/managed/bad_category/bad_name"))
 
       expect_tagging_result(
         [{:success => false, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => "bad_category", :tag_name => "bad_name"}]
@@ -1383,7 +1383,7 @@ describe "Vms API" do
     it "assigns multiple tags to a Vm" do
       api_basic_authorize subcollection_action_identifier(:vms, :tags, :assign)
 
-      run_post(api_vm_tags_url(nil, vm1), gen_request(:assign, [{:name => tag1[:path]}, {:name => tag2[:path]}]))
+      post(api_vm_tags_url(nil, vm1), gen_request(:assign, [{:name => tag1[:path]}, {:name => tag2[:path]}]))
 
       expect_tagging_result(
         [{:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]},
@@ -1395,7 +1395,7 @@ describe "Vms API" do
       api_basic_authorize subcollection_action_identifier(:vms, :tags, :assign)
 
       tag = Tag.find_by(:name => tag2[:path])
-      run_post(api_vm_tags_url(nil, vm1), gen_request(:assign, [{:name => tag1[:path]}, {:href => api_tag_url(nil, tag)}]))
+      post(api_vm_tags_url(nil, vm1), gen_request(:assign, [{:name => tag1[:path]}, {:href => api_tag_url(nil, tag)}]))
 
       expect_tagging_result(
         [{:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]},
@@ -1406,7 +1406,7 @@ describe "Vms API" do
     it "unassigns a tag from a Vm without appropriate role" do
       api_basic_authorize
 
-      run_post(api_vm_tags_url(nil, vm1), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+      post(api_vm_tags_url(nil, vm1), gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -1414,7 +1414,7 @@ describe "Vms API" do
     it "unassigns a tag from a Vm" do
       api_basic_authorize subcollection_action_identifier(:vms, :tags, :unassign)
 
-      run_post(api_vm_tags_url(nil, vm2), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+      post(api_vm_tags_url(nil, vm2), gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
       expect_tagging_result(
         [{:success => true, :href => api_vm_url(nil, vm2.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
@@ -1427,7 +1427,7 @@ describe "Vms API" do
       api_basic_authorize subcollection_action_identifier(:vms, :tags, :unassign)
 
       tag = Tag.find_by(:name => tag2[:path])
-      run_post(api_vm_tags_url(nil, vm2), gen_request(:unassign, [{:name => tag1[:path]}, {:href => api_tag_url(nil, tag)}]))
+      post(api_vm_tags_url(nil, vm2), gen_request(:unassign, [{:name => tag1[:path]}, {:href => api_tag_url(nil, tag)}]))
 
       expect_tagging_result(
         [{:success => true, :href => api_vm_url(nil, vm2.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]},
@@ -1446,7 +1446,7 @@ describe "Vms API" do
       )
       api_basic_authorize(action_identifier(:vms, :read, :resource_actions, :get))
 
-      run_get(api_vm_url(nil, vm))
+      get(api_vm_url(nil, vm))
 
       expected = {
         "actions" => a_collection_including(
@@ -1465,7 +1465,7 @@ describe "Vms API" do
       )
       api_basic_authorize(action_identifier(:vms, :read, :resource_actions, :get))
 
-      run_get(api_vm_url(nil, vm), :attributes => "custom_actions")
+      get(api_vm_url(nil, vm), :attributes => "custom_actions")
 
       expected = {
         "custom_actions" => a_hash_including(
@@ -1490,7 +1490,7 @@ describe "Vms API" do
       )
       api_basic_authorize(action_identifier(:vms, :read, :resource_actions, :get))
 
-      run_get(api_vm_url(nil, vm), :attributes => "custom_action_buttons")
+      get(api_vm_url(nil, vm), :attributes => "custom_action_buttons")
 
       expected = {
         "custom_action_buttons" => a_collection_containing_exactly(
@@ -1515,7 +1515,7 @@ describe "Vms API" do
       )
       api_basic_authorize
 
-      run_post(api_vm_url(nil, vm), :action => "test button", :button_key1 => "foo")
+      post(api_vm_url(nil, vm), :action => "test button", :button_key1 => "foo")
 
       expected = {
         "success" => true,
@@ -1533,7 +1533,7 @@ describe "Vms API" do
     it "does not allow setting an miq_server without an appropriate role" do
       api_basic_authorize
 
-      run_post(api_vm_url(nil, vm), :action => 'set_miq_server')
+      post(api_vm_url(nil, vm), :action => 'set_miq_server')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -1541,7 +1541,7 @@ describe "Vms API" do
     it "sets an miq server" do
       api_basic_authorize action_identifier(:vms, :set_miq_server)
 
-      run_post(api_vm_url(nil, vm), :action => 'set_miq_server', :miq_server => { :href => api_server_url(nil, server)})
+      post(api_vm_url(nil, vm), :action => 'set_miq_server', :miq_server => { :href => api_server_url(nil, server)})
 
       expected = {
         'success' => true,
@@ -1555,7 +1555,7 @@ describe "Vms API" do
     it "can set multiple miq servers" do
       api_basic_authorize collection_action_identifier(:vms, :set_miq_server)
 
-      run_post(api_vms_url, :action    => 'set_miq_server',
+      post(api_vms_url, :action    => 'set_miq_server',
                         :resources => [
                           { :id => vm.id, :miq_server => { :href => api_server_url(nil, server) } },
                           { :id => vm1.id, :miq_server => { :id => server2.id }}
@@ -1576,13 +1576,13 @@ describe "Vms API" do
     it "raises an error unless a valid miq_server reference is specified" do
       api_basic_authorize action_identifier(:vms, :set_miq_server)
 
-      run_post(api_vm_url(nil, vm), :action => 'set_miq_server', :miq_server => { :href => api_vm_url(nil, 1) })
+      post(api_vm_url(nil, vm), :action => 'set_miq_server', :miq_server => { :href => api_vm_url(nil, 1) })
 
       expected = { 'success' => false, 'message' => 'Failed to set miq_server - Must specify a valid miq_server href or id' }
       expect(response.parsed_body).to eq(expected)
       expect(response).to have_http_status(:ok)
 
-      run_post(api_vm_url(nil, vm), :action => 'set_miq_server', :miq_server => { :id => nil })
+      post(api_vm_url(nil, vm), :action => 'set_miq_server', :miq_server => { :id => nil })
       expect(response.parsed_body).to eq(expected)
       expect(response).to have_http_status(:ok)
     end
@@ -1591,7 +1591,7 @@ describe "Vms API" do
       vm.miq_server = server
       api_basic_authorize action_identifier(:vms, :set_miq_server)
 
-      run_post(api_vm_url(nil, vm), :action => 'set_miq_server', :miq_server => {})
+      post(api_vm_url(nil, vm), :action => 'set_miq_server', :miq_server => {})
 
       expected = {'success' => true, 'message' => "Removed miq_server for VM id:#{vm.id} name:'#{vm.name}'"}
       expect(response.parsed_body).to eq(expected)
@@ -1611,7 +1611,7 @@ describe "Vms API" do
     it 'returns the metric rollups for the vm' do
       api_basic_authorize subcollection_action_identifier(:vms, :metric_rollups, :read, :get)
 
-      run_get(url, :capture_interval => 'hourly', :start_date => Time.zone.today.to_s)
+      get(url, :capture_interval => 'hourly', :start_date => Time.zone.today.to_s)
 
       expected = {
         'count'    => 5,
@@ -1626,7 +1626,7 @@ describe "Vms API" do
     it 'will not return metric rollups without an appropriate role' do
       api_basic_authorize
 
-      run_get(url, :capture_interval => 'hourly', :start_date => Time.zone.today.to_s)
+      get(url, :capture_interval => 'hourly', :start_date => Time.zone.today.to_s)
 
       expect(response).to have_http_status(:forbidden)
     end

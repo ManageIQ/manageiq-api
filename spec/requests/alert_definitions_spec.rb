@@ -9,14 +9,14 @@
 describe "Alerts Definitions API" do
   it "forbids access to alert definitions list without an appropriate role" do
     api_basic_authorize
-    run_get(api_alert_definitions_url)
+    get(api_alert_definitions_url)
     expect(response).to have_http_status(:forbidden)
   end
 
   it "reads 2 alert definitions as a collection" do
     api_basic_authorize collection_action_identifier(:alert_definitions, :read, :get)
     alert_definitions = FactoryGirl.create_list(:miq_alert, 2)
-    run_get(api_alert_definitions_url)
+    get(api_alert_definitions_url)
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
       "name"      => "alert_definitions",
@@ -36,7 +36,7 @@ describe "Alerts Definitions API" do
   it "forbids access to an alert definition resource without an appropriate role" do
     api_basic_authorize
     alert_definition = FactoryGirl.create(:miq_alert)
-    run_get(api_alert_definition_url(nil, alert_definition))
+    get(api_alert_definition_url(nil, alert_definition))
     expect(response).to have_http_status(:forbidden)
   end
 
@@ -46,7 +46,7 @@ describe "Alerts Definitions API" do
       :miq_alert,
       :miq_expression => MiqExpression.new("=" => {"field" => "Vm-name", "value" => "foo"})
     )
-    run_get(api_alert_definition_url(nil, alert_definition))
+    get(api_alert_definition_url(nil, alert_definition))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
       "href"        => api_alert_definition_url(nil, alert_definition.compressed_id),
@@ -63,7 +63,7 @@ describe "Alerts Definitions API" do
       "description" => "Test Alert Definition",
       "db"          => "ContainerNode"
     }
-    run_post(api_alert_definitions_url, alert_definition)
+    post(api_alert_definitions_url, alert_definition)
     expect(response).to have_http_status(:forbidden)
   end
 
@@ -76,7 +76,7 @@ describe "Alerts Definitions API" do
       "enabled"     => true
     }
     api_basic_authorize collection_action_identifier(:alert_definitions, :create)
-    run_post(api_alert_definitions_url, sample_alert_definition)
+    post(api_alert_definitions_url, sample_alert_definition)
     expect(response).to have_http_status(:ok)
     alert_definition = MiqAlert.find(ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"]))
     expect(alert_definition).to be_truthy
@@ -94,7 +94,7 @@ describe "Alerts Definitions API" do
   it "deletes an alert definition via POST" do
     api_basic_authorize action_identifier(:alert_definitions, :delete, :resource_actions, :post)
     alert_definition = FactoryGirl.create(:miq_alert)
-    run_post(api_alert_definition_url(nil, alert_definition), gen_request(:delete))
+    post(api_alert_definition_url(nil, alert_definition), gen_request(:delete))
     expect(response).to have_http_status(:ok)
     expect_single_action_result(:success => true,
                                 :message => "alert_definitions id: #{alert_definition.id} deleting",
@@ -104,7 +104,7 @@ describe "Alerts Definitions API" do
   it "deletes an alert definition via DELETE" do
     api_basic_authorize action_identifier(:alert_definitions, :delete, :resource_actions, :delete)
     alert_definition = FactoryGirl.create(:miq_alert)
-    run_delete(api_alert_definition_url(nil, alert_definition))
+    delete(api_alert_definition_url(nil, alert_definition))
     expect(response).to have_http_status(:no_content)
     expect(MiqAlert.exists?(alert_definition.id)).to be_falsey
   end
@@ -112,7 +112,7 @@ describe "Alerts Definitions API" do
   it "deletes alert definitions" do
     api_basic_authorize collection_action_identifier(:alert_definitions, :delete)
     alert_definitions = FactoryGirl.create_list(:miq_alert, 2)
-    run_post(api_alert_definitions_url, gen_request(:delete, [{"id" => alert_definitions.first.id},
+    post(api_alert_definitions_url, gen_request(:delete, [{"id" => alert_definitions.first.id},
                                                           {"id" => alert_definitions.second.id}]))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body["results"].count).to eq(2)
@@ -126,7 +126,7 @@ describe "Alerts Definitions API" do
       :options    => { :notifications => {:delay_next_evaluation => 0, :evm_event => {} } }
     )
 
-    run_post(
+    post(
       api_alert_definition_url(nil, alert_definition),
       :action  => "edit",
       :options => { :notifications => {:delay_next_evaluation => 60, :evm_event => {} } }
@@ -152,7 +152,7 @@ describe "Alerts Definitions API" do
   it "edits alert definitions" do
     api_basic_authorize collection_action_identifier(:alert_definitions, :edit)
     alert_definitions = FactoryGirl.create_list(:miq_alert, 2)
-    run_post(api_alert_definitions_url, gen_request(:edit, [{"id"          => alert_definitions.first.id,
+    post(api_alert_definitions_url, gen_request(:edit, [{"id"          => alert_definitions.first.id,
                                                          "description" => "Updated Test Alert 1"},
                                                         {"id"          => alert_definitions.second.id,
                                                          "description" => "Updated Test Alert 2"}]))
@@ -167,7 +167,7 @@ end
 describe "Alerts Definition Profiles API" do
   it "forbids access to alert definition profiles list without an appropriate role" do
     api_basic_authorize
-    run_get(api_alert_definition_profiles_url)
+    get(api_alert_definition_profiles_url)
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -175,7 +175,7 @@ describe "Alerts Definition Profiles API" do
   it "forbids access to an alert definition profile without an appropriate role" do
     api_basic_authorize
     alert_definition_profile = FactoryGirl.create(:miq_alert_set)
-    run_get(api_alert_definition_profile_url(nil, alert_definition_profile))
+    get(api_alert_definition_profile_url(nil, alert_definition_profile))
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -183,7 +183,7 @@ describe "Alerts Definition Profiles API" do
   it "reads 2 alert definition profiles as a collection" do
     api_basic_authorize collection_action_identifier(:alert_definition_profiles, :read, :get)
     alert_definition_profiles = FactoryGirl.create_list(:miq_alert_set, 2)
-    run_get(api_alert_definition_profiles_url)
+    get(api_alert_definition_profiles_url)
 
     expect(response).to have_http_status(:ok)
     expect_query_result(:alert_definition_profiles, 2, 2)
@@ -197,7 +197,7 @@ describe "Alerts Definition Profiles API" do
   it "reads an alert definition profile as a resource" do
     api_basic_authorize action_identifier(:alert_definition_profiles, :read, :resource_actions, :get)
     alert_definition_profile = FactoryGirl.create(:miq_alert_set)
-    run_get(api_alert_definition_profile_url(nil, alert_definition_profile))
+    get(api_alert_definition_profile_url(nil, alert_definition_profile))
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
@@ -212,7 +212,7 @@ describe "Alerts Definition Profiles API" do
 
     alert_definitions = FactoryGirl.create_list(:miq_alert, 2)
     alert_definition_profile = FactoryGirl.create(:miq_alert_set, :alerts => alert_definitions)
-    run_get(api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile), :expand => "resources")
+    get(api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile), :expand => "resources")
 
     expect(response).to have_http_status(:ok)
     expect_result_resources_to_include_hrefs(
@@ -227,7 +227,7 @@ describe "Alerts Definition Profiles API" do
 
     alert_definition = FactoryGirl.create(:miq_alert)
     alert_definition_profile = FactoryGirl.create(:miq_alert_set, :alerts => [alert_definition])
-    run_get(api_alert_definition_profile_url(nil, alert_definition_profile), :expand => "alert_definitions")
+    get(api_alert_definition_profile_url(nil, alert_definition_profile), :expand => "alert_definitions")
 
     expect(response).to have_http_status(:ok)
     expect_single_resource_query(
@@ -245,7 +245,7 @@ describe "Alerts Definition Profiles API" do
       "mode"        => "ContainerNode",
     }
     api_basic_authorize collection_action_identifier(:alert_definition_profiles, :create)
-    run_post(api_alert_definition_profiles_url, sample_alert_definition_profile)
+    post(api_alert_definition_profiles_url, sample_alert_definition_profile)
 
     expect(response).to have_http_status(:ok)
     id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
@@ -260,7 +260,7 @@ describe "Alerts Definition Profiles API" do
   it "deletes an alert definition profile via POST" do
     api_basic_authorize action_identifier(:alert_definition_profiles, :delete, :resource_actions, :post)
     alert_definition_profile = FactoryGirl.create(:miq_alert_set)
-    run_post(api_alert_definition_profile_url(nil, alert_definition_profile), gen_request(:delete))
+    post(api_alert_definition_profile_url(nil, alert_definition_profile), gen_request(:delete))
 
     expect(response).to have_http_status(:ok)
     expect_single_action_result(:success => true,
@@ -271,7 +271,7 @@ describe "Alerts Definition Profiles API" do
   it "deletes an alert definition profile via DELETE" do
     api_basic_authorize action_identifier(:alert_definition_profiles, :delete, :resource_actions, :delete)
     alert_definition_profile = FactoryGirl.create(:miq_alert_set)
-    run_delete(api_alert_definition_profile_url(nil, alert_definition_profile))
+    delete(api_alert_definition_profile_url(nil, alert_definition_profile))
 
     expect(response).to have_http_status(:no_content)
     expect(MiqAlertSet.exists?(alert_definition_profile.id)).to be_falsey
@@ -280,7 +280,7 @@ describe "Alerts Definition Profiles API" do
   it "deletes alert definition profiles" do
     api_basic_authorize collection_action_identifier(:alert_definition_profiles, :delete)
     alert_definition_profiles = FactoryGirl.create_list(:miq_alert_set, 2)
-    run_post(api_alert_definition_profiles_url, gen_request(:delete, [{"id" => alert_definition_profiles.first.id},
+    post(api_alert_definition_profiles_url, gen_request(:delete, [{"id" => alert_definition_profiles.first.id},
                                                                   {"id" => alert_definition_profiles.second.id}]))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body["results"].count).to eq(2)
@@ -289,7 +289,7 @@ describe "Alerts Definition Profiles API" do
   it "edits alert definition profiles" do
     api_basic_authorize action_identifier(:alert_definition_profiles, :edit, :resource_actions, :post)
     alert_definition_profiles = FactoryGirl.create_list(:miq_alert_set, 2)
-    run_post(api_alert_definition_profiles_url, gen_request(:edit,
+    post(api_alert_definition_profiles_url, gen_request(:edit,
                                                         [{"id"          => alert_definition_profiles.first.id,
                                                           "description" => "Updated Test Alert Profile 1"},
                                                          {"id"          => alert_definition_profiles.second.id,

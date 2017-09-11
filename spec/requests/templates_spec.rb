@@ -5,7 +5,7 @@ RSpec.describe "Templates API" do
       template = FactoryGirl.create(:template)
 
       expect do
-        run_post(api_template_url(nil, template), :action => "delete")
+        post(api_template_url(nil, template), :action => "delete")
       end.to change(MiqTemplate, :count).by(-1)
 
       expected = {
@@ -22,7 +22,7 @@ RSpec.describe "Templates API" do
       template = FactoryGirl.create(:template)
 
       expect do
-        run_post(api_template_url(nil, template), :action => "delete")
+        post(api_template_url(nil, template), :action => "delete")
       end.not_to change(MiqTemplate, :count)
 
       expect(response).to have_http_status(:forbidden)
@@ -36,7 +36,7 @@ RSpec.describe "Templates API" do
       Classification.classify(template, "department", "finance")
       api_basic_authorize
 
-      run_get(api_template_tags_url(nil, template))
+      get(api_template_tags_url(nil, template))
 
       expect(response.parsed_body).to include("subcount" => 1)
       expect(response).to have_http_status(:ok)
@@ -47,7 +47,7 @@ RSpec.describe "Templates API" do
       FactoryGirl.create(:classification_department_with_tags)
       api_basic_authorize(subcollection_action_identifier(:templates, :tags, :assign))
 
-      run_post(api_template_tags_url(nil, template), :action => "assign", :category => "department", :name => "finance")
+      post(api_template_tags_url(nil, template), :action => "assign", :category => "department", :name => "finance")
 
       expected = {
         "results" => [
@@ -69,7 +69,7 @@ RSpec.describe "Templates API" do
       Classification.classify(template, "department", "finance")
       api_basic_authorize(subcollection_action_identifier(:templates, :tags, :unassign))
 
-      run_post(api_template_tags_url(nil, template),
+      post(api_template_tags_url(nil, template),
                :action   => "unassign",
                :category => "department",
                :name     => "finance")

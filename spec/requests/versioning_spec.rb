@@ -6,7 +6,7 @@ describe "Versioning" do
     it "test versioning query" do
       api_basic_authorize
 
-      run_get api_entrypoint_url
+      get api_entrypoint_url
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(%w(name description version versions collections))
@@ -16,7 +16,7 @@ describe "Versioning" do
       api_basic_authorize
 
       # Let's get the versions
-      run_get api_entrypoint_url
+      get api_entrypoint_url
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(%w(versions))
@@ -33,7 +33,7 @@ describe "Versioning" do
       ident = ver["href"].split("/").last
 
       # Let's try to access that version API URL
-      run_get api_entrypoint_url(ident)
+      get api_entrypoint_url(ident)
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(%w(name description version versions collections))
@@ -42,7 +42,7 @@ describe "Versioning" do
     it "test query with an invalid version" do
       api_basic_authorize
 
-      run_get api_entrypoint_url("v9999.9999")
+      get api_entrypoint_url("v9999.9999")
 
       expect(response).to have_http_status(:bad_request)
     end

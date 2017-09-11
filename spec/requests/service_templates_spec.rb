@@ -25,7 +25,7 @@ describe "Service Templates API" do
     it "queries all resource actions of a Service Template" do
       api_basic_authorize
 
-      run_get(api_service_template_resource_actions_url(nil, template), :expand => "resources")
+      get(api_service_template_resource_actions_url(nil, template), :expand => "resources")
 
       resource_actions = template.resource_actions
       expect_query_result(:resource_actions, resource_actions.count, resource_actions.count)
@@ -35,7 +35,7 @@ describe "Service Templates API" do
     it "queries a specific resource action of a Service Template" do
       api_basic_authorize
 
-      run_get(api_service_template_resource_actions_url(nil, template),
+      get(api_service_template_resource_actions_url(nil, template),
               :expand => "resources",
               :filter => ["action='Provision'"])
 
@@ -46,7 +46,7 @@ describe "Service Templates API" do
     it "allows queries of the related picture" do
       api_basic_authorize action_identifier(:service_templates, :read, :resource_actions, :get)
 
-      run_get api_service_template_url(nil, template), :attributes => "picture"
+      get api_service_template_url(nil, template), :attributes => "picture"
 
       expect_result_to_have_keys(%w(id href picture))
       expected = {"id" => template.compressed_id, "href" => api_service_template_url(nil, template.compressed_id)}
@@ -56,7 +56,7 @@ describe "Service Templates API" do
     it "allows queries of the related picture and image_href" do
       api_basic_authorize action_identifier(:service_templates, :read, :resource_actions, :get)
 
-      run_get api_service_template_url(nil, template), :attributes => "picture,picture.image_href"
+      get api_service_template_url(nil, template), :attributes => "picture,picture.image_href"
 
       expect_result_to_have_keys(%w(id href picture))
       expect_result_to_match_hash(response.parsed_body["picture"],
@@ -68,7 +68,7 @@ describe "Service Templates API" do
     it 'returns config_info for a specific service_template resource' do
       api_basic_authorize action_identifier(:service_templates, :read, :resource_actions, :get)
 
-      run_get(api_service_template_url(nil, template))
+      get(api_service_template_url(nil, template))
 
       expected = {
         'config_info' => a_hash_including(
@@ -123,7 +123,7 @@ describe "Service Templates API" do
       api_basic_authorize
 
       st = FactoryGirl.create(:service_template, :name => "st")
-      run_post(api_service_template_url(nil, st), gen_request(:edit, updated_catalog_item_options))
+      post(api_service_template_url(nil, st), gen_request(:edit, updated_catalog_item_options))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -132,7 +132,7 @@ describe "Service Templates API" do
       api_basic_authorize collection_action_identifier(:service_templates, :edit)
 
       st = FactoryGirl.create(:service_template, :name => "st1")
-      run_post(api_service_template_url(nil, st), gen_request(:edit, updated_catalog_item_options))
+      post(api_service_template_url(nil, st), gen_request(:edit, updated_catalog_item_options))
 
       expect_single_resource_query("id" => st.compressed_id, "href" => api_service_template_url(nil, st.compressed_id), "name" => "Updated Template Name")
       expect(st.reload.name).to eq("Updated Template Name")
@@ -144,7 +144,7 @@ describe "Service Templates API" do
       st1 = FactoryGirl.create(:service_template, :name => "st1")
       st2 = FactoryGirl.create(:service_template, :name => "st2")
 
-      run_post(api_service_templates_url, gen_request(:edit, [updated_catalog_item_options.merge('id' => st1.id),
+      post(api_service_templates_url, gen_request(:edit, [updated_catalog_item_options.merge('id' => st1.id),
                                                           updated_catalog_item_options.merge('id' => st2.id)]))
 
       expect(response).to have_http_status(:ok)
@@ -159,7 +159,7 @@ describe "Service Templates API" do
       api_basic_authorize collection_action_identifier(:service_templates, :edit)
       st1 = FactoryGirl.create(:service_template, :name => 'st1')
 
-      run_post(api_service_template_url(nil, st1), gen_request(:edit, 'name' => 'updated template'))
+      post(api_service_template_url(nil, st1), gen_request(:edit, 'name' => 'updated template'))
 
       expected = {
         'id'   => st1.compressed_id,
@@ -174,7 +174,7 @@ describe "Service Templates API" do
     it "rejects requests without appropriate role" do
       api_basic_authorize
 
-      run_post(api_service_templates_url, gen_request(:delete, "href" => api_service_template_url(nil, 100)))
+      post(api_service_templates_url, gen_request(:delete, "href" => api_service_template_url(nil, 100)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -182,7 +182,7 @@ describe "Service Templates API" do
     it "rejects resource deletion without appropriate role" do
       api_basic_authorize
 
-      run_delete(api_service_template_url(nil, 100))
+      delete(api_service_template_url(nil, 100))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -190,7 +190,7 @@ describe "Service Templates API" do
     it "rejects resource deletes for invalid resources" do
       api_basic_authorize collection_action_identifier(:service_templates, :delete)
 
-      run_delete(api_service_template_url(nil, 999_999))
+      delete(api_service_template_url(nil, 999_999))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -200,7 +200,7 @@ describe "Service Templates API" do
 
       st = FactoryGirl.create(:service_template, :name => "st", :description => "st description")
 
-      run_delete(api_service_template_url(nil, st))
+      delete(api_service_template_url(nil, st))
 
       expect(response).to have_http_status(:no_content)
       expect { st.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -211,7 +211,7 @@ describe "Service Templates API" do
       service_template = FactoryGirl.create(:service_template)
 
       expect do
-        run_post(api_service_template_url(nil, service_template), :action => "delete")
+        post(api_service_template_url(nil, service_template), :action => "delete")
       end.to change(ServiceTemplate, :count).by(-1)
 
       expected = {
@@ -228,7 +228,7 @@ describe "Service Templates API" do
       service_template = FactoryGirl.create(:service_template)
 
       expect do
-        run_post(api_service_template_url(nil, service_template), :action => "delete")
+        post(api_service_template_url(nil, service_template), :action => "delete")
       end.not_to change(ServiceTemplate, :count)
 
       expect(response).to have_http_status(:forbidden)
@@ -240,7 +240,7 @@ describe "Service Templates API" do
       st1 = FactoryGirl.create(:service_template, :name => "st1", :description => "st1 description")
       st2 = FactoryGirl.create(:service_template, :name => "st2", :description => "st2 description")
 
-      run_post(api_service_templates_url, gen_request(:delete,
+      post(api_service_templates_url, gen_request(:delete,
                                                       [{"href" => api_service_template_url(nil, st1)},
                                                        {"href" => api_service_template_url(nil, st2)}]))
       expect_multiple_action_result(2)
@@ -257,7 +257,7 @@ describe "Service Templates API" do
       api_basic_authorize action_identifier(:service_templates, :delete, :subresource_actions, :delete)
 
       expect do
-        run_delete(api_service_catalog_service_template_url(nil, service_catalog, service_template))
+        delete(api_service_catalog_service_template_url(nil, service_catalog, service_template))
       end.to change(ServiceTemplate, :count).by(-1)
 
       expect(response).to have_http_status(:no_content)
@@ -272,7 +272,7 @@ describe "Service Templates API" do
                                            :source    => service_template)
       api_basic_authorize(action_identifier(:service_requests, :read, :subcollection_actions, :get))
 
-      run_get(api_service_template_service_requests_url(nil, service_template))
+      get(api_service_template_service_requests_url(nil, service_template))
 
       expected = {
         "count"     => 1,
@@ -327,7 +327,7 @@ describe "Service Templates API" do
     it 'rejects requests without appropriate role' do
       api_basic_authorize
 
-      run_post(api_service_templates_url, :name => 'foobar')
+      post(api_service_templates_url, :name => 'foobar')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -347,7 +347,7 @@ describe "Service Templates API" do
       }
 
       expect do
-        run_post(api_service_templates_url, template_parameters)
+        post(api_service_templates_url, template_parameters)
       end.to change(ServiceTemplate, :count).by(1)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -373,7 +373,7 @@ describe "Service Templates API" do
         )
       }
       expect do
-        run_post(api_service_templates_url, :action => 'create', :resources => [template_parameters, template_parameters])
+        post(api_service_templates_url, :action => 'create', :resources => [template_parameters, template_parameters])
       end.to change(ServiceTemplate, :count).by(2)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -408,7 +408,7 @@ describe "Service Templates API" do
         )]
       }
       expect do
-        run_post(api_service_templates_url, template_parameters)
+        post(api_service_templates_url, template_parameters)
       end.to change(ServiceTemplateOrchestration, :count).by(1)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -435,7 +435,7 @@ describe "Service Templates API" do
         )
       }
       expect do
-        run_post(api_service_templates_url, template_parameters)
+        post(api_service_templates_url, template_parameters)
       end.to change(ServiceTemplateOrchestration, :count).by(0)
       expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)

@@ -21,7 +21,7 @@ describe "Querying" do
     it "supports offset" do
       create_vms_by_name(%w(aa bb cc))
 
-      run_get api_vms_url, :offset => 2
+      get api_vms_url, :offset => 2
 
       expect_query_result(:vms, 1, 3)
     end
@@ -29,7 +29,7 @@ describe "Querying" do
     it "supports limit" do
       create_vms_by_name(%w(aa bb cc))
 
-      run_get api_vms_url, :limit => 2
+      get api_vms_url, :limit => 2
 
       expect_query_result(:vms, 2, 3)
     end
@@ -37,7 +37,7 @@ describe "Querying" do
     it "supports offset and limit" do
       create_vms_by_name(%w(aa bb cc))
 
-      run_get api_vms_url, :offset => 1, :limit => 1
+      get api_vms_url, :offset => 1, :limit => 1
 
       expect_query_result(:vms, 1, 3)
     end
@@ -45,17 +45,17 @@ describe "Querying" do
     it "supports paging via offset and limit" do
       create_vms_by_name %w(aa bb cc dd ee)
 
-      run_get api_vms_url, :offset => 0, :limit => 2, :sort_by => "name", :expand => "resources"
+      get api_vms_url, :offset => 0, :limit => 2, :sort_by => "name", :expand => "resources"
 
       expect_query_result(:vms, 2, 5)
       expect_result_resources_to_match_hash([{"name" => "aa"}, {"name" => "bb"}])
 
-      run_get api_vms_url, :offset => 2, :limit => 2, :sort_by => "name", :expand => "resources"
+      get api_vms_url, :offset => 2, :limit => 2, :sort_by => "name", :expand => "resources"
 
       expect_query_result(:vms, 2, 5)
       expect_result_resources_to_match_hash([{"name" => "cc"}, {"name" => "dd"}])
 
-      run_get api_vms_url, :offset => 4, :limit => 2, :sort_by => "name", :expand => "resources"
+      get api_vms_url, :offset => 4, :limit => 2, :sort_by => "name", :expand => "resources"
 
       expect_query_result(:vms, 1, 5)
       expect_result_resources_to_match_hash([{"name" => "ee"}])
@@ -64,7 +64,7 @@ describe "Querying" do
     it 'raises a BadRequestError for attributes that do not exist' do
       api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
 
-      run_get(api_vm_url(nil, vm1), :attributes => 'not_an_attribute')
+      get(api_vm_url(nil, vm1), :attributes => 'not_an_attribute')
 
       expected = {
         'error' => a_hash_including(
@@ -79,37 +79,37 @@ describe "Querying" do
     it "returns correct paging links" do
       create_vms_by_name %w(bb ff aa cc ee gg dd)
 
-      run_get api_vms_url, :offset => 0, :limit => 2, :sort_by => "name", :expand => "resources"
+      get api_vms_url, :offset => 0, :limit => 2, :sort_by => "name", :expand => "resources"
 
       expect_query_result(:vms, 2, 7)
       expect_result_resources_to_match_hash([{"name" => "aa"}, {"name" => "bb"}])
       expect(response.parsed_body["links"].keys).to match_array(%w(self first next last))
       links = response.parsed_body["links"]
 
-      run_get(links["self"])
+      get(links["self"])
 
       expect_query_result(:vms, 2, 7)
       expect_result_resources_to_match_hash([{"name" => "aa"}, {"name" => "bb"}])
 
-      run_get(links["next"])
+      get(links["next"])
 
       expect_query_result(:vms, 2, 7)
       expect_result_resources_to_match_hash([{"name" => "cc"}, {"name" => "dd"}])
       expect(response.parsed_body["links"].keys).to match_array(%w(self next previous first last))
 
-      run_get(links["last"])
+      get(links["last"])
 
       expect_query_result(:vms, 1, 7)
       expect_result_resources_to_match_hash([{"name" => "gg"}])
       previous = response.parsed_body["links"]["previous"]
       expect(response.parsed_body["links"].keys).to match_array(%w(self previous first last))
 
-      run_get(previous)
+      get(previous)
 
       expect_query_result(:vms, 2, 7)
       expect_result_resources_to_match_hash([{"name" => "ee"}, {"name" => "ff"}])
 
-      run_get api_vms_url, :offset => 4, :limit => 3, :sort_by => "name", :expand => "resources"
+      get api_vms_url, :offset => 4, :limit => 3, :sort_by => "name", :expand => "resources"
 
       expect_query_result(:vms, 3, 7)
       expect_result_resources_to_match_hash([{"name" => "ee"}, {"name" => "ff"}, {"name" => "gg"}])
@@ -119,7 +119,7 @@ describe "Querying" do
     it "only returns paging links if both offset and limit are specified" do
       create_vms_by_name %w(aa bb)
 
-      run_get api_vms_url, :offset => 0, :expand => :resources
+      get api_vms_url, :offset => 0, :expand => :resources
 
       expect(response.parsed_body.keys).to eq(%w(name count subcount resources actions))
     end
@@ -127,19 +127,19 @@ describe "Querying" do
     it "returns the correct page count" do
       create_vms_by_name %w(aa bb cc dd)
 
-      run_get api_vms_url, :offset => 0, :limit => 2
+      get api_vms_url, :offset => 0, :limit => 2
 
       expect(response.parsed_body['pages']).to eq(2)
 
-      run_get api_vms_url, :offset => 0, :limit => 3
+      get api_vms_url, :offset => 0, :limit => 3
 
       expect(response.parsed_body['pages']).to eq(2)
 
-      run_get api_vms_url, :offset => 0, :limit => 4
+      get api_vms_url, :offset => 0, :limit => 4
       expect(response.parsed_body['subquery_count']).to be_nil
       expect(response.parsed_body['pages']).to eq(1)
 
-      run_get api_vms_url, :offset => 0, :limit => 4, :filter => ["name='aa'", "or name='bb'"]
+      get api_vms_url, :offset => 0, :limit => 4, :filter => ["name='aa'", "or name='bb'"]
       expect(response.parsed_body['subquery_count']).to eq(2)
       expect(response.parsed_body['pages']).to eq(1)
     end
@@ -147,13 +147,13 @@ describe "Querying" do
     it "returns the correct pages if filters are specified" do
       create_vms_by_name %w(aa bb cc)
 
-      run_get api_vms_url, :sort_by => "name", :filter => ["name='aa'", "or name='bb'"], :expand => "resources", :offset => 0, :limit => 1
+      get api_vms_url, :sort_by => "name", :filter => ["name='aa'", "or name='bb'"], :expand => "resources", :offset => 0, :limit => 1
 
       expect_query_result(:vms, 1, 3)
       expect_result_resources_to_match_hash([{"name" => "aa"}])
       expect(response.parsed_body["links"].keys).to match_array(%w(self next first last))
 
-      run_get response.parsed_body["links"]["next"]
+      get response.parsed_body["links"]["next"]
 
       expect_query_result(:vms, 1, 3)
       expect_result_resources_to_match_hash([{"name" => "bb"}])
@@ -164,7 +164,7 @@ describe "Querying" do
     it "returns the correct subquery_count" do
       create_vms_by_name %w(aa bb cc dd)
 
-      run_get api_vms_url, :sort_by => "name", :filter => ["name='aa'", "or name='bb'", "or name='dd'"], :expand => "resources", :offset => 0, :limit => 1
+      get api_vms_url, :sort_by => "name", :filter => ["name='aa'", "or name='bb'", "or name='dd'"], :expand => "resources", :offset => 0, :limit => 1
 
       expect(response.parsed_body["subquery_count"]).to eq(3)
       expect_query_result(:vms, 1, 4)
@@ -177,7 +177,7 @@ describe "Querying" do
     it "supports ascending order" do
       create_vms_by_name %w(cc aa bb)
 
-      run_get api_vms_url, :sort_by => "name", :sort_order => "asc", :expand => "resources"
+      get api_vms_url, :sort_by => "name", :sort_order => "asc", :expand => "resources"
 
       expect_query_result(:vms, 3, 3)
       expect_result_resources_to_match_hash([{"name" => "aa"}, {"name" => "bb"}, {"name" => "cc"}])
@@ -186,7 +186,7 @@ describe "Querying" do
     it "supports decending order" do
       create_vms_by_name %w(cc aa bb)
 
-      run_get api_vms_url, :sort_by => "name", :sort_order => "desc", :expand => "resources"
+      get api_vms_url, :sort_by => "name", :sort_order => "desc", :expand => "resources"
 
       expect_query_result(:vms, 3, 3)
       expect_result_resources_to_match_hash([{"name" => "cc"}, {"name" => "bb"}, {"name" => "aa"}])
@@ -195,7 +195,7 @@ describe "Querying" do
     it "supports case insensitive ordering" do
       create_vms_by_name %w(B c a)
 
-      run_get api_vms_url, :sort_by => "name", :sort_order => "asc", :sort_options => "ignore_case", :expand => "resources"
+      get api_vms_url, :sort_by => "name", :sort_order => "asc", :sort_options => "ignore_case", :expand => "resources"
 
       expect_query_result(:vms, 3, 3)
       expect_result_resources_to_match_hash([{"name" => "a"}, {"name" => "B"}, {"name" => "c"}])
@@ -205,7 +205,7 @@ describe "Querying" do
       FactoryGirl.create(:vm_vmware, :vendor => "vmware", :name => "vmware_vm")
       FactoryGirl.create(:vm_redhat, :vendor => "redhat", :name => "redhat_vm")
 
-      run_get api_vms_url, :sort_by => "vendor", :sort_order => "asc", :expand => "resources"
+      get api_vms_url, :sort_by => "vendor", :sort_order => "asc", :expand => "resources"
 
       expect_query_result(:vms, 2, 2)
       expect_result_resources_to_match_hash([{"name" => "redhat_vm"}, {"name" => "vmware_vm"}])
@@ -219,7 +219,7 @@ describe "Querying" do
       FactoryGirl.create(:vm, :name => 'vm_bar', :host => host_bar)
       FactoryGirl.create(:vm, :name => 'vm_zap', :host => host_zap)
 
-      run_get api_vms_url, :sort_by => 'host_name', :sort_order => 'desc', :expand => 'resources'
+      get api_vms_url, :sort_by => 'host_name', :sort_order => 'desc', :expand => 'resources'
 
       expect_query_result(:vms, 3, 3)
       expect_result_resources_to_match_hash([{'name' => 'vm_zap'}, {'name' => 'vm_foo'}, {'name' => 'vm_bar'}])
@@ -228,7 +228,7 @@ describe "Querying" do
     it 'does not support non sql friendly virtual attributes' do
       FactoryGirl.create(:vm)
 
-      run_get api_vms_url, :sort_by => 'aggressive_recommended_mem', :sort_order => 'asc'
+      get api_vms_url, :sort_by => 'aggressive_recommended_mem', :sort_order => 'asc'
 
       expected = {
         'error' => a_hash_including(
@@ -246,7 +246,7 @@ describe "Querying" do
       FactoryGirl.create(:classification_tag, :name => 'finance', :parent => dept)
       Classification.classify(svc1, 'department', 'finance')
 
-      run_get api_services_url, :sort_by => 'created_at', :filter => ['tags.name=/managed/department/finance'],
+      get api_services_url, :sort_by => 'created_at', :filter => ['tags.name=/managed/department/finance'],
               :sort_order => 'asc', :limit => 20, :offset => 0
 
       expect(response).to have_http_status(:ok)
@@ -260,7 +260,7 @@ describe "Querying" do
     it "supports attribute equality test using double quotes" do
       _vm1, vm2 = create_vms_by_name(%w(aa bb))
 
-      run_get api_vms_url, :expand => "resources", :filter => ['name="bb"']
+      get api_vms_url, :expand => "resources", :filter => ['name="bb"']
 
       expect_query_result(:vms, 1, 2)
       expect_result_resources_to_match_hash([{"name" => vm2.name, "guid" => vm2.guid}])
@@ -269,7 +269,7 @@ describe "Querying" do
     it "supports attribute equality test using single quotes" do
       vm1, _vm2 = create_vms_by_name(%w(aa bb))
 
-      run_get api_vms_url, :expand => "resources", :filter => ["name='aa'"]
+      get api_vms_url, :expand => "resources", :filter => ["name='aa'"]
 
       expect_query_result(:vms, 1, 2)
       expect_result_resources_to_match_hash([{"name" => vm1.name, "guid" => vm1.guid}])
@@ -278,7 +278,7 @@ describe "Querying" do
     it "supports attribute pattern matching via %" do
       vm1, _vm2, vm3 = create_vms_by_name(%w(aa_B2 bb aa_A1))
 
-      run_get api_vms_url, :expand => "resources", :filter => ["name='aa%'"], :sort_by => "name"
+      get api_vms_url, :expand => "resources", :filter => ["name='aa%'"], :sort_by => "name"
 
       expect_query_result(:vms, 2, 3)
       expect_result_resources_to_match_hash([{"name" => vm3.name, "guid" => vm3.guid},
@@ -288,7 +288,7 @@ describe "Querying" do
     it "supports attribute pattern matching via *" do
       vm1, _vm2, vm3 = create_vms_by_name(%w(aa_B2 bb aa_A1))
 
-      run_get api_vms_url, :expand => "resources", :filter => ["name='aa*'"], :sort_by => "name"
+      get api_vms_url, :expand => "resources", :filter => ["name='aa*'"], :sort_by => "name"
 
       expect_query_result(:vms, 2, 3)
       expect_result_resources_to_match_hash([{"name" => vm3.name, "guid" => vm3.guid},
@@ -298,7 +298,7 @@ describe "Querying" do
     it "supports inequality test via !=" do
       vm1, _vm2, vm3 = create_vms_by_name(%w(aa bb cc))
 
-      run_get api_vms_url, :expand => "resources", :filter => ["name!='b%'"], :sort_by => "name"
+      get api_vms_url, :expand => "resources", :filter => ["name!='b%'"], :sort_by => "name"
 
       expect_query_result(:vms, 2, 3)
       expect_result_resources_to_match_hash([{"name" => vm1.name, "guid" => vm1.guid},
@@ -309,7 +309,7 @@ describe "Querying" do
       vm1, vm2 = create_vms_by_name(%w(aa bb))
       vm2.update_attributes!(:retired => true)
 
-      run_get api_vms_url, :expand => "resources", :filter => ["retired=NULL"]
+      get api_vms_url, :expand => "resources", :filter => ["retired=NULL"]
 
       expect_query_result(:vms, 1, 2)
       expect_result_resources_to_match_hash([{"name" => vm1.name, "guid" => vm1.guid}])
@@ -319,7 +319,7 @@ describe "Querying" do
       _vm1, vm2 = create_vms_by_name(%w(aa bb))
       vm2.update_attributes!(:retired => true)
 
-      run_get api_vms_url, :expand => "resources", :filter => ["retired!=nil"]
+      get api_vms_url, :expand => "resources", :filter => ["retired!=nil"]
 
       expect_query_result(:vms, 1, 2)
       expect_result_resources_to_match_hash([{"name" => vm2.name, "guid" => vm2.guid}])
@@ -328,7 +328,7 @@ describe "Querying" do
     it "supports numerical less than comparison via <" do
       vm1, vm2, vm3 = create_vms_by_name(%w(aa bb cc))
 
-      run_get api_vms_url, :expand => "resources", :filter => ["id < #{vm3.id}"], :sort_by => "name"
+      get api_vms_url, :expand => "resources", :filter => ["id < #{vm3.id}"], :sort_by => "name"
 
       expect_query_result(:vms, 2, 3)
       expect_result_resources_to_match_hash([{"name" => vm1.name, "guid" => vm1.guid},
@@ -338,7 +338,7 @@ describe "Querying" do
     it "supports numerical less than or equal comparison via <=" do
       vm1, vm2, _vm3 = create_vms_by_name(%w(aa bb cc))
 
-      run_get api_vms_url, :expand => "resources", :filter => ["id <= #{vm2.id}"], :sort_by => "name"
+      get api_vms_url, :expand => "resources", :filter => ["id <= #{vm2.id}"], :sort_by => "name"
 
       expect_query_result(:vms, 2, 3)
       expect_result_resources_to_match_hash([{"name" => vm1.name, "guid" => vm1.guid},
@@ -348,7 +348,7 @@ describe "Querying" do
     it "support greater than numerical comparison via >" do
       vm1, vm2 = create_vms_by_name(%w(aa bb))
 
-      run_get api_vms_url, :expand => "resources", :filter => ["id > #{vm1.id}"], :sort_by => "name"
+      get api_vms_url, :expand => "resources", :filter => ["id > #{vm1.id}"], :sort_by => "name"
 
       expect_query_result(:vms, 1, 2)
       expect_result_resources_to_match_hash([{"name" => vm2.name, "guid" => vm2.guid}])
@@ -357,7 +357,7 @@ describe "Querying" do
     it "supports greater or equal than numerical comparison via >=" do
       _vm1, vm2, vm3 = create_vms_by_name(%w(aa bb cc))
 
-      run_get api_vms_url, :expand => "resources", :filter => ["id >= #{vm2.id}"], :sort_by => "name"
+      get api_vms_url, :expand => "resources", :filter => ["id >= #{vm2.id}"], :sort_by => "name"
 
       expect_query_result(:vms, 2, 3)
       expect_result_resources_to_match_hash([{"name" => vm2.name, "guid" => vm2.guid},
@@ -367,7 +367,7 @@ describe "Querying" do
     it "supports compound logical OR comparisons" do
       vm1, vm2, vm3 = create_vms_by_name(%w(aa bb cc))
 
-      run_get api_vms_url, :expand  => "resources",
+      get api_vms_url, :expand  => "resources",
                        :filter  => ["id = #{vm1.id}", "or id > #{vm2.id}"],
                        :sort_by => "name"
 
@@ -379,7 +379,7 @@ describe "Querying" do
     it "supports multiple logical AND comparisons" do
       vm1, _vm2 = create_vms_by_name(%w(aa bb))
 
-      run_get api_vms_url, :expand => "resources",
+      get api_vms_url, :expand => "resources",
                        :filter => ["id = #{vm1.id}", "name = #{vm1.name}"]
 
       expect_query_result(:vms, 1, 2)
@@ -389,7 +389,7 @@ describe "Querying" do
     it "supports multiple comparisons with both AND and OR" do
       vm1, vm2, vm3 = create_vms_by_name(%w(aa bb cc))
 
-      run_get api_vms_url, :expand  => "resources",
+      get api_vms_url, :expand  => "resources",
                        :filter  => ["id = #{vm1.id}", "name = #{vm1.name}", "or id > #{vm2.id}"],
                        :sort_by => "name"
 
@@ -404,7 +404,7 @@ describe "Querying" do
       vm1 = FactoryGirl.create(:vm_vmware, :name => "baz", :host => host1)
       _vm2 = FactoryGirl.create(:vm_vmware, :name => "qux", :host => host2)
 
-      run_get api_vms_url, :expand => "resources",
+      get api_vms_url, :expand => "resources",
                        :filter => ["host.name='foo'"]
 
       expect_query_result(:vms, 1, 2)
@@ -417,7 +417,7 @@ describe "Querying" do
       vm1 = FactoryGirl.create(:vm_vmware, :name => "baz", :host => host1)
       _vm2 = FactoryGirl.create(:vm_vmware, :name => "qux", :host => host2)
 
-      run_get api_vms_url, :expand => "resources",
+      get api_vms_url, :expand => "resources",
               :filter => ["host.name='foo'"], :offset => 0, :limit => 1
 
       expect_query_result(:vms, 1, 2)
@@ -425,7 +425,7 @@ describe "Querying" do
     end
 
     it "does not support filtering by attributes of associations' associations" do
-      run_get api_vms_url, :expand => "resources", :filter => ["host.hardware.memory_mb>1024"]
+      get api_vms_url, :expand => "resources", :filter => ["host.hardware.memory_mb>1024"]
 
       expect_bad_request(/Filtering of attributes with more than one association away is not supported/)
     end
@@ -436,7 +436,7 @@ describe "Querying" do
       vm_a = FactoryGirl.create(:vm, :host => host_a)
       _vm_b = FactoryGirl.create(:vm, :host => host_b)
 
-      run_get(api_vms_url, :filter => ["host_name='aa'"], :expand => "resources")
+      get(api_vms_url, :filter => ["host_name='aa'"], :expand => "resources")
 
       expect_query_result(:vms, 1, 2)
       expect_result_resources_to_match_hash([{"name" => vm_a.name, "guid" => vm_a.guid}])
@@ -448,7 +448,7 @@ describe "Querying" do
       vm_a = FactoryGirl.create(:vm, :host => host_a)
       _vm_b = FactoryGirl.create(:vm, :host => host_b)
 
-      run_get(api_vms_url, :filter => ["host_name='a%'"], :expand => "resources")
+      get(api_vms_url, :filter => ["host_name='a%'"], :expand => "resources")
 
       expect_query_result(:vms, 1, 2)
       expect_result_resources_to_match_hash([{"name" => vm_a.name, "guid" => vm_a.guid}])
@@ -461,7 +461,7 @@ describe "Querying" do
       _vm = FactoryGirl.create(:vm, :host => host, :ext_management_system => ems)
       archived_vm = FactoryGirl.create(:vm)
 
-      run_get(api_vms_url, :filter => ["archived=true"], :expand => "resources")
+      get(api_vms_url, :filter => ["archived=true"], :expand => "resources")
 
       expect_query_result(:vms, 1, 2)
       expect_result_resources_to_match_hash([{"name" => archived_vm.name, "guid" => archived_vm.guid}])
@@ -473,7 +473,7 @@ describe "Querying" do
       _vm_1 = FactoryGirl.create(:vm, :hardware => hardware_1)
       vm_2 = FactoryGirl.create(:vm, :hardware => hardware_2)
 
-      run_get(api_vms_url, :filter => ["num_cpu > 4"], :expand => "resources")
+      get(api_vms_url, :filter => ["num_cpu > 4"], :expand => "resources")
 
       expect_query_result(:vms, 1, 2)
       expect_result_resources_to_match_hash([{"name" => vm_2.name, "guid" => vm_2.guid}])
@@ -484,7 +484,7 @@ describe "Querying" do
       vm_2 = FactoryGirl.create(:vm, :retires_on => "2016-01-02", :vendor => "vmware")
       _vm_3 = FactoryGirl.create(:vm, :retires_on => "2016-01-02", :vendor => "openstack")
 
-      run_get(api_vms_url, :filter => ["retires_on = 2016-01-02", "vendor_display = VMware"])
+      get(api_vms_url, :filter => ["retires_on = 2016-01-02", "vendor_display = VMware"])
 
       expected = {"resources" => [{"href" => api_vm_url(nil, vm_2.compressed_id)}]}
       expect(response.parsed_body).to include(expected)
@@ -496,7 +496,7 @@ describe "Querying" do
       vm_2 = FactoryGirl.create(:vm, :retires_on => "2016-01-02", :vendor => "vmware")
       _vm_3 = FactoryGirl.create(:vm, :retires_on => "2016-01-03", :vendor => "openstack")
 
-      run_get(api_vms_url, :filter => ["retires_on > 2016-01-01", "vendor_display = VMware"])
+      get(api_vms_url, :filter => ["retires_on > 2016-01-01", "vendor_display = VMware"])
 
       expected = {"resources" => [{"href" => api_vm_url(nil, vm_2.compressed_id)}]}
       expect(response.parsed_body).to include(expected)
@@ -508,7 +508,7 @@ describe "Querying" do
       vm_2 = FactoryGirl.create(:vm, :last_scan_on => "2016-01-01T08:00:00Z", :vendor => "vmware")
       _vm_3 = FactoryGirl.create(:vm, :last_scan_on => "2016-01-01T08:00:00Z", :vendor => "openstack")
 
-      run_get(api_vms_url, :filter => ["last_scan_on > 2016-01-01T07:59:59Z", "vendor_display = VMware"])
+      get(api_vms_url, :filter => ["last_scan_on > 2016-01-01T07:59:59Z", "vendor_display = VMware"])
 
       expected = {"resources" => [{"href" => api_vm_url(nil, vm_2.compressed_id)}]}
       expect(response.parsed_body).to include(expected)
@@ -520,7 +520,7 @@ describe "Querying" do
       vm_2 = FactoryGirl.create(:vm, :retires_on => "2016-01-02", :vendor => "vmware")
       _vm_3 = FactoryGirl.create(:vm, :retires_on => "2016-01-03", :vendor => "vmware")
 
-      run_get(api_vms_url, :filter => ["retires_on < 2016-01-03", "vendor_display = VMware"])
+      get(api_vms_url, :filter => ["retires_on < 2016-01-03", "vendor_display = VMware"])
 
       expected = {"resources" => [{"href" => api_vm_url(nil, vm_2.compressed_id)}]}
       expect(response.parsed_body).to include(expected)
@@ -532,7 +532,7 @@ describe "Querying" do
       vm_2 = FactoryGirl.create(:vm, :last_scan_on => "2016-01-01T07:59:59Z", :vendor => "vmware")
       _vm_3 = FactoryGirl.create(:vm, :last_scan_on => "2016-01-01T08:00:00Z", :vendor => "vmware")
 
-      run_get(api_vms_url, :filter => ["last_scan_on < 2016-01-01T08:00:00Z", "vendor_display = VMware"])
+      get(api_vms_url, :filter => ["last_scan_on < 2016-01-01T08:00:00Z", "vendor_display = VMware"])
 
       expected = {"resources" => [{"href" => api_vm_url(nil, vm_2.compressed_id)}]}
       expect(response.parsed_body).to include(expected)
@@ -540,28 +540,28 @@ describe "Querying" do
     end
 
     it "does not support filtering with <= with datetimes" do
-      run_get(api_vms_url, :filter => ["retires_on <= 2016-01-03"])
+      get(api_vms_url, :filter => ["retires_on <= 2016-01-03"])
 
       expect(response.parsed_body).to include_error_with_message("Unsupported operator for datetime: <=")
       expect(response).to have_http_status(:bad_request)
     end
 
     it "does not support filtering with >= with datetimes" do
-      run_get(api_vms_url, :filter => ["retires_on >= 2016-01-03"])
+      get(api_vms_url, :filter => ["retires_on >= 2016-01-03"])
 
       expect(response.parsed_body).to include_error_with_message("Unsupported operator for datetime: >=")
       expect(response).to have_http_status(:bad_request)
     end
 
     it "does not support filtering with != with datetimes" do
-      run_get(api_vms_url, :filter => ["retires_on != 2016-01-03"])
+      get(api_vms_url, :filter => ["retires_on != 2016-01-03"])
 
       expect(response.parsed_body).to include_error_with_message("Unsupported operator for datetime: !=")
       expect(response).to have_http_status(:bad_request)
     end
 
     it "will handle poorly formed datetimes in the filter" do
-      run_get(api_vms_url, :filter => ["retires_on > foobar"])
+      get(api_vms_url, :filter => ["retires_on > foobar"])
 
       expect(response.parsed_body).to include_error_with_message("Bad format for datetime: foobar")
       expect(response).to have_http_status(:bad_request)
@@ -572,7 +572,7 @@ describe "Querying" do
       service << FactoryGirl.create(:vm_vmware, :name => "foo")
       service << FactoryGirl.create(:vm_vmware, :name => "bar")
 
-      run_get(api_service_vms_url(nil, service), :filter => ["name=foo"])
+      get(api_service_vms_url(nil, service), :filter => ["name=foo"])
 
       expect(response.parsed_body).to include_error_with_message("Filtering is not supported on vms subcollection")
       expect(response).to have_http_status(:bad_request)
@@ -583,7 +583,7 @@ describe "Querying" do
       _tag_2 = FactoryGirl.create(:tag, :name => "/managed/bar")
       api_basic_authorize collection_action_identifier(:tags, :read, :get)
 
-      run_get(api_tags_url, :filter => ["name='*/foo'"])
+      get(api_tags_url, :filter => ["name='*/foo'"])
 
       expected = {
         "count"     => 2,
@@ -597,7 +597,7 @@ describe "Querying" do
     it "supports filtering by compressed id" do
       vm1, _vm2 = create_vms_by_name(%w(aa bb))
 
-      run_get api_vms_url, :expand => "resources",
+      get api_vms_url, :expand => "resources",
                        :filter => ["id = #{ApplicationRecord.compress_id(vm1.id)}"]
 
       expect_query_result(:vms, 1, 2)
@@ -607,7 +607,7 @@ describe "Querying" do
     it "supports filtering by compressed id as string" do
       _vm1, vm2 = create_vms_by_name(%w(aa bb))
 
-      run_get api_vms_url, :expand => "resources",
+      get api_vms_url, :expand => "resources",
                        :filter => ["id = '#{ApplicationRecord.compress_id(vm2.id)}'"]
 
       expect_query_result(:vms, 1, 2)
@@ -629,7 +629,7 @@ describe "Querying" do
                                :ext_management_system => ems2,
                                :raw_power_state       => "poweredOff")
 
-      run_get api_vms_url, :expand => "resources",
+      get api_vms_url, :expand => "resources",
                        :filter => ["ems_id = #{ApplicationRecord.compress_id(ems2.id)}"]
 
       expect_query_result(:vms, 1, 2)
@@ -637,7 +637,7 @@ describe "Querying" do
     end
 
     it "returns a bad request if trying to filter on invalid attributes" do
-      run_get(api_vms_url, :filter => ["destroy=true"])
+      get(api_vms_url, :filter => ["destroy=true"])
 
       expected = {
         "error" => a_hash_including(
@@ -655,7 +655,7 @@ describe "Querying" do
       api_basic_authorize collection_action_identifier(:vms, :read, :get)
       vm = create_vms_by_name(%w(aa)).first
 
-      run_get api_vms_url, :expand => "resources", :attributes => "href_slug,name,vendor"
+      get api_vms_url, :expand => "resources", :attributes => "href_slug,name,vendor"
 
       expected = {
         "name"      => "vms",
@@ -686,7 +686,7 @@ describe "Querying" do
       Classification.classify(vm1, "department", "finance")
       Classification.classify(vm3, "department", "finance")
 
-      run_get api_vms_url, :expand => "resources", :by_tag => "/department/finance"
+      get api_vms_url, :expand => "resources", :by_tag => "/department/finance"
 
       expect_query_result(:vms, 2, 3)
       expect_result_resources_to_include_data("resources", "name" => [vm1.name, vm3.name])
@@ -705,7 +705,7 @@ describe "Querying" do
       Classification.classify(vm1, "cc", "cc01")
       Classification.classify(vm3, "department", "finance")
 
-      run_get api_vms_url, :expand => "resources", :by_tag => "/department/finance,/cc/cc01"
+      get api_vms_url, :expand => "resources", :by_tag => "/department/finance,/cc/cc01"
 
       expect_query_result(:vms, 1, 3)
       expect_result_resources_to_include_data("resources", "name" => [vm1.name])
@@ -716,13 +716,13 @@ describe "Querying" do
     before { api_basic_authorize collection_action_identifier(:vms, :read, :get) }
 
     it "and sorted by name succeeeds with unreferenced class" do
-      run_get api_vms_url, :sort_by => "name", :expand => "resources"
+      get api_vms_url, :sort_by => "name", :expand => "resources"
 
       expect_query_result(:vms, 0, 0)
     end
 
     it "by invalid attribute" do
-      run_get api_vms_url, :sort_by => "bad_attribute", :expand => "resources"
+      get api_vms_url, :sort_by => "bad_attribute", :expand => "resources"
 
       expect_bad_request("bad_attribute is not a valid attribute")
     end
@@ -730,7 +730,7 @@ describe "Querying" do
     it "is supported without expanding resources" do
       create_vms_by_name(%w(aa bb))
 
-      run_get api_vms_url
+      get api_vms_url
 
       expected = {
         "name"      => "vms",
@@ -745,7 +745,7 @@ describe "Querying" do
     it "supports expanding resources" do
       create_vms_by_name(%w(aa bb))
 
-      run_get api_vms_url, :expand => "resources"
+      get api_vms_url, :expand => "resources"
 
       expect_query_result(:vms, 2, 2)
       expect_result_resources_to_include_keys("resources", %w(id href guid name vendor))
@@ -755,7 +755,7 @@ describe "Querying" do
       vm1 = create_vms_by_name(%w(aa)).first
       FactoryGirl.create(:guest_application, :vm_or_template_id => vm1.id, :name => "LibreOffice")
 
-      run_get api_vms_url, :expand => "resources,software"
+      get api_vms_url, :expand => "resources,software"
 
       expect_query_result(:vms, 1, 1)
       expect_result_resources_to_include_keys("resources", %w(id href guid name vendor software))
@@ -764,7 +764,7 @@ describe "Querying" do
     it "supports suppressing resources" do
       FactoryGirl.create(:vm)
 
-      run_get(api_vms_url, :hide => "resources")
+      get(api_vms_url, :hide => "resources")
 
       expect(response.parsed_body).not_to include("resources")
       expect(response).to have_http_status(:ok)
@@ -775,7 +775,7 @@ describe "Querying" do
     it "does not return actions if not entitled" do
       api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
 
-      run_get api_vm_url(nil, vm1)
+      get api_vm_url(nil, vm1)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to_not have_key("actions")
@@ -784,7 +784,7 @@ describe "Querying" do
     it "returns actions if authorized" do
       api_basic_authorize action_identifier(:vms, :edit), action_identifier(:vms, :read, :resource_actions, :get)
 
-      run_get api_vm_url(nil, vm1)
+      get api_vm_url(nil, vm1)
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(%w(id href name vendor actions))
@@ -793,7 +793,7 @@ describe "Querying" do
     it "returns correct actions if authorized as such" do
       api_basic_authorize action_identifier(:vms, :suspend), action_identifier(:vms, :read, :resource_actions, :get)
 
-      run_get api_vm_url(nil, vm1)
+      get api_vm_url(nil, vm1)
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(%w(id href name vendor actions))
@@ -807,7 +807,7 @@ describe "Querying" do
                           action_identifier(:vms, :start),
                           action_identifier(:vms, :stop))
 
-      run_get(api_vms_url)
+      get(api_vms_url)
 
       actions = response.parsed_body['actions']
       expect(actions.size).to eq(3)
@@ -822,7 +822,7 @@ describe "Querying" do
       vm = FactoryGirl.create(:vm)
       FactoryGirl.create(:snapshot, :vm_or_template => vm)
 
-      run_get(api_vm_snapshots_url(nil, vm))
+      get(api_vm_snapshots_url(nil, vm))
 
       actions = response.parsed_body['actions']
       expect(actions.size).to eq(2)
@@ -838,7 +838,7 @@ describe "Querying" do
       vm = FactoryGirl.create(:vm)
       snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
 
-      run_get(api_vm_snapshot_url(nil, vm, snapshot))
+      get(api_vm_snapshot_url(nil, vm, snapshot))
 
       actions = response.parsed_body['actions']
       expect(actions.size).to eq(2)
@@ -854,7 +854,7 @@ describe "Querying" do
 
       blueprint = FactoryGirl.create(:blueprint)
 
-      run_get(api_blueprint_url(nil, blueprint))
+      get(api_blueprint_url(nil, blueprint))
 
       actions = response.parsed_body['actions']
       expect(actions.size).to eq(4)
@@ -867,7 +867,7 @@ describe "Querying" do
                           action_identifier(:vms, :stop),
                           action_identifier(:vms, :read, :resource_actions, :get))
 
-      run_get api_vm_url(nil, vm1)
+      get api_vm_url(nil, vm1)
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(%w(id href name vendor actions))
@@ -877,7 +877,7 @@ describe "Querying" do
     it "returns actions if asked for with physical attributes" do
       api_basic_authorize action_identifier(:vms, :start), action_identifier(:vms, :read, :resource_actions, :get)
 
-      run_get api_vm_url(nil, vm1), :attributes => "name,vendor,actions"
+      get api_vm_url(nil, vm1), :attributes => "name,vendor,actions"
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_only_keys(%w(id href name vendor actions))
@@ -886,7 +886,7 @@ describe "Querying" do
     it "does not return actions if asking for a physical attribute" do
       api_basic_authorize action_identifier(:vms, :start), action_identifier(:vms, :read, :resource_actions, :get)
 
-      run_get api_vm_url(nil, vm1), :attributes => "name"
+      get api_vm_url(nil, vm1), :attributes => "name"
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_only_keys(%w(id href name))
@@ -895,7 +895,7 @@ describe "Querying" do
     it "does return actions if asking for virtual attributes" do
       api_basic_authorize action_identifier(:vms, :start), action_identifier(:vms, :read, :resource_actions, :get)
 
-      run_get api_vm_url(nil, vm1), :attributes => "disconnected"
+      get api_vm_url(nil, vm1), :attributes => "disconnected"
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(%w(id href name vendor disconnected actions))
@@ -904,7 +904,7 @@ describe "Querying" do
     it "does not return actions if asking for physical and virtual attributes" do
       api_basic_authorize action_identifier(:vms, :start), action_identifier(:vms, :read, :resource_actions, :get)
 
-      run_get api_vm_url(nil, vm1), :attributes => "name,disconnected"
+      get api_vm_url(nil, vm1), :attributes => "name,disconnected"
 
       expect(response).to have_http_status(:ok)
       expect_result_to_have_only_keys(%w(id href name disconnected))
@@ -913,7 +913,7 @@ describe "Querying" do
 
   describe 'OPTIONS /api/vms' do
     it 'returns the options information' do
-      run_options(api_vms_url)
+      options(api_vms_url)
       expect_options_results(:vms)
     end
   end
@@ -922,7 +922,7 @@ describe "Querying" do
     before { api_basic_authorize collection_action_identifier(:vms, :read, :get) }
 
     it "fail with invalid collection_class specified" do
-      run_get api_vms_url, :collection_class => "BogusClass"
+      get api_vms_url, :collection_class => "BogusClass"
 
       expect_bad_request("Invalid collection_class BogusClass specified for the vms collection")
     end
@@ -930,7 +930,7 @@ describe "Querying" do
     it "succeed with collection_class matching the collection class" do
       create_vms_by_name(%w(aa bb))
 
-      run_get api_vms_url, :collection_class => "Vm"
+      get api_vms_url, :collection_class => "Vm"
 
       expect_query_result(:vms, 2, 2)
     end
@@ -940,7 +940,7 @@ describe "Querying" do
       FactoryGirl.create(:vm_vmware_cloud, :name => "bb")
       FactoryGirl.create(:vm_vmware_cloud, :name => "cc")
 
-      run_get api_vms_url, :expand => "resources", :collection_class => "Vm"
+      get api_vms_url, :expand => "resources", :collection_class => "Vm"
 
       expect_query_result(:vms, 3, 3)
       expect(response.parsed_body["resources"].collect { |vm| vm["name"] }).to match_array(%w(aa bb cc))
@@ -951,7 +951,7 @@ describe "Querying" do
       FactoryGirl.create(:vm_vmware_cloud, :name => "bb")
       vmcc = FactoryGirl.create(:vm_vmware_cloud, :name => "cc")
 
-      run_get api_vms_url, :expand => "resources", :collection_class => vmcc.class.name
+      get api_vms_url, :expand => "resources", :collection_class => vmcc.class.name
 
       expect_query_result(:vms, 2, 2)
       expect(response.parsed_body["resources"].collect { |vm| vm["name"] }).to match_array(%w(bb cc))

@@ -9,7 +9,7 @@ RSpec.describe 'MetricRollups API' do
     it 'returns metric_rollups for a specific resource_type' do
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
-      run_get api_metric_rollups_url, :resource_type => 'VmOrTemplate', :capture_interval => 'hourly', :start_date => Time.zone.today.to_s
+      get api_metric_rollups_url, :resource_type => 'VmOrTemplate', :capture_interval => 'hourly', :start_date => Time.zone.today.to_s
 
       expected = {
         'count'    => 3,
@@ -24,7 +24,7 @@ RSpec.describe 'MetricRollups API' do
       vm_metric = FactoryGirl.create(:metric_rollup_vm_hr, :resource => vm)
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
-      run_get api_metric_rollups_url, :resource_type    => 'VmOrTemplate',
+      get api_metric_rollups_url, :resource_type    => 'VmOrTemplate',
                                   :resource_ids     => [vm.id],
                                   :capture_interval => 'hourly',
                                   :start_date       => Time.zone.today.to_s
@@ -46,7 +46,7 @@ RSpec.describe 'MetricRollups API' do
       vm_daily = FactoryGirl.create(:metric_rollup_vm_daily, :resource => vm)
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
-      run_get api_metric_rollups_url, :resource_type    => 'VmOrTemplate',
+      get api_metric_rollups_url, :resource_type    => 'VmOrTemplate',
                                   :resource_ids     => [vm.id],
                                   :capture_interval => 'daily',
                                   :start_date       => Time.zone.today.to_s
@@ -65,7 +65,7 @@ RSpec.describe 'MetricRollups API' do
     it 'requires parameters' do
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
-      run_get api_metric_rollups_url
+      get api_metric_rollups_url
 
       expected = {
         'error' => a_hash_including(
@@ -79,7 +79,7 @@ RSpec.describe 'MetricRollups API' do
     it 'pages the request by default' do
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
-      run_get api_metric_rollups_url, :resource_type    => 'VmOrTemplate',
+      get api_metric_rollups_url, :resource_type    => 'VmOrTemplate',
                                   :capture_interval => 'daily',
                                   :start_date       => Time.zone.today.to_s
       expected = {
@@ -95,7 +95,7 @@ RSpec.describe 'MetricRollups API' do
     it 'validates that the capture interval is valid' do
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
-      run_get api_metric_rollups_url, :resource_type    => 'VmOrTemplate',
+      get api_metric_rollups_url, :resource_type    => 'VmOrTemplate',
                                   :start_date       => Time.zone.today.to_s,
                                   :capture_interval => 'bad_interval'
 
@@ -114,7 +114,7 @@ RSpec.describe 'MetricRollups API' do
       FactoryGirl.create_list(:metric_rollup_vm_hr, 3, :resource => vm)
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
-      run_get api_metric_rollups_url, :resource_type    => 'VmOrTemplate',
+      get api_metric_rollups_url, :resource_type    => 'VmOrTemplate',
                                   :resource_ids     => [vm.id],
                                   :capture_interval => 'hourly',
                                   :start_date       => Time.zone.today.to_s,

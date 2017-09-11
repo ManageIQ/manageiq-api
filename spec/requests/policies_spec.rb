@@ -48,7 +48,7 @@ describe "Policies API" do
   def test_no_policy_query(api_object_policies_url)
     api_basic_authorize
 
-    run_get api_object_policies_url
+    get api_object_policies_url
 
     expect_empty_query_result(:policies)
   end
@@ -56,7 +56,7 @@ describe "Policies API" do
   def test_no_policy_profile_query(api_object_policy_profiles_url)
     api_basic_authorize
 
-    run_get api_object_policy_profiles_url
+    get api_object_policy_profiles_url
 
     expect_empty_query_result(:policy_profiles)
   end
@@ -67,7 +67,7 @@ describe "Policies API" do
     object.add_policy(p1)
     object.add_policy(ps2)
 
-    run_get api_object_policies_url, :expand => "resources"
+    get api_object_policies_url, :expand => "resources"
 
     expect_query_result(:policies, 1)
     expect_result_resources_to_match_hash([{"name" => p1.name, "description" => p1.description, "guid" => p1.guid}])
@@ -80,7 +80,7 @@ describe "Policies API" do
     object.add_policy(p2)
     object.add_policy(ps2)
 
-    run_get api_object_policies_url, :expand => "resources"
+    get api_object_policies_url, :expand => "resources"
 
     expect_query_result(:policies, 2)
     expect_result_resources_to_include_data("resources", "guid" => p_guids)
@@ -92,7 +92,7 @@ describe "Policies API" do
     object.add_policy(p1)
     object.add_policy(ps2)
 
-    run_get api_object_policy_profiles_url, :expand => "resources"
+    get api_object_policy_profiles_url, :expand => "resources"
 
     expect_query_result(:policy_profiles, 1)
     expect_result_resources_to_include_data("resources", "guid" => Array.wrap(ps2.guid))
@@ -102,7 +102,7 @@ describe "Policies API" do
     it "query invalid policy" do
       api_basic_authorize action_identifier(:policies, :read, :resource_actions, :get)
 
-      run_get api_policy_url(nil, 999_999)
+      get api_policy_url(nil, 999_999)
 
       expect(response).to have_http_status(:not_found)
     end
@@ -110,7 +110,7 @@ describe "Policies API" do
     it "query policies" do
       api_basic_authorize collection_action_identifier(:policies, :read, :get)
 
-      run_get api_policies_url
+      get api_policies_url
 
       expect_query_result(:policies, 3, 3)
       expect_result_resources_to_include_hrefs(
@@ -122,7 +122,7 @@ describe "Policies API" do
     it "query policies in expanded form" do
       api_basic_authorize collection_action_identifier(:policies, :read, :get)
 
-      run_get api_policies_url, :expand => "resources"
+      get api_policies_url, :expand => "resources"
 
       expect_query_result(:policies, 3, 3)
       expect_result_resources_to_include_data("resources", "guid" => p_all_guids)
@@ -135,7 +135,7 @@ describe "Policies API" do
     it "query invalid policy profile" do
       api_basic_authorize action_identifier(:policy_profiles, :read, :resource_actions, :get)
 
-      run_get api_policy_profile_url(nil, 999_999)
+      get api_policy_profile_url(nil, 999_999)
 
       expect(response).to have_http_status(:not_found)
     end
@@ -143,7 +143,7 @@ describe "Policies API" do
     it "query Policy Profiles" do
       api_basic_authorize collection_action_identifier(:policy_profiles, :read, :get)
 
-      run_get api_policy_profiles_url
+      get api_policy_profiles_url
 
       expect_query_result(:policy_profiles, 2, 2)
       expect_result_resources_to_include_hrefs(
@@ -155,7 +155,7 @@ describe "Policies API" do
     it "query individual Policy Profile" do
       api_basic_authorize action_identifier(:policy_profiles, :read, :resource_actions, :get)
 
-      run_get api_policy_profile_url(nil, policy_profile)
+      get api_policy_profile_url(nil, policy_profile)
 
       expect_single_resource_query(
         "name" => policy_profile.name, "description" => policy_profile.description, "guid" => policy_profile.guid
@@ -165,7 +165,7 @@ describe "Policies API" do
     it "query Policy Profile policies subcollection" do
       api_basic_authorize
 
-      run_get api_policy_profile_policies_url(nil, policy_profile), :expand => "resources"
+      get api_policy_profile_policies_url(nil, policy_profile), :expand => "resources"
 
       expect_query_result(:policies, p_guids.count)
       expect_result_resources_to_include_data("resources", "guid" => p_guids)
@@ -174,7 +174,7 @@ describe "Policies API" do
     it "query Policy Profile with expanded policies subcollection" do
       api_basic_authorize action_identifier(:policy_profiles, :read, :resource_actions, :get)
 
-      run_get api_policy_profile_url(nil, policy_profile), :expand => "policies"
+      get api_policy_profile_url(nil, policy_profile), :expand => "policies"
 
       expect_single_resource_query(
         "name" => policy_profile.name, "description" => policy_profile.description, "guid" => policy_profile.guid
@@ -352,7 +352,7 @@ describe "Policies API" do
 
     it "creates new policy" do
       api_basic_authorize collection_action_identifier(:policies, :create)
-      run_post(api_policies_url, sample_policy.merge!(miq_policy_contents))
+      post(api_policies_url, sample_policy.merge!(miq_policy_contents))
       policy = MiqPolicy.find(ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"]))
       expect(response.parsed_body["results"].first["name"]).to eq("sample policy")
       expect(response.parsed_body["results"].first["towhat"]).to eq("ManageIQ::Providers::Redhat::InfraManager")
@@ -365,7 +365,7 @@ describe "Policies API" do
 
     it "shouldn't creates new policy with missing params" do
       api_basic_authorize collection_action_identifier(:policies, :create)
-      run_post(api_policies_url, sample_policy)
+      post(api_policies_url, sample_policy)
       expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body["error"]["message"]).to include(miq_policy_contents.keys.join(", "))
     end
@@ -375,7 +375,7 @@ describe "Policies API" do
         api_basic_authorize(action_identifier(:policies, :delete))
         policy = FactoryGirl.create(:miq_policy)
 
-        expect { run_post(api_policy_url(nil, policy), :action => "delete") }.to change(MiqPolicy, :count).by(-1)
+        expect { post(api_policy_url(nil, policy), :action => "delete") }.to change(MiqPolicy, :count).by(-1)
 
         expect(response).to have_http_status(:ok)
       end
@@ -384,7 +384,7 @@ describe "Policies API" do
         api_basic_authorize
         policy = FactoryGirl.create(:miq_policy)
 
-        expect { run_post(api_policy_url(nil, policy), :action => "delete") }.not_to change(MiqPolicy, :count)
+        expect { post(api_policy_url(nil, policy), :action => "delete") }.not_to change(MiqPolicy, :count)
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -396,7 +396,7 @@ describe "Policies API" do
         policy = FactoryGirl.create(:miq_policy)
 
         expect do
-          run_post(api_policies_url, :action => "delete", :resources => [{:id => policy.id}])
+          post(api_policies_url, :action => "delete", :resources => [{:id => policy.id}])
         end.to change(MiqPolicy, :count).by(-1)
 
         expect(response.parsed_body).to include("results" => [a_hash_including("success" => true)])
@@ -408,7 +408,7 @@ describe "Policies API" do
         policy = FactoryGirl.create(:miq_policy)
 
         expect do
-          run_post(api_policies_url, :action => "delete", :resources => [{:id => policy.id}])
+          post(api_policies_url, :action => "delete", :resources => [{:id => policy.id}])
         end.not_to change(MiqPolicy, :count)
 
         expect(response).to have_http_status(:forbidden)
@@ -420,7 +420,7 @@ describe "Policies API" do
         api_basic_authorize(action_identifier(:policies, :delete, :resource_actions, :delete))
         policy = FactoryGirl.create(:miq_policy)
 
-        expect { run_delete(api_policy_url(nil, policy)) }.to change(MiqPolicy, :count).by(-1)
+        expect { delete(api_policy_url(nil, policy)) }.to change(MiqPolicy, :count).by(-1)
 
         expect(response).to have_http_status(:no_content)
       end
@@ -429,7 +429,7 @@ describe "Policies API" do
         api_basic_authorize
         policy = FactoryGirl.create(:miq_policy)
 
-        expect { run_delete(api_policy_url(nil, policy)) }.not_to change(MiqPolicy, :count)
+        expect { delete(api_policy_url(nil, policy)) }.not_to change(MiqPolicy, :count)
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -441,7 +441,7 @@ describe "Policies API" do
       expect(miq_policy.conditions.count).to eq(2)
       expect(miq_policy.actions.count).to eq(0)
       expect(miq_policy.events.count).to eq(0)
-      run_post(api_policy_url(nil, miq_policy), gen_request(:edit, miq_policy_contents.merge('conditions_ids' => [])))
+      post(api_policy_url(nil, miq_policy), gen_request(:edit, miq_policy_contents.merge('conditions_ids' => [])))
       policy = MiqPolicy.find(ApplicationRecord.uncompress_id(response.parsed_body["id"]))
       expect(response).to have_http_status(:ok)
       expect(policy.actions.count).to eq(1)
@@ -452,7 +452,7 @@ describe "Policies API" do
     it "edits just the description" do
       api_basic_authorize collection_action_identifier(:policies, :edit)
       expect(miq_policy.description).to_not eq("BAR")
-      run_post(api_policy_url(nil, miq_policy), gen_request(:edit, :description => "BAR"))
+      post(api_policy_url(nil, miq_policy), gen_request(:edit, :description => "BAR"))
       policy = MiqPolicy.find(ApplicationRecord.uncompress_id(response.parsed_body["id"]))
       expect(response).to have_http_status(:ok)
       expect(policy.description).to eq("BAR")

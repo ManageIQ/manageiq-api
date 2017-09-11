@@ -10,7 +10,7 @@ RSpec.describe 'Configuration Script Sources API' do
       repository = FactoryGirl.create(:configuration_script_source)
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :read, :get)
 
-      run_get(api_configuration_script_sources_url)
+      get(api_configuration_script_sources_url)
 
       expected = {
         'count'     => 1,
@@ -25,7 +25,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'forbids access to configuration script sources without an appropriate role' do
       api_basic_authorize
 
-      run_get(api_configuration_script_sources_url)
+      get(api_configuration_script_sources_url)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -36,7 +36,7 @@ RSpec.describe 'Configuration Script Sources API' do
       repository = FactoryGirl.create(:configuration_script_source)
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :read, :get)
 
-      run_get(api_configuration_script_source_url(nil, repository))
+      get(api_configuration_script_source_url(nil, repository))
 
       expected = {
         'href' => api_configuration_script_source_url(nil, repository.compressed_id)
@@ -49,7 +49,7 @@ RSpec.describe 'Configuration Script Sources API' do
       repository = FactoryGirl.create(:configuration_script_source)
       api_basic_authorize
 
-      run_get(api_configuration_script_source_url(nil, repository))
+      get(api_configuration_script_source_url(nil, repository))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -68,7 +68,7 @@ RSpec.describe 'Configuration Script Sources API' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :edit, :post)
       params2 = params.dup.merge(:id => config_script_src_2.id)
 
-      run_post(api_configuration_script_sources_url, :action => 'edit', :resources => [params, params2])
+      post(api_configuration_script_sources_url, :action => 'edit', :resources => [params, params2])
 
       expected = {
         'results' => [
@@ -91,7 +91,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'forbids updating configuration_script_sources without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_configuration_script_sources_url, :action => 'edit', :resources => [params])
+      post(api_configuration_script_sources_url, :action => 'edit', :resources => [params])
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -99,7 +99,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'will delete multiple configuration script source with an appropriate role' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :delete, :post)
 
-      run_post(api_configuration_script_sources_url, :action => 'delete', :resources => [{:id => config_script_src.id}, {:id => config_script_src_2.id}])
+      post(api_configuration_script_sources_url, :action => 'delete', :resources => [{:id => config_script_src.id}, {:id => config_script_src_2.id}])
 
       expected = {
         'results' => [
@@ -122,7 +122,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'forbids delete without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_configuration_script_sources_url, :action => 'delete', :resources => [{:id => config_script_src.id}])
+      post(api_configuration_script_sources_url, :action => 'delete', :resources => [{:id => config_script_src.id}])
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -130,7 +130,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'can refresh multiple configuration_script_source with an appropriate role' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :refresh, :post)
 
-      run_post(api_configuration_script_sources_url, :action => :refresh, :resources => [{ :id => config_script_src.id}, {:id => config_script_src_2.id}])
+      post(api_configuration_script_sources_url, :action => :refresh, :resources => [{ :id => config_script_src.id}, {:id => config_script_src_2.id}])
 
       expected = {
         'results' => [
@@ -166,7 +166,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'updates a configuration_script_source with an appropriate role' do
       api_basic_authorize action_identifier(:configuration_script_sources, :edit)
 
-      run_put(api_configuration_script_source_url(nil, config_script_src), :resource => params)
+      put(api_configuration_script_source_url(nil, config_script_src), :resource => params)
 
       expected = {
         'success' => true,
@@ -190,7 +190,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'updates a configuration_script_source with an appropriate role' do
       api_basic_authorize action_identifier(:configuration_script_sources, :edit)
 
-      run_patch(api_configuration_script_source_url(nil, config_script_src), [params])
+      patch(api_configuration_script_source_url(nil, config_script_src), [params])
 
       expected = {
         'success' => true,
@@ -213,7 +213,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'updates a configuration_script_source with an appropriate role' do
       api_basic_authorize action_identifier(:configuration_script_sources, :edit)
 
-      run_post(api_configuration_script_source_url(nil, config_script_src), :action => 'edit', :resource => params)
+      post(api_configuration_script_source_url(nil, config_script_src), :action => 'edit', :resource => params)
 
       expected = {
         'success' => true,
@@ -228,7 +228,7 @@ RSpec.describe 'Configuration Script Sources API' do
       config_script_src = FactoryGirl.create(:configuration_script_source)
       api_basic_authorize action_identifier(:configuration_script_sources, :edit)
 
-      run_post(api_configuration_script_source_url(nil, config_script_src), :action => 'edit', :resource => params)
+      post(api_configuration_script_source_url(nil, config_script_src), :action => 'edit', :resource => params)
 
       expected = {
         'success' => false,
@@ -241,7 +241,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'forbids updating a configuration_script_source without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_configuration_script_source_url(nil, config_script_src), :action => 'edit', :resource => params)
+      post(api_configuration_script_source_url(nil, config_script_src), :action => 'edit', :resource => params)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -249,7 +249,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'forbids refresh without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_configuration_script_source_url(nil, config_script_src), :action => 'refresh')
+      post(api_configuration_script_source_url(nil, config_script_src), :action => 'refresh')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -257,7 +257,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'can refresh a configuration_script_source with an appropriate role' do
       api_basic_authorize action_identifier(:configuration_script_sources, :refresh)
 
-      run_post(api_configuration_script_source_url(nil, config_script_src), :action => :refresh)
+      post(api_configuration_script_source_url(nil, config_script_src), :action => :refresh)
 
       expected = {
         'success'   => true,
@@ -273,7 +273,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'can delete a configuration_script_source with an appropriate role' do
       api_basic_authorize action_identifier(:configuration_script_sources, :delete)
 
-      run_post(api_configuration_script_source_url(nil, config_script_src), :action => 'delete')
+      post(api_configuration_script_source_url(nil, config_script_src), :action => 'delete')
 
       expected = {
         'success' => true,
@@ -288,7 +288,7 @@ RSpec.describe 'Configuration Script Sources API' do
       config_script_src = FactoryGirl.create(:configuration_script_source)
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :delete, :post)
 
-      run_post(api_configuration_script_source_url(nil, config_script_src), :action => 'delete', :resource => params)
+      post(api_configuration_script_source_url(nil, config_script_src), :action => 'delete', :resource => params)
 
       expected = {
         'success' => false,
@@ -301,7 +301,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'forbids configuration script source delete without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_configuration_script_source_url(nil, config_script_src), :action => 'delete')
+      post(api_configuration_script_source_url(nil, config_script_src), :action => 'delete')
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -327,7 +327,7 @@ RSpec.describe 'Configuration Script Sources API' do
           )
         ]
       }
-      run_post(api_configuration_script_sources_url, create_params)
+      post(api_configuration_script_sources_url, create_params)
 
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -346,7 +346,7 @@ RSpec.describe 'Configuration Script Sources API' do
           )
         ]
       }
-      run_post(api_configuration_script_sources_url, create_params)
+      post(api_configuration_script_sources_url, create_params)
 
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -369,7 +369,7 @@ RSpec.describe 'Configuration Script Sources API' do
           )
         ]
       }
-      run_post(api_configuration_script_sources_url, :resources => [create_params, create_params])
+      post(api_configuration_script_sources_url, :resources => [create_params, create_params])
 
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -378,7 +378,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'requires a manager_resource to be specified' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :create, :post)
 
-      run_post(api_configuration_script_sources_url, :resources => [create_params.except(:manager_resource)])
+      post(api_configuration_script_sources_url, :resources => [create_params.except(:manager_resource)])
 
       expected = {
         'results' => [{
@@ -394,7 +394,7 @@ RSpec.describe 'Configuration Script Sources API' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :create, :post)
       create_params[:manager_resource] = { :href => api_user_url(nil, 10) }
 
-      run_post(api_configuration_script_sources_url, :resources => [create_params])
+      post(api_configuration_script_sources_url, :resources => [create_params])
 
       expected = {
         'results' => [{
@@ -409,7 +409,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'forbids creation of new configuration script source without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_configuration_script_sources_url, create_params)
+      post(api_configuration_script_sources_url, create_params)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -419,7 +419,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'can delete a configuration_script_source with an appropriate role' do
       api_basic_authorize action_identifier(:configuration_script_sources, :delete, :resource_actions, :delete)
 
-      run_delete(api_configuration_script_source_url(nil, config_script_src))
+      delete(api_configuration_script_source_url(nil, config_script_src))
 
       expect(response).to have_http_status(:no_content)
     end
@@ -427,7 +427,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'forbids configuration_script_source delete without an appropriate role' do
       api_basic_authorize
 
-      run_delete(api_configuration_script_source_url(nil, config_script_src))
+      delete(api_configuration_script_source_url(nil, config_script_src))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -443,7 +443,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'forbids configuration_script_payload retrievel without an appropriate role' do
       api_basic_authorize
 
-      run_get(api_configuration_script_source_configuration_script_payloads_url(nil, config_script_src))
+      get(api_configuration_script_source_configuration_script_payloads_url(nil, config_script_src))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -451,7 +451,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'lists all configuration_script_payloads belonging to a configuration_script_source' do
       api_basic_authorize subcollection_action_identifier(:configuration_script_sources, :configuration_script_payloads, :read, :get)
 
-      run_get(api_configuration_script_source_configuration_script_payloads_url(nil, config_script_src))
+      get(api_configuration_script_source_configuration_script_payloads_url(nil, config_script_src))
 
       expected = {
         'resources' => [
@@ -465,7 +465,7 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'can filter on region_number' do
       api_basic_authorize subcollection_action_identifier(:configuration_script_sources, :configuration_script_payloads, :read, :get)
 
-      run_get(
+      get(
         api_configuration_script_source_configuration_script_payloads_url(nil, config_script_src),
         :filter => ["region_number=#{payload.region_number}"]
       )
@@ -479,7 +479,7 @@ RSpec.describe 'Configuration Script Sources API' do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
 
-      run_get(
+      get(
         api_configuration_script_source_configuration_script_payloads_url(nil, config_script_src),
         :filter => ["region_number=#{payload.region_number + 1}"]
       )

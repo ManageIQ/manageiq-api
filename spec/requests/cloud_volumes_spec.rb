@@ -12,7 +12,7 @@ describe "Cloud Volumes API" do
   it "forbids access to cloud volumes without an appropriate role" do
     api_basic_authorize
 
-    run_get(api_cloud_volumes_url)
+    get(api_cloud_volumes_url)
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -22,7 +22,7 @@ describe "Cloud Volumes API" do
 
     cloud_volume = FactoryGirl.create(:cloud_volume)
 
-    run_get(api_cloud_volume_url(nil, cloud_volume))
+    get(api_cloud_volume_url(nil, cloud_volume))
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -32,7 +32,7 @@ describe "Cloud Volumes API" do
 
     cloud_volume = FactoryGirl.create(:cloud_volume)
 
-    run_get(api_cloud_volume_url(nil, cloud_volume))
+    get(api_cloud_volume_url(nil, cloud_volume))
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
@@ -44,7 +44,7 @@ describe "Cloud Volumes API" do
   it "rejects delete request without appropriate role" do
     api_basic_authorize
 
-    run_post(api_cloud_volumes_url, :action => 'delete')
+    post(api_cloud_volumes_url, :action => 'delete')
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -57,7 +57,7 @@ describe "Cloud Volumes API" do
 
     api_basic_authorize action_identifier(:cloud_volumes, :delete, :resource_actions, :post)
 
-    run_post(api_cloud_volume_url(nil, cloud_volume1), :action => "delete")
+    post(api_cloud_volume_url(nil, cloud_volume1), :action => "delete")
 
     expected = {
       'message' => 'Deleting Cloud Volume CloudVolume1',
@@ -77,7 +77,7 @@ describe "Cloud Volumes API" do
 
     api_basic_authorize action_identifier(:cloud_volumes, :delete, :resource_actions, :delete)
 
-    run_delete api_cloud_volume_url(nil, cloud_volume1)
+    delete api_cloud_volume_url(nil, cloud_volume1)
 
     expect(response).to have_http_status(:no_content)
   end
@@ -87,7 +87,7 @@ describe "Cloud Volumes API" do
 
     api_basic_authorize
 
-    run_delete api_cloud_volume_url(nil, cloud_volume)
+    delete api_cloud_volume_url(nil, cloud_volume)
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -115,7 +115,7 @@ describe "Cloud Volumes API" do
         )
       )
     }
-    run_post(api_cloud_volumes_url, :action => 'delete', :resources => [{ 'id' => cloud_volume1.id }, { 'id' => cloud_volume2.id }])
+    post(api_cloud_volumes_url, :action => 'delete', :resources => [{ 'id' => cloud_volume1.id }, { 'id' => cloud_volume2.id }])
 
     expect(response.parsed_body).to include(expected)
     expect(response).to have_http_status(:ok)

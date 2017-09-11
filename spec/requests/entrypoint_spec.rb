@@ -2,7 +2,7 @@ RSpec.describe "API entrypoint" do
   it "returns a :settings hash" do
     api_basic_authorize
 
-    run_get api_entrypoint_url
+    get api_entrypoint_url
 
     expect(response).to have_http_status(:ok)
     expect_result_to_have_keys(%w(settings))
@@ -12,7 +12,7 @@ RSpec.describe "API entrypoint" do
   it "returns a locale" do
     api_basic_authorize
 
-    run_get api_entrypoint_url
+    get api_entrypoint_url
 
     expect(%w(en en_US)).to include(response.parsed_body['settings']['locale'])
   end
@@ -23,7 +23,7 @@ RSpec.describe "API entrypoint" do
     test_settings = {:cartoons => {:saturday => {:tom_jerry => 'n', :bugs_bunny => 'y'}}}
     @user.update_attributes!(:settings => test_settings)
 
-    run_get api_entrypoint_url
+    get api_entrypoint_url
 
     expect(response.parsed_body).to include("settings" => a_hash_including(test_settings.deep_stringify_keys))
   end
@@ -31,7 +31,7 @@ RSpec.describe "API entrypoint" do
   it "collection query is sorted" do
     api_basic_authorize
 
-    run_get api_entrypoint_url
+    get api_entrypoint_url
 
     collection_names = response.parsed_body['collections'].map { |c| c['name'] }
     expect(collection_names).to eq(collection_names.sort)
@@ -40,7 +40,7 @@ RSpec.describe "API entrypoint" do
   it "returns server_info" do
     api_basic_authorize
 
-    run_get api_entrypoint_url
+    get api_entrypoint_url
 
     expect(response.parsed_body).to include(
       "server_info" => a_hash_including(
@@ -57,7 +57,7 @@ RSpec.describe "API entrypoint" do
   it "returns product_info" do
     api_basic_authorize
 
-    run_get api_entrypoint_url
+    get api_entrypoint_url
 
     expect(response.parsed_body).to include(
       "product_info" => a_hash_including(

@@ -87,7 +87,7 @@ describe "Provision Requests API" do
         }
       )
 
-      run_post(api_provision_requests_url, body)
+      post(api_provision_requests_url, body)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_provreq_attributes)
@@ -119,7 +119,7 @@ describe "Provision Requests API" do
         }
       )
 
-      run_post(api_provision_requests_url, body)
+      post(api_provision_requests_url, body)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_provreq_attributes)
@@ -148,7 +148,7 @@ describe "Provision Requests API" do
         }
       )
 
-      run_post(api_provision_requests_url, body)
+      post(api_provision_requests_url, body)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_provreq_attributes)
@@ -208,7 +208,7 @@ describe "Provision Requests API" do
       provision_request2 = FactoryGirl.create(:miq_provision_request, :requester => @user)
       api_basic_authorize collection_action_identifier(:provision_requests, :read, :get)
 
-      run_get api_provision_requests_url
+      get api_provision_requests_url
 
       expected = {
         "count"     => 2,
@@ -228,7 +228,7 @@ describe "Provision Requests API" do
       provision_request2 = FactoryGirl.create(:miq_provision_request, :requester => @user)
       api_basic_authorize collection_action_identifier(:provision_requests, :read, :get)
 
-      run_get api_provision_requests_url
+      get api_provision_requests_url
 
       expected = {
         "count"     => 2,
@@ -247,7 +247,7 @@ describe "Provision Requests API" do
       provision_request = FactoryGirl.create(:miq_provision_request, :requester => other_user)
       api_basic_authorize action_identifier(:provision_requests, :read, :resource_actions, :get)
 
-      run_get api_provision_request_url(nil, provision_request)
+      get api_provision_request_url(nil, provision_request)
 
       expect(response).to have_http_status(:not_found)
     end
@@ -258,7 +258,7 @@ describe "Provision Requests API" do
       provision_request = FactoryGirl.create(:miq_provision_request, :requester => other_user)
       api_basic_authorize action_identifier(:provision_requests, :read, :resource_actions, :get)
 
-      run_get api_provision_request_url(nil, provision_request)
+      get api_provision_request_url(nil, provision_request)
 
       expected = {
         "id"   => provision_request.compressed_id,
@@ -271,7 +271,7 @@ describe "Provision Requests API" do
     it "rejects requests without appropriate role" do
       api_basic_authorize
 
-      run_post(api_provision_requests_url, single_provision_request)
+      post(api_provision_requests_url, single_provision_request)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -280,7 +280,7 @@ describe "Provision Requests API" do
       api_basic_authorize collection_action_identifier(:provision_requests, :create)
 
       dialog  # Create the Provisioning dialog
-      run_post(api_provision_requests_url, single_provision_request)
+      post(api_provision_requests_url, single_provision_request)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -294,7 +294,7 @@ describe "Provision Requests API" do
       api_basic_authorize collection_action_identifier(:provision_requests, :create)
 
       dialog  # Create the Provisioning dialog
-      run_post(api_provision_requests_url, gen_request(:create, single_provision_request))
+      post(api_provision_requests_url, gen_request(:create, single_provision_request))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -308,7 +308,7 @@ describe "Provision Requests API" do
       api_basic_authorize collection_action_identifier(:provision_requests, :create)
 
       dialog  # Create the Provisioning dialog
-      run_post(api_provision_requests_url, gen_request(:create, [single_provision_request, single_provision_request]))
+      post(api_provision_requests_url, gen_request(:create, [single_provision_request, single_provision_request]))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -324,7 +324,7 @@ describe "Provision Requests API" do
         provision_request = FactoryGirl.create(:miq_provision_request, :requester => @user, :options => {:foo => "bar"})
         api_basic_authorize
 
-        run_post(api_provision_request_url(nil, provision_request), :action => "edit", :options => {:baz => "qux"})
+        post(api_provision_request_url(nil, provision_request), :action => "edit", :options => {:baz => "qux"})
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -333,7 +333,7 @@ describe "Provision Requests API" do
         provision_request = FactoryGirl.create(:miq_provision_request, :requester => @user, :options => {:foo => "bar"})
         api_basic_authorize(action_identifier(:provision_requests, :edit))
 
-        run_post(api_provision_request_url(nil, provision_request), :action => "edit", :options => {:baz => "qux"})
+        post(api_provision_request_url(nil, provision_request), :action => "edit", :options => {:baz => "qux"})
 
         expected = {
           "id"      => provision_request.compressed_id,
@@ -350,7 +350,7 @@ describe "Provision Requests API" do
                                                                         :options   => {:foo => "bar"})
         api_basic_authorize collection_action_identifier(:service_requests, :edit)
 
-        run_post(
+        post(
           api_provision_requests_url,
           :action    => "edit",
           :resources => [
@@ -387,7 +387,7 @@ describe "Provision Requests API" do
     it "supports approving a request" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      run_post(provreq1_url, gen_request(:approve))
+      post(provreq1_url, gen_request(:approve))
 
       expected_msg = "Provision request #{provreq1.id} approved"
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq1.compressed_id))
@@ -396,7 +396,7 @@ describe "Provision Requests API" do
     it "supports denying a request" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      run_post(provreq2_url, gen_request(:deny))
+      post(provreq2_url, gen_request(:deny))
 
       expected_msg = "Provision request #{provreq2.id} denied"
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq2.compressed_id))
@@ -405,7 +405,7 @@ describe "Provision Requests API" do
     it "supports approving multiple requests" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      run_post(api_provision_requests_url, gen_request(:approve, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
+      post(api_provision_requests_url, gen_request(:approve, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
@@ -428,7 +428,7 @@ describe "Provision Requests API" do
     it "supports denying multiple requests" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      run_post(api_provision_requests_url, gen_request(:deny, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
+      post(api_provision_requests_url, gen_request(:deny, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
@@ -456,7 +456,7 @@ describe "Provision Requests API" do
       FactoryGirl.create(:miq_request_task, :miq_request_id => provision_request.id)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      run_get("#{api_provision_request_url(nil, provision_request)}/tasks")
+      get("#{api_provision_request_url(nil, provision_request)}/tasks")
 
       expect(response).to have_http_status(:moved_permanently)
       expect(response.redirect_url).to include("#{api_provision_request_url(nil, provision_request)}/request_tasks")
@@ -466,7 +466,7 @@ describe "Provision Requests API" do
       task = FactoryGirl.create(:miq_request_task, :miq_request_id => provision_request.id)
       api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
 
-      run_get("#{api_provision_request_url(nil, provision_request)}/tasks/#{task.id}")
+      get("#{api_provision_request_url(nil, provision_request)}/tasks/#{task.id}")
 
       expect(response).to have_http_status(:moved_permanently)
       expect(response.redirect_url).to include("#{api_provision_request_url(nil, provision_request)}/request_tasks/#{task.id}")

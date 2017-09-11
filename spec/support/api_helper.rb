@@ -5,30 +5,6 @@
 module Spec
   module Support
     module ApiHelper
-      def run_get(url, options = {})
-        get url, options
-      end
-
-      def run_post(url, body = {}, headers = {})
-        post url, :params => body, :headers => headers
-      end
-
-      def run_put(url, body = {}, headers = {})
-        put url, :params => body, :headers => headers
-      end
-
-      def run_patch(url, body = {}, headers = {})
-        patch url, :params => body, :headers => headers
-      end
-
-      def run_delete(url, headers = {})
-        delete url, :headers => headers
-      end
-
-      def run_options(url, headers = {})
-        options url, headers
-      end
-
       def resources_include_suffix?(resources, key, suffix)
         resources.any? { |r| r.key?(key) && r[key].match("#{suffix}$") }
       end
