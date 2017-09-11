@@ -18,7 +18,8 @@ module Api
     end
 
     def create_resource(_type, _id, data)
-      DialogImportService.new.import(data)
+      dialog = DialogImportService.new.import(data)
+      fetch_service_dialogs_content(dialog).first
     rescue => e
       raise BadRequestError, "Failed to create a new dialog - #{e}"
     end
@@ -31,7 +32,7 @@ module Api
       rescue => err
         raise BadRequestError, "Failed to update service dialog - #{err}"
       end
-      service_dialog
+      fetch_service_dialogs_content(service_dialog).first
     end
 
     def copy_resource(type, id, data)
