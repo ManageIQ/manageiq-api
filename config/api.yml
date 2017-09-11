@@ -739,6 +739,23 @@
         :identifier: storage_tag
       - :name: unassign
         :identifier: storage_tag
+  :event_streams:
+    :description: Event Streams
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: EventStream
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: event_streams_show_list
+      :post:
+      - :name: query
+        identifier: event_streams_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: event_streams_show
   :events:
     :description: Events
     :identifier: event
