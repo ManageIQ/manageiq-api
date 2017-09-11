@@ -6,8 +6,7 @@ module Spec
   module Support
     module ApiHelper
       def run_get(url, options = {})
-        headers = options.delete(:headers) || {}
-        get url, :params => options, :headers => headers
+        get url, options
       end
 
       def run_post(url, body = {}, headers = {})
