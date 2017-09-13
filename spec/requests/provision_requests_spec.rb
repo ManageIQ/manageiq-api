@@ -87,7 +87,7 @@ describe "Provision Requests API" do
         }
       )
 
-      post(api_provision_requests_url, body)
+      post(api_provision_requests_url, :params => body)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_provreq_attributes)
@@ -119,7 +119,7 @@ describe "Provision Requests API" do
         }
       )
 
-      post(api_provision_requests_url, body)
+      post(api_provision_requests_url, :params => body)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_provreq_attributes)
@@ -148,7 +148,7 @@ describe "Provision Requests API" do
         }
       )
 
-      post(api_provision_requests_url, body)
+      post(api_provision_requests_url, :params => body)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_provreq_attributes)
@@ -271,7 +271,7 @@ describe "Provision Requests API" do
     it "rejects requests without appropriate role" do
       api_basic_authorize
 
-      post(api_provision_requests_url, single_provision_request)
+      post(api_provision_requests_url, :params => single_provision_request)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -280,7 +280,7 @@ describe "Provision Requests API" do
       api_basic_authorize collection_action_identifier(:provision_requests, :create)
 
       dialog  # Create the Provisioning dialog
-      post(api_provision_requests_url, single_provision_request)
+      post(api_provision_requests_url, :params => single_provision_request)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -294,7 +294,7 @@ describe "Provision Requests API" do
       api_basic_authorize collection_action_identifier(:provision_requests, :create)
 
       dialog  # Create the Provisioning dialog
-      post(api_provision_requests_url, gen_request(:create, single_provision_request))
+      post(api_provision_requests_url, :params => gen_request(:create, single_provision_request))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -308,7 +308,7 @@ describe "Provision Requests API" do
       api_basic_authorize collection_action_identifier(:provision_requests, :create)
 
       dialog  # Create the Provisioning dialog
-      post(api_provision_requests_url, gen_request(:create, [single_provision_request, single_provision_request]))
+      post(api_provision_requests_url, :params => gen_request(:create, [single_provision_request, single_provision_request]))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -324,7 +324,7 @@ describe "Provision Requests API" do
         provision_request = FactoryGirl.create(:miq_provision_request, :requester => @user, :options => {:foo => "bar"})
         api_basic_authorize
 
-        post(api_provision_request_url(nil, provision_request), :action => "edit", :options => {:baz => "qux"})
+        post(api_provision_request_url(nil, provision_request), :params => { :action => "edit", :options => {:baz => "qux"} })
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -333,7 +333,7 @@ describe "Provision Requests API" do
         provision_request = FactoryGirl.create(:miq_provision_request, :requester => @user, :options => {:foo => "bar"})
         api_basic_authorize(action_identifier(:provision_requests, :edit))
 
-        post(api_provision_request_url(nil, provision_request), :action => "edit", :options => {:baz => "qux"})
+        post(api_provision_request_url(nil, provision_request), :params => { :action => "edit", :options => {:baz => "qux"} })
 
         expected = {
           "id"      => provision_request.compressed_id,
@@ -352,11 +352,13 @@ describe "Provision Requests API" do
 
         post(
           api_provision_requests_url,
-          :action    => "edit",
-          :resources => [
-            {:id => provision_request.id, :options => {:baz => "qux"}},
-            {:id => provision_request2.id, :options => {:quux => "quuz"}}
-          ]
+          :params => {
+            :action    => "edit",
+            :resources => [
+              {:id => provision_request.id, :options => {:baz => "qux"}},
+              {:id => provision_request2.id, :options => {:quux => "quuz"}}
+            ]
+          }
         )
 
         expected = {
@@ -387,7 +389,7 @@ describe "Provision Requests API" do
     it "supports approving a request" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      post(provreq1_url, gen_request(:approve))
+      post(provreq1_url, :params => gen_request(:approve))
 
       expected_msg = "Provision request #{provreq1.id} approved"
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq1.compressed_id))
@@ -396,7 +398,7 @@ describe "Provision Requests API" do
     it "supports denying a request" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      post(provreq2_url, gen_request(:deny))
+      post(provreq2_url, :params => gen_request(:deny))
 
       expected_msg = "Provision request #{provreq2.id} denied"
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq2.compressed_id))
@@ -405,7 +407,7 @@ describe "Provision Requests API" do
     it "supports approving multiple requests" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      post(api_provision_requests_url, gen_request(:approve, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
+      post(api_provision_requests_url, :params => gen_request(:approve, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
@@ -428,7 +430,7 @@ describe "Provision Requests API" do
     it "supports denying multiple requests" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      post(api_provision_requests_url, gen_request(:deny, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
+      post(api_provision_requests_url, :params => gen_request(:deny, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(

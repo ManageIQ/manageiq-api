@@ -23,7 +23,7 @@ describe "Actions API" do
 
     it "creates new action" do
       api_basic_authorize collection_action_identifier(:actions, :create)
-      post(api_actions_url, sample_action)
+      post(api_actions_url, :params => sample_action)
 
       expect(response).to have_http_status(:ok)
 
@@ -34,8 +34,8 @@ describe "Actions API" do
 
     it "creates new actions" do
       api_basic_authorize collection_action_identifier(:actions, :create)
-      post(api_actions_url, gen_request(:create, [sample_action,
-                                                  sample_action.merge(:name => "foo", :description => "bar")]))
+      post(api_actions_url, :params => gen_request(:create, [sample_action,
+                                                             sample_action.merge(:name => "foo", :description => "bar")]))
       expect(response).to have_http_status(:ok)
 
       expect(response.parsed_body["results"].count).to eq(2)
@@ -54,7 +54,7 @@ describe "Actions API" do
 
     it "deletes action" do
       api_basic_authorize collection_action_identifier(:actions, :delete)
-      post(api_actions_url, gen_request(:delete, "name" => action.name, "href" => action_url))
+      post(api_actions_url, :params => gen_request(:delete, "name" => action.name, "href" => action_url))
 
       expect(response).to have_http_status(:ok)
 
@@ -63,10 +63,10 @@ describe "Actions API" do
 
     it "deletes actions" do
       api_basic_authorize collection_action_identifier(:actions, :delete)
-      post(api_actions_url, gen_request(:delete, [{"name" => actions.first.name,
-                                                       "href" => api_action_url(nil, actions.first)},
-                                                      {"name" => actions.second.name,
-                                                       "href" => api_action_url(nil, actions.second)}]))
+      post(api_actions_url, :params => gen_request(:delete, [{"name" => actions.first.name,
+                                                              "href" => api_action_url(nil, actions.first)},
+                                                             {"name" => actions.second.name,
+                                                              "href" => api_action_url(nil, actions.second)}]))
 
       expect(response).to have_http_status(:ok)
 
@@ -84,7 +84,7 @@ describe "Actions API" do
 
     it "edits new action" do
       api_basic_authorize collection_action_identifier(:actions, :edit)
-      post(action_url, gen_request(:edit, "description" => "change"))
+      post(action_url, :params => gen_request(:edit, "description" => "change"))
 
       expect(response).to have_http_status(:ok)
 
@@ -93,8 +93,8 @@ describe "Actions API" do
 
     it "edits new actions" do
       api_basic_authorize collection_action_identifier(:actions, :edit)
-      post(api_actions_url, gen_request(:edit, [{"id" => actions.first.id, "description" => "change"},
-                                                {"id" => actions.second.id, "description" => "change2"}]))
+      post(api_actions_url, :params => gen_request(:edit, [{"id" => actions.first.id, "description" => "change"},
+                                                           {"id" => actions.second.id, "description" => "change2"}]))
       expect(response).to have_http_status(:ok)
 
       expect(response.parsed_body["results"].count).to eq(2)

@@ -7,7 +7,7 @@ RSpec.describe "hosts API" do
         options = {:credentials => {:authtype => "default", :password => "abc123"}}
 
         expect do
-          post api_host_url(nil, host), gen_request(:edit, options)
+          post api_host_url(nil, host), :params => gen_request(:edit, options)
         end.to change { host.reload.authentication_password(:default) }.to("abc123")
         expect(response).to have_http_status(:ok)
       end
@@ -18,7 +18,7 @@ RSpec.describe "hosts API" do
         options = {:credentials => {:password => "abc123"}}
 
         expect do
-          post api_host_url(nil, host), gen_request(:edit, options)
+          post api_host_url(nil, host), :params => gen_request(:edit, options)
         end.to change { host.reload.authentication_password(:default) }.to("abc123")
         expect(response).to have_http_status(:ok)
       end
@@ -29,7 +29,7 @@ RSpec.describe "hosts API" do
         options = {:name => "new name"}
 
         expect do
-          post api_host_url(nil, host), gen_request(:edit, options)
+          post api_host_url(nil, host), :params => gen_request(:edit, options)
         end.not_to change { host.reload.name }
         expect(response).to have_http_status(:bad_request)
       end
@@ -43,7 +43,7 @@ RSpec.describe "hosts API" do
           {:href => api_host_url(nil, host2), :credentials => {:password => "def456"}}
         ]
 
-        post api_hosts_url, gen_request(:edit, options)
+        post api_hosts_url, :params => gen_request(:edit, options)
         expect(response).to have_http_status(:ok)
         expect(host1.reload.authentication_password(:default)).to eq("abc123")
         expect(host2.reload.authentication_password(:default)).to eq("def456")
@@ -58,7 +58,7 @@ RSpec.describe "hosts API" do
           {:id => host2.id, :credentials => {:password => "def456"}}
         ]
 
-        post api_hosts_url, gen_request(:edit, options)
+        post api_hosts_url, :params => gen_request(:edit, options)
         expect(response).to have_http_status(:ok)
         expect(host1.reload.authentication_password(:default)).to eq("abc123")
         expect(host2.reload.authentication_password(:default)).to eq("def456")
@@ -72,7 +72,7 @@ RSpec.describe "hosts API" do
         options = {:credentials => {:authtype => "default", :password => "abc123"}}
 
         expect do
-          post api_host_url(nil, host), gen_request(:edit, options)
+          post api_host_url(nil, host), :params => gen_request(:edit, options)
         end.not_to change { host.reload.authentication_password(:default) }
         expect(response).to have_http_status(:forbidden)
       end

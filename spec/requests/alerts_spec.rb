@@ -90,8 +90,10 @@ describe "Alerts API" do
       api_basic_authorize
       post(
         api_alert_alert_actions_url(nil, alert),
-        "action_type" => "comment",
-        "comment"     => "comment text",
+        :params => {
+          "action_type" => "comment",
+          "comment"     => "comment text"
+        }
       )
       expect(response).to have_http_status(:forbidden)
     end
@@ -102,7 +104,7 @@ describe "Alerts API" do
         "comment"     => "comment text",
       }
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
-      post(api_alert_alert_actions_url(nil, alert), attributes)
+      post(api_alert_alert_actions_url(nil, alert), :params => attributes)
       expect(response).to have_http_status(:ok)
       expected = {
         "results" => [
@@ -120,7 +122,7 @@ describe "Alerts API" do
         "user_id"     => user.id # should be ignored
       }
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
-      post(api_alert_alert_actions_url(nil, alert), attributes)
+      post(api_alert_alert_actions_url(nil, alert), :params => attributes)
       expect(response).to have_http_status(:ok)
       expected = {
         "results" => [
@@ -137,7 +139,7 @@ describe "Alerts API" do
         "assignee"    => { "id" => assignee.compressed_id }
       }
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
-      post(api_alert_alert_actions_url(nil, alert), attributes)
+      post(api_alert_alert_actions_url(nil, alert), :params => attributes)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected_assignee)
     end
@@ -148,7 +150,7 @@ describe "Alerts API" do
         "assignee"    => { "href" => api_user_url(nil, assignee.compressed_id) }
       }
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
-      post(api_alert_alert_actions_url(nil, alert), attributes)
+      post(api_alert_alert_actions_url(nil, alert), :params => attributes)
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected_assignee)
     end
@@ -157,7 +159,7 @@ describe "Alerts API" do
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
       post(
         api_alert_alert_actions_url(nil, alert),
-        "action_type" => "assign",
+        :params => { "action_type" => "assign"}
       )
       expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include_error_with_message(

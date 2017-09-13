@@ -21,7 +21,7 @@ RSpec.describe "reports API" do
     FactoryGirl.create(:miq_report_with_results)
     api_basic_authorize collection_action_identifier(:reports, :read, :get)
 
-    get api_reports_url, :expand => 'resources', :attributes => 'template_type'
+    get api_reports_url, :params => { :expand => 'resources', :attributes => 'template_type' }
 
     expect(response).to have_http_status(:ok)
     response.parsed_body['resources'].each { |res| expect_hash_to_have_only_keys(res, %w(href id template_type)) }
@@ -208,7 +208,7 @@ RSpec.describe "reports API" do
 
       expect do
         api_basic_authorize action_identifier(:reports, :run)
-        post api_report_url(nil, report).to_s, :action => "run"
+        post api_report_url(nil, report).to_s, :params => { :action => "run" }
       end.to change(MiqReportResult, :count).by(1)
       expect_single_action_result(
         :href    => api_report_url(nil, report.compressed_id),
@@ -224,14 +224,18 @@ RSpec.describe "reports API" do
 
       expect do
         api_basic_authorize action_identifier(:reports, :schedule)
-        post api_report_url(nil, report),
-                 :action      => 'schedule',
-                 :name        => 'schedule_name',
-                 :enabled     => true,
-                 :description => 'unit test',
-                 :start_date  => '05/05/2016',
-                 :interval    => {:unit => 'daily', :value => '110'},
-                 :time_zone   => 'UTC'
+        post(
+          api_report_url(nil, report),
+          :params => {
+            :action      => 'schedule',
+            :name        => 'schedule_name',
+            :enabled     => true,
+            :description => 'unit test',
+            :start_date  => '05/05/2016',
+            :interval    => {:unit => 'daily', :value => '110'},
+            :time_zone   => 'UTC'
+          }
+        )
       end.to change(MiqSchedule, :count).by(1)
       expect_single_action_result(
         :href    => api_report_url(nil, report.compressed_id),
@@ -255,7 +259,7 @@ RSpec.describe "reports API" do
       api_basic_authorize collection_action_identifier(:reports, :import)
 
       expect do
-        post api_reports_url, gen_request(:import, :report => serialized_report, :options => options)
+        post api_reports_url, :params => gen_request(:import, :report => serialized_report, :options => options)
       end.to change(MiqReport, :count).by(1)
       expect_result_to_match_hash(
         response.parsed_body["results"].first["result"],
@@ -301,7 +305,7 @@ RSpec.describe "reports API" do
       expect do
         post(
           api_reports_url,
-          gen_request(
+          :params => gen_request(
             :import,
             [{:report => serialized_report, :options => options},
              {:report => serialized_report2, :options => options}]
@@ -317,7 +321,7 @@ RSpec.describe "reports API" do
 
       expect do
         api_basic_authorize
-        post api_report_url(nil, report).to_s, :action => "run"
+        post api_report_url(nil, report).to_s, :params => { :action => "run" }
       end.not_to change(MiqReportResult, :count)
       expect(response).to have_http_status(:forbidden)
     end
@@ -337,7 +341,7 @@ RSpec.describe "reports API" do
       api_basic_authorize
 
       expect do
-        post api_reports_url, gen_request(:import, :report => serialized_report, :options => options)
+        post api_reports_url, :params => gen_request(:import, :report => serialized_report, :options => options)
       end.not_to change(MiqReport, :count)
       expect(response).to have_http_status(:forbidden)
     end

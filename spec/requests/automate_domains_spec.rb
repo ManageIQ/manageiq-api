@@ -7,7 +7,7 @@ describe "Automate Domains API" do
     it 'forbids access for users without proper permissions' do
       api_basic_authorize
 
-      post(api_automate_domain_url(nil, git_domain), gen_request(:refresh_from_source))
+      post(api_automate_domain_url(nil, git_domain), :params => gen_request(:refresh_from_source))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -16,7 +16,7 @@ describe "Automate Domains API" do
       api_basic_authorize action_identifier(:automate_domains, :refresh_from_source)
       expect(GitBasedDomainImportService).to receive(:available?).and_return(false)
 
-      post(api_automate_domain_url(nil, git_domain), gen_request(:refresh_from_source))
+      post(api_automate_domain_url(nil, git_domain), :params => gen_request(:refresh_from_source))
       expect_single_action_result(:success => false,
                                   :message => 'Git owner role is not enabled to be able to import git repositories')
     end
@@ -30,7 +30,7 @@ describe "Automate Domains API" do
       it 'fails to refresh when domain did not originate from git' do
         api_basic_authorize action_identifier(:automate_domains, :refresh_from_source)
 
-        post(api_automate_domain_url(nil, non_git_domain), gen_request(:refresh_from_source))
+        post(api_automate_domain_url(nil, non_git_domain), :params => gen_request(:refresh_from_source))
         expect_single_action_result(
           :success => false,
           :message => a_string_matching(/Automate Domain .* did not originate from git repository/)
@@ -41,7 +41,7 @@ describe "Automate Domains API" do
         api_basic_authorize action_identifier(:automate_domains, :refresh_from_source)
 
         expect_any_instance_of(GitBasedDomainImportService).to receive(:queue_refresh_and_import)
-        post(api_automate_domain_url(nil, git_domain), gen_request(:refresh_from_source))
+        post(api_automate_domain_url(nil, git_domain), :params => gen_request(:refresh_from_source))
         expect_single_action_result(
           :success => true,
           :message => a_string_matching(/Refreshing Automate Domain .* from git repository/),
@@ -53,7 +53,7 @@ describe "Automate Domains API" do
         api_basic_authorize action_identifier(:automate_domains, :refresh_from_source)
 
         expect_any_instance_of(GitBasedDomainImportService).to receive(:queue_refresh_and_import)
-        post(api_automate_domain_url(nil, git_domain.name), gen_request(:refresh_from_source))
+        post(api_automate_domain_url(nil, git_domain.name), :params => gen_request(:refresh_from_source))
         expect_single_action_result(
           :success => true,
           :message => a_string_matching(/Refreshing Automate Domain .* from git repository/),

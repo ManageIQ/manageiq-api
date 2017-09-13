@@ -46,7 +46,7 @@ RSpec.describe "tenants API" do
       api_basic_authorize collection_action_identifier(:tenants, :create)
 
       expect do
-        post api_tenants_url, :parent => {:id => root_tenant.id}
+        post api_tenants_url, :params => { :parent => {:id => root_tenant.id} }
       end.to change(Tenant, :count).by(1)
 
       expect(response).to have_http_status(:ok)
@@ -57,7 +57,7 @@ RSpec.describe "tenants API" do
       invalid_tenant = FactoryGirl.create(:tenant, :parent => root_tenant).destroy
 
       expect do
-        post api_tenants_url, :parent => {:id => invalid_tenant.id}
+        post api_tenants_url, :params => { :parent => {:id => invalid_tenant.id} }
       end.not_to change(Tenant, :count)
 
       expect(response).to have_http_status(:not_found)
@@ -73,7 +73,7 @@ RSpec.describe "tenants API" do
       )
       options = {:name => "New Tenant name", :description => "New Tenant description"}
 
-      post api_tenant_url(nil, tenant), gen_request(:edit, options)
+      post api_tenant_url(nil, tenant), :params => gen_request(:edit, options)
 
       expect(response).to have_http_status(:ok)
       tenant.reload
@@ -91,7 +91,7 @@ RSpec.describe "tenants API" do
       )
       options = {:name => "New Tenant name", :description => "New Tenant description"}
 
-      put api_tenant_url(nil, tenant), options
+      put api_tenant_url(nil, tenant), :params => options
 
       expect(response).to have_http_status(:ok)
       tenant.reload
@@ -136,7 +136,7 @@ RSpec.describe "tenants API" do
         {"href" => api_tenant_url(nil, tenant_2), "name" => "Updated Test Tenant 2"}
       ]
 
-      post api_tenants_url, gen_request(:edit, options)
+      post api_tenants_url, :params => gen_request(:edit, options)
 
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash(
@@ -152,7 +152,7 @@ RSpec.describe "tenants API" do
       api_basic_authorize action_identifier(:tenants, :delete)
       tenant = FactoryGirl.create(:tenant, :parent => root_tenant)
 
-      expect { post api_tenant_url(nil, tenant), gen_request(:delete) }.to change(Tenant, :count).by(-1)
+      expect { post api_tenant_url(nil, tenant), :params => gen_request(:delete) }.to change(Tenant, :count).by(-1)
       expect(response).to have_http_status(:ok)
     end
 
@@ -174,7 +174,7 @@ RSpec.describe "tenants API" do
       ]
 
       expect do
-        post api_tenants_url, gen_request(:delete, options)
+        post api_tenants_url, :params => gen_request(:delete, options)
       end.to change(Tenant, :count).by(-2)
       expect(response).to have_http_status(:ok)
     end
@@ -185,7 +185,7 @@ RSpec.describe "tenants API" do
       api_basic_authorize
 
       expect do
-        post api_tenants_url, :parent => {:id => root_tenant.id}
+        post api_tenants_url, :params => { :parent => {:id => root_tenant.id} }
       end.not_to change(Tenant, :count)
 
       expect(response).to have_http_status(:forbidden)
@@ -201,7 +201,7 @@ RSpec.describe "tenants API" do
       )
       options = {:name => "New Tenant name", :description => "New Tenant description"}
 
-      post api_tenant_url(nil, tenant), gen_request(:edit, options)
+      post api_tenant_url(nil, tenant), :params => gen_request(:edit, options)
 
       expect(response).to have_http_status(:forbidden)
       tenant.reload
@@ -219,7 +219,7 @@ RSpec.describe "tenants API" do
       )
       options = {:name => "New Tenant name", :description => "New Tenant description"}
 
-      put api_tenant_url(nil, tenant), options
+      put api_tenant_url(nil, tenant), :params => options
 
       expect(response).to have_http_status(:forbidden)
       tenant.reload
@@ -244,7 +244,7 @@ RSpec.describe "tenants API" do
         {"href" => api_tenant_url(nil, tenant_2), "name" => "Updated Test Tenant 2"}
       ]
 
-      post api_tenants_url, gen_request(:edit, options)
+      post api_tenants_url, :params => gen_request(:edit, options)
 
       expect(response).to have_http_status(:forbidden)
       expect(tenant_1.reload.name).to eq("Test Tenant 1")
@@ -255,7 +255,7 @@ RSpec.describe "tenants API" do
       api_basic_authorize
       tenant = FactoryGirl.create(:tenant, :parent => root_tenant)
 
-      expect { post api_tenant_url(nil, tenant), gen_request(:delete) }.not_to change(Tenant, :count)
+      expect { post api_tenant_url(nil, tenant), :params => gen_request(:delete) }.not_to change(Tenant, :count)
       expect(response).to have_http_status(:forbidden)
     end
 
@@ -277,7 +277,7 @@ RSpec.describe "tenants API" do
       ]
 
       expect do
-        post api_tenants_url, gen_request(:delete, options)
+        post api_tenants_url, :params => gen_request(:delete, options)
       end.not_to change(Tenant, :count)
       expect(response).to have_http_status(:forbidden)
     end

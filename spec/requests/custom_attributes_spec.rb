@@ -35,7 +35,7 @@ RSpec.describe "Custom Attributes API" do
     custom_attribute = FactoryGirl.create(:custom_attribute, :resource => provider, :name => 'foo', :value => 'bar')
     api_basic_authorize subcollection_action_identifier(:providers, :custom_attributes, :edit, :post)
 
-    post(api_provider_custom_attribute_url(nil, provider, custom_attribute), :action => :edit, :name => 'name1')
+    post(api_provider_custom_attribute_url(nil, provider, custom_attribute), :params => { :action => :edit, :name => 'name1' })
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body['href']).to include(api_provider_custom_attribute_url(nil, provider.compressed_id, custom_attribute.compressed_id))

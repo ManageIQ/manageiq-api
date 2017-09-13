@@ -35,7 +35,7 @@ describe "Conditions API" do
     it "forbids access to create condition without an appropriate role" do
       api_basic_authorize
 
-      post(api_conditions_url, sample_condition)
+      post(api_conditions_url, :params => sample_condition)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -43,7 +43,7 @@ describe "Conditions API" do
     it "forbids access to edit condition without an appropriate role" do
       api_basic_authorize
 
-      post(api_condition_url(nil, condition), gen_request(:edit, "description" => "change"))
+      post(api_condition_url(nil, condition), :params => gen_request(:edit, "description" => "change"))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -52,7 +52,7 @@ describe "Conditions API" do
       condition
       api_basic_authorize
 
-      post(api_conditions_url, gen_request(:delete, "name" => condition.name, "href" => condition_url))
+      post(api_conditions_url, :params => gen_request(:delete, "name" => condition.name, "href" => condition_url))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -68,7 +68,7 @@ describe "Conditions API" do
 
     it "creates new condition" do
       api_basic_authorize collection_action_identifier(:conditions, :create)
-      post(api_conditions_url, sample_condition)
+      post(api_conditions_url, :params => sample_condition)
 
       expect(response).to have_http_status(:ok)
 
@@ -79,8 +79,8 @@ describe "Conditions API" do
 
     it "creates new conditions" do
       api_basic_authorize collection_action_identifier(:conditions, :create)
-      post(api_conditions_url, gen_request(:create, [sample_condition,
-                                                     sample_condition.merge(:name => "foo", :description => "bar")]))
+      post(api_conditions_url, :params => gen_request(:create, [sample_condition,
+                                                                sample_condition.merge(:name => "foo", :description => "bar")]))
       expect(response).to have_http_status(:ok)
 
       expect(response.parsed_body["results"].count).to eq(2)
@@ -88,7 +88,7 @@ describe "Conditions API" do
 
     it "deletes condition" do
       api_basic_authorize collection_action_identifier(:conditions, :delete)
-      post(api_conditions_url, gen_request(:delete, "name" => condition.name, "href" => condition_url))
+      post(api_conditions_url, :params => gen_request(:delete, "name" => condition.name, "href" => condition_url))
 
       expect(response).to have_http_status(:ok)
 
@@ -97,10 +97,10 @@ describe "Conditions API" do
 
     it "deletes conditions" do
       api_basic_authorize collection_action_identifier(:conditions, :delete)
-      post(api_conditions_url, gen_request(:delete, [{"name" => conditions.first.name,
-                                                          "href" => api_condition_url(nil, conditions.first)},
-                                                         {"name" => conditions.second.name,
-                                                          "href" => api_condition_url(nil, conditions.second)}]))
+      post(api_conditions_url, :params => gen_request(:delete, [{"name" => conditions.first.name,
+                                                                 "href" => api_condition_url(nil, conditions.first)},
+                                                                {"name" => conditions.second.name,
+                                                                 "href" => api_condition_url(nil, conditions.second)}]))
 
       expect(response).to have_http_status(:ok)
 
@@ -118,7 +118,7 @@ describe "Conditions API" do
 
     it "edits condition" do
       api_basic_authorize collection_action_identifier(:conditions, :edit)
-      post(api_condition_url(nil, condition), gen_request(:edit, "description" => "change"))
+      post(api_condition_url(nil, condition), :params => gen_request(:edit, "description" => "change"))
 
       expect(response).to have_http_status(:ok)
 
@@ -128,8 +128,8 @@ describe "Conditions API" do
 
     it "edits conditions" do
       api_basic_authorize collection_action_identifier(:conditions, :edit)
-      post(api_conditions_url, gen_request(:edit, [{"id" => conditions.first.id, "description" => "change"},
-                                                   {"id" => conditions.second.id, "description" => "change2"}]))
+      post(api_conditions_url, :params => gen_request(:edit, [{"id" => conditions.first.id, "description" => "change"},
+                                                              {"id" => conditions.second.id, "description" => "change2"}]))
       expect(response).to have_http_status(:ok)
 
       expect(response.parsed_body["results"].count).to eq(2)
@@ -172,7 +172,7 @@ describe "Conditions API" do
       api_basic_authorize collection_action_identifier(:conditions, :read, :get)
       create_conditions(3)
 
-      get api_conditions_url, :expand => "resources"
+      get api_conditions_url, :params => { :expand => "resources" }
 
       expect_query_result(:conditions, 3, 3)
       expect_result_resources_to_include_data("resources", "guid" => condition_guid_list)
@@ -195,7 +195,7 @@ describe "Conditions API" do
       create_conditions(3)
       assign_conditions_to(policy)
 
-      get(api_policy_conditions_url(nil, policy), :expand => "resources")
+      get(api_policy_conditions_url(nil, policy), :params => { :expand => "resources" })
 
       expect_query_result(:conditions, 3, 3)
       expect_result_resources_to_include_data("resources", "guid" => condition_guid_list)
@@ -206,7 +206,7 @@ describe "Conditions API" do
       create_conditions(3)
       assign_conditions_to(policy)
 
-      get(api_policy_url(nil, policy), :expand => "conditions")
+      get(api_policy_url(nil, policy), :params => { :expand => "conditions" })
 
       expect_single_resource_query("name" => policy.name, "description" => policy.description, "guid" => policy.guid)
       expect_result_resources_to_include_data("conditions", "guid" => condition_guid_list)

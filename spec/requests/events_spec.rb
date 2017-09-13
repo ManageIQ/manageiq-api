@@ -48,7 +48,7 @@ describe "Events API" do
       api_basic_authorize collection_action_identifier(:events, :read, :get)
       create_events(3)
 
-      get api_events_url, :expand => "resources"
+      get api_events_url, :params => { :expand => "resources" }
 
       expect_query_result(:events, 3, 3)
       expect_result_resources_to_include_data("resources", "guid" => miq_event_guid_list)
@@ -77,7 +77,7 @@ describe "Events API" do
       create_events(3)
       relate_events_to(policy)
 
-      get api_policy_events_url(nil, policy), :expand => "resources"
+      get api_policy_events_url(nil, policy), :params => { :expand => "resources" }
 
       expect_query_result(:events, 3, 3)
       expect_result_resources_to_include_data("resources", "guid" => miq_event_guid_list)
@@ -88,7 +88,7 @@ describe "Events API" do
       create_events(3)
       relate_events_to(policy)
 
-      get api_policy_url(nil, policy), :expand => "events"
+      get api_policy_url(nil, policy), :params => { :expand => "events" }
 
       expect_single_resource_query("name" => policy.name, "description" => policy.description, "guid" => policy.guid)
       expect_result_resources_to_include_data("events", "guid" => miq_event_guid_list)

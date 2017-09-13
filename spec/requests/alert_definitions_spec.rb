@@ -63,7 +63,7 @@ describe "Alerts Definitions API" do
       "description" => "Test Alert Definition",
       "db"          => "ContainerNode"
     }
-    post(api_alert_definitions_url, alert_definition)
+    post(api_alert_definitions_url, :params => alert_definition)
     expect(response).to have_http_status(:forbidden)
   end
 
@@ -76,7 +76,7 @@ describe "Alerts Definitions API" do
       "enabled"     => true
     }
     api_basic_authorize collection_action_identifier(:alert_definitions, :create)
-    post(api_alert_definitions_url, sample_alert_definition)
+    post(api_alert_definitions_url, :params => sample_alert_definition)
     expect(response).to have_http_status(:ok)
     alert_definition = MiqAlert.find(ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"]))
     expect(alert_definition).to be_truthy
@@ -94,7 +94,7 @@ describe "Alerts Definitions API" do
   it "deletes an alert definition via POST" do
     api_basic_authorize action_identifier(:alert_definitions, :delete, :resource_actions, :post)
     alert_definition = FactoryGirl.create(:miq_alert)
-    post(api_alert_definition_url(nil, alert_definition), gen_request(:delete))
+    post(api_alert_definition_url(nil, alert_definition), :params => gen_request(:delete))
     expect(response).to have_http_status(:ok)
     expect_single_action_result(:success => true,
                                 :message => "alert_definitions id: #{alert_definition.id} deleting",
@@ -112,8 +112,8 @@ describe "Alerts Definitions API" do
   it "deletes alert definitions" do
     api_basic_authorize collection_action_identifier(:alert_definitions, :delete)
     alert_definitions = FactoryGirl.create_list(:miq_alert, 2)
-    post(api_alert_definitions_url, gen_request(:delete, [{"id" => alert_definitions.first.id},
-                                                          {"id" => alert_definitions.second.id}]))
+    post(api_alert_definitions_url, :params => gen_request(:delete, [{"id" => alert_definitions.first.id},
+                                                                     {"id" => alert_definitions.second.id}]))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body["results"].count).to eq(2)
   end
@@ -128,8 +128,15 @@ describe "Alerts Definitions API" do
 
     post(
       api_alert_definition_url(nil, alert_definition),
-      :action  => "edit",
-      :options => { :notifications => {:delay_next_evaluation => 60, :evm_event => {} } }
+      :params => {
+        :action  => "edit",
+        :options => {
+          :notifications => {
+            :delay_next_evaluation => 60,
+            :evm_event             => {}
+          }
+        }
+      }
     )
 
     expected = {
@@ -152,10 +159,10 @@ describe "Alerts Definitions API" do
   it "edits alert definitions" do
     api_basic_authorize collection_action_identifier(:alert_definitions, :edit)
     alert_definitions = FactoryGirl.create_list(:miq_alert, 2)
-    post(api_alert_definitions_url, gen_request(:edit, [{"id"          => alert_definitions.first.id,
-                                                         "description" => "Updated Test Alert 1"},
-                                                        {"id"          => alert_definitions.second.id,
-                                                         "description" => "Updated Test Alert 2"}]))
+    post(api_alert_definitions_url, :params => gen_request(:edit, [{"id"          => alert_definitions.first.id,
+                                                                    "description" => "Updated Test Alert 1"},
+                                                                   {"id"          => alert_definitions.second.id,
+                                                                    "description" => "Updated Test Alert 2"}]))
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body["results"].count).to eq(2)
@@ -212,7 +219,7 @@ describe "Alerts Definition Profiles API" do
 
     alert_definitions = FactoryGirl.create_list(:miq_alert, 2)
     alert_definition_profile = FactoryGirl.create(:miq_alert_set, :alerts => alert_definitions)
-    get(api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile), :expand => "resources")
+    get(api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile), :params => { :expand => "resources" })
 
     expect(response).to have_http_status(:ok)
     expect_result_resources_to_include_hrefs(
@@ -227,7 +234,7 @@ describe "Alerts Definition Profiles API" do
 
     alert_definition = FactoryGirl.create(:miq_alert)
     alert_definition_profile = FactoryGirl.create(:miq_alert_set, :alerts => [alert_definition])
-    get(api_alert_definition_profile_url(nil, alert_definition_profile), :expand => "alert_definitions")
+    get(api_alert_definition_profile_url(nil, alert_definition_profile), :params => { :expand => "alert_definitions" })
 
     expect(response).to have_http_status(:ok)
     expect_single_resource_query(
@@ -245,7 +252,7 @@ describe "Alerts Definition Profiles API" do
       "mode"        => "ContainerNode",
     }
     api_basic_authorize collection_action_identifier(:alert_definition_profiles, :create)
-    post(api_alert_definition_profiles_url, sample_alert_definition_profile)
+    post(api_alert_definition_profiles_url, :params => sample_alert_definition_profile)
 
     expect(response).to have_http_status(:ok)
     id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
@@ -260,7 +267,7 @@ describe "Alerts Definition Profiles API" do
   it "deletes an alert definition profile via POST" do
     api_basic_authorize action_identifier(:alert_definition_profiles, :delete, :resource_actions, :post)
     alert_definition_profile = FactoryGirl.create(:miq_alert_set)
-    post(api_alert_definition_profile_url(nil, alert_definition_profile), gen_request(:delete))
+    post(api_alert_definition_profile_url(nil, alert_definition_profile), :params => gen_request(:delete))
 
     expect(response).to have_http_status(:ok)
     expect_single_action_result(:success => true,
@@ -280,8 +287,8 @@ describe "Alerts Definition Profiles API" do
   it "deletes alert definition profiles" do
     api_basic_authorize collection_action_identifier(:alert_definition_profiles, :delete)
     alert_definition_profiles = FactoryGirl.create_list(:miq_alert_set, 2)
-    post(api_alert_definition_profiles_url, gen_request(:delete, [{"id" => alert_definition_profiles.first.id},
-                                                                  {"id" => alert_definition_profiles.second.id}]))
+    post(api_alert_definition_profiles_url, :params => gen_request(:delete, [{"id" => alert_definition_profiles.first.id},
+                                                                             {"id" => alert_definition_profiles.second.id}]))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body["results"].count).to eq(2)
   end
@@ -289,11 +296,11 @@ describe "Alerts Definition Profiles API" do
   it "edits alert definition profiles" do
     api_basic_authorize action_identifier(:alert_definition_profiles, :edit, :resource_actions, :post)
     alert_definition_profiles = FactoryGirl.create_list(:miq_alert_set, 2)
-    post(api_alert_definition_profiles_url, gen_request(:edit,
-                                                        [{"id"          => alert_definition_profiles.first.id,
-                                                          "description" => "Updated Test Alert Profile 1"},
-                                                         {"id"          => alert_definition_profiles.second.id,
-                                                          "description" => "Updated Test Alert Profile 2"}]))
+    post(api_alert_definition_profiles_url, :params => gen_request(:edit,
+                                                                   [{"id"          => alert_definition_profiles.first.id,
+                                                                     "description" => "Updated Test Alert Profile 1"},
+                                                                    {"id"          => alert_definition_profiles.second.id,
+                                                                     "description" => "Updated Test Alert Profile 2"}]))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body["results"].count).to eq(2)
     expect(alert_definition_profiles.first.reload.description).to eq("Updated Test Alert Profile 1")

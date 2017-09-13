@@ -44,7 +44,7 @@ RSpec.describe 'NetworkRouters API' do
   describe 'POST /api/network_routers' do
     it 'forbids access to network routers without an appropriate role' do
       api_basic_authorize
-      post(api_network_routers_url, gen_request(:query, ""))
+      post(api_network_routers_url, :params => gen_request(:query, ""))
       expect(response).to have_http_status(:forbidden)
     end
   end

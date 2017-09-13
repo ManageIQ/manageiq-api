@@ -47,7 +47,7 @@ describe "Policies Assignment API" do
   def test_policy_assign_no_role(api_object_policies_url)
     api_basic_authorize
 
-    post(api_object_policies_url, gen_request(:assign))
+    post(api_object_policies_url, :params => gen_request(:assign))
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -55,7 +55,7 @@ describe "Policies Assignment API" do
   def test_policy_assign_invalid_policy(api_object_policies_url, collection, subcollection)
     api_basic_authorize subcollection_action_identifier(collection, subcollection, :assign)
 
-    post(api_object_policies_url, gen_request(:assign, :href => "/api/#{subcollection}/999999"))
+    post(api_object_policies_url, :params => gen_request(:assign, :href => "/api/#{subcollection}/999999"))
 
     expect(response).to have_http_status(:not_found)
   end
@@ -63,7 +63,7 @@ describe "Policies Assignment API" do
   def test_policy_assign_invalid_policy_guid(object_url, api_object_policies_url, collection, subcollection)
     api_basic_authorize subcollection_action_identifier(collection, subcollection, :assign)
 
-    post(api_object_policies_url, gen_request(:assign, :guid => "xyzzy"))
+    post(api_object_policies_url, :params => gen_request(:assign, :guid => "xyzzy"))
 
     expect(response).to have_http_status(:ok)
     results_hash = [{"success" => false, "href" => object_url, "message" => /must specify a valid/i}]
@@ -76,7 +76,7 @@ describe "Policies Assignment API" do
     object = options[:object]
     policies = options[:policies]
 
-    post(api_object_policies_url, gen_request(:assign, policies.collect { |p| {:guid => p.guid} }))
+    post(api_object_policies_url, :params => gen_request(:assign, policies.collect { |p| {:guid => p.guid} }))
 
     expect_multiple_action_result(policies.size)
     sc_prefix = subcollection.to_s.singularize
@@ -91,7 +91,7 @@ describe "Policies Assignment API" do
   def test_policy_unassign_no_role(api_object_policies_url)
     api_basic_authorize
 
-    post(api_object_policies_url, gen_request(:unassign))
+    post(api_object_policies_url, :params => gen_request(:unassign))
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -99,7 +99,7 @@ describe "Policies Assignment API" do
   def test_policy_unassign_invalid_policy(api_object_policies_url, collection, subcollection)
     api_basic_authorize subcollection_action_identifier(collection, subcollection, :unassign)
 
-    post(api_object_policies_url, gen_request(:unassign, :href => "/api/#{subcollection}/999999"))
+    post(api_object_policies_url, :params => gen_request(:unassign, :href => "/api/#{subcollection}/999999"))
 
     expect(response).to have_http_status(:not_found)
   end
@@ -107,7 +107,7 @@ describe "Policies Assignment API" do
   def test_policy_unassign_invalid_policy_guid(object_url, api_object_policies_url, collection, subcollection)
     api_basic_authorize subcollection_action_identifier(collection, subcollection, :unassign)
 
-    post(api_object_policies_url, gen_request(:unassign, :guid => "xyzzy"))
+    post(api_object_policies_url, :params => gen_request(:unassign, :guid => "xyzzy"))
 
     expect(response).to have_http_status(:ok)
     results_hash = [{"success" => false, "href" => object_url, "message" => /must specify a valid/i}]
@@ -119,7 +119,7 @@ describe "Policies Assignment API" do
 
     object = options[:object]
     [p1, p2, p3].each { |p| object.add_policy(p) }
-    post(api_object_policies_url, gen_request(:unassign, [{:guid => p2.guid}, {:guid => p3.guid}]))
+    post(api_object_policies_url, :params => gen_request(:unassign, [{:guid => p2.guid}, {:guid => p3.guid}]))
     object.reload
 
     expect_multiple_action_result(2)
@@ -132,7 +132,7 @@ describe "Policies Assignment API" do
 
     object = options[:object]
     [ps1, ps2].each { |ps| object.add_policy(ps) }
-    post(api_object_policies_url, gen_request(:unassign, [{:guid => ps2.guid}]))
+    post(api_object_policies_url, :params => gen_request(:unassign, [{:guid => ps2.guid}]))
 
     expect_multiple_action_result(1)
     expect(object.get_policies.size).to eq(1)

@@ -49,7 +49,7 @@ describe "tenant quotas API" do
         ]
       }
       expect do
-        post "/api/tenants/#{tenant.id}/quotas/", :name => :cpu_allocated, :value => 1
+        post "/api/tenants/#{tenant.id}/quotas/", :params => { :name => :cpu_allocated, :value => 1 }
       end.to change(TenantQuota, :count).by(1)
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -62,7 +62,7 @@ describe "tenant quotas API" do
 
       options = {:value => 5}
 
-      post "/api/tenants/#{tenant.id}/quotas/#{quota.id}", gen_request(:edit, options)
+      post "/api/tenants/#{tenant.id}/quotas/#{quota.id}", :params => gen_request(:edit, options)
 
       expect(response).to have_http_status(:ok)
       quota.reload
@@ -76,7 +76,7 @@ describe "tenant quotas API" do
 
       options = {:value => 5}
 
-      put "/api/tenants/#{tenant.id}/quotas/#{quota.id}", options
+      put "/api/tenants/#{tenant.id}/quotas/#{quota.id}", :params => options
 
       expect(response).to have_http_status(:ok)
       quota.reload
@@ -95,7 +95,7 @@ describe "tenant quotas API" do
         {"href" => "/api/tenants/#{tenant.id}/quotas/#{quota_2.id}", "value" => 4},
       ]
 
-      post "/api/tenants/#{tenant.id}/quotas/", gen_request(:edit, options)
+      post "/api/tenants/#{tenant.id}/quotas/", :params => gen_request(:edit, options)
 
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash(
@@ -113,7 +113,7 @@ describe "tenant quotas API" do
       quota = FactoryGirl.create(:tenant_quota, :tenant_id => tenant.id, :name => :cpu_allocated, :value => 1)
 
       expect do
-        post "/api/tenants/#{tenant.id}/quotas/#{quota.id}", gen_request(:delete)
+        post "/api/tenants/#{tenant.id}/quotas/#{quota.id}", :params => gen_request(:delete)
       end.to change(TenantQuota, :count).by(-1)
 
       expect(response).to have_http_status(:ok)
@@ -143,7 +143,7 @@ describe "tenant quotas API" do
       ]
 
       expect do
-        post "/api/tenants/#{tenant.id}/quotas/", gen_request(:delete, options)
+        post "/api/tenants/#{tenant.id}/quotas/", :params => gen_request(:delete, options)
       end.to change(TenantQuota, :count).by(-2)
 
       expect(response).to have_http_status(:ok)
@@ -155,7 +155,7 @@ describe "tenant quotas API" do
       api_basic_authorize
 
       expect do
-        post "/api/tenants/#{tenant.id}/quotas/", :name => :cpu_allocated, :value => 1
+        post "/api/tenants/#{tenant.id}/quotas/", :params => { :name => :cpu_allocated, :value => 1 }
       end.not_to change(TenantQuota, :count)
 
       expect(response).to have_http_status(:forbidden)
@@ -168,7 +168,7 @@ describe "tenant quotas API" do
 
       options = {:value => 5}
 
-      post "/api/tenants/#{tenant.id}/quotas/#{quota.id}", gen_request(:edit, options)
+      post "/api/tenants/#{tenant.id}/quotas/#{quota.id}", :params => gen_request(:edit, options)
 
       expect(response).to have_http_status(:forbidden)
       quota.reload
@@ -182,7 +182,7 @@ describe "tenant quotas API" do
 
       options = {:value => 5}
 
-      put "/api/tenants/#{tenant.id}/quotas/#{quota.id}", options
+      put "/api/tenants/#{tenant.id}/quotas/#{quota.id}", :params => options
 
       expect(response).to have_http_status(:forbidden)
       quota.reload
@@ -200,7 +200,7 @@ describe "tenant quotas API" do
         {"href" => "/api/tenants/#{tenant.id}/quotas/#{quota_2.id}"}
       ]
 
-      post "/api/tenants/#{tenant.id}/quotas/", gen_request(:edit, options)
+      post "/api/tenants/#{tenant.id}/quotas/", :params => gen_request(:edit, options)
 
       expect(response).to have_http_status(:forbidden)
       expect(quota_1.reload.value).to eq(1)
@@ -213,7 +213,7 @@ describe "tenant quotas API" do
       quota = FactoryGirl.create(:tenant_quota, :tenant_id => tenant.id, :name => :cpu_allocated, :value => 1)
 
       expect do
-        post "/api/tenants/#{tenant.id}/quotas/#{quota.id}", gen_request(:delete)
+        post "/api/tenants/#{tenant.id}/quotas/#{quota.id}", :params => gen_request(:delete)
       end.not_to change(TenantQuota, :count)
 
       expect(response).to have_http_status(:forbidden)
@@ -243,7 +243,7 @@ describe "tenant quotas API" do
       ]
 
       expect do
-        post "/api/tenants/#{tenant.id}/quotas/", gen_request(:delete, options)
+        post "/api/tenants/#{tenant.id}/quotas/", :params => gen_request(:delete, options)
       end.not_to change(TenantQuota, :count)
 
       expect(response).to have_http_status(:forbidden)

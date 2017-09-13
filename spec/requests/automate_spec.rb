@@ -31,7 +31,7 @@ describe "Automate API" do
     it 'returns only the requested attributes' do
       api_basic_authorize action_identifier(:automate, :read, :collection_actions, :get)
 
-      get api_automates_url, :expand => 'resources', :attributes => 'name'
+      get api_automates_url, :params => { :expand => 'resources', :attributes => 'name' }
 
       expect(response).to have_http_status(:ok)
       response.parsed_body['resources'].each { |res| expect_hash_to_have_only_keys(res, %w(fqname name)) }
@@ -51,7 +51,7 @@ describe "Automate API" do
     it "supports depth 1" do
       api_basic_authorize action_identifier(:automate, :read, :collection_actions, :get)
 
-      get(api_automate_url(nil, "custom"), :depth => 1)
+      get(api_automate_url(nil, "custom"), :params => { :depth => 1 })
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["resources"]).to match_array(
@@ -63,7 +63,7 @@ describe "Automate API" do
     it "supports depth -1" do
       api_basic_authorize action_identifier(:automate, :read, :collection_actions, :get)
 
-      get(api_automates_url, :depth => -1)
+      get(api_automates_url, :params => { :depth => -1 })
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["resources"]).to match_array(
@@ -76,7 +76,7 @@ describe "Automate API" do
     it "supports state_machines search option" do
       api_basic_authorize action_identifier(:automate, :read, :collection_actions, :get)
 
-      get(api_automates_url, :depth => -1, :search_options => "state_machines")
+      get(api_automates_url, :params => { :depth => -1, :search_options => "state_machines" })
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["resources"]).to match_array(
@@ -88,7 +88,7 @@ describe "Automate API" do
     it "always return the fqname" do
       api_basic_authorize action_identifier(:automate, :read, :collection_actions, :get)
 
-      get(api_automate_url(nil, "custom/system"), :attributes => "name")
+      get(api_automate_url(nil, "custom/system"), :params => { :attributes => "name" })
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["resources"]).to match_array([{"name" => "System", "fqname" => "/Custom/System"}])

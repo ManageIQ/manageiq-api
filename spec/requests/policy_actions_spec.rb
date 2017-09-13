@@ -50,7 +50,7 @@ describe "Policy Actions API" do
       api_basic_authorize collection_action_identifier(:policy_actions, :read, :get)
       create_actions(4)
 
-      get api_policy_actions_url, :expand => "resources"
+      get api_policy_actions_url, :params => { :expand => "resources" }
 
       expect_query_result(:policy_actions, 4, 4)
       expect_result_resources_to_include_data("resources", "guid" => miq_action_guid_list)
@@ -79,7 +79,7 @@ describe "Policy Actions API" do
       create_actions(4)
       relate_actions_to(policy)
 
-      get api_policy_policy_actions_url(nil, policy), :expand => "resources"
+      get api_policy_policy_actions_url(nil, policy), :params => { :expand => "resources" }
 
       expect_query_result(:policy_actions, 4, 4)
       expect_result_resources_to_include_data("resources", "guid" => miq_action_guid_list)
@@ -90,7 +90,7 @@ describe "Policy Actions API" do
       create_actions(4)
       relate_actions_to(policy)
 
-      get api_policy_url(nil, policy), :expand => "policy_actions"
+      get api_policy_url(nil, policy), :params => { :expand => "policy_actions" }
 
       expect_single_resource_query("name" => policy.name, "description" => policy.description, "guid" => policy.guid)
       expect_result_resources_to_include_data("policy_actions", "guid" => miq_action_guid_list)

@@ -95,7 +95,7 @@ describe "Automation Requests API" do
     it "supports single request with normal post" do
       api_basic_authorize
 
-      post(api_automation_requests_url, single_automation_request)
+      post(api_automation_requests_url, :params => single_automation_request)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", %w(id approval_state type request_type status options))
@@ -108,7 +108,7 @@ describe "Automation Requests API" do
     it "supports single request with create action" do
       api_basic_authorize
 
-      post(api_automation_requests_url, gen_request(:create, single_automation_request))
+      post(api_automation_requests_url, :params => gen_request(:create, single_automation_request))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", %w(id approval_state type request_type status options))
@@ -121,7 +121,7 @@ describe "Automation Requests API" do
     it "supports multiple requests" do
       api_basic_authorize
 
-      post(api_automation_requests_url, gen_request(:create, [single_automation_request, single_automation_request]))
+      post(api_automation_requests_url, :params => gen_request(:create, [single_automation_request, single_automation_request]))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", %w(id approval_state type request_type status options))
@@ -138,7 +138,7 @@ describe "Automation Requests API" do
       automation_request = FactoryGirl.create(:automation_request, :requester => @user, :options => {:foo => "bar"})
       api_basic_authorize
 
-      post(api_automation_request_url(nil, automation_request), :action => "edit", :options => {:baz => "qux"})
+      post(api_automation_request_url(nil, automation_request), :params => { :action => "edit", :options => {:baz => "qux"} })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -147,7 +147,7 @@ describe "Automation Requests API" do
       automation_request = FactoryGirl.create(:automation_request, :requester => @user, :options => {:foo => "bar"})
       api_basic_authorize(action_identifier(:automation_requests, :edit))
 
-      post(api_automation_request_url(nil, automation_request), :action => "edit", :options => {:baz => "qux"})
+      post(api_automation_request_url(nil, automation_request), :params => { :action => "edit", :options => {:baz => "qux"} })
 
       expected = {
         "id"      => automation_request.compressed_id,
@@ -166,11 +166,13 @@ describe "Automation Requests API" do
 
       post(
         api_automation_requests_url,
-        :action    => "edit",
-        :resources => [
-          {:id => automation_request.id, :options => {:baz => "qux"}},
-          {:id => automation_request2.id, :options => {:quux => "quuz"}}
-        ]
+        :params => {
+          :action    => "edit",
+          :resources => [
+            {:id => automation_request.id, :options => {:baz => "qux"}},
+            {:id => automation_request2.id, :options => {:quux => "quuz"}}
+          ]
+        }
       )
 
       expected = {
@@ -195,7 +197,7 @@ describe "Automation Requests API" do
     it "supports approving a request" do
       api_basic_authorize collection_action_identifier(:automation_requests, :approve)
 
-      post(request1_url, gen_request(:approve, :reason => "approve reason"))
+      post(request1_url, :params => gen_request(:approve, :reason => "approve reason"))
 
       expected_msg = "Automation request #{request1.id} approved"
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_automation_request_url(nil, request1.compressed_id))
@@ -204,7 +206,7 @@ describe "Automation Requests API" do
     it "supports denying a request" do
       api_basic_authorize collection_action_identifier(:automation_requests, :deny)
 
-      post(request2_url, gen_request(:deny, :reason => "deny reason"))
+      post(request2_url, :params => gen_request(:deny, :reason => "deny reason"))
 
       expected_msg = "Automation request #{request2.id} denied"
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_automation_request_url(nil, request2.compressed_id))
@@ -213,8 +215,8 @@ describe "Automation Requests API" do
     it "supports approving multiple requests" do
       api_basic_authorize collection_action_identifier(:automation_requests, :approve)
 
-      post(api_automation_requests_url, gen_request(:approve, [{"href" => request1_url, "reason" => "approve reason"},
-                                                               {"href" => request2_url, "reason" => "approve reason"}]))
+      post(api_automation_requests_url, :params => gen_request(:approve, [{"href" => request1_url, "reason" => "approve reason"},
+                                                                          {"href" => request2_url, "reason" => "approve reason"}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
@@ -237,8 +239,8 @@ describe "Automation Requests API" do
     it "supports denying multiple requests" do
       api_basic_authorize collection_action_identifier(:automation_requests, :deny)
 
-      post(api_automation_requests_url, gen_request(:deny, [{"href" => request1_url, "reason" => "deny reason"},
-                                                            {"href" => request2_url, "reason" => "deny reason"}]))
+      post(api_automation_requests_url, :params => gen_request(:deny, [{"href" => request1_url, "reason" => "deny reason"},
+                                                                       {"href" => request2_url, "reason" => "deny reason"}]))
 
       expected = {
         "results" => a_collection_containing_exactly(

@@ -32,7 +32,7 @@ describe "Service Catalogs API" do
       FactoryGirl.create(:service_template_catalog)
       api_basic_authorize collection_action_identifier(:service_catalogs, :read, :get)
 
-      get api_service_catalogs_url, :expand => 'resources', :attributes => 'name'
+      get api_service_catalogs_url, :params => { :expand => 'resources', :attributes => 'name' }
 
       expect(response).to have_http_status(:ok)
       response.parsed_body['resources'].each { |res| expect_hash_to_have_only_keys(res, %w(href id name)) }
@@ -43,7 +43,7 @@ describe "Service Catalogs API" do
     it "rejects resource creation without appropriate role" do
       api_basic_authorize
 
-      post(api_service_catalogs_url, gen_request(:add, "name" => "sample service catalog"))
+      post(api_service_catalogs_url, :params => gen_request(:add, "name" => "sample service catalog"))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -51,7 +51,7 @@ describe "Service Catalogs API" do
     it "rejects resource creation via create action without appropriate role" do
       api_basic_authorize
 
-      post(api_service_catalogs_url, "name" => "sample service catalog")
+      post(api_service_catalogs_url, :params => { "name" => "sample service catalog" })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -59,7 +59,7 @@ describe "Service Catalogs API" do
     it "rejects resource creation with id specified" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :add)
 
-      post(api_service_catalogs_url, gen_request(:add, "name" => "sample service catalog", "id" => 100))
+      post(api_service_catalogs_url, :params => gen_request(:add, "name" => "sample service catalog", "id" => 100))
 
       expect_bad_request(/id or href should not be specified/i)
     end
@@ -67,7 +67,7 @@ describe "Service Catalogs API" do
     it "supports single resource creation" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :add)
 
-      post(api_service_catalogs_url, gen_request(:add, "name" => "sample service catalog"))
+      post(api_service_catalogs_url, :params => gen_request(:add, "name" => "sample service catalog"))
 
       expect(response).to have_http_status(:ok)
       expected = {
@@ -88,7 +88,7 @@ describe "Service Catalogs API" do
     it "supports single resource creation via create action" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :add)
 
-      post(api_service_catalogs_url, "name" => "sample service catalog")
+      post(api_service_catalogs_url, :params => { "name" => "sample service catalog" })
 
       expect(response).to have_http_status(:ok)
       expected = {
@@ -109,7 +109,7 @@ describe "Service Catalogs API" do
     it "supports multiple resource creation" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :add)
 
-      post(api_service_catalogs_url, gen_request(:add, [{"name" => "sc1"}, {"name" => "sc2"}]))
+      post(api_service_catalogs_url, :params => gen_request(:add, [{"name" => "sc1"}, {"name" => "sc2"}]))
 
       expect(response).to have_http_status(:ok)
       expected = {
@@ -133,13 +133,18 @@ describe "Service Catalogs API" do
       st1 = FactoryGirl.create(:service_template)
       st2 = FactoryGirl.create(:service_template)
 
-      post(api_service_catalogs_url, gen_request(:add,
-                                                 "name"              => "sc",
-                                                 "description"       => "sc description",
-                                                 "service_templates" => [
-                                                   {"href" => api_service_template_url(nil, st1)},
-                                                   {"href" => api_service_template_url(nil, st2)}
-                                                 ]))
+      post(
+        api_service_catalogs_url,
+        :params => gen_request(
+          :add,
+          "name"              => "sc",
+          "description"       => "sc description",
+          "service_templates" => [
+            {"href" => api_service_template_url(nil, st1)},
+            {"href" => api_service_template_url(nil, st2)}
+          ]
+        )
+      )
 
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results", [{"name" => "sc", "description" => "sc description"}])
@@ -155,7 +160,7 @@ describe "Service Catalogs API" do
     it "rejects resource edits without appropriate role" do
       api_basic_authorize
 
-      post(api_service_catalogs_url, gen_request(:edit, "name" => "sc1", "href" => api_service_catalog_url(nil, 999_999)))
+      post(api_service_catalogs_url, :params => gen_request(:edit, "name" => "sc1", "href" => api_service_catalog_url(nil, 999_999)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -163,7 +168,7 @@ describe "Service Catalogs API" do
     it "rejects edits for invalid resources" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :edit)
 
-      post(api_service_catalog_url(nil, 999_999), gen_request(:edit, "description" => "updated sc description"))
+      post(api_service_catalog_url(nil, 999_999), :params => gen_request(:edit, "description" => "updated sc description"))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -173,7 +178,7 @@ describe "Service Catalogs API" do
 
       sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
 
-      post(api_service_catalog_url(nil, sc), gen_request(:edit, "description" => "updated sc description"))
+      post(api_service_catalog_url(nil, sc), :params => gen_request(:edit, "description" => "updated sc description"))
 
       expected = {
         "service_templates" => a_hash_including(
@@ -200,9 +205,9 @@ describe "Service Catalogs API" do
       sc1 = FactoryGirl.create(:service_template_catalog, :name => "sc1", :description => "sc1 description")
       sc2 = FactoryGirl.create(:service_template_catalog, :name => "sc2", :description => "sc2 description")
 
-      post(api_service_catalogs_url, gen_request(:edit,
-                                                     [{"href" => api_service_catalog_url(nil, sc1), "name" => "sc1 updated"},
-                                                      {"href" => api_service_catalog_url(nil, sc2), "name" => "sc2 updated"}]))
+      post(api_service_catalogs_url, :params => gen_request(:edit,
+                                                            [{"href" => api_service_catalog_url(nil, sc1), "name" => "sc1 updated"},
+                                                             {"href" => api_service_catalog_url(nil, sc2), "name" => "sc2 updated"}]))
 
       expect_results_to_match_hash("results",
                                    [{"id" => sc1.compressed_id, "name" => "sc1 updated", "description" => "sc1 description"},
@@ -217,7 +222,7 @@ describe "Service Catalogs API" do
     it "rejects deletion without appropriate role" do
       api_basic_authorize
 
-      post(api_service_catalogs_url, gen_request(:delete, "name" => "sc1", "href" => api_service_catalog_url(nil, 100)))
+      post(api_service_catalogs_url, :params => gen_request(:delete, "name" => "sc1", "href" => api_service_catalog_url(nil, 100)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -254,7 +259,7 @@ describe "Service Catalogs API" do
 
       sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
 
-      post(api_service_catalog_url(nil, sc), gen_request(:delete))
+      post(api_service_catalog_url(nil, sc), :params => gen_request(:delete))
 
       expect_single_action_result(:success => true, :message => "deleting", :href => api_service_catalog_url(nil, sc.compressed_id))
       expect { sc.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -266,9 +271,9 @@ describe "Service Catalogs API" do
       sc1 = FactoryGirl.create(:service_template_catalog, :name => "sc1", :description => "sc1 description")
       sc2 = FactoryGirl.create(:service_template_catalog, :name => "sc2", :description => "sc2 description")
 
-      post(api_service_catalogs_url, gen_request(:delete,
-                                                     [{"href" => api_service_catalog_url(nil, sc1)},
-                                                      {"href" => api_service_catalog_url(nil, sc2)}]))
+      post(api_service_catalogs_url, :params => gen_request(:delete,
+                                                            [{"href" => api_service_catalog_url(nil, sc1)},
+                                                             {"href" => api_service_catalog_url(nil, sc2)}]))
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_service_catalog_url(nil, sc1.compressed_id), api_service_catalog_url(nil, sc2.compressed_id)])
 
@@ -281,7 +286,7 @@ describe "Service Catalogs API" do
     it "rejects assign requests without appropriate role" do
       api_basic_authorize
 
-      post(sc_template_url(100), gen_request(:assign, "href" => api_service_template_url(nil, 1)))
+      post(sc_template_url(100), :params => gen_request(:assign, "href" => api_service_template_url(nil, 1)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -289,7 +294,7 @@ describe "Service Catalogs API" do
     it "rejects unassign requests without appropriate role" do
       api_basic_authorize
 
-      post(sc_template_url(100), gen_request(:unassign, "href" => api_service_template_url(nil, 1)))
+      post(sc_template_url(100), :params => gen_request(:unassign, "href" => api_service_template_url(nil, 1)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -299,7 +304,7 @@ describe "Service Catalogs API" do
 
       sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
 
-      post(sc_template_url(sc.id), gen_request(:assign, "href" => api_service_template_url(nil, 999_999)))
+      post(sc_template_url(sc.id), :params => gen_request(:assign, "href" => api_service_template_url(nil, 999_999)))
 
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results", [{"success" => false, "href" => api_service_catalog_url(nil, sc.compressed_id)}])
@@ -311,7 +316,7 @@ describe "Service Catalogs API" do
       sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
       st = FactoryGirl.create(:service_template)
 
-      post(sc_template_url(sc.id), gen_request(:assign, "href" => api_service_template_url(nil, st.compressed_id)))
+      post(sc_template_url(sc.id), :params => gen_request(:assign, "href" => api_service_template_url(nil, st.compressed_id)))
 
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results",
@@ -331,7 +336,7 @@ describe "Service Catalogs API" do
       st2 = FactoryGirl.create(:service_template)
       sc.service_templates = [st1, st2]
 
-      post(sc_template_url(sc.id), gen_request(:unassign, "href" => api_service_template_url(nil, st1)))
+      post(sc_template_url(sc.id), :params => gen_request(:unassign, "href" => api_service_template_url(nil, st1)))
 
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results",
@@ -401,7 +406,7 @@ describe "Service Catalogs API" do
     it "rejects order requests without appropriate role" do
       api_basic_authorize
 
-      post(sc_template_url(100), gen_request(:order, "href" => api_service_template_url(nil, 1)))
+      post(sc_template_url(100), :params => gen_request(:order, "href" => api_service_template_url(nil, 1)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -412,7 +417,7 @@ describe "Service Catalogs API" do
       init_st(st1, ra1)
       sc.service_templates = [st1]
 
-      post(sc_template_url(sc.id, st1.id), gen_request(:order))
+      post(sc_template_url(sc.id, st1.id), :params => gen_request(:order))
 
       expect_single_resource_query(order_request.merge("href" => /service_requests/))
     end
@@ -424,7 +429,7 @@ describe "Service Catalogs API" do
       init_st(st1, ra1)
       sc.service_templates = [st1]
 
-      post(sc_template_url(sc.id, st1.id), gen_request(:order, "text1" => "value1"))
+      post(sc_template_url(sc.id, st1.id), :params => gen_request(:order, "text1" => "value1"))
 
       expect_single_resource_query(order_request)
     end
@@ -436,7 +441,7 @@ describe "Service Catalogs API" do
       init_st(st1, ra1)
       sc.service_templates = [st1]
 
-      post(sc_template_url(sc.id, st1.id), gen_request(:order))
+      post(sc_template_url(sc.id, st1.id), :params => gen_request(:order))
 
       expect_bad_request("Failed to order")
     end
@@ -448,8 +453,8 @@ describe "Service Catalogs API" do
       init_st(st2, ra2)
       sc.service_templates = [st1, st2]
 
-      post(sc_template_url(sc.id), gen_request(:order, [{"href" => api_service_template_url(nil, st1)},
-                                                            {"href" => api_service_template_url(nil, st2)}]))
+      post(sc_template_url(sc.id), :params => gen_request(:order, [{"href" => api_service_template_url(nil, st1)},
+                                                                   {"href" => api_service_template_url(nil, st2)}]))
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results", [order_request, order_request])
     end
@@ -479,7 +484,7 @@ describe "Service Catalogs API" do
     it "rejects refresh dialog fields requests without appropriate role" do
       api_basic_authorize
 
-      post(sc_template_url(sc.id, st1.id), gen_request(:refresh_dialog_fields, "fields" => %w(test1)))
+      post(sc_template_url(sc.id, st1.id), :params => gen_request(:refresh_dialog_fields, "fields" => %w(test1)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -488,7 +493,7 @@ describe "Service Catalogs API" do
       api_basic_authorize subcollection_action_identifier(:service_catalogs, :service_templates, :refresh_dialog_fields)
       sc.service_templates = [st1]
 
-      post(sc_template_url(sc.id, st1.id), gen_request(:refresh_dialog_fields))
+      post(sc_template_url(sc.id, st1.id), :params => gen_request(:refresh_dialog_fields))
 
       expect_single_action_result(:success => false, :message => /must specify fields/i)
     end
@@ -497,7 +502,7 @@ describe "Service Catalogs API" do
       api_basic_authorize subcollection_action_identifier(:service_catalogs, :service_templates, :refresh_dialog_fields)
       init_st_dialog
 
-      post(sc_template_url(sc.id, st1.id), gen_request(:refresh_dialog_fields, "fields" => %w(bad_field)))
+      post(sc_template_url(sc.id, st1.id), :params => gen_request(:refresh_dialog_fields, "fields" => %w(bad_field)))
 
       expect_single_action_result(:success => false, :message => /unknown dialog field bad_field/i)
     end
@@ -506,7 +511,7 @@ describe "Service Catalogs API" do
       api_basic_authorize subcollection_action_identifier(:service_catalogs, :service_templates, :refresh_dialog_fields)
       init_st_dialog
 
-      post(sc_template_url(sc.id, st1.id), gen_request(:refresh_dialog_fields, "fields" => %w(text1)))
+      post(sc_template_url(sc.id, st1.id), :params => gen_request(:refresh_dialog_fields, "fields" => %w(text1)))
 
       expected = {
         "success"               => true,

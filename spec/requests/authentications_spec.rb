@@ -73,7 +73,7 @@ RSpec.describe 'Authentications API' do
           )
         ]
       }
-      post(api_authentications_url, :action => 'delete', :resources => [{ 'id' => auth.id }])
+      post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }] })
 
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -83,7 +83,7 @@ RSpec.describe 'Authentications API' do
       api_basic_authorize collection_action_identifier(:authentications, :delete, :post)
       auth = FactoryGirl.create(:authentication)
 
-      post(api_authentications_url, :action => 'delete', :resources => [{ 'id' => auth.id }])
+      post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }] })
 
       expected = {
         'results' => [
@@ -114,7 +114,7 @@ RSpec.describe 'Authentications API' do
           )
         ]
       }
-      post(api_authentications_url, :action => 'delete', :resources => [{ 'id' => auth.id }, { 'id' => auth_2.id }])
+      post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }, { 'id' => auth_2.id }] })
 
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -124,14 +124,14 @@ RSpec.describe 'Authentications API' do
       auth = FactoryGirl.create(:authentication)
       api_basic_authorize
 
-      post(api_authentications_url, :action => 'delete', :resources => [{ 'id' => auth.id }])
+      post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }] })
       expect(response).to have_http_status(:forbidden)
     end
 
     it 'can update an authentication with an appropriate role' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
 
-      post(api_authentications_url, :action => 'edit', :resources => [params])
+      post(api_authentications_url, :params => { :action => 'edit', :resources => [params] })
 
       expected = {
         'results' => [
@@ -150,7 +150,7 @@ RSpec.describe 'Authentications API' do
       params2 = params.dup.merge(:id => auth_2.id)
       api_basic_authorize collection_action_identifier(:authentications, :edit)
 
-      post(api_authentications_url, :action => 'edit', :resources => [params, params2])
+      post(api_authentications_url, :params => { :action => 'edit', :resources => [params, params2] })
 
       expected = {
         'results' => [
@@ -173,7 +173,7 @@ RSpec.describe 'Authentications API' do
     it 'will forbid update to an authentication without appropriate role' do
       api_basic_authorize
 
-      post(api_authentications_url, :action => 'edit', :resources => [params])
+      post(api_authentications_url, :params => { :action => 'edit', :resources => [params] })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -192,7 +192,7 @@ RSpec.describe 'Authentications API' do
     it 'requires a manager resource when creating an authentication' do
       api_basic_authorize collection_action_identifier(:authentications, :create, :post)
 
-      post(api_authentications_url, :action => 'create', :type => 'Authentication')
+      post(api_authentications_url, :params => { :action => 'create', :type => 'Authentication' })
 
       expected = {
         'results' => [
@@ -206,7 +206,7 @@ RSpec.describe 'Authentications API' do
     it 'requires that the type support create_in_provider_queue' do
       api_basic_authorize collection_action_identifier(:authentications, :create, :post)
 
-      post(api_authentications_url, :action => 'create', :type => 'Authentication', :manager_resource => { :href => api_provider_url(nil, manager) })
+      post(api_authentications_url, :params => { :action => 'create', :type => 'Authentication', :manager_resource => { :href => api_provider_url(nil, manager) } })
 
       expected = {
         'results' => [
@@ -227,7 +227,7 @@ RSpec.describe 'Authentications API' do
           'task_id' => a_kind_of(String)
         )]
       }
-      post(api_authentications_url, create_params)
+      post(api_authentications_url, :params => create_params)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -250,7 +250,7 @@ RSpec.describe 'Authentications API' do
           )
         ]
       }
-      post(api_authentications_url, :resources => [create_params, create_params])
+      post(api_authentications_url, :params => { :resources => [create_params, create_params] })
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -268,7 +268,7 @@ RSpec.describe 'Authentications API' do
           )
         ]
       }
-      post(api_authentications_url, :resources => [create_params])
+      post(api_authentications_url, :params => { :resources => [create_params] })
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -277,7 +277,7 @@ RSpec.describe 'Authentications API' do
     it 'will forbid creation of an authentication without appropriate role' do
       api_basic_authorize
 
-      post(api_authentications_url, :action => 'create')
+      post(api_authentications_url, :params => { :action => 'create' })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -285,7 +285,7 @@ RSpec.describe 'Authentications API' do
     it 'can refresh multiple authentications with an appropriate role' do
       api_basic_authorize collection_action_identifier(:authentications, :refresh, :post)
 
-      post(api_authentications_url, :action => :refresh, :resources => [{ :id => auth.id}, {:id => auth_2.id}])
+      post(api_authentications_url, :params => { :action => :refresh, :resources => [{ :id => auth.id}, {:id => auth_2.id}] })
 
       expected = {
         'results' => [
@@ -321,7 +321,7 @@ RSpec.describe 'Authentications API' do
     it 'can update an authentication with an appropriate role' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
 
-      put(api_authentication_url(nil, auth), :resource => params)
+      put(api_authentication_url(nil, auth), :params => { :resource => params })
 
       expected = {
         'success' => true,
@@ -345,7 +345,7 @@ RSpec.describe 'Authentications API' do
     it 'can update an authentication with an appropriate role' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
 
-      patch(api_authentication_url(nil, auth), [params])
+      patch(api_authentication_url(nil, auth), :params => [params])
 
       expected = {
         'success' => true,
@@ -368,7 +368,7 @@ RSpec.describe 'Authentications API' do
     it 'will delete an authentication' do
       api_basic_authorize action_identifier(:authentications, :delete, :resource_actions, :post)
 
-      post(api_authentication_url(nil, auth), :action => 'delete')
+      post(api_authentication_url(nil, auth), :params => { :action => 'delete' })
 
       expected = {
         'success' => true,
@@ -382,7 +382,7 @@ RSpec.describe 'Authentications API' do
     it 'will not delete an authentication without an appropriate role' do
       api_basic_authorize
 
-      post(api_authentication_url(nil, auth), :action => 'delete')
+      post(api_authentication_url(nil, auth), :params => { :action => 'delete' })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -390,7 +390,7 @@ RSpec.describe 'Authentications API' do
     it 'can update an authentication with an appropriate role' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
 
-      post(api_authentication_url(nil, auth), :action => 'edit', :resource => params)
+      post(api_authentication_url(nil, auth), :params => { :action => 'edit', :resource => params })
 
       expected = {
         'success' => true,
@@ -405,7 +405,7 @@ RSpec.describe 'Authentications API' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
       auth = FactoryGirl.create(:authentication)
 
-      post(api_authentication_url(nil, auth), :action => 'edit', :resource => params)
+      post(api_authentication_url(nil, auth), :params => { :action => 'edit', :resource => params })
 
       expected = {
         'success' => false,
@@ -418,7 +418,7 @@ RSpec.describe 'Authentications API' do
     it 'will forbid update to an authentication without appropriate role' do
       api_basic_authorize
 
-      post(api_authentication_url(nil, auth), :action => 'edit', :resource => params)
+      post(api_authentication_url(nil, auth), :params => { :action => 'edit', :resource => params })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -426,7 +426,7 @@ RSpec.describe 'Authentications API' do
     it 'forbids refresh without an appropriate role' do
       api_basic_authorize
 
-      post(api_authentication_url(nil, auth), :action => :refresh)
+      post(api_authentication_url(nil, auth), :params => { :action => :refresh })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -434,7 +434,7 @@ RSpec.describe 'Authentications API' do
     it 'can refresh a authentications with an appropriate role' do
       api_basic_authorize action_identifier(:authentications, :refresh)
 
-      post(api_authentication_url(nil, auth), :action => :refresh)
+      post(api_authentication_url(nil, auth), :params => { :action => :refresh })
 
       expected = {
         'success'   => true,

@@ -44,7 +44,7 @@ describe "Cloud Volumes API" do
   it "rejects delete request without appropriate role" do
     api_basic_authorize
 
-    post(api_cloud_volumes_url, :action => 'delete')
+    post(api_cloud_volumes_url, :params => { :action => 'delete' })
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -57,7 +57,7 @@ describe "Cloud Volumes API" do
 
     api_basic_authorize action_identifier(:cloud_volumes, :delete, :resource_actions, :post)
 
-    post(api_cloud_volume_url(nil, cloud_volume1), :action => "delete")
+    post(api_cloud_volume_url(nil, cloud_volume1), :params => { :action => "delete" })
 
     expected = {
       'message' => 'Deleting Cloud Volume CloudVolume1',
@@ -115,7 +115,7 @@ describe "Cloud Volumes API" do
         )
       )
     }
-    post(api_cloud_volumes_url, :action => 'delete', :resources => [{ 'id' => cloud_volume1.id }, { 'id' => cloud_volume2.id }])
+    post(api_cloud_volumes_url, :params => { :action => 'delete', :resources => [{ 'id' => cloud_volume1.id }, { 'id' => cloud_volume2.id }] })
 
     expect(response.parsed_body).to include(expected)
     expect(response).to have_http_status(:ok)

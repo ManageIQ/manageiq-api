@@ -37,7 +37,7 @@ describe "Logging" do
     it "filters password attributes in nested parameters" do
       api_basic_authorize collection_action_identifier(:services, :create)
 
-      post(api_services_url, gen_request(:create, "name" => "new_service_1", "options" => { "password" => "SECRET" }))
+      post(api_services_url, :params => gen_request(:create, "name" => "new_service_1", "options" => { "password" => "SECRET" }))
 
       expect(@log.string).to include(
         'Parameters:     {"action"=>"update", "controller"=>"api/services", "format"=>"json", ' \

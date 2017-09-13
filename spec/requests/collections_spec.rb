@@ -15,7 +15,7 @@ describe "Rest API Collections" do
       api_basic_authorize
     end
 
-    get collection_url, :expand => "resources"
+    get collection_url, :params => { :expand => "resources" }
 
     expect_query_result(collection, klass.count, klass.count)
     expected = attr == :id ? klass.select(:id).collect(&:compressed_id) : klass.pluck(attr)
@@ -32,7 +32,7 @@ describe "Rest API Collections" do
     resources = [{"id" => obj.compressed_id}, {"href" => url}]
     attr_list.each { |attr| resources << {attr => obj.public_send(attr)} }
 
-    post(collection_url, gen_request(:query, resources))
+    post(collection_url, :params => gen_request(:query, resources))
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body["results"].size).to eq(resources.size)
@@ -123,7 +123,7 @@ describe "Rest API Collections" do
       expect(Tenant.exists?).to be_truthy
       FactoryGirl.create(:miq_group)
       api_basic_authorize collection_action_identifier(:groups, :read, :get)
-      get api_groups_url, :expand => 'resources'
+      get api_groups_url, :params => { :expand => 'resources' }
       expect_query_result(:groups, MiqGroup.non_tenant_groups.count, MiqGroup.count)
       expect_result_resources_to_include_data('resources',
                                               'id' => MiqGroup.non_tenant_groups.select(:id).collect(&:compressed_id))
@@ -543,7 +543,7 @@ describe "Rest API Collections" do
       api_basic_authorize(collection_action_identifier(:vms, :query), action_identifier(:vms, :start))
 
       # HMMM
-      post(api_vms_url, gen_request(:query, [{"id" => vm.id}]))
+      post(api_vms_url, :params => gen_request(:query, [{"id" => vm.id}]))
 
       expected = {
         "results" => [
@@ -565,7 +565,7 @@ describe "Rest API Collections" do
       FactoryGirl.create(:vm_vmware)
       api_basic_authorize collection_action_identifier(:vms, :query)
 
-      post(api_vms_url, gen_request(:query, [{"guid" => "B999999D"}]))
+      post(api_vms_url, :params => gen_request(:query, [{"guid" => "B999999D"}]))
 
       expect(response.parsed_body).to include_error_with_message("Invalid vms resource specified - guid=B999999D")
       expect(response).to have_http_status(:not_found)

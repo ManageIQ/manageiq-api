@@ -55,7 +55,7 @@ RSpec.describe 'Configuration Script Payloads API' do
       playbook = FactoryGirl.create(:configuration_script_payload, :authentications => [authentication])
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :read, :get)
 
-      get(api_configuration_script_payload_authentications_url(nil, playbook), :expand => 'resources')
+      get(api_configuration_script_payload_authentications_url(nil, playbook), :params => { :expand => 'resources' })
 
       expected = {
         'resources' => [
@@ -84,7 +84,7 @@ RSpec.describe 'Configuration Script Payloads API' do
     it 'requires that the type support create_in_provider_queue' do
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :create)
 
-      post(api_configuration_script_payload_authentications_url(nil, playbook), :type => 'Authentication')
+      post(api_configuration_script_payload_authentications_url(nil, playbook), :params => { :type => 'Authentication' })
 
       expected = {
         'results' => [
@@ -98,7 +98,7 @@ RSpec.describe 'Configuration Script Payloads API' do
     it 'creates a new authentication with an appropriate role' do
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :create)
 
-      post(api_configuration_script_payload_authentications_url(nil, playbook), params)
+      post(api_configuration_script_payload_authentications_url(nil, playbook), :params => params)
 
       expected = {
         'results' => [a_hash_including(
@@ -114,7 +114,7 @@ RSpec.describe 'Configuration Script Payloads API' do
     it 'can create multiple authentications with an appropriate role' do
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :create)
 
-      post(api_configuration_script_payload_authentications_url(nil, playbook), :resources => [params, params])
+      post(api_configuration_script_payload_authentications_url(nil, playbook), :params => { :resources => [params, params] })
 
       expected = {
         'results' => [
@@ -137,7 +137,7 @@ RSpec.describe 'Configuration Script Payloads API' do
     it 'cannot create an authentication without appropriate role' do
       api_basic_authorize
 
-      post(api_configuration_script_payload_authentications_url(nil, playbook), :resources => [params])
+      post(api_configuration_script_payload_authentications_url(nil, playbook), :params => { :resources => [params] })
 
       expect(response).to have_http_status(:forbidden)
     end

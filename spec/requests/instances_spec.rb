@@ -32,7 +32,7 @@ RSpec.describe "Instances API" do
     it "responds not found for an invalid instance" do
       api_basic_authorize action_identifier(:instances, :terminate)
 
-      post(invalid_instance_url, gen_request(:terminate))
+      post(invalid_instance_url, :params => gen_request(:terminate))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -40,7 +40,7 @@ RSpec.describe "Instances API" do
     it "responds forbidden for an invalid instance without appropriate role" do
       api_basic_authorize
 
-      post(invalid_instance_url, gen_request(:terminate))
+      post(invalid_instance_url, :params => gen_request(:terminate))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -48,7 +48,7 @@ RSpec.describe "Instances API" do
     it "terminates a single valid Instance" do
       api_basic_authorize action_identifier(:instances, :terminate)
 
-      post(instance_url, gen_request(:terminate))
+      post(instance_url, :params => gen_request(:terminate))
 
       expect_single_action_result(
         :success => true,
@@ -60,7 +60,7 @@ RSpec.describe "Instances API" do
     it "terminates multiple valid Instances" do
       api_basic_authorize collection_action_identifier(:instances, :terminate)
 
-      post(api_instances_url, gen_request(:terminate, [{"href" => instance1_url}, {"href" => instance2_url}]))
+      post(api_instances_url, :params => gen_request(:terminate, [{"href" => instance1_url}, {"href" => instance2_url}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
@@ -85,7 +85,7 @@ RSpec.describe "Instances API" do
     it "responds not found for an invalid instance" do
       api_basic_authorize action_identifier(:instances, :stop)
 
-      post(invalid_instance_url, gen_request(:stop))
+      post(invalid_instance_url, :params => gen_request(:stop))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -93,7 +93,7 @@ RSpec.describe "Instances API" do
     it "stopping an invalid instance without appropriate role is forbidden" do
       api_basic_authorize
 
-      post(invalid_instance_url, gen_request(:stop))
+      post(invalid_instance_url, :params => gen_request(:stop))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -102,7 +102,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :stop)
       update_raw_power_state("poweredOff", instance)
 
-      post(instance_url, gen_request(:stop))
+      post(instance_url, :params => gen_request(:stop))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -110,7 +110,7 @@ RSpec.describe "Instances API" do
     it "stops a valid instance" do
       api_basic_authorize action_identifier(:instances, :stop)
 
-      post(instance_url, gen_request(:stop))
+      post(instance_url, :params => gen_request(:stop))
 
       expect_single_action_result(:success => true, :message => "stopping", :href => api_instance_url(nil, instance.compressed_id), :task => true)
     end
@@ -118,7 +118,7 @@ RSpec.describe "Instances API" do
     it "stops multiple valid instances" do
       api_basic_authorize action_identifier(:instances, :stop)
 
-      post(api_instances_url, gen_request(:stop, nil, instance1_url, instance2_url))
+      post(api_instances_url, :params => gen_request(:stop, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
@@ -129,7 +129,7 @@ RSpec.describe "Instances API" do
     it "responds not found for an invalid instance" do
       api_basic_authorize action_identifier(:instances, :start)
 
-      post(invalid_instance_url, gen_request(:start))
+      post(invalid_instance_url, :params => gen_request(:start))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -137,7 +137,7 @@ RSpec.describe "Instances API" do
     it "starting an invalid instance without appropriate role is forbidden" do
       api_basic_authorize
 
-      post(invalid_instance_url, gen_request(:start))
+      post(invalid_instance_url, :params => gen_request(:start))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -145,7 +145,7 @@ RSpec.describe "Instances API" do
     it "fails to start a powered on instance" do
       api_basic_authorize action_identifier(:instances, :start)
 
-      post(instance_url, gen_request(:start))
+      post(instance_url, :params => gen_request(:start))
 
       expect_single_action_result(:success => false, :message => "is powered on", :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -154,7 +154,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :start)
       update_raw_power_state("poweredOff", instance)
 
-      post(instance_url, gen_request(:start))
+      post(instance_url, :params => gen_request(:start))
 
       expect_single_action_result(:success => true, :message => "starting", :href => api_instance_url(nil, instance.compressed_id), :task => true)
     end
@@ -163,7 +163,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :start)
       update_raw_power_state("poweredOff", instance1, instance2)
 
-      post(api_instances_url, gen_request(:start, nil, instance1_url, instance2_url))
+      post(api_instances_url, :params => gen_request(:start, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
@@ -174,7 +174,7 @@ RSpec.describe "Instances API" do
     it "responds not found for an invalid instance" do
       api_basic_authorize action_identifier(:instances, :pause)
 
-      post(invalid_instance_url, gen_request(:pause))
+      post(invalid_instance_url, :params => gen_request(:pause))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -182,7 +182,7 @@ RSpec.describe "Instances API" do
     it "pausing an invalid instance without appropriate role is forbidden" do
       api_basic_authorize
 
-      post(invalid_instance_url, gen_request(:pause))
+      post(invalid_instance_url, :params => gen_request(:pause))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -191,7 +191,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :pause)
       update_raw_power_state("poweredOff", instance)
 
-      post(instance_url, gen_request(:pause))
+      post(instance_url, :params => gen_request(:pause))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -200,7 +200,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :pause)
       update_raw_power_state("paused", instance)
 
-      post(instance_url, gen_request(:pause))
+      post(instance_url, :params => gen_request(:pause))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -208,7 +208,7 @@ RSpec.describe "Instances API" do
     it "pauses an instance" do
       api_basic_authorize action_identifier(:instances, :pause)
 
-      post(instance_url, gen_request(:pause))
+      post(instance_url, :params => gen_request(:pause))
 
       expect_single_action_result(:success => true, :message => "pausing", :href => api_instance_url(nil, instance.compressed_id), :task => true)
     end
@@ -216,7 +216,7 @@ RSpec.describe "Instances API" do
     it "pauses multiple instances" do
       api_basic_authorize action_identifier(:instances, :pause)
 
-      post(api_instances_url, gen_request(:pause, nil, instance1_url, instance2_url))
+      post(api_instances_url, :params => gen_request(:pause, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
@@ -227,7 +227,7 @@ RSpec.describe "Instances API" do
     it "responds not found for an invalid instance" do
       api_basic_authorize action_identifier(:instances, :suspend)
 
-      post(invalid_instance_url, gen_request(:suspend))
+      post(invalid_instance_url, :params => gen_request(:suspend))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -235,7 +235,7 @@ RSpec.describe "Instances API" do
     it "responds forbidden for an invalid instance without appropriate role" do
       api_basic_authorize
 
-      post(invalid_instance_url, gen_request(:suspend))
+      post(invalid_instance_url, :params => gen_request(:suspend))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -244,7 +244,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :suspend)
       update_raw_power_state("poweredOff", instance)
 
-      post(instance_url, gen_request(:suspend))
+      post(instance_url, :params => gen_request(:suspend))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -253,7 +253,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :suspend)
       update_raw_power_state("suspended", instance)
 
-      post(instance_url, gen_request(:suspend))
+      post(instance_url, :params => gen_request(:suspend))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -261,7 +261,7 @@ RSpec.describe "Instances API" do
     it "suspends an instance" do
       api_basic_authorize action_identifier(:instances, :suspend)
 
-      post(instance_url, gen_request(:suspend))
+      post(instance_url, :params => gen_request(:suspend))
 
       expect_single_action_result(:success => true, :message => "suspending", :href => api_instance_url(nil, instance.compressed_id), :task => true)
     end
@@ -269,7 +269,7 @@ RSpec.describe "Instances API" do
     it "suspends multiple instances" do
       api_basic_authorize action_identifier(:instances, :suspend)
 
-      post(api_instances_url, gen_request(:suspend, nil, instance1_url, instance2_url))
+      post(api_instances_url, :params => gen_request(:suspend, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
@@ -280,7 +280,7 @@ RSpec.describe "Instances API" do
     it "responds not found for an invalid instance" do
       api_basic_authorize action_identifier(:instances, :shelve)
 
-      post(invalid_instance_url, gen_request(:shelve))
+      post(invalid_instance_url, :params => gen_request(:shelve))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -288,7 +288,7 @@ RSpec.describe "Instances API" do
     it "responds forbidden for an invalid instance without appropriate role" do
       api_basic_authorize
 
-      post(invalid_instance_url, gen_request(:shelve))
+      post(invalid_instance_url, :params => gen_request(:shelve))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -297,7 +297,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :shelve)
       update_raw_power_state("SHUTOFF", instance)
 
-      post(instance_url, gen_request(:shelve))
+      post(instance_url, :params => gen_request(:shelve))
 
       expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -306,7 +306,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :shelve)
       update_raw_power_state("SUSPENDED", instance)
 
-      post(instance_url, gen_request(:shelve))
+      post(instance_url, :params => gen_request(:shelve))
 
       expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -315,7 +315,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :shelve)
       update_raw_power_state("PAUSED", instance)
 
-      post(instance_url, gen_request(:shelve))
+      post(instance_url, :params => gen_request(:shelve))
 
       expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -324,7 +324,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :shelve)
       update_raw_power_state("SHELVED", instance)
 
-      post(instance_url, gen_request(:shelve))
+      post(instance_url, :params => gen_request(:shelve))
 
       expect_single_action_result(
         :success => false,
@@ -336,7 +336,7 @@ RSpec.describe "Instances API" do
     it "shelves an instance" do
       api_basic_authorize action_identifier(:instances, :shelve)
 
-      post(instance_url, gen_request(:shelve))
+      post(instance_url, :params => gen_request(:shelve))
 
       expect_single_action_result(:success => true,
                                   :message => "shelving",
@@ -347,7 +347,7 @@ RSpec.describe "Instances API" do
     it "shelves multiple instances" do
       api_basic_authorize action_identifier(:instances, :shelve)
 
-      post(api_instances_url, gen_request(:shelve, nil, instance1_url, instance2_url))
+      post(api_instances_url, :params => gen_request(:shelve, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
@@ -358,7 +358,7 @@ RSpec.describe "Instances API" do
     it "responds not found for an invalid instance" do
       api_basic_authorize action_identifier(:instances, :reboot_guest)
 
-      post(invalid_instance_url, gen_request(:reboot_guest))
+      post(invalid_instance_url, :params => gen_request(:reboot_guest))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -366,7 +366,7 @@ RSpec.describe "Instances API" do
     it "responds forbidden for an invalid instance without appropriate role" do
       api_basic_authorize
 
-      post(invalid_instance_url, gen_request(:reboot_guest))
+      post(invalid_instance_url, :params => gen_request(:reboot_guest))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -375,7 +375,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :reboot_guest)
       update_raw_power_state("poweredOff", instance)
 
-      post(instance_url, gen_request(:reboot_guest))
+      post(instance_url, :params => gen_request(:reboot_guest))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -383,7 +383,7 @@ RSpec.describe "Instances API" do
     it "reboots a valid instance" do
       api_basic_authorize action_identifier(:instances, :reboot_guest)
 
-      post(instance_url, gen_request(:reboot_guest))
+      post(instance_url, :params => gen_request(:reboot_guest))
 
       expect_single_action_result(:success => true, :message => "rebooting", :href => api_instance_url(nil, instance.compressed_id), :task => true)
     end
@@ -391,7 +391,7 @@ RSpec.describe "Instances API" do
     it "reboots multiple valid instances" do
       api_basic_authorize action_identifier(:instances, :reboot_guest)
 
-      post(api_instances_url, gen_request(:reboot_guest, nil, instance1_url, instance2_url))
+      post(api_instances_url, :params => gen_request(:reboot_guest, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
@@ -402,7 +402,7 @@ RSpec.describe "Instances API" do
     it "responds not found for an invalid instance" do
       api_basic_authorize action_identifier(:instances, :reset)
 
-      post(invalid_instance_url, gen_request(:reset))
+      post(invalid_instance_url, :params => gen_request(:reset))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -410,7 +410,7 @@ RSpec.describe "Instances API" do
     it "responds forbidden for an invalid instance without appropriate role" do
       api_basic_authorize
 
-      post(invalid_instance_url, gen_request(:reset))
+      post(invalid_instance_url, :params => gen_request(:reset))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -419,7 +419,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize action_identifier(:instances, :reset)
       update_raw_power_state("poweredOff", instance)
 
-      post(instance_url, gen_request(:reset))
+      post(instance_url, :params => gen_request(:reset))
 
       expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
     end
@@ -427,7 +427,7 @@ RSpec.describe "Instances API" do
     it "resets a valid instance" do
       api_basic_authorize action_identifier(:instances, :reset)
 
-      post(instance_url, gen_request(:reset))
+      post(instance_url, :params => gen_request(:reset))
 
       expect_single_action_result(:success => true, :message => "resetting", :href => api_instance_url(nil, instance.compressed_id), :task => true)
     end
@@ -435,7 +435,7 @@ RSpec.describe "Instances API" do
     it "resets multiple valid instances" do
       api_basic_authorize action_identifier(:instances, :reset)
 
-      post(api_instances_url, gen_request(:reset, nil, instance1_url, instance2_url))
+      post(api_instances_url, :params => gen_request(:reset, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])

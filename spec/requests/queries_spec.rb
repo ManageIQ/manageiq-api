@@ -30,7 +30,7 @@ describe "Queries API" do
       api_basic_authorize collection_action_identifier(:vms, :read, :get)
       create_vms(3)
 
-      get api_vms_url, :expand => "resources"
+      get api_vms_url, :params => { :expand => "resources" }
 
       expect_query_result(:vms, 3, 3)
       expected = {
@@ -45,7 +45,7 @@ describe "Queries API" do
       api_basic_authorize collection_action_identifier(:vms, :read, :get)
       vm1   # create resource
 
-      get api_vms_url, :expand => "resources", :attributes => "guid"
+      get api_vms_url, :params => { :expand => "resources", :attributes => "guid" }
 
       expect_query_result(:vms, 1, 1)
       expect_result_resources_to_match_hash([{"id" => vm1.compressed_id, "href" => api_vm_url(nil, vm1.compressed_id), "guid" => vm1.guid}])
@@ -120,7 +120,7 @@ describe "Queries API" do
       acct1
       acct2
 
-      get vm1_accounts_url, :expand => "resources"
+      get vm1_accounts_url, :params => { :expand => "resources" }
 
       expect_query_result(:accounts, 2)
       expect_result_resources_to_include_keys("resources", %w(id href))
@@ -159,7 +159,7 @@ describe "Queries API" do
       provider = FactoryGirl.create(:ext_management_system, :name => "sample", :hostname => "sample.com")
       provider.update_authentication(:default => credentials)
 
-      get(api_provider_url(nil, provider), :attributes => "authentications")
+      get(api_provider_url(nil, provider), :params => { :attributes => "authentications" })
 
       expect(response).to have_http_status(:ok)
       expect_result_to_match_hash(response.parsed_body, "name" => "sample")

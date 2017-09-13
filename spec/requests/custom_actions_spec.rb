@@ -98,7 +98,7 @@ describe "Custom Actions API" do
       api_basic_authorize(action_identifier(:services, :edit),
                           action_identifier(:services, :read, :resource_actions, :get))
 
-      get api_service_url(nil, svc1), :attributes => "custom_actions"
+      get api_service_url(nil, svc1), :params => { :attributes => "custom_actions" }
 
       expect_result_to_have_keys(%w(id href))
       expect_result_to_have_custom_actions_hash
@@ -108,7 +108,7 @@ describe "Custom Actions API" do
       api_basic_authorize(action_identifier(:services, :edit),
                           action_identifier(:services, :read, :resource_actions, :get))
 
-      get api_service_url(nil, svc1), :attributes => "custom_action_buttons"
+      get api_service_url(nil, svc1), :params => { :attributes => "custom_action_buttons" }
 
       expect_result_to_have_keys(%w(id href custom_action_buttons))
       expect(response.parsed_body["custom_action_buttons"].size).to eq(3)
@@ -135,7 +135,7 @@ describe "Custom Actions API" do
     it "supports the custom_actions attribute" do
       api_basic_authorize action_identifier(:service_templates, :read, :resource_actions, :get)
 
-      get api_service_template_url(nil, template1), :attributes => "custom_actions"
+      get api_service_template_url(nil, template1), :params => { :attributes => "custom_actions" }
 
       expect_result_to_have_keys(%w(id href))
       expect_result_to_have_custom_actions_hash
@@ -144,7 +144,7 @@ describe "Custom Actions API" do
     it "supports the custom_action_buttons attribute" do
       api_basic_authorize action_identifier(:service_templates, :read, :resource_actions, :get)
 
-      get api_service_template_url(nil, template1), :attributes => "custom_action_buttons"
+      get api_service_template_url(nil, template1), :params => { :attributes => "custom_action_buttons" }
 
       expect_result_to_have_keys(%w(id href custom_action_buttons))
       expect(response.parsed_body["custom_action_buttons"].size).to eq(3)
@@ -160,7 +160,7 @@ describe "Custom Actions API" do
     it "accepts a custom action" do
       api_basic_authorize
 
-      post(api_service_url(nil, svc1), gen_request(:button1, "button_key1" => "value", "button_key2" => "value"))
+      post(api_service_url(nil, svc1), :params => gen_request(:button1, "button_key1" => "value", "button_key2" => "value"))
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_service_url(nil, svc1.compressed_id))
     end
@@ -168,7 +168,7 @@ describe "Custom Actions API" do
     it "accepts a custom action as case insensitive" do
       api_basic_authorize
 
-      post(api_service_url(nil, svc1), gen_request(:BuTtOn1, "button_key1" => "value", "button_key2" => "value"))
+      post(api_service_url(nil, svc1), :params => gen_request(:BuTtOn1, "button_key1" => "value", "button_key2" => "value"))
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_service_url(nil, svc1.compressed_id))
     end
@@ -187,7 +187,7 @@ describe "Custom Actions API" do
       service = FactoryGirl.create(:service, :service_template => FactoryGirl.create(:service_template))
       api_basic_authorize
 
-      post(api_service_url(nil, service), "action" => "test button")
+      post(api_service_url(nil, service), :params => { "action" => "test button" })
 
       expect(response.parsed_body).to include("success" => true, "message" => /Invoked custom action test button/)
     end
@@ -204,7 +204,7 @@ describe "Custom Actions API" do
       svc2      = FactoryGirl.create(:service, :name => "svc2", :service_template_id => template2.id)
       button2.resource_action = ra2
 
-      get api_service_url(nil, svc2), :attributes => "custom_actions"
+      get api_service_url(nil, svc2), :params => { :attributes => "custom_actions" }
 
       expected = {
         "custom_actions" => {

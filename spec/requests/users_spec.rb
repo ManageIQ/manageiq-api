@@ -30,7 +30,7 @@ RSpec.describe "users API" do
       api_basic_authorize action_identifier(:users, :edit)
 
       expect do
-        post api_user_url(nil, @user), gen_request(:edit, :password => "new_password")
+        post api_user_url(nil, @user), :params => gen_request(:edit, :password => "new_password")
       end.to change { @user.reload.password_digest }
 
       expect(response).to have_http_status(:ok)
@@ -41,7 +41,7 @@ RSpec.describe "users API" do
       user = FactoryGirl.create(:user)
 
       expect do
-        post api_user_url(nil, user), gen_request(:edit, :password => "new_password")
+        post api_user_url(nil, user), :params => gen_request(:edit, :password => "new_password")
       end.to change { user.reload.password_digest }
 
       expect(response).to have_http_status(:ok)
@@ -53,7 +53,7 @@ RSpec.describe "users API" do
       api_basic_authorize
 
       expect do
-        post api_user_url(nil, @user), gen_request(:edit, :password => "new_password")
+        post api_user_url(nil, @user), :params => gen_request(:edit, :password => "new_password")
       end.to change { @user.reload.password_digest }
 
       expect(response).to have_http_status(:ok)
@@ -63,7 +63,7 @@ RSpec.describe "users API" do
       api_basic_authorize action_identifier(:users, :edit)
 
       expect do
-        post api_user_url(nil, @user), gen_request(:edit, :email => "tom@cartoons.com")
+        post api_user_url(nil, @user), :params => gen_request(:edit, :email => "tom@cartoons.com")
       end.to change { @user.reload.email }
 
       expect(response).to have_http_status(:ok)
@@ -73,7 +73,7 @@ RSpec.describe "users API" do
       api_basic_authorize action_identifier(:users, :edit)
 
       expect do
-        post api_user_url(nil, @user), gen_request(:edit, :settings => {:cartoon => {:tom_jerry => 'y'}})
+        post api_user_url(nil, @user), :params => gen_request(:edit, :settings => {:cartoon => {:tom_jerry => 'y'}})
       end.to change { @user.reload.settings }
 
       expect(response).to have_http_status(:ok)
@@ -83,7 +83,7 @@ RSpec.describe "users API" do
       api_basic_authorize
 
       expect do
-        post api_user_url(nil, @user), gen_request(:edit, :name => "updated_name")
+        post api_user_url(nil, @user), :params => gen_request(:edit, :name => "updated_name")
       end.not_to change { @user.reload.name }
 
       expect(response).to have_http_status(:bad_request)
@@ -94,7 +94,7 @@ RSpec.describe "users API" do
       user = FactoryGirl.create(:user)
 
       expect do
-        post api_user_url(nil, user), gen_request(:edit, :password => "new_password")
+        post api_user_url(nil, user), :params => gen_request(:edit, :password => "new_password")
       end.not_to change { user.reload.password_digest }
 
       expect(response).to have_http_status(:forbidden)
@@ -105,7 +105,7 @@ RSpec.describe "users API" do
       user = FactoryGirl.create(:user, :settings => {:locale => "en"})
 
       expect do
-        post api_user_url(nil, user), gen_request(:edit, :settings => {:locale => "ja"})
+        post api_user_url(nil, user), :params => gen_request(:edit, :settings => {:locale => "ja"})
       end.not_to change { user.reload.settings }
 
       expect(response).to have_http_status(:forbidden)
@@ -116,7 +116,7 @@ RSpec.describe "users API" do
     it "rejects creation without appropriate role" do
       api_basic_authorize
 
-      post(api_users_url, sample_user1)
+      post(api_users_url, :params => sample_user1)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -124,7 +124,7 @@ RSpec.describe "users API" do
     it "rejects user creation with id specified" do
       api_basic_authorize collection_action_identifier(:users, :create)
 
-      post(api_users_url, "userid" => "userid1", "id" => 100)
+      post(api_users_url, :params => { "userid" => "userid1", "id" => 100 })
 
       expect_bad_request(/id or href should not be specified/i)
     end
@@ -132,7 +132,7 @@ RSpec.describe "users API" do
     it "rejects user creation with invalid group specified" do
       api_basic_authorize collection_action_identifier(:users, :create)
 
-      post(api_users_url, sample_user2.merge("group" => {"id" => 999_999}))
+      post(api_users_url, :params => sample_user2.merge("group" => {"id" => 999_999}))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -140,7 +140,7 @@ RSpec.describe "users API" do
     it "rejects user creation with missing attribute" do
       api_basic_authorize collection_action_identifier(:users, :create)
 
-      post(api_users_url, sample_user2.except(:userid))
+      post(api_users_url, :params => sample_user2.except(:userid))
 
       expect_bad_request(/Missing attribute/i)
     end
@@ -148,7 +148,7 @@ RSpec.describe "users API" do
     it "supports single user creation" do
       api_basic_authorize collection_action_identifier(:users, :create)
 
-      post(api_users_url, sample_user1)
+      post(api_users_url, :params => sample_user1)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -160,7 +160,7 @@ RSpec.describe "users API" do
     it "supports single user creation via action" do
       api_basic_authorize collection_action_identifier(:users, :create)
 
-      post(api_users_url, gen_request(:create, sample_user1))
+      post(api_users_url, :params => gen_request(:create, sample_user1))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -172,7 +172,7 @@ RSpec.describe "users API" do
     it "supports multiple user creation" do
       api_basic_authorize collection_action_identifier(:users, :create)
 
-      post(api_users_url, gen_request(:create, [sample_user1, sample_user2]))
+      post(api_users_url, :params => gen_request(:create, [sample_user1, sample_user2]))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -201,7 +201,7 @@ RSpec.describe "users API" do
           ]
         }]
       }
-      post(api_users_url, request)
+      post(api_users_url, :params => request)
 
       expect(response).to have_http_status(:ok)
       expect(user1.reload.miq_groups).to match_array([group2, group3])
@@ -210,7 +210,7 @@ RSpec.describe "users API" do
     it "rejects user edits without appropriate role" do
       api_basic_authorize
 
-      post(api_users_url, gen_request(:edit, "name" => "updated name", "href" => api_user_url(nil, user1)))
+      post(api_users_url, :params => gen_request(:edit, "name" => "updated name", "href" => api_user_url(nil, user1)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -218,7 +218,7 @@ RSpec.describe "users API" do
     it "rejects user edits for invalid resources" do
       api_basic_authorize collection_action_identifier(:users, :edit)
 
-      post(api_user_url(nil, 999_999), gen_request(:edit, "name" => "updated name"))
+      post(api_user_url(nil, 999_999), :params => gen_request(:edit, "name" => "updated name"))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -226,7 +226,7 @@ RSpec.describe "users API" do
     it "supports single user edit" do
       api_basic_authorize collection_action_identifier(:users, :edit)
 
-      post(api_user_url(nil, user1), gen_request(:edit, "name" => "updated name"))
+      post(api_user_url(nil, user1), :params => gen_request(:edit, "name" => "updated name"))
 
       expect_single_resource_query("id" => user1.compressed_id, "name" => "updated name")
       expect(user1.reload.name).to eq("updated name")
@@ -236,7 +236,7 @@ RSpec.describe "users API" do
       api_basic_authorize collection_action_identifier(:users, :edit)
       user1.miq_groups << group2
 
-      post(api_user_url(nil, user1.id), gen_request(:edit, "current_group" => { "href" => api_group_url(nil, group2.compressed_id) }))
+      post(api_user_url(nil, user1.id), :params => gen_request(:edit, "current_group" => { "href" => api_group_url(nil, group2.compressed_id) }))
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["current_group_id"]).to eq(group2.compressed_id)
@@ -245,9 +245,9 @@ RSpec.describe "users API" do
     it "supports single user edit of other attributes including group change" do
       api_basic_authorize collection_action_identifier(:users, :edit)
 
-      post(api_user_url(nil, user1), gen_request(:edit,
-                                                "email" => "user1@email.com",
-                                                "group" => {"description" => group2.description}))
+      post(api_user_url(nil, user1), :params => gen_request(:edit,
+                                                            "email" => "user1@email.com",
+                                                            "group" => {"description" => group2.description}))
 
       expect_single_resource_query("id" => user1.compressed_id, "email" => "user1@email.com", "current_group_id" => group2.compressed_id)
       expect(user1.reload.email).to eq("user1@email.com")
@@ -257,9 +257,9 @@ RSpec.describe "users API" do
     it "supports multiple user edits" do
       api_basic_authorize collection_action_identifier(:users, :edit)
 
-      post(api_users_url, gen_request(:edit,
-                                          [{"href" => api_user_url(nil, user1), "first_name" => "John"},
-                                           {"href" => api_user_url(nil, user2), "first_name" => "Jane"}]))
+      post(api_users_url, :params => gen_request(:edit,
+                                                 [{"href" => api_user_url(nil, user1), "first_name" => "John"},
+                                                  {"href" => api_user_url(nil, user2), "first_name" => "Jane"}]))
 
       expect_results_to_match_hash("results",
                                    [{"id" => user1.compressed_id, "first_name" => "John"},
@@ -274,7 +274,7 @@ RSpec.describe "users API" do
     it "rejects user deletion, by post action, without appropriate role" do
       api_basic_authorize
 
-      post(api_users_url, gen_request(:delete, "href" => api_user_url(nil, 100)))
+      post(api_users_url, :params => gen_request(:delete, "href" => api_user_url(nil, 100)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -298,7 +298,7 @@ RSpec.describe "users API" do
     it "rejects user delete of requesting user via action" do
       api_basic_authorize collection_action_identifier(:users, :delete)
 
-      post(api_users_url, gen_request(:delete, "href" => api_user_url(nil, @user)))
+      post(api_users_url, :params => gen_request(:delete, "href" => api_user_url(nil, @user)))
 
       expect_bad_request("Cannot delete user of current request")
     end
@@ -327,7 +327,7 @@ RSpec.describe "users API" do
       user1_id = user1.id
       user1_url = api_user_url(nil, user1_id)
 
-      post(user1_url, gen_request(:delete))
+      post(user1_url, :params => gen_request(:delete))
 
       expect_single_action_result(:success => true, :message => "deleting", :href => api_user_url(nil, user1.compressed_id))
       expect(User.exists?(user1_id)).to be_falsey
@@ -339,7 +339,7 @@ RSpec.describe "users API" do
       user1_id, user2_id = user1.id, user2.id
       user1_url, user2_url = api_user_url(nil, user1_id), api_user_url(nil, user2_id)
 
-      post(api_users_url, gen_request(:delete, [{"href" => user1_url}, {"href" => user2_url}]))
+      post(api_users_url, :params => gen_request(:delete, [{"href" => user1_url}, {"href" => user2_url}]))
 
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_user_url(nil, user1.compressed_id), api_user_url(nil, user2.compressed_id)])
@@ -366,7 +366,7 @@ RSpec.describe "users API" do
       FactoryGirl.create(:classification_department_with_tags)
       api_basic_authorize(subcollection_action_identifier(:users, :tags, :assign))
 
-      post(api_user_tags_url(nil, user), :action => "assign", :category => "department", :name => "finance")
+      post(api_user_tags_url(nil, user), :params => { :action => "assign", :category => "department", :name => "finance" })
 
       expected = {
         "results" => [
@@ -388,7 +388,7 @@ RSpec.describe "users API" do
       Classification.classify(user, "department", "finance")
       api_basic_authorize(subcollection_action_identifier(:users, :tags, :unassign))
 
-      post(api_user_tags_url(nil, user), :action => "unassign", :category => "department", :name => "finance")
+      post(api_user_tags_url(nil, user), :params => { :action => "unassign", :category => "department", :name => "finance" })
 
       expected = {
         "results" => [

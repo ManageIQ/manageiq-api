@@ -96,7 +96,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           ]
         }
       }
-      post(api_generic_object_definitions_url, object_definition)
+      post(api_generic_object_definitions_url, :params => object_definition)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['results'].first).to include(object_definition)
@@ -114,7 +114,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      post(api_generic_object_definitions_url, request)
+      post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'error' => a_hash_including(
@@ -139,7 +139,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id), 'resource' => { 'name' => 'updated 3' }}
         ]
       }
-      post(api_generic_object_definitions_url, request)
+      post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
@@ -176,7 +176,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           ]
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.name), request)
+      post(api_generic_object_definition_url(nil, object_def.name), :params => request)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(request.except('action'))
@@ -204,7 +204,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           ]
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), request)
+      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(request.except('action'))
@@ -221,7 +221,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), request)
+      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
 
       expected = {
         'error' => a_hash_including(
@@ -236,7 +236,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'can delete an object definition by name' do
       api_basic_authorize action_identifier(:generic_object_definitions, :delete)
 
-      post(api_generic_object_definition_url(nil, object_def.name), :action => 'delete')
+      post(api_generic_object_definition_url(nil, object_def.name), :params => { :action => 'delete' })
 
       expect(response).to have_http_status(:ok)
     end
@@ -244,7 +244,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'can delete an object definition by id' do
       api_basic_authorize action_identifier(:generic_object_definitions, :delete)
 
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :action => 'delete')
+      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => { :action => 'delete' })
 
       expect(response).to have_http_status(:ok)
     end
@@ -253,7 +253,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
       api_basic_authorize action_identifier(:generic_object_definitions, :delete, :resource_actions, :delete)
       object_def.create_object(:name => 'foo object')
 
-      post(api_generic_object_definition_url(nil, object_def.name), :action => 'delete')
+      post(api_generic_object_definition_url(nil, object_def.name), :params => { :action => 'delete' })
 
       expected = {
         'error' => a_hash_including(
@@ -278,7 +278,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id)}
         ]
       }
-      post(api_generic_object_definitions_url, request)
+      post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
@@ -318,7 +318,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'name'        => 'LoadBalancer Updated',
         'description' => 'LoadBalancer description Updated'
       }
-      put(api_generic_object_definition_url(nil, object_def.name), request)
+      put(api_generic_object_definition_url(nil, object_def.name), :params => request)
 
       expected = {
         'name'        => 'LoadBalancer Updated',

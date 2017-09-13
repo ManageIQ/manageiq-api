@@ -112,7 +112,7 @@ describe "Authentication API" do
     it "querying user's authorization" do
       api_basic_authorize
 
-      get api_entrypoint_url, :attributes => "authorization"
+      get api_entrypoint_url, :params => { :attributes => "authorization" }
 
       expect(response).to have_http_status(:ok)
       expected = {"authorization" => hash_including("product_features")}
@@ -191,7 +191,7 @@ describe "Authentication API" do
         it "gets a token based identifier with an invalid requester_type" do
           api_basic_authorize
 
-          get api_auth_url, :requester_type => "bogus_type"
+          get api_auth_url, :params => { :requester_type => "bogus_type" }
 
           expect_bad_request(/invalid requester_type/i)
         end
@@ -199,7 +199,7 @@ describe "Authentication API" do
         it "gets a token based identifier with a UI based token_ttl" do
           api_basic_authorize
 
-          get api_auth_url, :requester_type => "ui"
+          get api_auth_url, :params => { :requester_type => "ui" }
 
           expect(response).to have_http_status(:ok)
           expect_result_to_have_keys(%w(auth_token token_ttl expires_on))
@@ -221,7 +221,7 @@ describe "Authentication API" do
           it 'gets a UI based token_ttl when requesting token for web sockets' do
             api_basic_authorize
 
-            get api_auth_url, :requester_type => 'ws'
+            get api_auth_url, :params => { :requester_type => 'ws' }
             expect(response).to have_http_status(:ok)
             expect_result_to_have_keys(%w(auth_token token_ttl expires_on))
             expect(response.parsed_body["token_ttl"]).to eq(::Settings.session.timeout.to_i_with_method)
@@ -229,7 +229,7 @@ describe "Authentication API" do
 
           it 'cannot authorize user to api based on token that is dedicated for web sockets' do
             api_basic_authorize
-            get api_auth_url, :requester_type => 'ws'
+            get api_auth_url, :params => { :requester_type => 'ws' }
             ws_token = response.parsed_body["auth_token"]
 
             get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => ws_token}
@@ -249,8 +249,7 @@ describe "Authentication API" do
     end
 
     it "authentication using a bad token" do
-      get api_entrypoint_url,
-              :headers => {Api::HttpHeaders::MIQ_TOKEN => "badtoken"}
+      get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => "badtoken"}
 
       expect(response).to have_http_status(:unauthorized)
       expect(response.parsed_body).to include(
@@ -259,8 +258,10 @@ describe "Authentication API" do
     end
 
     it "authentication using a token with a bad server guid" do
-      get api_entrypoint_url,
-              :headers => {Api::HttpHeaders::MIQ_TOKEN => systoken("bad_server_guid", api_config(:user), Time.now.utc)}
+      get(
+        api_entrypoint_url,
+        :headers => {Api::HttpHeaders::MIQ_TOKEN => systoken("bad_server_guid", api_config(:user), Time.now.utc)}
+      )
 
       expect(response).to have_http_status(:unauthorized)
       expect(response.parsed_body).to include(
@@ -269,8 +270,10 @@ describe "Authentication API" do
     end
 
     it "authentication using a token with bad user" do
-      get api_entrypoint_url,
-              :headers => {Api::HttpHeaders::MIQ_TOKEN => systoken(MiqServer.first.guid, "bad_user_id", Time.now.utc)}
+      get(
+        api_entrypoint_url,
+        :headers => {Api::HttpHeaders::MIQ_TOKEN => systoken(MiqServer.first.guid, "bad_user_id", Time.now.utc)}
+      )
 
       expect(response).to have_http_status(:unauthorized)
       expect(response.parsed_body).to include(

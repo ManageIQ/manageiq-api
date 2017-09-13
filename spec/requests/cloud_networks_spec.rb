@@ -26,7 +26,7 @@ RSpec.describe 'Cloud Networks API' do
       cloud_network_ids = provider.cloud_networks.select(:id).collect(&:compressed_id)
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
 
-      get api_provider_cloud_networks_url(nil, provider), :expand => 'resources'
+      get api_provider_cloud_networks_url(nil, provider), :params => { :expand => 'resources' }
 
       expect_query_result(:cloud_networks, 2)
       expect_result_resources_to_include_data('resources', 'id' => cloud_network_ids)
@@ -63,7 +63,7 @@ RSpec.describe 'Cloud Networks API' do
       FactoryGirl.create(:ems_amazon_with_cloud_networks) # Provider with cloud networks
       api_basic_authorize collection_action_identifier(:providers, :read, :get)
 
-      get api_providers_url, :expand => 'resources,cloud_networks'
+      get api_providers_url, :params => { :expand => 'resources,cloud_networks' }
 
       expected = {
         'resources' => a_collection_including(
@@ -84,7 +84,7 @@ RSpec.describe 'Cloud Networks API' do
       openshift = FactoryGirl.create(:ems_openshift)
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
 
-      get(api_provider_cloud_networks_url(nil, openshift), :expand => 'resources')
+      get(api_provider_cloud_networks_url(nil, openshift), :params => { :expand => 'resources' })
 
       expected = {
         'name'      => 'cloud_networks',
