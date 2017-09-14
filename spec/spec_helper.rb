@@ -9,7 +9,8 @@ Dir[ManageIQ::Api::Engine.root.join("spec/support/**/*.rb")].each { |f| require 
 Dir[Rails.root.join("spec/shared/**/*.rb")].each { |f| require f }
 
 RSpec.configure do |config|
-  config.include Spec::Support::ApiHelper, :type => :request
+  config.include Spec::Support::Api::Helpers, :type => :request
+  config.include Spec::Support::Api::RequestHelpers, :type => :request
   config.define_derived_metadata(:type => :request) do |metadata|
     metadata[:aggregate_failures] = true
   end
