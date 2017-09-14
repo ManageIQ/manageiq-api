@@ -3,7 +3,7 @@ RSpec.describe 'CloudTenants API' do
     it 'lists all cloud tenants with an appropriate role' do
       cloud_tenant = FactoryGirl.create(:cloud_tenant)
       api_basic_authorize collection_action_identifier(:cloud_tenants, :read, :get)
-      run_get(api_cloud_tenants_url)
+      get(api_cloud_tenants_url)
 
       expected = {
         'count'     => 1,
@@ -20,7 +20,7 @@ RSpec.describe 'CloudTenants API' do
     it 'forbids access to cloud tenants without an appropriate role' do
       api_basic_authorize
 
-      run_get(api_cloud_tenants_url)
+      get(api_cloud_tenants_url)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -31,7 +31,7 @@ RSpec.describe 'CloudTenants API' do
       cloud_tenant = FactoryGirl.create(:cloud_tenant)
       api_basic_authorize action_identifier(:cloud_tenants, :read, :resource_actions, :get)
 
-      run_get(api_cloud_tenant_url(nil, cloud_tenant))
+      get(api_cloud_tenant_url(nil, cloud_tenant))
 
       expect(response.parsed_body).to include('href' => api_cloud_tenant_url(nil, cloud_tenant.compressed_id))
       expect(response).to have_http_status(:ok)
@@ -41,7 +41,7 @@ RSpec.describe 'CloudTenants API' do
       cloud_tenant = FactoryGirl.create(:cloud_tenant)
       api_basic_authorize
 
-      run_get(api_cloud_tenant_url(nil, cloud_tenant))
+      get(api_cloud_tenant_url(nil, cloud_tenant))
 
       expect(response).to have_http_status(:forbidden)
     end

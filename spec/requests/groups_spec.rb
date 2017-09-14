@@ -25,7 +25,7 @@ describe "Groups API" do
     it "rejects creation without appropriate role" do
       api_basic_authorize
 
-      run_post(api_groups_url, sample_group1)
+      post(api_groups_url, :params => sample_group1)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -33,7 +33,7 @@ describe "Groups API" do
     it "rejects group creation with id specified" do
       api_basic_authorize collection_action_identifier(:groups, :create)
 
-      run_post(api_groups_url, "description" => "sample group", "id" => 100)
+      post(api_groups_url, :params => { "description" => "sample group", "id" => 100 })
 
       expect_bad_request(/id or href should not be specified/i)
     end
@@ -41,7 +41,7 @@ describe "Groups API" do
     it "rejects group creation with invalid role specified" do
       api_basic_authorize collection_action_identifier(:groups, :create)
 
-      run_post(api_groups_url, "description" => "sample group", "role" => {"id" => 999_999})
+      post(api_groups_url, :params => { "description" => "sample group", "role" => {"id" => 999_999} })
 
       expect(response).to have_http_status(:not_found)
     end
@@ -49,7 +49,7 @@ describe "Groups API" do
     it "rejects group creation with invalid tenant specified" do
       api_basic_authorize collection_action_identifier(:groups, :create)
 
-      run_post(api_groups_url, "description" => "sample group", "tenant" => {"id" => 999_999})
+      post(api_groups_url, :params => { "description" => "sample group", "tenant" => {"id" => 999_999} })
 
       expect(response).to have_http_status(:not_found)
     end
@@ -57,7 +57,7 @@ describe "Groups API" do
     it "rejects group creation with invalid filters specified" do
       api_basic_authorize collection_action_identifier(:groups, :create)
 
-      run_post(api_groups_url, "description" => "sample group", "filters" => {"bogus" => %w(f1 f2)})
+      post(api_groups_url, :params => { "description" => "sample group", "filters" => {"bogus" => %w(f1 f2)} })
 
       expect_bad_request(/Invalid filter/i)
     end
@@ -65,7 +65,7 @@ describe "Groups API" do
     it "supports single group creation" do
       api_basic_authorize collection_action_identifier(:groups, :create)
 
-      run_post(api_groups_url, sample_group1)
+      post(api_groups_url, :params => sample_group1)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -77,7 +77,7 @@ describe "Groups API" do
     it "supports single group creation via action" do
       api_basic_authorize collection_action_identifier(:groups, :create)
 
-      run_post(api_groups_url, gen_request(:create, sample_group1))
+      post(api_groups_url, :params => gen_request(:create, sample_group1))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -89,10 +89,10 @@ describe "Groups API" do
     it "supports single group creation via action with role and tenant specified" do
       api_basic_authorize collection_action_identifier(:groups, :create)
 
-      run_post(api_groups_url, gen_request(:create,
-                                       "description" => "sample_group3",
-                                       "role"        => {"name" => role3.name},
-                                       "tenant"      => {"href" => api_tenant_url(nil, tenant3)}))
+      post(api_groups_url, :params => gen_request(:create,
+                                                  "description" => "sample_group3",
+                                                  "role"        => {"name" => role3.name},
+                                                  "tenant"      => {"href" => api_tenant_url(nil, tenant3)}))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -117,7 +117,7 @@ describe "Groups API" do
                         "belongsto" => ["/managed/infra/1", "/managed/infra/2"],
                       }
       }
-      run_post(api_groups_url, gen_request(:create, sample_group))
+      post(api_groups_url, :params => gen_request(:create, sample_group))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -133,7 +133,7 @@ describe "Groups API" do
     it "supports multiple group creation" do
       api_basic_authorize collection_action_identifier(:groups, :create)
 
-      run_post(api_groups_url, gen_request(:create, [sample_group1, sample_group2]))
+      post(api_groups_url, :params => gen_request(:create, [sample_group1, sample_group2]))
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
@@ -149,9 +149,9 @@ describe "Groups API" do
   describe "groups edit" do
     it "rejects group edits without appropriate role" do
       api_basic_authorize
-      run_post(api_groups_url, gen_request(:edit,
-                                       "description" => "updated_group",
-                                       "href"        => api_group_url(nil, group1)))
+      post(api_groups_url, :params => gen_request(:edit,
+                                                  "description" => "updated_group",
+                                                  "href"        => api_group_url(nil, group1)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -159,7 +159,7 @@ describe "Groups API" do
     it "rejects group edits for invalid resources" do
       api_basic_authorize collection_action_identifier(:groups, :edit)
 
-      run_post(api_group_url(nil, 999_999), gen_request(:edit, "description" => "updated_group"))
+      post(api_group_url(nil, 999_999), :params => gen_request(:edit, "description" => "updated_group"))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -167,7 +167,7 @@ describe "Groups API" do
     it "supports single group edit" do
       api_basic_authorize collection_action_identifier(:groups, :edit)
 
-      run_post(api_group_url(nil, group1), gen_request(:edit, "description" => "updated_group"))
+      post(api_group_url(nil, group1), :params => gen_request(:edit, "description" => "updated_group"))
 
       expect_single_resource_query("id"          => group1.compressed_id,
                                    "description" => "updated_group")
@@ -177,9 +177,9 @@ describe "Groups API" do
     it "supports multiple group edits" do
       api_basic_authorize collection_action_identifier(:groups, :edit)
 
-      run_post(api_groups_url, gen_request(:edit,
-                                           [{"href" => api_group_url(nil, group1), "description" => "updated_group1"},
-                                            {"href" => api_group_url(nil, group2), "description" => "updated_group2"}]))
+      post(api_groups_url, :params => gen_request(:edit,
+                                                  [{"href" => api_group_url(nil, group1), "description" => "updated_group1"},
+                                                   {"href" => api_group_url(nil, group2), "description" => "updated_group2"}]))
 
       expect_results_to_match_hash("results",
                                    [{"id" => group1.compressed_id, "description" => "updated_group1"},
@@ -194,7 +194,7 @@ describe "Groups API" do
     it "rejects group deletion, by post action, without appropriate role" do
       api_basic_authorize
 
-      run_post(api_groups_url, gen_request(:delete, "description" => "group_description", "href" => api_group_url(nil, 100)))
+      post(api_groups_url, :params => gen_request(:delete, "description" => "group_description", "href" => api_group_url(nil, 100)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -202,7 +202,7 @@ describe "Groups API" do
     it "rejects group deletion without appropriate role" do
       api_basic_authorize
 
-      run_delete(api_group_url(nil, 100))
+      delete(api_group_url(nil, 100))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -210,7 +210,7 @@ describe "Groups API" do
     it "rejects group deletes for invalid groups" do
       api_basic_authorize collection_action_identifier(:groups, :delete)
 
-      run_delete(api_group_url(nil, 999_999))
+      delete(api_group_url(nil, 999_999))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -218,7 +218,7 @@ describe "Groups API" do
     it 'rejects a request to remove a default tenant group' do
       api_basic_authorize collection_action_identifier(:groups, :delete)
 
-      run_delete(api_group_url(nil, tenant3.default_miq_group_id))
+      delete(api_group_url(nil, tenant3.default_miq_group_id))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -227,7 +227,7 @@ describe "Groups API" do
       api_basic_authorize collection_action_identifier(:groups, :delete)
 
       g1_id = group1.id
-      run_delete(api_group_url(nil, g1_id))
+      delete(api_group_url(nil, g1_id))
 
       expect(response).to have_http_status(:no_content)
       expect(MiqGroup.exists?(g1_id)).to be_falsey
@@ -239,7 +239,7 @@ describe "Groups API" do
       g1_id = group1.id
       g1_url = api_group_url(nil, g1_id)
 
-      run_post(g1_url, gen_request(:delete))
+      post(g1_url, :params => gen_request(:delete))
 
       expect_single_action_result(:success => true, :message => "deleting", :href => api_group_url(nil, group1.compressed_id))
       expect(MiqGroup.exists?(g1_id)).to be_falsey
@@ -251,7 +251,7 @@ describe "Groups API" do
       g1_id, g2_id = group1.id, group2.id
       g1_url, g2_url = api_group_url(nil, g1_id), api_group_url(nil, g2_id)
 
-      run_post(api_groups_url, gen_request(:delete, [{"href" => g1_url}, {"href" => g2_url}]))
+      post(api_groups_url, :params => gen_request(:delete, [{"href" => g1_url}, {"href" => g2_url}]))
 
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_group_url(nil, group1.compressed_id), api_group_url(nil, group2.compressed_id)])
@@ -267,7 +267,7 @@ describe "Groups API" do
       Classification.classify(group, "department", "finance")
       api_basic_authorize
 
-      run_get(api_group_tags_url(nil, group))
+      get(api_group_tags_url(nil, group))
 
       expect(response.parsed_body).to include("subcount" => 1)
       expect(response).to have_http_status(:ok)
@@ -278,7 +278,7 @@ describe "Groups API" do
       FactoryGirl.create(:classification_department_with_tags)
       api_basic_authorize(subcollection_action_identifier(:groups, :tags, :assign))
 
-      run_post(api_group_tags_url(nil, group), :action => "assign", :category => "department", :name => "finance")
+      post(api_group_tags_url(nil, group), :params => { :action => "assign", :category => "department", :name => "finance" })
 
       expected = {
         "results" => [
@@ -300,7 +300,7 @@ describe "Groups API" do
       Classification.classify(group, "department", "finance")
       api_basic_authorize(subcollection_action_identifier(:groups, :tags, :unassign))
 
-      run_post(api_group_tags_url(nil, group), :action => "unassign", :category => "department", :name => "finance")
+      post(api_group_tags_url(nil, group), :params => { :action => "unassign", :category => "department", :name => "finance" })
 
       expected = {
         "results" => [

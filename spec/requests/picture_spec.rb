@@ -36,7 +36,7 @@ describe "Pictures" do
     it "allows queries of the related picture and image_href" do
       api_basic_authorize action_identifier(:service_templates, :read, :resource_actions, :get)
 
-      run_get api_service_template_url(nil, template), :attributes => "picture,picture.image_href"
+      get api_service_template_url(nil, template), :params => { :attributes => "picture,picture.image_href" }
 
       expect_result_to_include_picture_href(template.compressed_id)
     end
@@ -46,7 +46,7 @@ describe "Pictures" do
     it "allows queries of the related picture and image_href" do
       api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
 
-      run_get api_service_url(nil, service), :attributes => "picture,picture.image_href"
+      get api_service_url(nil, service), :params => { :attributes => "picture,picture.image_href" }
 
       expect_result_to_include_picture_href(service.compressed_id)
     end
@@ -56,7 +56,7 @@ describe "Pictures" do
     it "allows queries of the related picture and image_href" do
       api_basic_authorize action_identifier(:service_requests, :read, :resource_actions, :get)
 
-      run_get api_service_request_url(nil, service_request), :attributes => "picture,picture.image_href"
+      get api_service_request_url(nil, service_request), :params => { :attributes => "picture,picture.image_href" }
 
       expect_result_to_include_picture_href(service_request.compressed_id)
     end
@@ -82,7 +82,7 @@ describe "Pictures" do
     it 'rejects create without an appropriate role' do
       api_basic_authorize
 
-      run_post api_pictures_url, :extension => 'png', :content => content
+      post api_pictures_url, :params => { :extension => 'png', :content => content }
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -95,7 +95,7 @@ describe "Pictures" do
       }
 
       expect do
-        run_post api_pictures_url, :extension => 'png', :content => content
+        post api_pictures_url, :params => { :extension => 'png', :content => content }
       end.to change(Picture, :count).by(1)
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -109,10 +109,8 @@ describe "Pictures" do
       }
 
       expect do
-        run_post(api_pictures_url, gen_request(:create, [
-                                             {:extension => 'png', :content => content},
-                                             {:extension => 'jpg', :content => content}
-                                           ]))
+        post(api_pictures_url, :params => gen_request(:create, [{:extension => 'png', :content => content},
+                                                                {:extension => 'jpg', :content => content}]))
       end.to change(Picture, :count).by(2)
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -121,7 +119,7 @@ describe "Pictures" do
     it 'requires an extension' do
       api_basic_authorize collection_action_identifier(:pictures, :create)
 
-      run_post api_pictures_url, :content => content
+      post api_pictures_url, :params => { :content => content }
 
       expected = {
         'error' => a_hash_including(
@@ -135,7 +133,7 @@ describe "Pictures" do
     it 'requires content' do
       api_basic_authorize collection_action_identifier(:pictures, :create)
 
-      run_post api_pictures_url, :extension => 'png'
+      post api_pictures_url, :params => { :extension => 'png' }
 
       expected = {
         'error' => a_hash_including(
@@ -149,7 +147,7 @@ describe "Pictures" do
     it 'requires content with valid base64' do
       api_basic_authorize collection_action_identifier(:pictures, :create)
 
-      run_post api_pictures_url, :content => 'not base64', :extension => 'png'
+      post api_pictures_url, :params => { :content => 'not base64', :extension => 'png' }
 
       expected = {
         'error' => a_hash_including(

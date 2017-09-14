@@ -19,7 +19,7 @@ describe "Set Ownership" do
     it "to an invalid service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      run_post(api_service_url(nil, 999_999), gen_request(:set_ownership, "owner" => {"id" => 1}))
+      post(api_service_url(nil, 999_999), :params => gen_request(:set_ownership, "owner" => {"id" => 1}))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -27,7 +27,7 @@ describe "Set Ownership" do
     it "without appropriate action role" do
       api_basic_authorize
 
-      run_post(api_service_url(nil, svc), gen_request(:set_ownership, "owner" => {"id" => 1}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"id" => 1}))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -35,7 +35,7 @@ describe "Set Ownership" do
     it "with missing owner or group" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      run_post(api_service_url(nil, svc), gen_request(:set_ownership))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership))
 
       expect_bad_request("Must specify an owner or group")
     end
@@ -43,7 +43,7 @@ describe "Set Ownership" do
     it "with invalid owner" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      run_post(api_service_url(nil, svc), gen_request(:set_ownership, "owner" => {"id" => 999_999}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"id" => 999_999}))
 
       expect_single_action_result(:success => false, :message => /.*/, :href => api_service_url(nil, svc.compressed_id))
     end
@@ -51,7 +51,7 @@ describe "Set Ownership" do
     it "to a service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      run_post(api_service_url(nil, svc), gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
 
       expect_set_ownership_success(svc, api_service_url(nil, svc.compressed_id), @user)
     end
@@ -59,7 +59,7 @@ describe "Set Ownership" do
     it "by owner name to a service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      run_post(api_service_url(nil, svc), gen_request(:set_ownership, "owner" => {"name" => @user.name}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"name" => @user.name}))
 
       expect_set_ownership_success(svc, api_service_url(nil, svc.compressed_id), @user)
     end
@@ -67,7 +67,7 @@ describe "Set Ownership" do
     it "by owner href to a service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      run_post(api_service_url(nil, svc), gen_request(:set_ownership, "owner" => {"href" => api_user_url(nil, @user)}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"href" => api_user_url(nil, @user)}))
 
       expect_set_ownership_success(svc, api_service_url(nil, svc.compressed_id), @user)
     end
@@ -75,7 +75,7 @@ describe "Set Ownership" do
     it "by owner id to a service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      run_post(api_service_url(nil, svc), gen_request(:set_ownership, "owner" => {"id" => @user.id}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"id" => @user.id}))
 
       expect_set_ownership_success(svc, api_service_url(nil, svc.compressed_id), @user)
     end
@@ -83,7 +83,7 @@ describe "Set Ownership" do
     it "by group id to a service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      run_post(api_service_url(nil, svc), gen_request(:set_ownership, "group" => {"id" => @group.id}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "group" => {"id" => @group.id}))
 
       expect_set_ownership_success(svc, api_service_url(nil, svc.compressed_id), nil, @group)
     end
@@ -91,7 +91,7 @@ describe "Set Ownership" do
     it "by group description to a service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      run_post(api_service_url(nil, svc), gen_request(:set_ownership, "group" => {"description" => @group.description}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "group" => {"description" => @group.description}))
 
       expect_set_ownership_success(svc, api_service_url(nil, svc.compressed_id), nil, @group)
     end
@@ -99,7 +99,7 @@ describe "Set Ownership" do
     it "with owner and group to a service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      run_post(api_service_url(nil, svc), gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
 
       expect_set_ownership_success(svc, api_service_url(nil, svc.compressed_id), @user)
     end
@@ -111,7 +111,7 @@ describe "Set Ownership" do
       svc2 = FactoryGirl.create(:service, :name => "svc2", :description => "svc2 description")
 
       svc_urls = [api_service_url(nil, svc1), api_service_url(nil, svc2)]
-      run_post(api_services_url, gen_request(:set_ownership, {"owner" => {"userid" => api_config(:user)}}, *svc_urls))
+      post(api_services_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => api_config(:user)}}, *svc_urls))
 
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_service_url(nil, svc1.compressed_id), api_service_url(nil, svc2.compressed_id)])
@@ -126,7 +126,7 @@ describe "Set Ownership" do
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      run_post(api_vm_url(nil, 999_999), gen_request(:set_ownership, "owner" => {"id" => 1}))
+      post(api_vm_url(nil, 999_999), :params => gen_request(:set_ownership, "owner" => {"id" => 1}))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -134,7 +134,7 @@ describe "Set Ownership" do
     it "without appropriate action role" do
       api_basic_authorize
 
-      run_post(api_vm_url(nil, vm), gen_request(:set_ownership, "owner" => {"id" => 1}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"id" => 1}))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -142,7 +142,7 @@ describe "Set Ownership" do
     it "with missing owner or group" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      run_post(api_vm_url(nil, vm), gen_request(:set_ownership))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership))
 
       expect_bad_request("Must specify an owner or group")
     end
@@ -150,7 +150,7 @@ describe "Set Ownership" do
     it "with invalid owner" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      run_post(api_vm_url(nil, vm), gen_request(:set_ownership, "owner" => {"id" => 999_999}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"id" => 999_999}))
 
       expect_single_action_result(:success => false, :message => /.*/, :href => api_vm_url(nil, vm.compressed_id))
     end
@@ -158,7 +158,7 @@ describe "Set Ownership" do
     it "to a vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      run_post(api_vm_url(nil, vm), gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
 
       expect_set_ownership_success(vm, api_vm_url(nil, vm.compressed_id), @user)
     end
@@ -166,7 +166,7 @@ describe "Set Ownership" do
     it "by owner name to a vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      run_post(api_vm_url(nil, vm), gen_request(:set_ownership, "owner" => {"name" => @user.name}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"name" => @user.name}))
 
       expect_set_ownership_success(vm, api_vm_url(nil, vm.compressed_id), @user)
     end
@@ -174,7 +174,7 @@ describe "Set Ownership" do
     it "by owner href to a vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      run_post(api_vm_url(nil, vm), gen_request(:set_ownership, "owner" => {"href" => api_user_url(nil, @user)}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"href" => api_user_url(nil, @user)}))
 
       expect_set_ownership_success(vm, api_vm_url(nil, vm.compressed_id), @user)
     end
@@ -182,7 +182,7 @@ describe "Set Ownership" do
     it "by owner id to a vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      run_post(api_vm_url(nil, vm), gen_request(:set_ownership, "owner" => {"id" => @user.id}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"id" => @user.id}))
 
       expect_set_ownership_success(vm, api_vm_url(nil, vm.compressed_id), @user)
     end
@@ -190,7 +190,7 @@ describe "Set Ownership" do
     it "by group id to a vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      run_post(api_vm_url(nil, vm), gen_request(:set_ownership, "group" => {"id" => @group.id}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "group" => {"id" => @group.id}))
 
       expect_set_ownership_success(vm, api_vm_url(nil, vm.compressed_id), nil, @group)
     end
@@ -198,7 +198,7 @@ describe "Set Ownership" do
     it "by group description to a vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      run_post(api_vm_url(nil, vm), gen_request(:set_ownership, "group" => {"description" => @group.description}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "group" => {"description" => @group.description}))
 
       expect_set_ownership_success(vm, api_vm_url(nil, vm.compressed_id), nil, @group)
     end
@@ -206,7 +206,7 @@ describe "Set Ownership" do
     it "with owner and group to a vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      run_post(api_vm_url(nil, vm), gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
 
       expect_set_ownership_success(vm, api_vm_url(nil, vm.compressed_id), @user)
     end
@@ -218,7 +218,7 @@ describe "Set Ownership" do
       vm2 = FactoryGirl.create(:vm, :name => "vm2", :description => "vm2 description")
 
       vm_urls = [api_vm_url(nil, vm1), api_vm_url(nil, vm2)]
-      run_post(api_vms_url, gen_request(:set_ownership, {"owner" => {"userid" => api_config(:user)}}, *vm_urls))
+      post(api_vms_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => api_config(:user)}}, *vm_urls))
 
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
@@ -233,7 +233,7 @@ describe "Set Ownership" do
     it "to an invalid template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      run_post(api_template_url(nil, 999_999), gen_request(:set_ownership, "owner" => {"id" => 1}))
+      post(api_template_url(nil, 999_999), :params => gen_request(:set_ownership, "owner" => {"id" => 1}))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -241,7 +241,7 @@ describe "Set Ownership" do
     it "without appropriate action role" do
       api_basic_authorize
 
-      run_post(api_template_url(nil, template), gen_request(:set_ownership, "owner" => {"id" => 1}))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"id" => 1}))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -249,7 +249,7 @@ describe "Set Ownership" do
     it "with missing owner or group" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      run_post(api_template_url(nil, template), gen_request(:set_ownership))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership))
 
       expect_bad_request("Must specify an owner or group")
     end
@@ -257,7 +257,7 @@ describe "Set Ownership" do
     it "with invalid owner" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      run_post(api_template_url(nil, template), gen_request(:set_ownership, "owner" => {"id" => 999_999}))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"id" => 999_999}))
 
       expect_single_action_result(:success => false, :message => /.*/, :href => api_template_url(nil, template.compressed_id))
     end
@@ -265,7 +265,7 @@ describe "Set Ownership" do
     it "to a template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      run_post(api_template_url(nil, template), gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
 
       expect_set_ownership_success(template, api_template_url(nil, template.compressed_id), @user)
     end
@@ -273,7 +273,7 @@ describe "Set Ownership" do
     it "by owner name to a template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      run_post(api_template_url(nil, template), gen_request(:set_ownership, "owner" => {"name" => @user.name}))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"name" => @user.name}))
 
       expect_set_ownership_success(template, api_template_url(nil, template.compressed_id), @user)
     end
@@ -281,7 +281,7 @@ describe "Set Ownership" do
     it "by owner href to a template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      run_post(api_template_url(nil, template), gen_request(:set_ownership, "owner" => {"href" => api_user_url(nil, @user)}))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"href" => api_user_url(nil, @user)}))
 
       expect_set_ownership_success(template, api_template_url(nil, template.compressed_id), @user)
     end
@@ -289,7 +289,7 @@ describe "Set Ownership" do
     it "by owner id to a template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      run_post(api_template_url(nil, template), gen_request(:set_ownership, "owner" => {"id" => @user.id}))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"id" => @user.id}))
 
       expect_set_ownership_success(template, api_template_url(nil, template.compressed_id), @user)
     end
@@ -297,7 +297,7 @@ describe "Set Ownership" do
     it "by group id to a template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      run_post(api_template_url(nil, template), gen_request(:set_ownership, "group" => {"id" => @group.id}))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "group" => {"id" => @group.id}))
 
       expect_set_ownership_success(template, api_template_url(nil, template.compressed_id), nil, @group)
     end
@@ -305,8 +305,8 @@ describe "Set Ownership" do
     it "by group description to a template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      run_post(api_template_url(nil, template),
-               gen_request(:set_ownership, "group" => {"description" => @group.description}))
+      post(api_template_url(nil, template),
+           :params => gen_request(:set_ownership, "group" => {"description" => @group.description}))
 
       expect_set_ownership_success(template, api_template_url(nil, template.compressed_id), nil, @group)
     end
@@ -314,7 +314,7 @@ describe "Set Ownership" do
     it "with owner and group to a template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      run_post(api_template_url(nil, template), gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
 
       expect_set_ownership_success(template, api_template_url(nil, template.compressed_id), @user)
     end
@@ -326,7 +326,7 @@ describe "Set Ownership" do
       template2 = FactoryGirl.create(:template_vmware, :name => "template2")
 
       template_urls = [api_template_url(nil, template1), api_template_url(nil, template2)]
-      run_post(api_templates_url, gen_request(:set_ownership, {"owner" => {"userid" => api_config(:user)}}, *template_urls))
+      post(api_templates_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => api_config(:user)}}, *template_urls))
 
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_template_url(nil, template1.compressed_id), api_template_url(nil, template2.compressed_id)])

@@ -8,7 +8,7 @@ RSpec.describe "firmwares API" do
 
         api_basic_authorize action_identifier(:firmwares, :read, :resource_actions, :get)
 
-        run_get(api_firmware_url(nil, fw))
+        get(api_firmware_url(nil, fw))
 
         expect_single_resource_query("name"    => "UEFI",
                                      "version" => "D7E152CUS-2.11")
@@ -21,7 +21,7 @@ RSpec.describe "firmwares API" do
 
         api_basic_authorize
 
-        run_get(api_firmware_url(nil, fw))
+        get(api_firmware_url(nil, fw))
 
         expect(response).to have_http_status(:forbidden)
       end

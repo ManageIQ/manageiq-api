@@ -5,7 +5,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server, :ems_ref => "A59D5B36821111E1A9F5E41F13ED4F6A")
 
         api_basic_authorize action_identifier(:physical_servers, :read, :resource_actions, :get)
-        run_get api_physical_server_url(nil, ps)
+        get api_physical_server_url(nil, ps)
 
         expect_single_resource_query("ems_ref" => "A59D5B36821111E1A9F5E41F13ED4F6A")
       end
@@ -18,7 +18,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :power_on, :resource_actions, :post)
-        run_post(api_physical_server_url(nil, ps), gen_request(:power_on))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:power_on))
 
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
@@ -28,7 +28,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :power_off, :resource_actions, :post)
-        run_post(api_physical_server_url(nil, ps), gen_request(:power_off))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:power_off))
 
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
@@ -38,7 +38,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :power_off_now, :resource_actions, :post)
-        run_post(api_physical_server_url(nil, ps), gen_request(:power_off_now))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:power_off_now))
 
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
@@ -48,7 +48,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :restart, :resource_actions, :post)
-        run_post(api_physical_server_url(nil, ps), gen_request(:restart))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:restart))
 
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
@@ -58,7 +58,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :restart_now, :resource_actions, :post)
-        run_post(api_physical_server_url(nil, ps), gen_request(:restart_now))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:restart_now))
 
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
@@ -68,7 +68,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :restart_to_sys_setup, :resource_actions, :post)
-        run_post(api_physical_server_url(nil, ps), gen_request(:restart_to_sys_setup))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:restart_to_sys_setup))
 
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
@@ -78,7 +78,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :restart_mgmt_controller, :resource_actions, :post)
-        run_post(api_physical_server_url(nil, ps), gen_request(:restart_mgmt_controller))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:restart_mgmt_controller))
 
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
@@ -90,7 +90,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize
-        run_post(api_physical_server_url(nil, ps), gen_request(:power_on))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:power_on))
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
@@ -100,7 +100,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize
-        run_post(api_physical_server_url(nil, ps), gen_request(:power_off))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:power_off))
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
@@ -110,7 +110,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize
-        run_post(api_physical_server_url(nil, ps), gen_request(:power_off_now))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:power_off_now))
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
@@ -120,7 +120,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize
-        run_post(api_physical_server_url(nil, ps), gen_request(:restart))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:restart))
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
@@ -130,7 +130,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize
-        run_post(api_physical_server_url(nil, ps), gen_request(:restart_now))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:restart_now))
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
@@ -140,7 +140,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize
-        run_post(api_physical_server_url(nil, ps), gen_request(:restart_to_sys_setup))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:restart_to_sys_setup))
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
@@ -150,7 +150,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize
-        run_post(api_physical_server_url(nil, ps), gen_request(:restart_mgmt_controller))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:restart_mgmt_controller))
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
@@ -164,7 +164,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :turn_on_loc_led, :resource_actions, :post)
-        run_post(api_physical_server_url(nil, ps), gen_request(:turn_on_loc_led))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:turn_on_loc_led))
 
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
@@ -174,7 +174,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :turn_off_loc_led, :resource_actions, :post)
-        run_post(api_physical_server_url(nil, ps), gen_request(:turn_off_loc_led))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:turn_off_loc_led))
 
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
@@ -184,7 +184,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :blink_loc_led, :resource_actions, :post)
-        run_post(api_physical_server_url(nil, ps), gen_request(:blink_loc_led))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:blink_loc_led))
 
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
@@ -196,7 +196,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize
-        run_post(api_physical_server_url(nil, ps), gen_request(:turn_on_loc_led))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:turn_on_loc_led))
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
@@ -206,7 +206,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize
-        run_post(api_physical_server_url(nil, ps), gen_request(:turn_off_loc_led))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:turn_off_loc_led))
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
@@ -216,7 +216,7 @@ RSpec.describe "physical_servers API" do
         ps = FactoryGirl.create(:physical_server)
 
         api_basic_authorize
-        run_post(api_physical_server_url(nil, ps), gen_request(:blink_loc_led))
+        post(api_physical_server_url(nil, ps), :params => gen_request(:blink_loc_led))
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")

@@ -10,7 +10,7 @@ describe 'Notifications API' do
     it 'is not supported' do
       api_basic_authorize
 
-      run_post(api_notifications_url, gen_request(:create, :notification_id => 1, :user_id => 1))
+      post(api_notifications_url, :params => gen_request(:create, :notification_id => 1, :user_id => 1))
       expect_bad_request(/Unsupported Action create/i)
     end
   end
@@ -19,7 +19,7 @@ describe 'Notifications API' do
     it "renders the available actions" do
       api_basic_authorize
 
-      run_get(notification_url)
+      get(notification_url)
 
       expected = {
         "actions" => a_collection_including(
@@ -36,7 +36,7 @@ describe 'Notifications API' do
     it 'is not supported' do
       api_basic_authorize
 
-      run_post(api_notifications_url, gen_request(:edit, :user_id => 1, :href => notification_url))
+      post(api_notifications_url, :params => gen_request(:edit, :user_id => 1, :href => notification_url))
       expect_bad_request(/Unsupported Action edit/i)
     end
   end
@@ -46,7 +46,7 @@ describe 'Notifications API' do
       it 'deletes notification using POST' do
         api_basic_authorize
 
-        run_post(notification_url, gen_request(:delete))
+        post(notification_url, :params => gen_request(:delete))
         expect(response).to have_http_status(:ok)
         expect_single_action_result(:success => true, :href => api_notification_url(nil, notification_recipient.compressed_id))
         expect { notification_recipient.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -55,7 +55,7 @@ describe 'Notifications API' do
       it 'deletes notification using DELETE' do
         api_basic_authorize
 
-        run_delete(notification_url)
+        delete(notification_url)
         expect(response).to have_http_status(:no_content)
         expect { notification_recipient.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
@@ -65,14 +65,14 @@ describe 'Notifications API' do
       it 'rejects on notification that is not owned by current user' do
         api_basic_authorize
 
-        run_post(api_notifications_url, gen_request(:delete, :href => foreign_notification_url))
+        post(api_notifications_url, :params => gen_request(:delete, :href => foreign_notification_url))
         expect(response).to have_http_status(:not_found)
       end
 
       it 'deletes single' do
         api_basic_authorize
 
-        run_post(api_notifications_url, gen_request(:delete, :href => notification_url))
+        post(api_notifications_url, :params => gen_request(:delete, :href => notification_url))
         expect(response).to have_http_status(:ok)
         expect_results_to_match_hash('results', [{'success' => true,
                                                   'href'    => api_notification_url(nil, notification_recipient.compressed_id)}])
@@ -85,7 +85,7 @@ describe 'Notifications API' do
 
       it 'deletes multiple' do
         api_basic_authorize
-        run_post(api_notifications_url, gen_request(:delete, [{:href => notification_url}, {:href => notification2_url}]))
+        post(api_notifications_url, :params => gen_request(:delete, [{:href => notification_url}, {:href => notification2_url}]))
         expect(response).to have_http_status(:ok)
         expect { notification_recipient.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { notification2_recipient.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -95,13 +95,13 @@ describe 'Notifications API' do
         let(:notification_id) { ApplicationRecord.compress_id(notification_recipient.id) }
         it 'deletes notifications specified by compressed id in href' do
           api_basic_authorize
-          run_post(api_notifications_url, gen_request(:delete, :href => api_notification_url(nil, notification_id)))
+          post(api_notifications_url, :params => gen_request(:delete, :href => api_notification_url(nil, notification_id)))
           expect(response).to have_http_status(:ok)
         end
 
         it 'deletes notifications specified by compressed id' do
           api_basic_authorize
-          run_post(api_notifications_url, gen_request(:delete, :id => notification_id))
+          post(api_notifications_url, :params => gen_request(:delete, :id => notification_id))
           expect(response).to have_http_status(:ok)
         end
       end
@@ -113,7 +113,7 @@ describe 'Notifications API' do
     it 'rejects on notification that is not owned by current user' do
       api_basic_authorize
 
-      run_post(foreign_notification_url, gen_request(:mark_as_seen))
+      post(foreign_notification_url, :params => gen_request(:mark_as_seen))
       expect(response).to have_http_status(:not_found)
     end
 
@@ -121,7 +121,7 @@ describe 'Notifications API' do
       api_basic_authorize
 
       expect(notification_recipient.seen).to be_falsey
-      run_post(notification_url, gen_request(:mark_as_seen))
+      post(notification_url, :params => gen_request(:mark_as_seen))
       expect_single_action_result(:success => true, :href => api_notification_url(nil, notification_recipient.compressed_id))
       expect(notification_recipient.reload.seen).to be_truthy
     end

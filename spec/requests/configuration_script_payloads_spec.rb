@@ -4,7 +4,7 @@ RSpec.describe 'Configuration Script Payloads API' do
       script_payload = FactoryGirl.create(:configuration_script_payload)
       api_basic_authorize collection_action_identifier(:configuration_script_payloads, :read, :get)
 
-      run_get(api_configuration_script_payloads_url)
+      get(api_configuration_script_payloads_url)
 
       expected = {
         'count'     => 1,
@@ -21,7 +21,7 @@ RSpec.describe 'Configuration Script Payloads API' do
     it 'forbids access to configuration script payloads without an appropriate role' do
       api_basic_authorize
 
-      run_get(api_configuration_script_payloads_url)
+      get(api_configuration_script_payloads_url)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -32,7 +32,7 @@ RSpec.describe 'Configuration Script Payloads API' do
       script_payload = FactoryGirl.create(:configuration_script_payload)
       api_basic_authorize action_identifier(:configuration_script_payloads, :read, :resource_actions, :get)
 
-      run_get(api_configuration_script_payload_url(nil, script_payload))
+      get(api_configuration_script_payload_url(nil, script_payload))
 
       expect(response.parsed_body)
         .to include('href' => api_configuration_script_payload_url(nil, script_payload.compressed_id))
@@ -43,7 +43,7 @@ RSpec.describe 'Configuration Script Payloads API' do
       script_payload = FactoryGirl.create(:configuration_script_payload)
       api_basic_authorize
 
-      run_get(api_configuration_script_payload_url(nil, script_payload))
+      get(api_configuration_script_payload_url(nil, script_payload))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -55,7 +55,7 @@ RSpec.describe 'Configuration Script Payloads API' do
       playbook = FactoryGirl.create(:configuration_script_payload, :authentications => [authentication])
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :read, :get)
 
-      run_get(api_configuration_script_payload_authentications_url(nil, playbook), :expand => 'resources')
+      get(api_configuration_script_payload_authentications_url(nil, playbook), :params => { :expand => 'resources' })
 
       expected = {
         'resources' => [
@@ -84,7 +84,7 @@ RSpec.describe 'Configuration Script Payloads API' do
     it 'requires that the type support create_in_provider_queue' do
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :create)
 
-      run_post(api_configuration_script_payload_authentications_url(nil, playbook), :type => 'Authentication')
+      post(api_configuration_script_payload_authentications_url(nil, playbook), :params => { :type => 'Authentication' })
 
       expected = {
         'results' => [
@@ -98,7 +98,7 @@ RSpec.describe 'Configuration Script Payloads API' do
     it 'creates a new authentication with an appropriate role' do
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :create)
 
-      run_post(api_configuration_script_payload_authentications_url(nil, playbook), params)
+      post(api_configuration_script_payload_authentications_url(nil, playbook), :params => params)
 
       expected = {
         'results' => [a_hash_including(
@@ -114,7 +114,7 @@ RSpec.describe 'Configuration Script Payloads API' do
     it 'can create multiple authentications with an appropriate role' do
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :create)
 
-      run_post(api_configuration_script_payload_authentications_url(nil, playbook), :resources => [params, params])
+      post(api_configuration_script_payload_authentications_url(nil, playbook), :params => { :resources => [params, params] })
 
       expected = {
         'results' => [
@@ -137,7 +137,7 @@ RSpec.describe 'Configuration Script Payloads API' do
     it 'cannot create an authentication without appropriate role' do
       api_basic_authorize
 
-      run_post(api_configuration_script_payload_authentications_url(nil, playbook), :resources => [params])
+      post(api_configuration_script_payload_authentications_url(nil, playbook), :params => { :resources => [params] })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -149,7 +149,7 @@ RSpec.describe 'Configuration Script Payloads API' do
       playbook = FactoryGirl.create(:configuration_script_payload, :authentications => [authentication])
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :read, :get)
 
-      run_get(api_configuration_script_payload_authentication_url(nil, playbook, authentication))
+      get(api_configuration_script_payload_authentication_url(nil, playbook, authentication))
 
       expected = {
         'id' => authentication.compressed_id

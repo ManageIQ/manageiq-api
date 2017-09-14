@@ -12,7 +12,7 @@ RSpec.describe 'LoadBalancers API' do
           hash_including('href' => api_load_balancer_url(nil, load_balancer.compressed_id))
         ]
       }
-      run_get(api_load_balancers_url)
+      get(api_load_balancers_url)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -21,7 +21,7 @@ RSpec.describe 'LoadBalancers API' do
     it 'forbids access to load balancers without an appropriate role' do
       api_basic_authorize
 
-      run_get(api_load_balancers_url)
+      get(api_load_balancers_url)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -32,7 +32,7 @@ RSpec.describe 'LoadBalancers API' do
       load_balancer = FactoryGirl.create(:load_balancer)
       api_basic_authorize action_identifier(:load_balancers, :read, :resource_actions, :get)
 
-      run_get(api_load_balancer_url(nil, load_balancer))
+      get(api_load_balancer_url(nil, load_balancer))
 
       expect(response.parsed_body).to include('href' => api_load_balancer_url(nil, load_balancer.compressed_id))
       expect(response).to have_http_status(:ok)
@@ -42,7 +42,7 @@ RSpec.describe 'LoadBalancers API' do
       load_balancer = FactoryGirl.create(:load_balancer)
       api_basic_authorize
 
-      run_get(api_load_balancer_url(nil, load_balancer))
+      get(api_load_balancer_url(nil, load_balancer))
 
       expect(response).to have_http_status(:forbidden)
     end

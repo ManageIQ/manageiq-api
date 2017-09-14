@@ -8,7 +8,7 @@ RSpec.describe 'Orchestration Template API' do
       FactoryGirl.create(:orchestration_template_vnfd_with_content)
 
       api_basic_authorize collection_action_identifier(:orchestration_templates, :read, :get)
-      run_get(api_orchestration_templates_url)
+      get(api_orchestration_templates_url)
       expect_query_result(:orchestration_templates, 3, 3)
     end
   end
@@ -39,7 +39,7 @@ RSpec.describe 'Orchestration Template API' do
     it 'rejects creation without appropriate role' do
       api_basic_authorize
 
-      run_post(api_orchestration_templates_url, request_body_hot)
+      post(api_orchestration_templates_url, :params => request_body_hot)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -48,7 +48,7 @@ RSpec.describe 'Orchestration Template API' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :create)
 
       expect do
-        run_post(api_orchestration_templates_url, request_body_hot)
+        post(api_orchestration_templates_url, :params => request_body_hot)
       end.to change(OrchestrationTemplateHot, :count).by(1)
     end
 
@@ -56,7 +56,7 @@ RSpec.describe 'Orchestration Template API' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :create)
 
       expect do
-        run_post(api_orchestration_templates_url, request_body_cfn)
+        post(api_orchestration_templates_url, :params => request_body_cfn)
       end.to change(OrchestrationTemplateCfn, :count).by(1)
     end
 
@@ -64,7 +64,7 @@ RSpec.describe 'Orchestration Template API' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :create)
 
       expect do
-        run_post(api_orchestration_templates_url, request_body_vnfd)
+        post(api_orchestration_templates_url, :params => request_body_vnfd)
       end.to change(OrchestrationTemplateVnfd, :count).by(1)
     end
 
@@ -72,14 +72,14 @@ RSpec.describe 'Orchestration Template API' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :create)
 
       expect do
-        run_post(api_orchestration_templates_url, gen_request(:create, request_body_hot))
+        post(api_orchestration_templates_url, :params => gen_request(:create, request_body_hot))
       end.to change(OrchestrationTemplateHot, :count).by(1)
     end
 
     it 'rejects a request with an id' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :create)
 
-      run_post(api_orchestration_templates_url, request_body_hot.merge(:id => 1))
+      post(api_orchestration_templates_url, :params => request_body_hot.merge(:id => 1))
 
       expect_bad_request(/Resource id or href should not be specified/)
     end
@@ -92,7 +92,7 @@ RSpec.describe 'Orchestration Template API' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :edit)
 
       edited_name = "Edited Hot Template"
-      run_post(api_orchestration_template_url(nil, hot), gen_request(:edit, :name => edited_name))
+      post(api_orchestration_template_url(nil, hot), :params => gen_request(:edit, :name => edited_name))
 
       expect(hot.reload.name).to eq(edited_name)
     end
@@ -106,7 +106,7 @@ RSpec.describe 'Orchestration Template API' do
 
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
 
-      run_delete(api_orchestration_template_url(nil, cfn))
+      delete(api_orchestration_template_url(nil, cfn))
 
       expect(response).to have_http_status(:no_content)
       expect(OrchestrationTemplate.exists?(cfn.id)).to be_falsey
@@ -118,7 +118,7 @@ RSpec.describe 'Orchestration Template API' do
       cfn = FactoryGirl.create(:orchestration_template_vnfd_with_content)
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
       expect_any_instance_of(OrchestrationTemplateVnfd).to receive(:raw_destroy).with(no_args) # callback on the model
-      run_delete(api_orchestration_template_url(nil, cfn))
+      delete(api_orchestration_template_url(nil, cfn))
 
       expect(response).to have_http_status(:no_content)
       expect(OrchestrationTemplate.exists?(cfn.id)).to be_falsey
@@ -130,8 +130,10 @@ RSpec.describe 'Orchestration Template API' do
       cfn = FactoryGirl.create(:orchestration_template_cfn_with_content)
       hot = FactoryGirl.create(:orchestration_template_hot_with_content)
 
-      run_post(api_orchestration_templates_url,
-               gen_request(:delete, [{'id' => cfn.id}, {'id' => hot.id}]))
+      post(
+        api_orchestration_templates_url,
+        :params => gen_request(:delete, [{'id' => cfn.id}, {'id' => hot.id}])
+      )
 
       expected = {
         'results' => a_collection_containing_exactly(
@@ -153,9 +155,9 @@ RSpec.describe 'Orchestration Template API' do
       orchestration_template = FactoryGirl.create(:orchestration_template_cfn)
       new_content            = "{ 'Description': 'Test content 1' }\n"
 
-      run_post(
+      post(
         api_orchestration_template_url(nil, orchestration_template),
-        gen_request(:copy, :content => new_content)
+        :params => gen_request(:copy, :content => new_content)
       )
 
       expect(response).to have_http_status(:forbidden)
@@ -166,7 +168,7 @@ RSpec.describe 'Orchestration Template API' do
 
       orchestration_template = FactoryGirl.create(:orchestration_template_cfn)
 
-      run_post(api_orchestration_template_url(nil, orchestration_template), gen_request(:copy))
+      post(api_orchestration_template_url(nil, orchestration_template), :params => gen_request(:copy))
 
       expect(response).to have_http_status(:bad_request)
     end
@@ -186,9 +188,9 @@ RSpec.describe 'Orchestration Template API' do
       }
 
       expect do
-        run_post(
+        post(
           api_orchestration_template_url(nil, orchestration_template),
-          gen_request(:copy, :content => new_content)
+          :params => gen_request(:copy, :content => new_content)
         )
       end.to change(OrchestrationTemplateCfn, :count).by(1)
 
@@ -213,9 +215,9 @@ RSpec.describe 'Orchestration Template API' do
       }
 
       expect do
-        run_post(
+        post(
           api_orchestration_templates_url,
-          gen_request(
+          :params => gen_request(
             :copy,
             [
               {:id => orchestration_template.id, :content => new_content},

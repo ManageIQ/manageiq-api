@@ -20,7 +20,7 @@ describe "Policy Actions API" do
     it "query invalid action" do
       api_basic_authorize action_identifier(:policy_actions, :read, :resource_actions, :get)
 
-      run_get api_policy_action_url(nil, 999_999)
+      get api_policy_action_url(nil, 999_999)
 
       expect(response).to have_http_status(:not_found)
     end
@@ -28,7 +28,7 @@ describe "Policy Actions API" do
     it "query policy actions with no actions defined" do
       api_basic_authorize collection_action_identifier(:policy_actions, :read, :get)
 
-      run_get api_policy_actions_url
+      get api_policy_actions_url
 
       expect_empty_query_result(:policy_actions)
     end
@@ -37,7 +37,7 @@ describe "Policy Actions API" do
       api_basic_authorize collection_action_identifier(:policy_actions, :read, :get)
       create_actions(4)
 
-      run_get api_policy_actions_url
+      get api_policy_actions_url
 
       expect_query_result(:policy_actions, 4, 4)
       expect_result_resources_to_include_hrefs(
@@ -50,7 +50,7 @@ describe "Policy Actions API" do
       api_basic_authorize collection_action_identifier(:policy_actions, :read, :get)
       create_actions(4)
 
-      run_get api_policy_actions_url, :expand => "resources"
+      get api_policy_actions_url, :params => { :expand => "resources" }
 
       expect_query_result(:policy_actions, 4, 4)
       expect_result_resources_to_include_data("resources", "guid" => miq_action_guid_list)
@@ -69,7 +69,7 @@ describe "Policy Actions API" do
     it "query policy actions with no actions defined" do
       api_basic_authorize collection_action_identifier(:policy_actions, :read, :get)
 
-      run_get api_policy_policy_actions_url(nil, policy)
+      get api_policy_policy_actions_url(nil, policy)
 
       expect_empty_query_result(:policy_actions)
     end
@@ -79,7 +79,7 @@ describe "Policy Actions API" do
       create_actions(4)
       relate_actions_to(policy)
 
-      run_get api_policy_policy_actions_url(nil, policy), :expand => "resources"
+      get api_policy_policy_actions_url(nil, policy), :params => { :expand => "resources" }
 
       expect_query_result(:policy_actions, 4, 4)
       expect_result_resources_to_include_data("resources", "guid" => miq_action_guid_list)
@@ -90,7 +90,7 @@ describe "Policy Actions API" do
       create_actions(4)
       relate_actions_to(policy)
 
-      run_get api_policy_url(nil, policy), :expand => "policy_actions"
+      get api_policy_url(nil, policy), :params => { :expand => "policy_actions" }
 
       expect_single_resource_query("name" => policy.name, "description" => policy.description, "guid" => policy.guid)
       expect_result_resources_to_include_data("policy_actions", "guid" => miq_action_guid_list)

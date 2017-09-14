@@ -34,7 +34,7 @@ describe "Services API" do
     it "rejects requests without appropriate role" do
       api_basic_authorize
 
-      run_post(api_services_url, gen_request(:create, "name" => "svc_new_1"))
+      post(api_services_url, :params => gen_request(:create, "name" => "svc_new_1"))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -43,7 +43,7 @@ describe "Services API" do
       api_basic_authorize collection_action_identifier(:services, :create)
 
       expect do
-        run_post(api_services_url, gen_request(:create, "name" => "svc_new_1"))
+        post(api_services_url, :params => gen_request(:create, "name" => "svc_new_1"))
       end.to change(Service, :count).by(1)
 
       expect(response).to have_http_status(:ok)
@@ -54,9 +54,9 @@ describe "Services API" do
       api_basic_authorize collection_action_identifier(:services, :create)
 
       expect do
-        run_post(api_services_url, gen_request(:create,
-                                           [{"name" => "svc_new_1"},
-                                            {"name" => "svc_new_2"}]))
+        post(api_services_url, :params => gen_request(:create,
+                                                      [{"name" => "svc_new_1"},
+                                                       {"name" => "svc_new_2"}]))
       end.to change(Service, :count).by(2)
 
       expect(response).to have_http_status(:ok)
@@ -79,7 +79,7 @@ describe "Services API" do
         }
       }
       expect do
-        run_post(api_services_url, request)
+        post(api_services_url, :params => request)
       end.to change(Service, :count).by(1)
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results", [{"name" => "svc_new"}])
@@ -99,7 +99,7 @@ describe "Services API" do
         }
       }
       expect do
-        run_post(api_services_url, request)
+        post(api_services_url, :params => request)
       end.to change(Service, :count).by(1)
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results", [{"name" => "svc_new"}])
@@ -110,7 +110,7 @@ describe "Services API" do
     it "rejects requests without appropriate role" do
       api_basic_authorize
 
-      run_post(api_service_url(nil, svc), gen_request(:edit, "name" => "sample service"))
+      post(api_service_url(nil, svc), :params => gen_request(:edit, "name" => "sample service"))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -118,7 +118,7 @@ describe "Services API" do
     it "supports edits of single resource" do
       api_basic_authorize collection_action_identifier(:services, :edit)
 
-      run_post(api_service_url(nil, svc), gen_request(:edit, "name" => "updated svc1"))
+      post(api_service_url(nil, svc), :params => gen_request(:edit, "name" => "updated svc1"))
 
       expect_single_resource_query("id" => svc.compressed_id, "href" => api_service_url(nil, svc.compressed_id), "name" => "updated svc1")
       expect(svc.reload.name).to eq("updated svc1")
@@ -135,7 +135,7 @@ describe "Services API" do
           'orchestration_manager'  => { 'href' => api_provider_url(nil, ems.compressed_id) }
         }
       }
-      run_post(api_service_url(nil, svc_orchestration), resource)
+      post(api_service_url(nil, svc_orchestration), :params => resource)
 
       expected = {
         'id'       => svc_orchestration.compressed_id,
@@ -159,7 +159,7 @@ describe "Services API" do
           'orchestration_manager'  => { 'id' => ems.id }
         }
       }
-      run_post(api_service_url(nil, svc_orchestration), resource)
+      post(api_service_url(nil, svc_orchestration), :params => resource)
 
       expected = {
         'id'       => svc_orchestration.compressed_id,
@@ -175,7 +175,7 @@ describe "Services API" do
     it "supports edits of single resource via PUT" do
       api_basic_authorize collection_action_identifier(:services, :edit)
 
-      run_put(api_service_url(nil, svc), "name" => "updated svc1")
+      put(api_service_url(nil, svc), :params => { "name" => "updated svc1" })
 
       expect_single_resource_query("id" => svc.compressed_id, "href" => api_service_url(nil, svc.compressed_id), "name" => "updated svc1")
       expect(svc.reload.name).to eq("updated svc1")
@@ -184,9 +184,9 @@ describe "Services API" do
     it "supports edits of single resource via PATCH" do
       api_basic_authorize collection_action_identifier(:services, :edit)
 
-      run_patch(api_service_url(nil, svc), [{"action" => "edit",   "path" => "name", "value" => "updated svc1"},
-                                            {"action" => "remove", "path" => "description"},
-                                            {"action" => "add",    "path" => "display", "value" => true}])
+      patch(api_service_url(nil, svc), :params => [{"action" => "edit",   "path" => "name", "value" => "updated svc1"},
+                                                   {"action" => "remove", "path" => "description"},
+                                                   {"action" => "add",    "path" => "display", "value" => true}])
 
       expect_single_resource_query("id" => svc.compressed_id, "name" => "updated svc1", "display" => true)
       expect(svc.reload.name).to eq("updated svc1")
@@ -197,9 +197,9 @@ describe "Services API" do
     it "supports edits of multiple resources" do
       api_basic_authorize collection_action_identifier(:services, :edit)
 
-      run_post(api_services_url, gen_request(:edit,
-                                             [{"href" => api_service_url(nil, svc1), "name" => "updated svc1"},
-                                              {"href" => api_service_url(nil, svc2), "name" => "updated svc2"}]))
+      post(api_services_url, :params => gen_request(:edit,
+                                                    [{"href" => api_service_url(nil, svc1), "name" => "updated svc1"},
+                                                     {"href" => api_service_url(nil, svc2), "name" => "updated svc2"}]))
 
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results",
@@ -214,7 +214,7 @@ describe "Services API" do
     it "rejects POST delete requests without appropriate role" do
       api_basic_authorize
 
-      run_post(api_services_url, gen_request(:delete, "href" => api_service_url(nil, 100)))
+      post(api_services_url, :params => gen_request(:delete, "href" => api_service_url(nil, 100)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -222,7 +222,7 @@ describe "Services API" do
     it "rejects DELETE requests without appropriate role" do
       api_basic_authorize
 
-      run_delete(api_service_url(nil, 100))
+      delete(api_service_url(nil, 100))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -230,7 +230,7 @@ describe "Services API" do
     it "rejects requests for invalid resources" do
       api_basic_authorize collection_action_identifier(:services, :delete)
 
-      run_delete(api_service_url(nil, 999_999))
+      delete(api_service_url(nil, 999_999))
 
       expect(response).to have_http_status(:not_found)
     end
@@ -238,7 +238,7 @@ describe "Services API" do
     it "supports single resource deletes" do
       api_basic_authorize collection_action_identifier(:services, :delete)
 
-      run_delete(api_service_url(nil, svc))
+      delete(api_service_url(nil, svc))
 
       expect(response).to have_http_status(:no_content)
       expect { svc.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -249,7 +249,7 @@ describe "Services API" do
       api_basic_authorize(action_identifier(:services, :delete))
 
       expect do
-        run_post(api_service_url(nil, service), :action => "delete")
+        post(api_service_url(nil, service), :params => { :action => "delete" })
       end.to change(Service, :count).by(-1)
 
       expected = {
@@ -266,7 +266,7 @@ describe "Services API" do
       api_basic_authorize
 
       expect do
-        run_post(api_service_url(nil, service), :action => "delete")
+        post(api_service_url(nil, service), :params => { :action => "delete" })
       end.not_to change(Service, :count)
 
       expect(response).to have_http_status(:forbidden)
@@ -275,9 +275,9 @@ describe "Services API" do
     it "supports multiple resource deletes" do
       api_basic_authorize collection_action_identifier(:services, :delete)
 
-      run_post(api_services_url, gen_request(:delete,
-                                             [{"href" => api_service_url(nil, svc1)},
-                                              {"href" => api_service_url(nil, svc2)}]))
+      post(api_services_url, :params => gen_request(:delete,
+                                                    [{"href" => api_service_url(nil, svc1)},
+                                                     {"href" => api_service_url(nil, svc2)}]))
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results",
                                                [api_service_url(nil, svc1.compressed_id), api_service_url(nil, svc2.compressed_id)])
@@ -294,7 +294,7 @@ describe "Services API" do
     it "rejects requests without appropriate role" do
       api_basic_authorize
 
-      run_post(api_service_url(nil, 100), gen_request(:retire))
+      post(api_service_url(nil, 100), :params => gen_request(:retire))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -302,7 +302,7 @@ describe "Services API" do
     it "rejects multiple requests without appropriate role" do
       api_basic_authorize
 
-      run_post(api_services_url, gen_request(:retire, [{"href" => api_service_url(nil, 1)}, {"href" => api_service_url(nil, 2)}]))
+      post(api_services_url, :params => gen_request(:retire, [{"href" => api_service_url(nil, 1)}, {"href" => api_service_url(nil, 2)}]))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -312,7 +312,7 @@ describe "Services API" do
 
       expect(MiqEvent).to receive(:raise_evm_event).once
 
-      run_post(api_service_url(nil, svc), gen_request(:retire))
+      post(api_service_url(nil, svc), :params => gen_request(:retire))
 
       expect_single_resource_query("id" => svc.compressed_id, "href" => api_service_url(nil, svc.compressed_id))
     end
@@ -322,7 +322,7 @@ describe "Services API" do
 
       ret_date = format_retirement_date(Time.now + 5.days)
 
-      run_post(api_service_url(nil, svc), gen_request(:retire, "date" => ret_date, "warn" => 2))
+      post(api_service_url(nil, svc), :params => gen_request(:retire, "date" => ret_date, "warn" => 2))
 
       expect_single_resource_query("id" => svc.compressed_id, "retires_on" => ret_date, "retirement_warn" => 2)
       expect(format_retirement_date(svc.reload.retires_on)).to eq(ret_date)
@@ -334,9 +334,9 @@ describe "Services API" do
 
       expect(MiqEvent).to receive(:raise_evm_event).twice
 
-      run_post(api_services_url, gen_request(:retire,
-                                             [{"href" => api_service_url(nil, svc1)},
-                                              {"href" => api_service_url(nil, svc2)}]))
+      post(api_services_url, :params => gen_request(:retire,
+                                                    [{"href" => api_service_url(nil, svc1)},
+                                                     {"href" => api_service_url(nil, svc2)}]))
 
       expect_results_to_match_hash("results", [{"id" => svc1.compressed_id}, {"id" => svc2.compressed_id}])
     end
@@ -346,9 +346,9 @@ describe "Services API" do
 
       ret_date = format_retirement_date(Time.now + 2.days)
 
-      run_post(api_services_url, gen_request(:retire,
-                                             [{"href" => api_service_url(nil, svc1), "date" => ret_date, "warn" => 3},
-                                              {"href" => api_service_url(nil, svc2), "date" => ret_date, "warn" => 5}]))
+      post(api_services_url, :params => gen_request(:retire,
+                                                    [{"href" => api_service_url(nil, svc1), "date" => ret_date, "warn" => 3},
+                                                     {"href" => api_service_url(nil, svc2), "date" => ret_date, "warn" => 5}]))
 
       expect_results_to_match_hash("results",
                                    [{"id" => svc1.compressed_id, "retires_on" => ret_date, "retirement_warn" => 3},
@@ -371,7 +371,7 @@ describe "Services API" do
     it "rejects requests without appropriate role" do
       api_basic_authorize
 
-      run_post(api_service_url(nil, 100), gen_request(:reconfigure))
+      post(api_service_url(nil, 100), :params => gen_request(:reconfigure))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -381,7 +381,7 @@ describe "Services API" do
                           action_identifier(:services, :retire),
                           action_identifier(:services, :reconfigure))
 
-      run_get api_service_url(nil, svc1)
+      get api_service_url(nil, svc1)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to declare_actions("retire")
@@ -396,7 +396,7 @@ describe "Services API" do
       svc1.service_template_id = st1.id
       svc1.save
 
-      run_get api_service_url(nil, svc1)
+      get api_service_url(nil, svc1)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to declare_actions("retire", "reconfigure")
@@ -410,7 +410,7 @@ describe "Services API" do
       svc1.service_template_id = st1.id
       svc1.save
 
-      run_post(api_service_url(nil, svc1), gen_request(:reconfigure, "text1" => "updated_text"))
+      post(api_service_url(nil, svc1), :params => gen_request(:reconfigure, "text1" => "updated_text"))
 
       expect_single_action_result(:success => true, :message => /reconfiguring/i, :href => api_service_url(nil, svc1.compressed_id))
     end
@@ -438,7 +438,7 @@ describe "Services API" do
     end
 
     it "can query vms as subcollection" do
-      run_get(api_service_vms_url(nil, svc1))
+      get(api_service_vms_url(nil, svc1))
 
       expect_query_result(:vms, 2, 2)
       expect_result_resources_to_include_hrefs("resources",
@@ -447,7 +447,7 @@ describe "Services API" do
     end
 
     it "supports expansion of virtual attributes" do
-      run_get api_services_url, :expand => "resources", :attributes => "power_states"
+      get api_services_url, :params => { :expand => "resources", :attributes => "power_states" }
 
       expected = {
         "resources" => [
@@ -459,13 +459,13 @@ describe "Services API" do
     end
 
     it "can query vms as subcollection via expand" do
-      run_get api_service_url(nil, svc1), :expand => "vms"
+      get api_service_url(nil, svc1), :params => { :expand => "vms" }
 
       expect_svc_with_vms
     end
 
     it "can query vms as subcollection via expand with additional virtual attributes" do
-      run_get api_service_url(nil, svc1), :expand => "vms", :attributes => "vms.cpu_total_cores"
+      get api_service_url(nil, svc1), :params => { :expand => "vms", :attributes => "vms.cpu_total_cores" }
 
       expect_svc_with_vms
       expect_results_to_match_hash("vms", [{"id" => vm1.compressed_id, "cpu_total_cores" => 2},
@@ -473,7 +473,7 @@ describe "Services API" do
     end
 
     it "can query vms as subcollection via decorators with additional decorators" do
-      run_get api_service_url(nil, svc1), :expand => "vms", :attributes => "", :decorators => "vms.supports_console?"
+      get api_service_url(nil, svc1), :params => { :expand => "vms", :attributes => "", :decorators => "vms.supports_console?" }
 
       expect_svc_with_vms
       expect_results_to_match_hash("vms", [{"id" => vm1.compressed_id, "supports_console?" => true},
@@ -481,7 +481,7 @@ describe "Services API" do
     end
 
     it "cannot query vms via both virtual attribute and subcollection" do
-      run_get api_service_url(nil, svc1), :expand => "vms", :attributes => "vms"
+      get api_service_url(nil, svc1), :params => { :expand => "vms", :attributes => "vms" }
 
       expect_bad_request("Cannot expand subcollection vms by name and virtual attribute")
     end
@@ -493,7 +493,7 @@ describe "Services API" do
         service = FactoryGirl.create(:service)
         api_basic_authorize(action_identifier(:services, :start))
 
-        run_post(api_service_url(nil, service), :action => "start")
+        post(api_service_url(nil, service), :params => { :action => "start" })
 
         expected = {
           "href"    => api_service_url(nil, service.compressed_id),
@@ -508,7 +508,7 @@ describe "Services API" do
         service_1, service_2 = FactoryGirl.create_list(:service, 2)
         api_basic_authorize(collection_action_identifier(:services, :start))
 
-        run_post(api_services_url, :action => "start", :resources => [{:id => service_1.id}, {:id => service_2.id}])
+        post(api_services_url, :params => { :action => "start", :resources => [{:id => service_1.id}, {:id => service_2.id}] })
 
         expected = {
           "results" => a_collection_containing_exactly(
@@ -532,7 +532,7 @@ describe "Services API" do
         service = FactoryGirl.create(:service)
         api_basic_authorize
 
-        run_post(api_service_url(nil, service), :action => "start")
+        post(api_service_url(nil, service), :params => { :action => "start" })
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -543,7 +543,7 @@ describe "Services API" do
         service = FactoryGirl.create(:service)
         api_basic_authorize(action_identifier(:services, :stop))
 
-        run_post(api_service_url(nil, service), :action => "stop")
+        post(api_service_url(nil, service), :params => { :action => "stop" })
 
         expected = {
           "href"    => api_service_url(nil, service.compressed_id),
@@ -558,7 +558,7 @@ describe "Services API" do
         service_1, service_2 = FactoryGirl.create_list(:service, 2)
         api_basic_authorize(collection_action_identifier(:services, :stop))
 
-        run_post(api_services_url, :action => "stop", :resources => [{:id => service_1.id}, {:id => service_2.id}])
+        post(api_services_url, :params => { :action => "stop", :resources => [{:id => service_1.id}, {:id => service_2.id}] })
 
         expected = {
           "results" => a_collection_containing_exactly(
@@ -582,7 +582,7 @@ describe "Services API" do
         service = FactoryGirl.create(:service)
         api_basic_authorize
 
-        run_post(api_service_url(nil, service), :action => "stop")
+        post(api_service_url(nil, service), :params => { :action => "stop" })
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -593,7 +593,7 @@ describe "Services API" do
         service = FactoryGirl.create(:service)
         api_basic_authorize(action_identifier(:services, :suspend))
 
-        run_post(api_service_url(nil, service), :action => "suspend")
+        post(api_service_url(nil, service), :params => { :action => "suspend" })
 
         expected = {
           "href"    => api_service_url(nil, service.compressed_id),
@@ -608,7 +608,7 @@ describe "Services API" do
         service_1, service_2 = FactoryGirl.create_list(:service, 2)
         api_basic_authorize(collection_action_identifier(:services, :suspend))
 
-        run_post(api_services_url, :action => "suspend", :resources => [{:id => service_1.id}, {:id => service_2.id}])
+        post(api_services_url, :params => { :action => "suspend", :resources => [{:id => service_1.id}, {:id => service_2.id}] })
 
         expected = {
           "results" => a_collection_containing_exactly(
@@ -632,7 +632,7 @@ describe "Services API" do
         service = FactoryGirl.create(:service)
         api_basic_authorize
 
-        run_post(api_service_url(nil, service), :action => "suspend")
+        post(api_service_url(nil, service), :params => { :action => "suspend" })
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -649,7 +649,7 @@ describe "Services API" do
     it 'can query orchestration stacks as a subcollection' do
       api_basic_authorize subcollection_action_identifier(:services, :orchestration_stacks, :read, :get)
 
-      run_get(api_service_orchestration_stacks_url(nil, svc), :expand => 'resources')
+      get(api_service_orchestration_stacks_url(nil, svc), :params => { :expand => 'resources' })
 
       expected = {
         'resources' => [
@@ -663,7 +663,7 @@ describe "Services API" do
     it 'can query a specific orchestration stack' do
       api_basic_authorize subcollection_action_identifier(:services, :orchestration_stacks, :read, :get)
 
-      run_get(api_service_orchestration_stack_url(nil, svc, os))
+      get(api_service_orchestration_stack_url(nil, svc, os))
 
       expected = {'id' => os.compressed_id}
       expect(response).to have_http_status(:ok)
@@ -674,7 +674,7 @@ describe "Services API" do
       api_basic_authorize subcollection_action_identifier(:services, :orchestration_stacks, :read, :get)
 
       allow_any_instance_of(OrchestrationStack).to receive(:stdout).with(nil).and_return("default text stdout")
-      run_get(api_service_orchestration_stack_url(nil, svc, os), :attributes => "stdout")
+      get(api_service_orchestration_stack_url(nil, svc, os), :params => { :attributes => "stdout" })
 
       expected = {
         'id'     => os.compressed_id,
@@ -688,7 +688,7 @@ describe "Services API" do
       api_basic_authorize subcollection_action_identifier(:services, :orchestration_stacks, :read, :get)
 
       allow_any_instance_of(OrchestrationStack).to receive(:stdout).with("json").and_return("json stdout")
-      run_get(api_service_orchestration_stack_url(nil, svc, os), :attributes => "stdout", :format_attributes => "stdout=json")
+      get(api_service_orchestration_stack_url(nil, svc, os), :params => { :attributes => "stdout", :format_attributes => "stdout=json" })
 
       expected = {
         'id'     => os.compressed_id,
@@ -701,7 +701,7 @@ describe "Services API" do
     it 'will not return orchestration stacks without an appropriate role' do
       api_basic_authorize
 
-      run_get(api_service_orchestration_stacks_url(nil, svc))
+      get(api_service_orchestration_stacks_url(nil, svc))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -721,7 +721,7 @@ describe "Services API" do
         ]
       }
 
-      run_post(api_services_url, request)
+      post(api_services_url, :params => request)
 
       expected = {
         'results' => [
@@ -747,7 +747,7 @@ describe "Services API" do
         ]
       }
 
-      run_post(api_services_url, request)
+      post(api_services_url, :params => request)
 
       expected = {
         'results' => [
@@ -768,7 +768,7 @@ describe "Services API" do
         'resource' => { 'resource' => { 'href' => '1' } }
       }
 
-      run_post(api_service_url(nil, svc), request)
+      post(api_service_url(nil, svc), :params => request)
 
       expected = { 'success' => false, 'message' => "Invalid resource href specified 1"}
 
@@ -784,7 +784,7 @@ describe "Services API" do
         'resource' => { 'resource' => { 'href' => api_user_url(nil, user.compressed_id) } }
       }
 
-      run_post(api_service_url(nil, svc), request)
+      post(api_service_url(nil, svc), :params => request)
 
       expected = { 'success' => false, 'message' => "Cannot assign users to Service id:#{svc.id} name:'#{svc.name}'"}
 
@@ -799,7 +799,7 @@ describe "Services API" do
         'resource' => { 'resource' => {} }
       }
 
-      run_post(api_service_url(nil, svc), request)
+      post(api_service_url(nil, svc), :params => request)
 
       expected = { 'success' => false, 'message' => "Must specify a resource reference"}
 
@@ -814,7 +814,7 @@ describe "Services API" do
         'resource' => { 'resource' => {'href' => api_vm_url(nil, vm1)} }
       }
 
-      run_post(api_service_url(nil, svc), request)
+      post(api_service_url(nil, svc), :params => request)
 
       expected = { 'success' => true, 'message' => "Assigned resource vms id:#{vm1.id} to Service id:#{svc.id} name:'#{svc.name}'"}
 
@@ -826,7 +826,7 @@ describe "Services API" do
     it 'cannot add multiple vms to multiple services by href without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_services_url, 'action' => 'add_resource')
+      post(api_services_url, :params => { 'action' => 'add_resource' })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -844,7 +844,7 @@ describe "Services API" do
     it 'cannot remove vms from services without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_services_url, 'action' => 'remove_resource')
+      post(api_services_url, :params => { 'action' => 'remove_resource' })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -859,7 +859,7 @@ describe "Services API" do
         ]
       }
 
-      run_post(api_services_url, request)
+      post(api_services_url, :params => request)
 
       expected = {
         'results' => [
@@ -882,7 +882,7 @@ describe "Services API" do
         ]
       }
 
-      run_post(api_services_url, request)
+      post(api_services_url, :params => request)
 
       expected = {
         'results' => [
@@ -902,7 +902,7 @@ describe "Services API" do
         ]
       }
 
-      run_post(api_services_url, request)
+      post(api_services_url, :params => request)
 
       expected = {
         'results' => [
@@ -916,7 +916,7 @@ describe "Services API" do
     it 'cannot remove a vm from a service without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_service_url(nil, svc), 'action' => 'remove_resource')
+      post(api_service_url(nil, svc), :params => { 'action' => 'remove_resource' })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -928,7 +928,7 @@ describe "Services API" do
         'resource' => { 'resource' => {'href' => api_vm_url(nil, vm1)} }
       }
 
-      run_post(api_service_url(nil, svc), request)
+      post(api_service_url(nil, svc), :params => request)
 
       expected = {
         'success' => true,
@@ -954,7 +954,7 @@ describe "Services API" do
     it 'cannot remove all resources without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_services_url, 'action' => 'remove_all_resources')
+      post(api_services_url, :params => { 'action' => 'remove_all_resources' })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -969,7 +969,7 @@ describe "Services API" do
         ]
       }
 
-      run_post(api_services_url, request)
+      post(api_services_url, :params => request)
 
       expected = {
         'results' => [
@@ -986,7 +986,7 @@ describe "Services API" do
     it 'cannot remove all resources without an appropriate role' do
       api_basic_authorize
 
-      run_post(api_service_url(nil, svc), :action => 'remove_all_resources')
+      post(api_service_url(nil, svc), :params => { :action => 'remove_all_resources' })
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -994,7 +994,7 @@ describe "Services API" do
     it 'can remove all resources from a service' do
       api_basic_authorize collection_action_identifier(:services, :remove_all_resources)
 
-      run_post(api_service_url(nil, svc), :action => 'remove_all_resources')
+      post(api_service_url(nil, svc), :params => { :action => 'remove_all_resources' })
 
       expected = {
         'success' => true, 'message' => "Removed all resources from Service id:#{svc.id} name:'#{svc.name}'"
@@ -1018,7 +1018,7 @@ describe "Services API" do
     it 'returns the metric rollups for the service' do
       api_basic_authorize subcollection_action_identifier(:services, :metric_rollups, :read, :get)
 
-      run_get(url, :capture_interval => 'hourly', :start_date => Time.zone.today.to_s)
+      get(url, :params => { :capture_interval => 'hourly', :start_date => Time.zone.today.to_s })
 
       expected = {
         'count'    => 5,
@@ -1033,7 +1033,7 @@ describe "Services API" do
     it 'will not return metric rollups without an appropriate role' do
       api_basic_authorize
 
-      run_get(url, :capture_interval => 'hourly', :start_date => Time.zone.today.to_s)
+      get(url, :params => { :capture_interval => 'hourly', :start_date => Time.zone.today.to_s })
 
       expect(response).to have_http_status(:forbidden)
     end

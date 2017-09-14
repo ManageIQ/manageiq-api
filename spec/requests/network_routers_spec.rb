@@ -3,7 +3,7 @@ RSpec.describe 'NetworkRouters API' do
     it 'lists all cloud subnets with an appropriate role' do
       network_router = FactoryGirl.create(:network_router)
       api_basic_authorize collection_action_identifier(:network_routers, :read, :get)
-      run_get(api_network_routers_url)
+      get(api_network_routers_url)
 
       expected = {
         'count'     => 1,
@@ -19,7 +19,7 @@ RSpec.describe 'NetworkRouters API' do
 
     it 'forbids access to cloud subnets without an appropriate role' do
       api_basic_authorize
-      run_get(api_network_routers_url)
+      get(api_network_routers_url)
       expect(response).to have_http_status(:forbidden)
     end
   end
@@ -28,7 +28,7 @@ RSpec.describe 'NetworkRouters API' do
     it 'will show a cloud subnet with an appropriate role' do
       network_router = FactoryGirl.create(:network_router)
       api_basic_authorize action_identifier(:network_routers, :read, :resource_actions, :get)
-      run_get(api_network_router_url(nil, network_router))
+      get(api_network_router_url(nil, network_router))
       expect(response.parsed_body).to include('href' => api_network_router_url(nil, network_router.compressed_id))
       expect(response).to have_http_status(:ok)
     end
@@ -36,7 +36,7 @@ RSpec.describe 'NetworkRouters API' do
     it 'forbids access to a cloud tenant without an appropriate role' do
       network_router = FactoryGirl.create(:network_router)
       api_basic_authorize
-      run_get(api_network_router_url(nil, network_router))
+      get(api_network_router_url(nil, network_router))
       expect(response).to have_http_status(:forbidden)
     end
   end
@@ -44,7 +44,7 @@ RSpec.describe 'NetworkRouters API' do
   describe 'POST /api/network_routers' do
     it 'forbids access to network routers without an appropriate role' do
       api_basic_authorize
-      run_post(api_network_routers_url, gen_request(:query, ""))
+      post(api_network_routers_url, :params => gen_request(:query, ""))
       expect(response).to have_http_status(:forbidden)
     end
   end
