@@ -21,7 +21,7 @@ RSpec.describe 'GenericObjects API' do
       object = FactoryGirl.create(:generic_object, :generic_object_definition => object_definition)
       api_basic_authorize collection_action_identifier(:generic_objects, :read, :get)
 
-      run_get(api_generic_objects_url)
+      get(api_generic_objects_url)
 
       expected = {
         'count'     => 1,
@@ -41,7 +41,7 @@ RSpec.describe 'GenericObjects API' do
       object.add_to_property_association('services', service)
       api_basic_authorize collection_action_identifier(:generic_objects, :read, :get)
 
-      run_get(api_generic_objects_url, :expand => :resources, :property_associations => 'vms,services')
+      get(api_generic_objects_url, :params => {:expand => 'resources', :property_associations => 'vms,services'})
 
       expected = {
         'resources' => [
@@ -71,7 +71,7 @@ RSpec.describe 'GenericObjects API' do
     it 'returns a generic object with property_attributes' do
       api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get)
 
-      run_get(api_generic_object_url(nil, object.compressed_id))
+      get(api_generic_object_url(nil, object.compressed_id))
 
       expected = {
         'name'                => 'object 1',
@@ -84,16 +84,15 @@ RSpec.describe 'GenericObjects API' do
     it 'allows specification of property_associations and returns them accordingly' do
       api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get)
 
-      run_get(api_generic_object_url(nil, object.compressed_id), :property_associations => 'vms,services')
+      get(api_generic_object_url(nil, object.compressed_id), :params => {:property_associations => 'vms,services'})
 
-      # TODO: add test to ensure the hrefs correctly align with the collection
       expected = {
         'name'                => 'object 1',
         'property_attributes' => { 'widget' => 'a widget string', 'is_something' => true },
-        'services'            => a_collection_containing_exactly(a_hash_including('id' => service.compressed_id)),
+        'services'            => a_collection_containing_exactly(a_hash_including('href' => api_service_url(nil, service.compressed_id), 'id' => service.compressed_id)),
         'vms'                 => a_collection_containing_exactly(
-          a_hash_including('id' => vm.compressed_id),
-          a_hash_including('id' => vm2.compressed_id)
+          a_hash_including('href' => api_instance_url(nil, vm.compressed_id), 'id' => vm.compressed_id),
+          a_hash_including('href' => api_instance_url(nil, vm2.compressed_id), 'id' => vm2.compressed_id)
         )
       }
       expect(response).to have_http_status(:ok)
@@ -105,7 +104,7 @@ RSpec.describe 'GenericObjects API' do
     it 'does not allow creation of a generic object without appropriate role' do
       api_basic_authorize
 
-      run_post(api_generic_objects_url)
+      post(api_generic_objects_url, :params => {})
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -131,7 +130,7 @@ RSpec.describe 'GenericObjects API' do
           ]
         }
       }
-      run_post(api_generic_objects_url, generic_object)
+      post(api_generic_objects_url, :params => generic_object)
 
       expected = {
         'results' => [
@@ -153,7 +152,7 @@ RSpec.describe 'GenericObjects API' do
           { 'href' => api_generic_object_url(nil, object.compressed_id), 'name' => 'updated name', 'property_attributes' => {'widget' => 'updated widget'} }
         ]
       }
-      run_post(api_generic_objects_url, request)
+      post(api_generic_objects_url, :params => request)
 
       expected = {
         'results' => [
@@ -173,7 +172,7 @@ RSpec.describe 'GenericObjects API' do
           { 'href' => api_generic_object_url(nil, object.compressed_id) }
         ]
       }
-      run_post(api_generic_objects_url, request)
+      post(api_generic_objects_url, :params => request)
 
       expected = {
         'results' => [a_hash_including('success' => true, 'message' => a_string_including('deleting'))]
@@ -202,7 +201,7 @@ RSpec.describe 'GenericObjects API' do
           }
         }
       }
-      run_post(api_generic_object_url(nil, object.compressed_id), request)
+      post(api_generic_object_url(nil, object.compressed_id), :params => request)
 
       expected = {
         'name'                => 'updated object',
@@ -220,7 +219,7 @@ RSpec.describe 'GenericObjects API' do
     it 'deletes a generic object' do
       api_basic_authorize action_identifier(:generic_objects, :delete)
 
-      run_post(api_generic_object_url(nil, object.compressed_id), :action => 'delete')
+      post(api_generic_object_url(nil, object.compressed_id), :params => { :action => 'delete' })
 
       expected = {
         'success' => true,
@@ -235,7 +234,7 @@ RSpec.describe 'GenericObjects API' do
     it 'can delete a generic object' do
       api_basic_authorize action_identifier(:generic_objects, :delete, :resource_actions, :delete)
 
-      run_delete(api_generic_object_url(nil, object.compressed_id))
+      delete(api_generic_object_url(nil, object.compressed_id))
 
       expect(response).to have_http_status(:no_content)
     end
