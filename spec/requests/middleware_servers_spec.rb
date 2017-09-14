@@ -1,17 +1,12 @@
 describe 'Middleware Servers API' do
   let(:server) { FactoryGirl.create(:middleware_server) }
 
-  # For some reason middleware_servers_url is not returning the full
-  # url, just the path portion. This is a hack, but will do the trick.
-  def server_url
-    "http://www.example.com#{middleware_servers_url(server.compressed_id)}"
-  end
 
   describe '/' do
     it 'forbids access without an appropriate role' do
       api_basic_authorize
 
-      run_get middleware_servers_url
+      run_get api_middleware_servers_url
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -19,7 +14,7 @@ describe 'Middleware Servers API' do
     it 'returns an empty listing of servers' do
       api_basic_authorize collection_action_identifier(:middleware_servers, :read, :get)
 
-      run_get middleware_servers_url
+      run_get api_middleware_servers_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq(
@@ -35,14 +30,14 @@ describe 'Middleware Servers API' do
 
       api_basic_authorize collection_action_identifier(:middleware_servers, :read, :get)
 
-      run_get middleware_servers_url
+      run_get api_middleware_servers_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq(
         'name'      => 'middleware_servers',
         'count'     => 1,
         'resources' => [{
-          'href' => server_url
+          'href' => api_middleware_server_url(nil, server.compressed_id)
         }],
         'subcount'  => 1
       )
@@ -53,12 +48,12 @@ describe 'Middleware Servers API' do
     it 'returns the attributes of one server' do
       api_basic_authorize
 
-      run_get middleware_servers_url(server.id)
+      run_get api_middleware_server_url(nil, server.id)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['id']).to eq server.compressed_id
       expect(response.parsed_body).to include(
-        'href'       => server_url,
+        'href'       => api_middleware_server_url(nil, server.compressed_id),
         'name'       => server.name,
         'feed'       => server.feed,
         'properties' => server.properties,

@@ -1,17 +1,11 @@
 describe 'Middleware Datasources API' do
   let(:datasource) { FactoryGirl.create(:middleware_datasource) }
 
-  # For some reason middleware_datasources_url is not returning the full
-  # url, just the path portion. This is a hack, but will do the trick.
-  def datasource_url
-    "http://www.example.com#{middleware_datasources_url(datasource.compressed_id)}"
-  end
-
   describe '/' do
     it 'forbids access without an appropriate role' do
       api_basic_authorize
 
-      run_get middleware_datasources_url
+      run_get api_middleware_datasources_url
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -19,7 +13,7 @@ describe 'Middleware Datasources API' do
     it 'returns an empty listing of datasources' do
       api_basic_authorize collection_action_identifier(:middleware_datasources, :read, :get)
 
-      run_get middleware_datasources_url
+      run_get api_middleware_datasources_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq(
@@ -35,14 +29,14 @@ describe 'Middleware Datasources API' do
 
       api_basic_authorize collection_action_identifier(:middleware_datasources, :read, :get)
 
-      run_get middleware_datasources_url
+      run_get api_middleware_datasources_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq(
         'name'      => 'middleware_datasources',
         'count'     => 1,
         'resources' => [{
-          'href' => datasource_url
+          'href' => api_middleware_datasource_url(nil, datasource.compressed_id)
         }],
         'subcount'  => 1
       )
@@ -53,11 +47,11 @@ describe 'Middleware Datasources API' do
     it 'returns the attributes of one datasource' do
       api_basic_authorize
 
-      run_get middleware_datasources_url(datasource.id)
+      run_get api_middleware_datasource_url(nil, datasource.compressed_id)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['id']).to eq datasource.compressed_id
-      expect(response.parsed_body).to include('href' => datasource_url)
+      expect(response.parsed_body).to include('href' => api_middleware_datasource_url(nil, datasource.compressed_id))
     end
   end
 end

@@ -1,17 +1,11 @@
 describe 'Middleware Messagings API' do
   let(:messaging) { FactoryGirl.create(:middleware_messaging) }
 
-  # For some reason middleware_messagings_url is not returning the full
-  # url, just the path portion. This is a hack, but will do the trick.
-  def messaging_url
-    "http://www.example.com#{middleware_messagings_url(messaging.compressed_id)}"
-  end
-
   describe '/' do
     it 'forbids access without an appropriate role' do
       api_basic_authorize
 
-      run_get middleware_messagings_url
+      run_get api_middleware_messagings_url
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -19,7 +13,7 @@ describe 'Middleware Messagings API' do
     it 'returns an empty listing of messagings' do
       api_basic_authorize collection_action_identifier(:middleware_messagings, :read, :get)
 
-      run_get middleware_messagings_url
+      run_get api_middleware_messagings_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq(
@@ -35,14 +29,14 @@ describe 'Middleware Messagings API' do
 
       api_basic_authorize collection_action_identifier(:middleware_messagings, :read, :get)
 
-      run_get middleware_messagings_url
+      run_get api_middleware_messagings_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq(
         'name'      => 'middleware_messagings',
         'count'     => 1,
         'resources' => [{
-          'href' => messaging_url
+          'href' => api_middleware_messaging_url(nil, messaging.compressed_id)
         }],
         'subcount'  => 1
       )
@@ -53,11 +47,11 @@ describe 'Middleware Messagings API' do
     it 'returns the attributes of one messaging' do
       api_basic_authorize
 
-      run_get middleware_messagings_url(messaging.id)
+      run_get api_middleware_messaging_url(nil, messaging.id)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['id']).to eq messaging.compressed_id
-      expect(response.parsed_body).to include('href' => messaging_url)
+      expect(response.parsed_body).to include('href' => api_middleware_messaging_url(nil, messaging.compressed_id))
     end
   end
 end
