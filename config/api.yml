@@ -842,6 +842,18 @@
         :identifier: generic_object_definition_edit
       - :name: delete
         :identifier: generic_object_definition_delete
+      - :name: add_attributes
+        :identifier: generic_object_definition_edit
+      - :name: remove_attributes
+        :identifier: generic_object_definition_edit
+      - :name: add_associations
+        :identifier: generic_object_definition_edit
+      - :name: remove_associations
+        :identifier: generic_object_definition_edit
+      - :name: add_methods
+        :identifier: generic_object_definition_edit
+      - :name: remove_methods
+        :identifier: generic_object_definition_edit
     :resource_actions:
       :get:
       - :name: read
@@ -851,6 +863,18 @@
         :identifier: generic_object_definition_edit
       - :name: delete
         :identifier: generic_object_definition_delete
+      - :name: add_attributes
+        :identifier: generic_object_definition_edit
+      - :name: remove_attributes
+        :identifier: generic_object_definition_edit
+      - :name: add_associations
+        :identifier: generic_object_definition_edit
+      - :name: remove_associations
+        :identifier: generic_object_definition_edit
+      - :name: add_methods
+        :identifier: generic_object_definition_edit
+      - :name: remove_methods
+        :identifier: generic_object_definition_edit
       :put:
       - :name: edit
         :identifier: generic_object_definition_edit
