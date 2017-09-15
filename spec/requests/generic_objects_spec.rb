@@ -41,7 +41,7 @@ RSpec.describe 'GenericObjects API' do
       object.add_to_property_association('services', service)
       api_basic_authorize collection_action_identifier(:generic_objects, :read, :get)
 
-      get(api_generic_objects_url, :params => {:expand => 'resources', :property_associations => 'vms,services'})
+      get(api_generic_objects_url, :params => {:expand => 'resources', :associations => 'vms,services'})
 
       expected = {
         'resources' => [
@@ -84,7 +84,7 @@ RSpec.describe 'GenericObjects API' do
     it 'allows specification of property_associations and returns them accordingly' do
       api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get)
 
-      get(api_generic_object_url(nil, object.compressed_id), :params => {:property_associations => 'vms,services'})
+      get(api_generic_object_url(nil, object.compressed_id), :params => {:associations => 'vms,services'})
 
       expected = {
         'name'                => 'object 1',

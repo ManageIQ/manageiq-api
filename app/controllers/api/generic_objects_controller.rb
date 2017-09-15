@@ -3,6 +3,7 @@ module Api
     ADDITIONAL_ATTRS = %w(generic_object_definition associations).freeze
 
     before_action :set_additional_attributes
+    before_action :set_associations, :only => [:index, :show]
 
     def create_resource(_type, _id, data)
       object_def = retrieve_generic_object_definition(data)
@@ -28,8 +29,11 @@ module Api
 
     def set_additional_attributes
       @additional_attributes = %w(property_attributes)
-      return unless params[:property_associations]
-      params[:property_associations].split(',').each do |prop|
+    end
+
+    def set_associations
+      return unless params[:associations]
+      params[:associations].split(',').each do |prop|
         @additional_attributes << prop
       end
     end

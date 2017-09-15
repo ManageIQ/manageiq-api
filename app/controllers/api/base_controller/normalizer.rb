@@ -112,7 +112,7 @@ module Api
       end
 
       def normalize_array(obj)
-        type = @req.subcollection || @req.collection
+        type = @req.subject
         obj.collect { |item| normalize_attr(get_reftype(type, type, item), item) }
       end
 
