@@ -76,6 +76,81 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
   end
 
+  describe 'GET /api/generic_object_definitions/:id/generic_objects' do
+    it 'can return the generic objects of a definition with appropriate role' do
+      object = FactoryGirl.create(:generic_object, :name => 'bar', :generic_object_definition => object_def)
+      api_basic_authorize subcollection_action_identifier(:generic_object_definitions, :generic_objects, :read, :get)
+
+      get(api_generic_object_definition_generic_objects_url(nil, object_def))
+
+      expected = {
+        'name'      => 'generic_objects',
+        'count'     => 1,
+        'subcount'  => 1,
+        'resources' => [
+          { 'href' => api_generic_object_definition_generic_object_url(nil, object_def, object) }
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'does not return the generic objects without an appropriate role' do
+      api_basic_authorize
+
+      get(api_generic_object_definition_generic_objects_url(nil, object_def))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
+  describe 'GET /api/generic_object_definitions/:id/generic_objects/:id' do
+    let(:object) { FactoryGirl.create(:generic_object, :name => 'bar', :generic_object_definition => object_def) }
+    let(:vm) { FactoryGirl.create(:vm_amazon) }
+
+    before do
+      object_def.add_property_attribute('is_something', 'boolean')
+      object_def.add_property_association('services', 'Service')
+      object_def.add_property_association('vms', 'Vm')
+
+      object.is_something = true
+      object.save!
+
+      object.add_to_property_association('vms', [vm])
+    end
+
+    it 'returns the generic object with property attributes by default' do
+      api_basic_authorize subcollection_action_identifier(:generic_object_definitions, :generic_objects, :read, :get)
+
+      get(api_generic_object_definition_generic_object_url(nil, object_def.id, object.id))
+
+      expected = {
+        'href'                => api_generic_object_definition_generic_object_url(nil, object_def, object),
+        'id'                  => object.id.to_s,
+        'name'                => 'bar',
+        'property_attributes' => { 'is_something' => true }
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'will return the specified associations' do
+      api_basic_authorize subcollection_action_identifier(:generic_object_definitions, :generic_objects, :read, :get)
+
+      get(api_generic_object_definition_generic_object_url(nil, object_def.id, object.id), :params => {:associations => 'vms'})
+
+      expected = {
+        'href'                => api_generic_object_definition_generic_object_url(nil, object_def, object),
+        'id'                  => object.id.to_s,
+        'name'                => 'bar',
+        'property_attributes' => { 'is_something' => true },
+        'vms'                 => [a_hash_including('id' => vm.id.to_s, 'href' => api_instance_url(nil, vm.id))]
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   describe 'POST /api/generic_object_definitions' do
     it 'can create a new generic_object_definition' do
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :create)
@@ -686,6 +761,41 @@ RSpec.describe 'GenericObjectDefinitions API' do
                        'allowed_types'             => Api::GenericObjectDefinitionsController.allowed_types}
 
       expect_options_results(:generic_object_definitions, expected_data)
+    end
+  end
+
+  describe 'POST /api/generic_object_definitions/:id/generic_objects' do
+    before do
+      object_def.add_property_attribute('widget', 'string')
+      object_def.add_property_association('vms', 'Vm')
+      object_def.add_property_method('method_a')
+    end
+
+    it 'can create a generic object with an appropriate role' do
+      vm = FactoryGirl.create(:vm_amazon)
+      api_basic_authorize subcollection_action_identifier(:generic_object_definitions, :generic_objects, :create, :post)
+
+      generic_object = {
+        'name'                => 'go_name1',
+        'uid'                 => 'optional_uid',
+        'property_attributes' => {
+          'widget' => 'widget value',
+        },
+        'associations'        => {
+          'vms' => [
+            { 'href' => api_vm_url(nil, vm) },
+          ]
+        }
+      }
+      post(api_generic_object_definition_generic_objects_url(nil, object_def), :params => generic_object)
+
+      expected = {
+        'results' => [
+          a_hash_including('name' => 'go_name1', 'uid' => 'optional_uid', 'generic_object_definition_id' => object_def.id.to_s)
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
     end
   end
 end

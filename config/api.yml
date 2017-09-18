@@ -865,6 +865,8 @@
     - :collection
     :verbs: *gpppd
     :klass: GenericObjectDefinition
+    :subcollections:
+    - :generic_objects
     :collection_actions:
       :get:
       - :name: read
@@ -947,6 +949,13 @@
       :delete:
       - :name: delete
         :identifier: generic_object_delete
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: generic_object_show_list
+      :post:
+      - :name: create
+        identifier: generic_object_new
     :tags_subcollection_actions:
       :post:
       - :name: assign
