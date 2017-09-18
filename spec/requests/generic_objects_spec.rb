@@ -143,6 +143,39 @@ RSpec.describe 'GenericObjects API' do
       expect(response.parsed_body).to include(expected)
     end
 
+    it 'will raise an error if invalid associations are specified on create' do
+      api_basic_authorize collection_action_identifier(:generic_objects, :create)
+
+      generic_object = {
+        'generic_object_definition' => { 'href' => api_generic_object_definition_url(nil, object_definition.compressed_id) },
+        'name'                      => 'go_name1',
+        'uid'                       => 'optional_uid',
+        'property_attributes'       => {
+          'widget'       => 'widget value',
+          'is_something' => false
+        },
+        'associations'              => {
+          'not_an_association' => [
+            { 'href' => api_vm_url(nil, vm.compressed_id) },
+            { 'href' => api_vm_url(nil, vm2.compressed_id) }
+          ],
+          'services'           => [
+            { 'href' => api_service_url(nil, service.compressed_id) }
+          ]
+        }
+      }
+      post(api_generic_objects_url, :params => generic_object)
+
+      expected = {
+        'error' => a_hash_including(
+          'kind'    => 'bad_request',
+          'message' => a_string_including('Invalid associations not_an_association')
+        )
+      }
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include(expected)
+    end
+
     it 'can edit a generic object' do
       api_basic_authorize collection_action_identifier(:generic_objects, :edit)
 
@@ -160,6 +193,27 @@ RSpec.describe 'GenericObjects API' do
         ]
       }
       expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'will raise an error if invalid associations are specified on edit' do
+      api_basic_authorize collection_action_identifier(:generic_objects, :edit)
+
+      request = {
+        'action'    => 'edit',
+        'resources' => [
+          { 'href' => api_generic_object_url(nil, object.compressed_id), 'associations' => { 'not_an_association' => {}} }
+        ]
+      }
+      post(api_generic_objects_url, :params => request)
+
+      expected = {
+        'error' => a_hash_including(
+          'kind'    => 'bad_request',
+          'message' => a_string_including('Invalid associations not_an_association')
+        )
+      }
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
 
