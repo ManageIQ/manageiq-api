@@ -11,9 +11,9 @@ RSpec.describe "tenants API" do
     expect_result_resources_to_include_hrefs(
       "resources",
       [
-        api_tenant_url(nil, root_tenant.compressed_id),
-        api_tenant_url(nil, tenant_1.compressed_id),
-        api_tenant_url(nil, tenant_2.compressed_id)
+        api_tenant_url(nil, root_tenant),
+        api_tenant_url(nil, tenant_1),
+        api_tenant_url(nil, tenant_2)
       ]
     )
 
@@ -33,8 +33,8 @@ RSpec.describe "tenants API" do
 
     expect_result_to_match_hash(
       response.parsed_body,
-      "href"        => api_tenant_url(nil, tenant.compressed_id),
-      "id"          => tenant.compressed_id,
+      "href"        => api_tenant_url(nil, tenant),
+      "id"          => tenant.id.to_s,
       "name"        => "Test Tenant",
       "description" => "Tenant for this test"
     )
@@ -111,8 +111,8 @@ RSpec.describe "tenants API" do
         get api_tenant_url(nil, root_tenant)
 
         expect_result_to_match_hash(response.parsed_body,
-                                    "href" => api_tenant_url(nil, root_tenant.compressed_id),
-                                    "id"   => root_tenant.compressed_id,
+                                    "href" => api_tenant_url(nil, root_tenant),
+                                    "id"   => root_tenant.id.to_s,
                                     "name" => ::Settings.server.company,
                                    )
         expect(response).to have_http_status(:ok)
@@ -141,8 +141,8 @@ RSpec.describe "tenants API" do
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash(
         "results",
-        [{"id" => tenant_1.compressed_id, "name" => "Updated Test Tenant 1"},
-         {"id" => tenant_2.compressed_id, "name" => "Updated Test Tenant 2"}]
+        [{"id" => tenant_1.id.to_s, "name" => "Updated Test Tenant 1"},
+         {"id" => tenant_2.id.to_s, "name" => "Updated Test Tenant 2"}]
       )
       expect(tenant_1.reload.name).to eq("Updated Test Tenant 1")
       expect(tenant_2.reload.name).to eq("Updated Test Tenant 2")

@@ -6,7 +6,7 @@ RSpec.describe "service orders API" do
     get api_service_orders_url
 
     expect(response).to have_http_status(:ok)
-    expect_result_resources_to_include_hrefs("resources", [api_service_order_url(nil, service_order.compressed_id)])
+    expect_result_resources_to_include_hrefs("resources", [api_service_order_url(nil, service_order)])
   end
 
   it "won't show another user's service orders" do
@@ -19,7 +19,7 @@ RSpec.describe "service orders API" do
     expected = {
       "count"     => 2,
       "subcount"  => 1,
-      "resources" => [{"href" => api_service_order_url(nil, shopping_cart_for_user.compressed_id)}]
+      "resources" => [{"href" => api_service_order_url(nil, shopping_cart_for_user)}]
     }
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(expected)
@@ -90,8 +90,8 @@ RSpec.describe "service orders API" do
     get api_service_order_url(nil, "cart")
 
     expect(response).to have_http_status(:ok)
-    expect(response.parsed_body).to include("id"   => shopping_cart.compressed_id,
-                                            "href" => api_service_order_url(nil, shopping_cart.compressed_id))
+    expect(response.parsed_body).to include("id"   => shopping_cart.id.to_s,
+                                            "href" => api_service_order_url(nil, shopping_cart))
   end
 
   it "returns an empty response when there is no shopping cart" do
@@ -183,7 +183,7 @@ RSpec.describe "service orders API" do
 
         get(api_service_order_service_requests_url(nil, "cart"))
 
-        expected_href = api_service_order_service_request_url(nil, "cart", service_request.compressed_id)
+        expected_href = api_service_order_service_request_url(nil, "cart", service_request)
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include("count"     => 1,
                                          "name"      => "service_requests",
@@ -199,8 +199,8 @@ RSpec.describe "service orders API" do
         get(api_service_order_service_request_url(nil, "cart", service_request))
 
         expected = {
-          "id"   => service_request.compressed_id,
-          "href" => api_service_order_service_request_url(nil, "cart", service_request.compressed_id)
+          "id"   => service_request.id.to_s,
+          "href" => api_service_order_service_request_url(nil, "cart", service_request)
         }
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include(expected)
@@ -233,8 +233,8 @@ RSpec.describe "service orders API" do
             a_hash_including(
               "success"              => true,
               "message"              => /Adding service_request/,
-              "service_request_id"   => actual_requests.first.compressed_id,
-              "service_request_href" => api_service_request_url(nil, actual_requests.first.compressed_id)
+              "service_request_id"   => actual_requests.first.id.to_s,
+              "service_request_href" => api_service_request_url(nil, actual_requests.first)
             )
           ]
         }
@@ -275,14 +275,14 @@ RSpec.describe "service orders API" do
             a_hash_including(
               "success"              => true,
               "message"              => /Adding service_request/,
-              "service_request_id"   => actual_requests.first.compressed_id,
-              "service_request_href" => api_service_request_url(nil, actual_requests.first.compressed_id)
+              "service_request_id"   => actual_requests.first.id.to_s,
+              "service_request_href" => api_service_request_url(nil, actual_requests.first)
             ),
             a_hash_including(
               "success"              => true,
               "message"              => /Adding service_request/,
-              "service_request_id"   => actual_requests.second.compressed_id,
-              "service_request_href" => api_service_request_url(nil, actual_requests.second.compressed_id)
+              "service_request_id"   => actual_requests.second.id.to_s,
+              "service_request_href" => api_service_request_url(nil, actual_requests.second)
             )
           )
         }
@@ -300,8 +300,8 @@ RSpec.describe "service orders API" do
         expected = {
           "success"              => true,
           "message"              => a_string_starting_with("Removing Service Request id:#{service_request.id}"),
-          "service_request_href" => api_service_request_url(nil, service_request.compressed_id),
-          "service_request_id"   => service_request.compressed_id
+          "service_request_href" => api_service_request_url(nil, service_request),
+          "service_request_id"   => service_request.id.to_s
         }
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include(expected)
@@ -333,14 +333,14 @@ RSpec.describe "service orders API" do
             a_hash_including(
               "success"              => true,
               "message"              => a_string_starting_with("Removing Service Request id:#{service_request_1.id}"),
-              "service_request_href" => api_service_request_url(nil, service_request_1.compressed_id),
-              "service_request_id"   => service_request_1.compressed_id
+              "service_request_href" => api_service_request_url(nil, service_request_1),
+              "service_request_id"   => service_request_1.id.to_s
             ),
             a_hash_including(
               "success"              => true,
               "message"              => a_string_starting_with("Removing Service Request id:#{service_request_2.id}"),
-              "service_request_href" => api_service_request_url(nil, service_request_2.compressed_id),
-              "service_request_id"   => service_request_2.compressed_id
+              "service_request_href" => api_service_request_url(nil, service_request_2),
+              "service_request_id"   => service_request_2.id.to_s
             )
           )
         }
@@ -374,14 +374,14 @@ RSpec.describe "service orders API" do
             a_hash_including(
               "success"              => true,
               "message"              => a_string_starting_with("Removing Service Request id:#{service_request_1.id}"),
-              "service_request_href" => api_service_request_url(nil, service_request_1.compressed_id),
-              "service_request_id"   => service_request_1.compressed_id
+              "service_request_href" => api_service_request_url(nil, service_request_1),
+              "service_request_id"   => service_request_1.id.to_s
             ),
             a_hash_including(
               "success"              => true,
               "message"              => a_string_starting_with("Removing Service Request id:#{service_request_2.id}"),
-              "service_request_href" => api_service_request_url(nil, service_request_2.compressed_id),
-              "service_request_id"   => service_request_2.compressed_id
+              "service_request_href" => api_service_request_url(nil, service_request_2),
+              "service_request_id"   => service_request_2.id.to_s
             )
           )
         }
@@ -402,8 +402,8 @@ RSpec.describe "service orders API" do
         post api_service_order_url(nil, "cart"), :params => { :action => :clear }
 
         expected = {
-          "href" => api_service_order_url(nil, shopping_cart.compressed_id),
-          "id"   => shopping_cart.compressed_id
+          "href" => api_service_order_url(nil, shopping_cart),
+          "id"   => shopping_cart.id.to_s
         }
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include(expected)

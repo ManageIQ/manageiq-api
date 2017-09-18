@@ -18,7 +18,7 @@ describe "Rest API Collections" do
     get collection_url, :params => { :expand => "resources" }
 
     expect_query_result(collection, klass.count, klass.count)
-    expected = attr == :id ? klass.select(:id).collect(&:compressed_id) : klass.pluck(attr)
+    expected = attr == :id ? klass.pluck(:id).collect(&:to_s) : klass.pluck(attr)
     expect_result_resources_to_include_data("resources", attr.to_s => expected)
   end
 
@@ -26,10 +26,10 @@ describe "Rest API Collections" do
     api_basic_authorize collection_action_identifier(collection, :query)
 
     obj = id.nil? ? klass.first : klass.find(id)
-    url = send("api_#{collection.to_s.singularize}_url", nil, obj.compressed_id)
+    url = send("api_#{collection.to_s.singularize}_url", nil, obj.id.to_s)
     attr_list = String(Api::ApiConfig.collections[collection].identifying_attrs).split(",")
     attr_list |= %w(guid) if klass.attribute_method?(:guid)
-    resources = [{"id" => obj.compressed_id}, {"href" => url}]
+    resources = [{"id" => obj.id.to_s}, {"href" => url}]
     attr_list.each { |attr| resources << {attr => obj.public_send(attr)} }
 
     post(collection_url, :params => gen_request(:query, resources))
@@ -38,7 +38,7 @@ describe "Rest API Collections" do
     expect(response.parsed_body["results"].size).to eq(resources.size)
     expect(response.parsed_body).to include(
       "results" => all(
-        a_hash_including("id" => obj.compressed_id, "href" => url)
+        a_hash_including("id" => obj.id.to_s, "href" => url)
       )
     )
   end
@@ -125,8 +125,7 @@ describe "Rest API Collections" do
       api_basic_authorize collection_action_identifier(:groups, :read, :get)
       get api_groups_url, :params => { :expand => 'resources' }
       expect_query_result(:groups, MiqGroup.non_tenant_groups.count, MiqGroup.count)
-      expect_result_resources_to_include_data('resources',
-                                              'id' => MiqGroup.non_tenant_groups.select(:id).collect(&:compressed_id))
+      expect_result_resources_to_include_data('resources', 'id' => MiqGroup.non_tenant_groups.pluck(:id).collect(&:to_s))
     end
 
     it "query Hosts" do
@@ -552,7 +551,7 @@ describe "Rest API Collections" do
               a_hash_including(
                 "name"   => "start",
                 "method" => "post",
-                "href"   => api_vm_url(nil, vm.compressed_id)
+                "href"   => api_vm_url(nil, vm)
               )
             ]
           )

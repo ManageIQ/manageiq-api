@@ -174,14 +174,14 @@ describe "Providers API" do
         api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
         get(ems_cinder_url, :params => { :attributes => 'parent_manager.cloud_tenants' })
         cloud_tenant_ids = response.parsed_body['parent_manager']['cloud_tenants'].map { |x| x['id'] }
-        expect([cloud_tenant_1.compressed_id]).to match_array(cloud_tenant_ids)
+        expect([cloud_tenant_1.id.to_s]).to match_array(cloud_tenant_ids)
       end
 
       it 'lists only CloudTenant for the restricted user(direct association)' do
         api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
         get(ems_cinder_url, :params => { :attributes => 'vms' })
         vm_ids = response.parsed_body['vms'].map { |x| x['id'] }
-        expect([vm.compressed_id]).to match_array(vm_ids)
+        expect([vm.id.to_s]).to match_array(vm_ids)
       end
     end
 
@@ -189,7 +189,7 @@ describe "Providers API" do
       api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
       get(ems_cinder_url, :params => { :attributes => 'parent_manager.cloud_tenants' })
       cloud_tenant_ids = response.parsed_body['parent_manager']['cloud_tenants'].map { |x| x['id'] }
-      expect([cloud_tenant_1.compressed_id, cloud_tenant_2.compressed_id]).to match_array(cloud_tenant_ids)
+      expect([cloud_tenant_1.id.to_s, cloud_tenant_2.id.to_s]).to match_array(cloud_tenant_ids)
     end
   end
 
@@ -220,8 +220,8 @@ describe "Providers API" do
       expect_query_result(:custom_attributes, 2)
 
       expect_result_resources_to_include_hrefs("resources",
-                                               [api_provider_custom_attribute_url(nil, provider.compressed_id, ca1.compressed_id),
-                                                api_provider_custom_attribute_url(nil, provider.compressed_id, ca2.compressed_id)])
+                                               [api_provider_custom_attribute_url(nil, provider, ca1),
+                                                api_provider_custom_attribute_url(nil, provider, ca2)])
     end
 
     it "getting custom_attributes from a provider in expanded form" do
@@ -377,7 +377,7 @@ describe "Providers API" do
 
       expect(response).to have_http_status(:ok)
 
-      provider_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      provider_id = response.parsed_body["results"].first["id"]
       provider = foreman_type.find(provider_id)
       [:name, :type, :url].each do |item|
         expect(provider.send(item)).to eq(sample_foreman[item])
@@ -392,7 +392,7 @@ describe "Providers API" do
 
       expected = {
         'resources' => [
-          {'href' => a_string_including("/api/providers/#{provider.compressed_id}?provider_class=provider")}
+          {'href' => "#{api_provider_url(nil, provider)}?provider_class=provider"}
         ],
         'actions'   => [a_hash_including('href' => a_string_including('?provider_class=provider'))]
       }
@@ -408,9 +408,9 @@ describe "Providers API" do
       get api_provider_url(nil, provider), :params => { :provider_class => :provider }
 
       expected = {
-        'href'    => a_string_including("/api/providers/#{provider.compressed_id}?provider_class=provider"),
+        'href'    => "#{api_provider_url(nil, provider)}?provider_class=provider",
         'actions' => [
-          a_hash_including('href' => a_string_including("/api/providers/#{provider.compressed_id}?provider_class=provider"))
+          a_hash_including('href' => "#{api_provider_url(nil, provider)}?provider_class=provider")
         ]
       }
       expect(response).to have_http_status(:ok)
@@ -456,7 +456,7 @@ describe "Providers API" do
       }
       expect(response.parsed_body).to include(expected)
 
-      provider_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      provider_id = response.parsed_body["results"].first["id"]
       endpoint = ExtManagementSystem.find(provider_id).default_endpoint
       expect(endpoint).to have_endpoint_attributes(sample_rhevm)
     end
@@ -478,7 +478,7 @@ describe "Providers API" do
           }
           expect(response.parsed_body).to include(expected)
 
-          provider_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+          provider_id = response.parsed_body["results"].first["id"]
           ems = ExtManagementSystem.find(provider_id)
           expect(ems.authentications.size).to eq(1)
           expect(ems).to have_endpoint_attributes(sample_containers)
@@ -499,7 +499,7 @@ describe "Providers API" do
       }
       expect(response.parsed_body).to include(expected)
 
-      provider_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      provider_id = response.parsed_body["results"].first["id"]
       expect(ExtManagementSystem.exists?(provider_id)).to be_truthy
     end
 
@@ -516,7 +516,7 @@ describe "Providers API" do
       }
       expect(response.parsed_body).to include(expected)
 
-      provider_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      provider_id = response.parsed_body["results"].first["id"]
       provider = ExtManagementSystem.find(provider_id)
       expect(provider.authentication_userid).to eq(default_credentials["userid"])
       expect(provider.authentication_password).to eq(default_credentials["password"])
@@ -535,7 +535,7 @@ describe "Providers API" do
       }
       expect(response.parsed_body).to include(expected)
 
-      provider_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      provider_id = response.parsed_body["results"].first["id"]
       provider = ExtManagementSystem.find(provider_id)
       expect(provider.authentication_userid(:default)).to eq(default_credentials["userid"])
       expect(provider.authentication_password(:default)).to eq(default_credentials["password"])
@@ -558,8 +558,8 @@ describe "Providers API" do
       expect(response.parsed_body).to include(expected)
 
       results = response.parsed_body["results"]
-      p1_id = ApplicationRecord.uncompress_id(results.first["id"])
-      p2_id = ApplicationRecord.uncompress_id(results.second["id"])
+      p1_id = results.first["id"]
+      p2_id = results.second["id"]
       expect(ExtManagementSystem.exists?(p1_id)).to be_truthy
       expect(ExtManagementSystem.exists?(p2_id)).to be_truthy
     end
@@ -623,7 +623,7 @@ describe "Providers API" do
 
       post(api_provider_url(nil, provider), :params => gen_request(:edit, "name" => "updated provider", "port" => "8080"))
 
-      expect_single_resource_query("id" => provider.compressed_id, "name" => "updated provider")
+      expect_single_resource_query("id" => provider.id.to_s, "name" => "updated provider")
       expect(provider.reload.name).to eq("updated provider")
       expect(provider.port).to eq(8080)
     end
@@ -650,7 +650,7 @@ describe "Providers API" do
                                                                    "name"        => "updated vmware",
                                                                    "credentials" => {"userid" => "superadmin"}))
 
-      expect_single_resource_query("id" => provider.compressed_id, "name" => "updated vmware")
+      expect_single_resource_query("id" => provider.id.to_s, "name" => "updated vmware")
       expect(provider.reload.name).to eq("updated vmware")
       expect(provider.authentication_userid).to eq("superadmin")
     end
@@ -713,7 +713,7 @@ describe "Providers API" do
                                                                    "name"        => "updated rhevm",
                                                                    "credentials" => [metrics_credentials]))
 
-      expect_single_resource_query("id" => provider.compressed_id, "name" => "updated rhevm")
+      expect_single_resource_query("id" => provider.id.to_s, "name" => "updated rhevm")
       expect(provider.reload.name).to eq("updated rhevm")
       expect(provider.authentication_userid).to eq(default_credentials["userid"])
       expect(provider.authentication_userid(:metrics)).to eq(metrics_credentials["userid"])
@@ -730,8 +730,8 @@ describe "Providers API" do
                                                       {"href" => api_provider_url(nil, p2), "name" => "updated name2"}]))
 
       expect_results_to_match_hash("results",
-                                   [{"id" => p1.compressed_id, "name" => "updated name1"},
-                                    {"id" => p2.compressed_id, "name" => "updated name2"}])
+                                   [{"id" => p1.id.to_s, "name" => "updated name1"},
+                                    {"id" => p2.id.to_s, "name" => "updated name2"}])
 
       expect(p1.reload.name).to eq("updated name1")
       expect(p2.reload.name).to eq("updated name2")
@@ -782,7 +782,7 @@ describe "Providers API" do
 
       expect_single_action_result(:success => true,
                                   :message => "deleting",
-                                  :href    => api_provider_url(nil, provider.compressed_id),
+                                  :href    => api_provider_url(nil, provider),
                                   :task    => true)
     end
 
@@ -797,7 +797,7 @@ describe "Providers API" do
                                                       {"href" => api_provider_url(nil, p2)}]))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_provider_url(nil, p1.compressed_id), api_provider_url(nil, p2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_provider_url(nil, p1), api_provider_url(nil, p2)])
     end
   end
 
@@ -822,7 +822,7 @@ describe "Providers API" do
 
       post(api_provider_url(nil, provider), :params => gen_request(:refresh))
 
-      expect_single_action_result(failed_auth_action(provider.compressed_id).symbolize_keys)
+      expect_single_action_result(failed_auth_action(provider.id.to_s).symbolize_keys)
     end
 
     it "supports multiple provider refreshes" do
@@ -837,7 +837,7 @@ describe "Providers API" do
       post(api_providers_url, :params => gen_request(:refresh, [{"href" => api_provider_url(nil, p1)},
                                                                 {"href" => api_provider_url(nil, p2)}]))
       expect(response).to have_http_status(:ok)
-      expect_results_to_match_hash("results", [failed_auth_action(p1.compressed_id), failed_auth_action(p2.compressed_id)])
+      expect_results_to_match_hash("results", [failed_auth_action(p1.id.to_s), failed_auth_action(p2.id.to_s)])
     end
 
     it "provider refresh are created with a task" do
@@ -851,7 +851,7 @@ describe "Providers API" do
 
       expect_single_action_result(:success => true,
                                   :message => a_string_matching("Provider .* refreshing"),
-                                  :href    => api_provider_url(nil, provider.compressed_id),
+                                  :href    => api_provider_url(nil, provider),
                                   :task    => true)
     end
 
@@ -866,7 +866,7 @@ describe "Providers API" do
 
       expect_single_action_result(:success => true,
                                   :message => a_string_matching("Provider .* refreshing"),
-                                  :href    => api_provider_url(nil, provider.compressed_id),
+                                  :href    => api_provider_url(nil, provider),
                                   :task    => true)
     end
 
@@ -882,7 +882,7 @@ describe "Providers API" do
       expected = {
         "success"   => true,
         "message"   => a_string_matching("Provider .* refreshing"),
-        "href"      => api_provider_url(nil, provider.compressed_id),
+        "href"      => api_provider_url(nil, provider),
         "task_id"   => a_kind_of(String),
         "task_href" => a_string_matching(api_tasks_url),
         "tasks"     => [a_hash_including("id" => a_kind_of(String), "href" => a_string_matching(api_tasks_url)),
@@ -981,7 +981,7 @@ describe "Providers API" do
       expected = {
         'resources' => [
           {
-            'href' => api_provider_load_balancer_url(nil, @provider.compressed_id, @load_balancer.compressed_id)
+            'href' => api_provider_load_balancer_url(nil, @provider, @load_balancer)
           }
         ]
 
@@ -1006,7 +1006,7 @@ describe "Providers API" do
       get(api_provider_load_balancer_url(nil, @provider, @load_balancer))
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => @load_balancer.compressed_id)
+      expect(response.parsed_body).to include('id' => @load_balancer.id.to_s)
     end
 
     it "will not show a provider's load balancer without the appropriate role" do
@@ -1031,7 +1031,7 @@ describe "Providers API" do
 
       expected = {
         'resources' => [
-          { 'href' => api_provider_cloud_subnet_url(nil, @provider.compressed_id, @cloud_subnet.compressed_id) }
+          { 'href' => api_provider_cloud_subnet_url(nil, @provider, @cloud_subnet) }
         ]
 
       }
@@ -1053,7 +1053,7 @@ describe "Providers API" do
       get(api_provider_cloud_subnet_url(nil, @provider, @cloud_subnet))
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => @cloud_subnet.compressed_id)
+      expect(response.parsed_body).to include('id' => @cloud_subnet.id.to_s)
     end
 
     it "will not show a provider's cloud subnet without the appropriate role" do
@@ -1078,7 +1078,7 @@ describe "Providers API" do
 
       expected = {
         'resources' => [
-          { 'href' => api_provider_cloud_tenant_url(nil, @provider.compressed_id, @cloud_tenant.compressed_id) }
+          { 'href' => api_provider_cloud_tenant_url(nil, @provider, @cloud_tenant) }
         ]
 
       }
@@ -1100,7 +1100,7 @@ describe "Providers API" do
       get(api_provider_cloud_tenant_url(nil, @provider, @cloud_tenant))
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => @cloud_tenant.compressed_id)
+      expect(response.parsed_body).to include('id' => @cloud_tenant.id.to_s)
     end
 
     it "will not show a provider's cloud tenant without the appropriate role" do

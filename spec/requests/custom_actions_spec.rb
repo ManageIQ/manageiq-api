@@ -162,7 +162,7 @@ describe "Custom Actions API" do
 
       post(api_service_url(nil, svc1), :params => gen_request(:button1, "button_key1" => "value", "button_key2" => "value"))
 
-      expect_single_action_result(:success => true, :message => /.*/, :href => api_service_url(nil, svc1.compressed_id))
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_service_url(nil, svc1))
     end
 
     it "accepts a custom action as case insensitive" do
@@ -170,7 +170,7 @@ describe "Custom Actions API" do
 
       post(api_service_url(nil, svc1), :params => gen_request(:BuTtOn1, "button_key1" => "value", "button_key2" => "value"))
 
-      expect_single_action_result(:success => true, :message => /.*/, :href => api_service_url(nil, svc1.compressed_id))
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_service_url(nil, svc1))
     end
   end
 
@@ -212,7 +212,7 @@ describe "Custom Actions API" do
           "buttons"       => [
             hash_including(
               "id"              => anything,
-              "resource_action" => hash_including("id" => ra2.compressed_id, "dialog_id" => ra2.dialog.compressed_id)
+              "resource_action" => hash_including("id" => ra2.id.to_s, "dialog_id" => ra2.dialog.id.to_s)
             )
           ]
         }

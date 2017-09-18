@@ -47,7 +47,7 @@ describe "Vms API" do
     it 'can edit a VM with an appropriate role' do
       api_basic_authorize collection_action_identifier(:vms, :edit)
       children = new_vms.collect do |vm|
-        { 'href' => api_vm_url(nil, vm.compressed_id) }
+        { 'href' => api_vm_url(nil, vm) }
       end
 
       post(
@@ -143,8 +143,8 @@ describe "Vms API" do
 
       expect_query_result(:accounts, 2)
       expect_result_resources_to_include_hrefs("resources",
-                                               [api_vm_account_url(nil, vm.compressed_id, acct1.compressed_id),
-                                                api_vm_account_url(nil, vm.compressed_id, acct2.compressed_id)])
+                                               [api_vm_account_url(nil, vm, acct1),
+                                                api_vm_account_url(nil, vm, acct2)])
     end
 
     it "query VM accounts subcollection with a valid Account Id" do
@@ -173,8 +173,8 @@ describe "Vms API" do
 
       expect_single_resource_query("guid" => vm_guid)
       expect_result_resources_to_include_hrefs("accounts",
-                                               [api_vm_account_url(nil, vm.compressed_id, acct1.compressed_id),
-                                                api_vm_account_url(nil, vm.compressed_id, acct2.compressed_id)])
+                                               [api_vm_account_url(nil, vm, acct1),
+                                                api_vm_account_url(nil, vm, acct2)])
     end
   end
 
@@ -202,8 +202,8 @@ describe "Vms API" do
 
       expect_query_result(:software, 2)
       expect_result_resources_to_include_hrefs("resources",
-                                               [api_vm_software_url(nil, vm.compressed_id, sw1.compressed_id),
-                                                api_vm_software_url(nil, vm.compressed_id, sw2.compressed_id)])
+                                               [api_vm_software_url(nil, vm, sw1),
+                                                api_vm_software_url(nil, vm, sw2)])
     end
 
     it "query VM software subcollection with a valid Software Id" do
@@ -232,8 +232,8 @@ describe "Vms API" do
 
       expect_single_resource_query("guid" => vm_guid)
       expect_result_resources_to_include_hrefs("software",
-                                               [api_vm_software_url(nil, vm.compressed_id, sw1.compressed_id),
-                                                api_vm_software_url(nil, vm.compressed_id, sw2.compressed_id)])
+                                               [api_vm_software_url(nil, vm, sw1),
+                                                api_vm_software_url(nil, vm, sw2)])
     end
   end
 
@@ -259,7 +259,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:start))
 
-      expect_single_action_result(:success => false, :message => "is powered on", :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => false, :message => "is powered on", :href => api_vm_url(nil, vm))
     end
 
     it "starts a vm" do
@@ -268,7 +268,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:start))
 
-      expect_single_action_result(:success => true, :message => "starting", :href => api_vm_url(nil, vm.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "starting", :href => api_vm_url(nil, vm), :task => true)
     end
 
     it "starting a vm queues it properly" do
@@ -277,7 +277,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:start))
 
-      expect_single_action_result(:success => true, :message => "starting", :href => api_vm_url(nil, vm.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "starting", :href => api_vm_url(nil, vm), :task => true)
       expect(MiqQueue.where(:class_name  => vm.class.name,
                             :instance_id => vm.id,
                             :method_name => "start",
@@ -291,7 +291,7 @@ describe "Vms API" do
       post(api_vms_url, :params => gen_request(:start, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
     end
   end
 
@@ -318,7 +318,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:stop))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm))
     end
 
     it "stops a vm" do
@@ -326,7 +326,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:stop))
 
-      expect_single_action_result(:success => true, :message => "stopping", :href => api_vm_url(nil, vm.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "stopping", :href => api_vm_url(nil, vm), :task => true)
     end
 
     it "stops multiple vms" do
@@ -335,7 +335,7 @@ describe "Vms API" do
       post(api_vms_url, :params => gen_request(:stop, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
     end
   end
 
@@ -362,7 +362,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:suspend))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm))
     end
 
     it "suspends a suspended vm" do
@@ -371,7 +371,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:suspend))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm))
     end
 
     it "suspends a vm" do
@@ -379,7 +379,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:suspend))
 
-      expect_single_action_result(:success => true, :message => "suspending", :href => api_vm_url(nil, vm.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "suspending", :href => api_vm_url(nil, vm), :task => true)
     end
 
     it "suspends multiple vms" do
@@ -388,7 +388,7 @@ describe "Vms API" do
       post(api_vms_url, :params => gen_request(:suspend, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
     end
   end
 
@@ -415,7 +415,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm))
     end
 
     it "pauses a pauseed vm" do
@@ -424,7 +424,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm))
     end
 
     it "pauses a vm" do
@@ -432,7 +432,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => true, :message => "pausing", :href => api_vm_url(nil, vm.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "pausing", :href => api_vm_url(nil, vm), :task => true)
     end
 
     it "pauses multiple vms" do
@@ -441,7 +441,7 @@ describe "Vms API" do
       post(api_vms_url, :params => gen_request(:pause, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
     end
   end
 
@@ -468,7 +468,7 @@ describe "Vms API" do
 
       post(vm_openstack_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true, :message => 'shelving', :href => api_vm_url(nil, vm_openstack.compressed_id))
+      expect_single_action_result(:success => true, :message => 'shelving', :href => api_vm_url(nil, vm_openstack))
     end
 
     it "shelves a suspended vm" do
@@ -477,7 +477,7 @@ describe "Vms API" do
 
       post(vm_openstack_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true, :message => 'shelving', :href => api_vm_url(nil, vm_openstack.compressed_id))
+      expect_single_action_result(:success => true, :message => 'shelving', :href => api_vm_url(nil, vm_openstack))
     end
 
     it "shelves a paused off vm" do
@@ -486,7 +486,7 @@ describe "Vms API" do
 
       post(vm_openstack_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true, :message => 'shelving', :href => api_vm_url(nil, vm_openstack.compressed_id))
+      expect_single_action_result(:success => true, :message => 'shelving', :href => api_vm_url(nil, vm_openstack))
     end
 
     it "shelves a shelveed vm" do
@@ -497,7 +497,7 @@ describe "Vms API" do
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved, current state has to be powered on, off, suspended or paused",
-                                  :href    => api_vm_url(nil, vm_openstack.compressed_id))
+                                  :href    => api_vm_url(nil, vm_openstack))
     end
 
     it "shelves a vm" do
@@ -505,7 +505,7 @@ describe "Vms API" do
 
       post(vm_openstack_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true, :message => "shelving", :href => api_vm_url(nil, vm_openstack.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "shelving", :href => api_vm_url(nil, vm_openstack), :task => true)
     end
 
     it "shelve for a VMWare vm is not supported" do
@@ -515,7 +515,7 @@ describe "Vms API" do
 
       expect_single_action_result(:success => false,
                                   :message => "Shelve Operation is not available for Vmware VM.",
-                                  :href    => api_vm_url(nil, vm.compressed_id),
+                                  :href    => api_vm_url(nil, vm),
                                   :task    => false)
     end
 
@@ -525,7 +525,7 @@ describe "Vms API" do
       post(api_vms_url, :params => gen_request(:shelve, nil, vm_openstack1_url, vm_openstack2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm_openstack1.compressed_id), api_vm_url(nil, vm_openstack2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm_openstack1), api_vm_url(nil, vm_openstack2)])
     end
   end
 
@@ -553,7 +553,7 @@ describe "Vms API" do
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved offload, current state has to be shelved",
-                                  :href    => api_vm_url(nil, vm_openstack.compressed_id))
+                                  :href    => api_vm_url(nil, vm_openstack))
     end
 
     it "shelve_offloads a powered off vm" do
@@ -564,7 +564,7 @@ describe "Vms API" do
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved offload, current state has to be shelved",
-                                  :href    => api_vm_url(nil, vm_openstack.compressed_id))
+                                  :href    => api_vm_url(nil, vm_openstack))
     end
 
     it "shelve_offloads a suspended vm" do
@@ -575,7 +575,7 @@ describe "Vms API" do
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved offload, current state has to be shelved",
-                                  :href    => api_vm_url(nil, vm_openstack.compressed_id))
+                                  :href    => api_vm_url(nil, vm_openstack))
     end
 
     it "shelve_offloads a paused off vm" do
@@ -586,7 +586,7 @@ describe "Vms API" do
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved offload, current state has to be shelved",
-                                  :href    => api_vm_url(nil, vm_openstack.compressed_id))
+                                  :href    => api_vm_url(nil, vm_openstack))
     end
 
     it "shelve_offloads a shelve_offloaded vm" do
@@ -597,7 +597,7 @@ describe "Vms API" do
 
       expect_single_action_result(:success => false,
                                   :message => "The VM can't be shelved offload, current state has to be shelved",
-                                  :href    => api_vm_url(nil, vm_openstack.compressed_id))
+                                  :href    => api_vm_url(nil, vm_openstack))
     end
 
     it "shelve_offloads a shelved vm" do
@@ -608,7 +608,7 @@ describe "Vms API" do
 
       expect_single_action_result(:success => true,
                                   :message => "shelve-offloading",
-                                  :href    => api_vm_url(nil, vm_openstack.compressed_id))
+                                  :href    => api_vm_url(nil, vm_openstack))
     end
 
     it "shelve_offload for a VMWare vm is not supported" do
@@ -618,7 +618,7 @@ describe "Vms API" do
 
       expect_single_action_result(:success => false,
                                   :message => "Shelve Offload Operation is not available for Vmware VM.",
-                                  :href    => api_vm_url(nil, vm.compressed_id),
+                                  :href    => api_vm_url(nil, vm),
                                   :task    => false)
     end
 
@@ -631,7 +631,7 @@ describe "Vms API" do
       post(api_vms_url, :params => gen_request(:shelve_offload, nil, vm_openstack1_url, vm_openstack2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm_openstack1.compressed_id), api_vm_url(nil, vm_openstack2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm_openstack1), api_vm_url(nil, vm_openstack2)])
     end
   end
 
@@ -665,7 +665,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:delete))
 
-      expect_single_action_result(:success => true, :message => "deleting", :href => api_vm_url(nil, vm.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "deleting", :href => api_vm_url(nil, vm), :task => true)
     end
 
     it "deletes a vm via a resource DELETE" do
@@ -715,7 +715,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:set_owner, "owner" => "bad_user"))
 
-      expect_single_action_result(:success => false, :message => /.*/, :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => false, :message => /.*/, :href => api_vm_url(nil, vm))
     end
 
     it "set_owner to a vm" do
@@ -723,7 +723,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:set_owner, "owner" => api_config(:user)))
 
-      expect_single_action_result(:success => true, :message => "setting owner", :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => true, :message => "setting owner", :href => api_vm_url(nil, vm))
       expect(vm.reload.evm_owner).to eq(@user)
     end
 
@@ -733,7 +733,7 @@ describe "Vms API" do
       post(api_vms_url, :params => gen_request(:set_owner, {"owner" => api_config(:user)}, vm1_url, vm2_url))
 
       expect_multiple_action_result(2)
-      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
       expect(vm1.reload.evm_owner).to eq(@user)
       expect(vm2.reload.evm_owner).to eq(@user)
     end
@@ -761,8 +761,8 @@ describe "Vms API" do
 
       expect_query_result(:custom_attributes, 2)
       expect_result_resources_to_include_hrefs("resources",
-                                               [api_vm_custom_attributes_url(nil, vm.compressed_id, ca1.compressed_id),
-                                                api_vm_custom_attributes_url(nil, vm.compressed_id, ca2.compressed_id)])
+                                               [api_vm_custom_attributes_url(nil, vm, ca1),
+                                                api_vm_custom_attributes_url(nil, vm, ca2)])
     end
 
     it "getting custom_attributes from a vm in expanded form" do
@@ -887,7 +887,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:add_lifecycle_event, events[0]))
 
-      expect_single_action_result(:success => true, :message => /adding lifecycle event/i, :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => true, :message => /adding lifecycle event/i, :href => api_vm_url(nil, vm))
       expect(vm.lifecycle_events.size).to eq(1)
       expect(vm.lifecycle_events.first.event).to eq(events[0][:event])
     end
@@ -926,7 +926,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:scan))
 
-      expect_single_action_result(:success => true, :message => "scanning", :href => api_vm_url(nil, vm.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "scanning", :href => api_vm_url(nil, vm), :task => true)
     end
 
     it "scan multiple Vms" do
@@ -935,7 +935,7 @@ describe "Vms API" do
       post(api_vms_url, :params => gen_request(:scan, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1.compressed_id), api_vm_url(nil, vm2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
     end
   end
 
@@ -961,7 +961,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:add_event, :event_type => "special", :event_message => "message"))
 
-      expect_single_action_result(:success => true, :message => /adding event/i, :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => true, :message => /adding event/i, :href => api_vm_url(nil, vm))
     end
 
     it "to multiple Vms" do
@@ -981,12 +981,12 @@ describe "Vms API" do
           {
             "message" => a_string_matching(/adding event .*etype1/i),
             "success" => true,
-            "href"    => api_vm_url(nil, vm1.compressed_id)
+            "href"    => api_vm_url(nil, vm1)
           },
           {
             "message" => a_string_matching(/adding event .*etype2/i),
             "success" => true,
-            "href"    => api_vm_url(nil, vm2.compressed_id)
+            "href"    => api_vm_url(nil, vm2)
           }
         )
       }
@@ -1017,7 +1017,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:retire))
 
-      expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm))
     end
 
     it "to multiple Vms" do
@@ -1030,12 +1030,12 @@ describe "Vms API" do
           {
             "message" => a_string_matching(/#{vm1.id}.* retiring/i),
             "success" => true,
-            "href"    => api_vm_url(nil, vm1.compressed_id)
+            "href"    => api_vm_url(nil, vm1)
           },
           {
             "message" => a_string_matching(/#{vm2.id}.* retiring/ii),
             "success" => true,
-            "href"    => api_vm_url(nil, vm2.compressed_id)
+            "href"    => api_vm_url(nil, vm2)
           }
         )
       }
@@ -1048,7 +1048,7 @@ describe "Vms API" do
       date = 2.weeks.from_now
       post(vm_url, :params => gen_request(:retire, :date => date.iso8601))
 
-      expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm))
     end
   end
 
@@ -1074,7 +1074,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:reset))
 
-      expect_single_action_result(:success => true, :message => /#{vm.id}.* resetting/i, :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => true, :message => /#{vm.id}.* resetting/i, :href => api_vm_url(nil, vm))
     end
 
     it "to multiple Vms" do
@@ -1087,12 +1087,12 @@ describe "Vms API" do
           a_hash_including(
             "message" => a_string_matching(/#{vm1.id}.* resetting/i),
             "success" => true,
-            "href"    => api_vm_url(nil, vm1.compressed_id)
+            "href"    => api_vm_url(nil, vm1)
           ),
           a_hash_including(
             "message" => a_string_matching(/#{vm2.id}.* resetting/i),
             "success" => true,
-            "href"    => api_vm_url(nil, vm2.compressed_id)
+            "href"    => api_vm_url(nil, vm2)
           )
         )
       }
@@ -1123,7 +1123,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:shutdown_guest))
 
-      expect_single_action_result(:success => true, :message => /#{vm.id}.* shutting down/i, :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => true, :message => /#{vm.id}.* shutting down/i, :href => api_vm_url(nil, vm))
     end
 
     it "to multiple Vms" do
@@ -1136,12 +1136,12 @@ describe "Vms API" do
           a_hash_including(
             "message" => a_string_matching(/#{vm1.id}.* shutting down/i),
             "success" => true,
-            "href"    => api_vm_url(nil, vm1.compressed_id)
+            "href"    => api_vm_url(nil, vm1)
           ),
           a_hash_including(
             "message" => a_string_matching(/#{vm2.id}.* shutting down/i),
             "success" => true,
-            "href"    => api_vm_url(nil, vm2.compressed_id)
+            "href"    => api_vm_url(nil, vm2)
           )
         )
       }
@@ -1172,7 +1172,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:refresh))
 
-      expect_single_action_result(:success => true, :message => /#{vm.id}.* refreshing/i, :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => true, :message => /#{vm.id}.* refreshing/i, :href => api_vm_url(nil, vm))
     end
 
     it "to multiple Vms" do
@@ -1185,12 +1185,12 @@ describe "Vms API" do
           a_hash_including(
             "message" => a_string_matching(/#{vm1.id}.* refreshing/i),
             "success" => true,
-            "href"    => api_vm_url(nil, vm1.compressed_id)
+            "href"    => api_vm_url(nil, vm1)
           ),
           a_hash_including(
             "message" => a_string_matching(/#{vm2.id}.* refreshing/i),
             "success" => true,
-            "href"    => api_vm_url(nil, vm2.compressed_id)
+            "href"    => api_vm_url(nil, vm2)
           )
         )
       }
@@ -1221,7 +1221,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:reboot_guest))
 
-      expect_single_action_result(:success => true, :message => /#{vm.id}.* rebooting/i, :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => true, :message => /#{vm.id}.* rebooting/i, :href => api_vm_url(nil, vm))
     end
 
     it "to multiple Vms" do
@@ -1234,12 +1234,12 @@ describe "Vms API" do
           a_hash_including(
             "message" => a_string_matching(/#{vm1.id}.* rebooting/i,),
             "success" => true,
-            "href"    => api_vm_url(nil, vm1.compressed_id)
+            "href"    => api_vm_url(nil, vm1)
           ),
           a_hash_including(
             "message" => a_string_matching(/#{vm2.id}.* rebooting/i),
             "success" => true,
-            "href"    => api_vm_url(nil, vm2.compressed_id)
+            "href"    => api_vm_url(nil, vm2)
           )
         )
       }
@@ -1270,7 +1270,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:request_console))
 
-      expect_single_action_result(:success => true, :message => /#{vm.id}.* requesting console/i, :href => api_vm_url(nil, vm.compressed_id))
+      expect_single_action_result(:success => true, :message => /#{vm.id}.* requesting console/i, :href => api_vm_url(nil, vm))
     end
   end
 
@@ -1327,7 +1327,7 @@ describe "Vms API" do
       get api_vms_url, :params => { :expand => "resources", :filter => ["tags.name='#{tag2[:path]}'"] }
 
       expect_query_result(:vms, 1, 2)
-      expect_result_resources_to_include_hrefs("resources", [api_vm_url(nil, vm2.compressed_id)])
+      expect_result_resources_to_include_hrefs("resources", [api_vm_url(nil, vm2)])
     end
 
     it "assigns a tag to a Vm without appropriate role" do
@@ -1344,7 +1344,7 @@ describe "Vms API" do
       post(api_vm_tags_url(nil, vm1), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
       expect_tagging_result(
-        [{:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
+        [{:success => true, :href => api_vm_url(nil, vm1), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
       )
     end
 
@@ -1354,7 +1354,7 @@ describe "Vms API" do
       post(api_vm_tags_url(nil, vm1), :params => gen_request(:assign, :name => tag1[:path]))
 
       expect_tagging_result(
-        [{:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
+        [{:success => true, :href => api_vm_url(nil, vm1), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
       )
     end
 
@@ -1364,7 +1364,7 @@ describe "Vms API" do
       post(api_vm_tags_url(nil, vm1), :params => gen_request(:assign, :href => api_tag_url(nil, Tag.find_by(:name => tag1[:path]))))
 
       expect_tagging_result(
-        [{:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
+        [{:success => true, :href => api_vm_url(nil, vm1), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
       )
     end
 
@@ -1382,7 +1382,7 @@ describe "Vms API" do
       post(api_vm_tags_url(nil, vm1), :params => gen_request(:assign, :name => "/managed/bad_category/bad_name"))
 
       expect_tagging_result(
-        [{:success => false, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => "bad_category", :tag_name => "bad_name"}]
+        [{:success => false, :href => api_vm_url(nil, vm1), :tag_category => "bad_category", :tag_name => "bad_name"}]
       )
     end
 
@@ -1392,8 +1392,8 @@ describe "Vms API" do
       post(api_vm_tags_url(nil, vm1), :params => gen_request(:assign, [{:name => tag1[:path]}, {:name => tag2[:path]}]))
 
       expect_tagging_result(
-        [{:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]},
-         {:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag2[:category], :tag_name => tag2[:name]}]
+        [{:success => true, :href => api_vm_url(nil, vm1), :tag_category => tag1[:category], :tag_name => tag1[:name]},
+         {:success => true, :href => api_vm_url(nil, vm1), :tag_category => tag2[:category], :tag_name => tag2[:name]}]
       )
     end
 
@@ -1404,8 +1404,8 @@ describe "Vms API" do
       post(api_vm_tags_url(nil, vm1), :params => gen_request(:assign, [{:name => tag1[:path]}, {:href => api_tag_url(nil, tag)}]))
 
       expect_tagging_result(
-        [{:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]},
-         {:success => true, :href => api_vm_url(nil, vm1.compressed_id), :tag_category => tag2[:category], :tag_name => tag2[:name]}]
+        [{:success => true, :href => api_vm_url(nil, vm1), :tag_category => tag1[:category], :tag_name => tag1[:name]},
+         {:success => true, :href => api_vm_url(nil, vm1), :tag_category => tag2[:category], :tag_name => tag2[:name]}]
       )
     end
 
@@ -1423,7 +1423,7 @@ describe "Vms API" do
       post(api_vm_tags_url(nil, vm2), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
       expect_tagging_result(
-        [{:success => true, :href => api_vm_url(nil, vm2.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
+        [{:success => true, :href => api_vm_url(nil, vm2), :tag_category => tag1[:category], :tag_name => tag1[:name]}]
       )
       expect(vm2.tags.count).to eq(1)
       expect(vm2.tags.first.name).to eq(tag2[:path])
@@ -1436,8 +1436,8 @@ describe "Vms API" do
       post(api_vm_tags_url(nil, vm2), :params => gen_request(:unassign, [{:name => tag1[:path]}, {:href => api_tag_url(nil, tag)}]))
 
       expect_tagging_result(
-        [{:success => true, :href => api_vm_url(nil, vm2.compressed_id), :tag_category => tag1[:category], :tag_name => tag1[:name]},
-         {:success => true, :href => api_vm_url(nil, vm2.compressed_id), :tag_category => tag2[:category], :tag_name => tag2[:name]}]
+        [{:success => true, :href => api_vm_url(nil, vm2), :tag_category => tag1[:category], :tag_name => tag1[:name]},
+         {:success => true, :href => api_vm_url(nil, vm2), :tag_category => tag2[:category], :tag_name => tag2[:name]}]
       )
       expect(vm2.tags.count).to eq(0)
     end
@@ -1526,7 +1526,7 @@ describe "Vms API" do
       expected = {
         "success" => true,
         "message" => "Invoked custom action test button for vms id: #{vm.id}",
-        "href"    => api_vm_url(nil, vm.compressed_id)
+        "href"    => api_vm_url(nil, vm)
       }
       expect(response.parsed_body).to include(expected)
     end

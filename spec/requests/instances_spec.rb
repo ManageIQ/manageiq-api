@@ -24,7 +24,7 @@ RSpec.describe "Instances API" do
       get(api_instances_url)
 
       expect_query_result(:instances, 1, 1)
-      expect_result_resources_to_include_hrefs("resources", [api_instance_url(nil, instance.compressed_id)])
+      expect_result_resources_to_include_hrefs("resources", [api_instance_url(nil, instance)])
     end
   end
 
@@ -53,7 +53,7 @@ RSpec.describe "Instances API" do
       expect_single_action_result(
         :success => true,
         :message => /#{instance.id}.* terminating/i,
-        :href    => api_instance_url(nil, instance.compressed_id)
+        :href    => api_instance_url(nil, instance)
       )
     end
 
@@ -67,12 +67,12 @@ RSpec.describe "Instances API" do
           a_hash_including(
             "message" => a_string_matching(/#{instance1.id}.* terminating/i),
             "success" => true,
-            "href"    => api_instance_url(nil, instance1.compressed_id)
+            "href"    => api_instance_url(nil, instance1)
           ),
           a_hash_including(
             "message" => a_string_matching(/#{instance2.id}.* terminating/i),
             "success" => true,
-            "href"    => api_instance_url(nil, instance2.compressed_id)
+            "href"    => api_instance_url(nil, instance2)
           )
         )
       }
@@ -104,7 +104,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:stop))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
     end
 
     it "stops a valid instance" do
@@ -112,7 +112,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:stop))
 
-      expect_single_action_result(:success => true, :message => "stopping", :href => api_instance_url(nil, instance.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "stopping", :href => api_instance_url(nil, instance), :task => true)
     end
 
     it "stops multiple valid instances" do
@@ -121,7 +121,7 @@ RSpec.describe "Instances API" do
       post(api_instances_url, :params => gen_request(:stop, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1), api_instance_url(nil, instance2)])
     end
   end
 
@@ -147,7 +147,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:start))
 
-      expect_single_action_result(:success => false, :message => "is powered on", :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => false, :message => "is powered on", :href => api_instance_url(nil, instance))
     end
 
     it "starts an instance" do
@@ -156,7 +156,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:start))
 
-      expect_single_action_result(:success => true, :message => "starting", :href => api_instance_url(nil, instance.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "starting", :href => api_instance_url(nil, instance), :task => true)
     end
 
     it "starts multiple instances" do
@@ -166,7 +166,7 @@ RSpec.describe "Instances API" do
       post(api_instances_url, :params => gen_request(:start, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1), api_instance_url(nil, instance2)])
     end
   end
 
@@ -193,7 +193,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
     end
 
     it "fails to pause a paused instance" do
@@ -202,7 +202,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
     end
 
     it "pauses an instance" do
@@ -210,7 +210,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => true, :message => "pausing", :href => api_instance_url(nil, instance.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "pausing", :href => api_instance_url(nil, instance), :task => true)
     end
 
     it "pauses multiple instances" do
@@ -219,7 +219,7 @@ RSpec.describe "Instances API" do
       post(api_instances_url, :params => gen_request(:pause, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1), api_instance_url(nil, instance2)])
     end
   end
 
@@ -246,7 +246,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:suspend))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
     end
 
     it "cannot suspend a suspended instance" do
@@ -255,7 +255,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:suspend))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
     end
 
     it "suspends an instance" do
@@ -263,7 +263,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:suspend))
 
-      expect_single_action_result(:success => true, :message => "suspending", :href => api_instance_url(nil, instance.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "suspending", :href => api_instance_url(nil, instance), :task => true)
     end
 
     it "suspends multiple instances" do
@@ -272,7 +272,7 @@ RSpec.describe "Instances API" do
       post(api_instances_url, :params => gen_request(:suspend, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1), api_instance_url(nil, instance2)])
     end
   end
 
@@ -299,7 +299,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance))
     end
 
     it "shelves a suspended instance" do
@@ -308,7 +308,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance))
     end
 
     it "shelves a paused instance" do
@@ -317,7 +317,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance))
     end
 
     it "cannot shelve a shelved instance" do
@@ -329,7 +329,7 @@ RSpec.describe "Instances API" do
       expect_single_action_result(
         :success => false,
         :message => "The VM can't be shelved, current state has to be powered on, off, suspended or paused",
-        :href    => api_instance_url(nil, instance.compressed_id)
+        :href    => api_instance_url(nil, instance)
       )
     end
 
@@ -340,7 +340,7 @@ RSpec.describe "Instances API" do
 
       expect_single_action_result(:success => true,
                                   :message => "shelving",
-                                  :href    => api_instance_url(nil, instance.compressed_id),
+                                  :href    => api_instance_url(nil, instance),
                                   :task    => true)
     end
 
@@ -350,7 +350,7 @@ RSpec.describe "Instances API" do
       post(api_instances_url, :params => gen_request(:shelve, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1), api_instance_url(nil, instance2)])
     end
   end
 
@@ -377,7 +377,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:reboot_guest))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
     end
 
     it "reboots a valid instance" do
@@ -385,7 +385,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:reboot_guest))
 
-      expect_single_action_result(:success => true, :message => "rebooting", :href => api_instance_url(nil, instance.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "rebooting", :href => api_instance_url(nil, instance), :task => true)
     end
 
     it "reboots multiple valid instances" do
@@ -394,7 +394,7 @@ RSpec.describe "Instances API" do
       post(api_instances_url, :params => gen_request(:reboot_guest, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1), api_instance_url(nil, instance2)])
     end
   end
 
@@ -421,7 +421,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:reset))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance.compressed_id))
+      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
     end
 
     it "resets a valid instance" do
@@ -429,7 +429,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:reset))
 
-      expect_single_action_result(:success => true, :message => "resetting", :href => api_instance_url(nil, instance.compressed_id), :task => true)
+      expect_single_action_result(:success => true, :message => "resetting", :href => api_instance_url(nil, instance), :task => true)
     end
 
     it "resets multiple valid instances" do
@@ -438,7 +438,7 @@ RSpec.describe "Instances API" do
       post(api_instances_url, :params => gen_request(:reset, nil, instance1_url, instance2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1.compressed_id), api_instance_url(nil, instance2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_instance_url(nil, instance1), api_instance_url(nil, instance2)])
     end
   end
 
@@ -460,7 +460,7 @@ RSpec.describe "Instances API" do
       expected = {
         'name'      => 'load_balancers',
         'resources' => [
-          { 'href' => api_instance_load_balancer_url(nil, @vm.compressed_id, @load_balancer.compressed_id) }
+          { 'href' => api_instance_load_balancer_url(nil, @vm, @load_balancer) }
         ]
       }
       get(api_instance_load_balancers_url(nil, @vm))
@@ -482,7 +482,7 @@ RSpec.describe "Instances API" do
       get(api_instance_load_balancer_url(nil, @vm, @load_balancer))
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => @load_balancer.compressed_id)
+      expect(response.parsed_body).to include('id' => @load_balancer.id.to_s)
     end
 
     it "will not show an instance's load balancer without the appropriate role" do

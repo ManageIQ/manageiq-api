@@ -45,7 +45,7 @@ describe "Automate Domains API" do
         expect_single_action_result(
           :success => true,
           :message => a_string_matching(/Refreshing Automate Domain .* from git repository/),
-          :href    => api_automate_domain_url(nil, git_domain.compressed_id)
+          :href    => api_automate_domain_url(nil, git_domain)
         )
       end
 

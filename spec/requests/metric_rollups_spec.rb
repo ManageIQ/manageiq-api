@@ -38,7 +38,7 @@ RSpec.describe 'MetricRollups API' do
         'count'     => 4,
         'subcount'  => 1,
         'resources' => [
-          { 'href' => a_string_including(api_metric_rollup_url(nil, vm_metric.compressed_id)) }
+          { 'href' => a_string_including(api_metric_rollup_url(nil, vm_metric)) }
         ]
       }
       expect(response).to have_http_status(:ok)
@@ -65,7 +65,7 @@ RSpec.describe 'MetricRollups API' do
         'count'     => 5,
         'subcount'  => 1,
         'resources' => [
-          { 'href' => a_string_including(api_metric_rollup_url(nil, vm_daily.compressed_id)) }
+          { 'href' => a_string_including(api_metric_rollup_url(nil, vm_daily)) }
         ]
       }
       expect(response).to have_http_status(:ok)

@@ -153,7 +153,7 @@ RSpec.describe "users API" do
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
 
-      user_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      user_id = response.parsed_body["results"].first["id"]
       expect(User.exists?(user_id)).to be_truthy
     end
 
@@ -165,7 +165,7 @@ RSpec.describe "users API" do
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
 
-      user_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      user_id = response.parsed_body["results"].first["id"]
       expect(User.exists?(user_id)).to be_truthy
     end
 
@@ -179,10 +179,10 @@ RSpec.describe "users API" do
 
       results = response.parsed_body["results"]
       user1_hash, user2_hash = results.first, results.second
-      expect(User.exists?(ApplicationRecord.uncompress_id(user1_hash["id"]))).to be_truthy
-      expect(User.exists?(ApplicationRecord.uncompress_id(user2_hash["id"]))).to be_truthy
-      expect(user1_hash["current_group_id"]).to eq(group1.compressed_id)
-      expect(user2_hash["current_group_id"]).to eq(group2.compressed_id)
+      expect(User.exists?(user1_hash["id"])).to be_truthy
+      expect(User.exists?(user2_hash["id"])).to be_truthy
+      expect(user1_hash["current_group_id"]).to eq(group1.id.to_s)
+      expect(user2_hash["current_group_id"]).to eq(group2.id.to_s)
     end
   end
 
@@ -194,10 +194,10 @@ RSpec.describe "users API" do
       request = {
         "action"    => "edit",
         "resources" => [{
-          "href"       => api_user_url(nil, user1.compressed_id),
+          "href"       => api_user_url(nil, user1),
           "miq_groups" => [
-            { "id" => group2.compressed_id },
-            { "href" => api_group_url(nil, group3.compressed_id) }
+            { "id" => group2.id.to_s },
+            { "href" => api_group_url(nil, group3) }
           ]
         }]
       }
@@ -228,7 +228,7 @@ RSpec.describe "users API" do
 
       post(api_user_url(nil, user1), :params => gen_request(:edit, "name" => "updated name"))
 
-      expect_single_resource_query("id" => user1.compressed_id, "name" => "updated name")
+      expect_single_resource_query("id" => user1.id.to_s, "name" => "updated name")
       expect(user1.reload.name).to eq("updated name")
     end
 
@@ -236,10 +236,10 @@ RSpec.describe "users API" do
       api_basic_authorize collection_action_identifier(:users, :edit)
       user1.miq_groups << group2
 
-      post(api_user_url(nil, user1.id), :params => gen_request(:edit, "current_group" => { "href" => api_group_url(nil, group2.compressed_id) }))
+      post(api_user_url(nil, user1), :params => gen_request(:edit, "current_group" => { "href" => api_group_url(nil, group2) }))
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body["current_group_id"]).to eq(group2.compressed_id)
+      expect(response.parsed_body["current_group_id"]).to eq(group2.id.to_s)
     end
 
     it "supports single user edit of other attributes including group change" do
@@ -249,7 +249,7 @@ RSpec.describe "users API" do
                                                             "email" => "user1@email.com",
                                                             "group" => {"description" => group2.description}))
 
-      expect_single_resource_query("id" => user1.compressed_id, "email" => "user1@email.com", "current_group_id" => group2.compressed_id)
+      expect_single_resource_query("id" => user1.id.to_s, "email" => "user1@email.com", "current_group_id" => group2.id.to_s)
       expect(user1.reload.email).to eq("user1@email.com")
       expect(user1.reload.current_group_id).to eq(group2.id)
     end
@@ -262,8 +262,8 @@ RSpec.describe "users API" do
                                                   {"href" => api_user_url(nil, user2), "first_name" => "Jane"}]))
 
       expect_results_to_match_hash("results",
-                                   [{"id" => user1.compressed_id, "first_name" => "John"},
-                                    {"id" => user2.compressed_id, "first_name" => "Jane"}])
+                                   [{"id" => user1.id.to_s, "first_name" => "John"},
+                                    {"id" => user2.id.to_s, "first_name" => "Jane"}])
 
       expect(user1.reload.first_name).to eq("John")
       expect(user2.reload.first_name).to eq("Jane")
@@ -329,7 +329,7 @@ RSpec.describe "users API" do
 
       post(user1_url, :params => gen_request(:delete))
 
-      expect_single_action_result(:success => true, :message => "deleting", :href => api_user_url(nil, user1.compressed_id))
+      expect_single_action_result(:success => true, :message => "deleting", :href => api_user_url(nil, user1))
       expect(User.exists?(user1_id)).to be_falsey
     end
 
@@ -342,7 +342,7 @@ RSpec.describe "users API" do
       post(api_users_url, :params => gen_request(:delete, [{"href" => user1_url}, {"href" => user2_url}]))
 
       expect_multiple_action_result(2)
-      expect_result_resources_to_include_hrefs("results", [api_user_url(nil, user1.compressed_id), api_user_url(nil, user2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_user_url(nil, user1), api_user_url(nil, user2)])
       expect(User.exists?(user1_id)).to be_falsey
       expect(User.exists?(user2_id)).to be_falsey
     end

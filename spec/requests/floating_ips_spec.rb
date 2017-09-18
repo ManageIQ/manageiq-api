@@ -10,7 +10,7 @@ RSpec.describe 'FloatingIp API' do
         'subcount'  => 1,
         'name'      => 'floating_ips',
         'resources' => [
-          hash_including('href' => api_floating_ip_url(nil, floating_ip.compressed_id))
+          hash_including('href' => api_floating_ip_url(nil, floating_ip))
         ]
       }
       expect(response).to have_http_status(:ok)
@@ -33,7 +33,7 @@ RSpec.describe 'FloatingIp API' do
 
       get(api_floating_ip_url(nil, floating_ip))
 
-      expect(response.parsed_body).to include('href' => api_floating_ip_url(nil, floating_ip.compressed_id))
+      expect(response.parsed_body).to include('href' => api_floating_ip_url(nil, floating_ip))
       expect(response).to have_http_status(:ok)
     end
 

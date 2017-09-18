@@ -24,10 +24,10 @@ describe "Alerts Definitions API" do
       "subcount"  => 2,
       "resources" => a_collection_containing_exactly(
         {
-          "href" => api_alert_definition_url(nil, alert_definitions[0].compressed_id)
+          "href" => api_alert_definition_url(nil, alert_definitions[0])
         },
         {
-          "href" => api_alert_definition_url(nil, alert_definitions[1].compressed_id)
+          "href" => api_alert_definition_url(nil, alert_definitions[1])
         }
       )
     )
@@ -49,8 +49,8 @@ describe "Alerts Definitions API" do
     get(api_alert_definition_url(nil, alert_definition))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
-      "href"        => api_alert_definition_url(nil, alert_definition.compressed_id),
-      "id"          => alert_definition.compressed_id,
+      "href"        => api_alert_definition_url(nil, alert_definition),
+      "id"          => alert_definition.id.to_s,
       "description" => alert_definition.description,
       "guid"        => alert_definition.guid,
       "expression"  => {"exp" => {"=" => {"field" => "Vm-name", "value" => "foo"}}, "context_type" => nil}
@@ -78,7 +78,7 @@ describe "Alerts Definitions API" do
     api_basic_authorize collection_action_identifier(:alert_definitions, :create)
     post(api_alert_definitions_url, :params => sample_alert_definition)
     expect(response).to have_http_status(:ok)
-    alert_definition = MiqAlert.find(ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"]))
+    alert_definition = MiqAlert.find(response.parsed_body["results"].first["id"])
     expect(alert_definition).to be_truthy
     expect(alert_definition.expression.class).to eq(MiqExpression)
     expect(alert_definition.expression.exp).to eq(sample_alert_definition["expression"])
@@ -98,7 +98,7 @@ describe "Alerts Definitions API" do
     expect(response).to have_http_status(:ok)
     expect_single_action_result(:success => true,
                                 :message => "alert_definitions id: #{alert_definition.id} deleting",
-                                :href    => api_alert_definition_url(nil, alert_definition.compressed_id))
+                                :href    => api_alert_definition_url(nil, alert_definition))
   end
 
   it "deletes an alert definition via DELETE" do
@@ -196,8 +196,8 @@ describe "Alerts Definition Profiles API" do
     expect_query_result(:alert_definition_profiles, 2, 2)
     expect_result_resources_to_include_hrefs(
       "resources",
-      [api_alert_definition_profile_url(nil, alert_definition_profiles.first.compressed_id),
-       api_alert_definition_profile_url(nil, alert_definition_profiles.second.compressed_id)]
+      [api_alert_definition_profile_url(nil, alert_definition_profiles.first),
+       api_alert_definition_profile_url(nil, alert_definition_profiles.second)]
     )
   end
 
@@ -208,7 +208,7 @@ describe "Alerts Definition Profiles API" do
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
-      "href"        => api_alert_definition_profile_url(nil, alert_definition_profile.compressed_id),
+      "href"        => api_alert_definition_profile_url(nil, alert_definition_profile),
       "description" => alert_definition_profile.description,
       "guid"        => alert_definition_profile.guid
     )
@@ -224,8 +224,8 @@ describe "Alerts Definition Profiles API" do
     expect(response).to have_http_status(:ok)
     expect_result_resources_to_include_hrefs(
       "resources",
-      [api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile.compressed_id, alert_definitions.first.compressed_id),
-       api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile.compressed_id, alert_definitions.first.compressed_id)]
+      [api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile, alert_definitions.first),
+       api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile, alert_definitions.first)]
     )
   end
 
@@ -255,7 +255,7 @@ describe "Alerts Definition Profiles API" do
     post(api_alert_definition_profiles_url, :params => sample_alert_definition_profile)
 
     expect(response).to have_http_status(:ok)
-    id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+    id = response.parsed_body["results"].first["id"]
     alert_definition_profile = MiqAlertSet.find(id)
     expect(alert_definition_profile).to be_truthy
     expect(response.parsed_body["results"].first).to include(
@@ -272,7 +272,7 @@ describe "Alerts Definition Profiles API" do
     expect(response).to have_http_status(:ok)
     expect_single_action_result(:success => true,
                                 :message => "alert_definition_profiles id: #{alert_definition_profile.id} deleting",
-                                :href    => api_alert_definition_profile_url(nil, alert_definition_profile.compressed_id))
+                                :href    => api_alert_definition_profile_url(nil, alert_definition_profile))
   end
 
   it "deletes an alert definition profile via DELETE" do

@@ -11,7 +11,7 @@ RSpec.describe "Blueprints API" do
         "subcount"  => 1,
         "name"      => "blueprints",
         "resources" => [
-          hash_including("href" => api_blueprint_url(nil, blueprint.compressed_id))
+          hash_including("href" => api_blueprint_url(nil, blueprint))
         ]
       }
       expect(response.parsed_body).to include(expected)
@@ -35,7 +35,7 @@ RSpec.describe "Blueprints API" do
 
       get(api_blueprint_url(nil, blueprint))
 
-      expect(response.parsed_body).to include("href" => api_blueprint_url(nil, blueprint.compressed_id))
+      expect(response.parsed_body).to include("href" => api_blueprint_url(nil, blueprint))
       expect(response).to have_http_status(:ok)
     end
 
@@ -167,11 +167,11 @@ RSpec.describe "Blueprints API" do
       expected = {
         "results" => a_collection_containing_exactly(
           a_hash_including(
-            "id"   => blueprint1.compressed_id,
+            "id"   => blueprint1.id.to_s,
             "name" => "baz"
           ),
           a_hash_including(
-            "id"   => blueprint2.compressed_id,
+            "id"   => blueprint2.id.to_s,
             "name" => "qux"
           )
         )
@@ -240,8 +240,8 @@ RSpec.describe "Blueprints API" do
 
       expected = {
         "results" => a_collection_containing_exactly(
-          a_hash_including("id" => blueprint1.compressed_id, "status" => "published"),
-          a_hash_including("id" => blueprint2.compressed_id, "status" => "published")
+          a_hash_including("id" => blueprint1.id.to_s, "status" => "published"),
+          a_hash_including("id" => blueprint2.id.to_s, "status" => "published")
         )
       }
 
@@ -299,7 +299,7 @@ RSpec.describe "Blueprints API" do
       post(api_blueprint_url(nil, blueprint), :params => { :action => "publish" })
 
       expected = {
-        "id"     => blueprint.compressed_id,
+        "id"     => blueprint.id.to_s,
         "status" => "published"
       }
       expect(response.parsed_body).to include(expected)

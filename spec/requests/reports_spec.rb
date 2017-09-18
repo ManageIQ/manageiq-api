@@ -9,8 +9,8 @@ RSpec.describe "reports API" do
     expect_result_resources_to_include_hrefs(
       "resources",
       [
-        api_report_url(nil, report_1.compressed_id),
-        api_report_url(nil, report_2.compressed_id)
+        api_report_url(nil, report_1),
+        api_report_url(nil, report_2)
       ]
     )
     expect_result_to_match_hash(response.parsed_body, "count" => 2, "name" => "reports")
@@ -35,8 +35,8 @@ RSpec.describe "reports API" do
 
     expect_result_to_match_hash(
       response.parsed_body,
-      "href"  => api_report_url(nil, report.compressed_id),
-      "id"    => report.compressed_id,
+      "href"  => api_report_url(nil, report),
+      "id"    => report.id.to_s,
       "name"  => report.name,
       "title" => report.title
     )
@@ -60,7 +60,7 @@ RSpec.describe "reports API" do
       expect_result_resources_to_include_hrefs(
         "resources",
         [
-          api_report_result_url(nil, report.compressed_id, report_result.compressed_id)
+          api_report_result_url(nil, report, report_result)
         ]
       )
       expect(response.parsed_body["resources"]).not_to be_any { |resource| resource.key?("result_set") }
@@ -92,7 +92,7 @@ RSpec.describe "reports API" do
       expect_result_resources_to_include_hrefs(
         "resources",
         [
-          api_result_url(nil, result.compressed_id).to_s
+          api_result_url(nil, result).to_s
         ]
       )
       expect(response).to have_http_status(:ok)
@@ -152,8 +152,8 @@ RSpec.describe "reports API" do
     expect_result_resources_to_include_hrefs(
       "resources",
       [
-        api_report_schedule_url(nil, report.compressed_id, schedule_1.compressed_id),
-        api_report_schedule_url(nil, report.compressed_id, schedule_2.compressed_id),
+        api_report_schedule_url(nil, report, schedule_1),
+        api_report_schedule_url(nil, report, schedule_2),
       ]
     )
     expect(response).to have_http_status(:ok)
@@ -184,8 +184,8 @@ RSpec.describe "reports API" do
 
     expect_result_to_match_hash(
       response.parsed_body,
-      "href" => api_report_schedule_url(nil, report.compressed_id, schedule.compressed_id),
-      "id"   => schedule.compressed_id,
+      "href" => api_report_schedule_url(nil, report, schedule),
+      "id"   => schedule.id.to_s,
       "name" => 'unit_test'
     )
     expect(response).to have_http_status(:ok)
@@ -211,11 +211,11 @@ RSpec.describe "reports API" do
         post api_report_url(nil, report).to_s, :params => { :action => "run" }
       end.to change(MiqReportResult, :count).by(1)
       expect_single_action_result(
-        :href    => api_report_url(nil, report.compressed_id),
+        :href    => api_report_url(nil, report),
         :success => true,
         :message => "running report #{report.id}"
       )
-      actual = MiqReportResult.find(ApplicationRecord.uncompress_id(response.parsed_body["result_id"]))
+      actual = MiqReportResult.find(response.parsed_body["result_id"])
       expect(actual.userid).to eq("api_user_id")
     end
 
@@ -238,7 +238,7 @@ RSpec.describe "reports API" do
         )
       end.to change(MiqSchedule, :count).by(1)
       expect_single_action_result(
-        :href    => api_report_url(nil, report.compressed_id),
+        :href    => api_report_url(nil, report),
         :success => true,
         :message => "scheduling of report #{report.id}"
       )

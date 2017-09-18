@@ -29,10 +29,10 @@ describe "Tags API" do
         expect { post api_tags_url, :params => options }.to change(Tag, :count).by(1)
 
         result = response.parsed_body["results"].first
-        tag = Tag.find(ApplicationRecord.uncompress_id(result["id"]))
+        tag = Tag.find(result["id"])
         tag_category = Category.find(tag.category.id)
         expect(tag_category).to eq(category)
-        expect(result["href"]).to include(api_tag_url(nil, tag.compressed_id))
+        expect(result["href"]).to include(api_tag_url(nil, tag))
         expect(response).to have_http_status(:ok)
       end
 
@@ -44,7 +44,7 @@ describe "Tags API" do
           post api_tags_url, :params => { :name => "test_tag", :description => "Test Tag", :category => {:id => category.id} }
         end.to change(Tag, :count).by(1)
 
-        tag = Tag.find(ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"]))
+        tag = Tag.find(response.parsed_body["results"].first["id"])
         tag_category = Category.find(tag.category.id)
         expect(tag_category).to eq(category)
 
@@ -59,7 +59,7 @@ describe "Tags API" do
           post api_tags_url, :params => { :name => "test_tag", :description => "Test Tag", :category => {:name => category.name} }
         end.to change(Tag, :count).by(1)
 
-        tag = Tag.find(ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"]))
+        tag = Tag.find(response.parsed_body["results"].first["id"])
         tag_category = Category.find(tag.category.id)
         expect(tag_category).to eq(category)
 
@@ -73,7 +73,7 @@ describe "Tags API" do
         expect do
           post(api_category_tags_url(nil, category), :params => { :name => "test_tag", :description => "Test Tag" })
         end.to change(Tag, :count).by(1)
-        tag = Tag.find(ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"]))
+        tag = Tag.find(response.parsed_body["results"].first["id"])
         tag_category = Category.find(tag.category.id)
         expect(tag_category).to eq(category)
 
@@ -165,7 +165,7 @@ describe "Tags API" do
         tag2 = classification2.tag
 
         expect do
-          post(api_category_tags_url(nil, category.id), :params => gen_request(:delete, [{:id => tag1.id}, {:id => tag2.id}]))
+          post(api_category_tags_url(nil, category), :params => gen_request(:delete, [{:id => tag1.id}, {:id => tag2.id}]))
         end.to change(Tag, :count).by(-2)
         expect { classification1.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { classification2.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -270,8 +270,8 @@ describe "Tags API" do
       get api_tag_url(nil, tag), :params => { :attributes => attr_list }
 
       expect_single_resource_query(
-        "href"           => api_tag_url(nil, tag.compressed_id),
-        "id"             => tag.compressed_id,
+        "href"           => api_tag_url(nil, tag),
+        "id"             => tag.id.to_s,
         "name"           => tag.name,
         "category"       => {"name" => tag.category.name,       "description" => tag.category.description},
         "classification" => {"name" => tag.classification.name, "description" => tag.classification.description}
@@ -285,8 +285,8 @@ describe "Tags API" do
       get api_tag_url(nil, tag), :params => { :attributes => "categorization" }
 
       expect_single_resource_query(
-        "href"           => api_tag_url(nil, tag.compressed_id),
-        "id"             => tag.compressed_id,
+        "href"           => api_tag_url(nil, tag),
+        "id"             => tag.id.to_s,
         "name"           => tag.name,
         "categorization" => {
           "name"         => tag.classification.name,

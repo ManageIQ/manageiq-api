@@ -38,6 +38,6 @@ RSpec.describe "Custom Attributes API" do
     post(api_provider_custom_attribute_url(nil, provider, custom_attribute), :params => { :action => :edit, :name => 'name1' })
 
     expect(response).to have_http_status(:ok)
-    expect(response.parsed_body['href']).to include(api_provider_custom_attribute_url(nil, provider.compressed_id, custom_attribute.compressed_id))
+    expect(response.parsed_body['href']).to include(api_provider_custom_attribute_url(nil, provider, custom_attribute))
   end
 end

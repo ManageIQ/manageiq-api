@@ -115,7 +115,7 @@ describe "Policies API" do
       expect_query_result(:policies, 3, 3)
       expect_result_resources_to_include_hrefs(
         "resources",
-        [api_policy_url(nil, p1.compressed_id), api_policy_url(nil, p2.compressed_id), api_policy_url(nil, p3.compressed_id)]
+        [api_policy_url(nil, p1), api_policy_url(nil, p2), api_policy_url(nil, p3)]
       )
     end
 
@@ -148,7 +148,7 @@ describe "Policies API" do
       expect_query_result(:policy_profiles, 2, 2)
       expect_result_resources_to_include_hrefs(
         "resources",
-        [api_policy_profile_url(nil, ps1.compressed_id), api_policy_profile_url(nil, ps2.compressed_id)]
+        [api_policy_profile_url(nil, ps1), api_policy_profile_url(nil, ps2)]
       )
     end
 
@@ -353,7 +353,7 @@ describe "Policies API" do
     it "creates new policy" do
       api_basic_authorize collection_action_identifier(:policies, :create)
       post(api_policies_url, :params => sample_policy.merge!(miq_policy_contents))
-      policy = MiqPolicy.find(ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"]))
+      policy = MiqPolicy.find(response.parsed_body["results"].first["id"])
       expect(response.parsed_body["results"].first["name"]).to eq("sample policy")
       expect(response.parsed_body["results"].first["towhat"]).to eq("ManageIQ::Providers::Redhat::InfraManager")
       expect(policy).to be_truthy
@@ -442,7 +442,7 @@ describe "Policies API" do
       expect(miq_policy.actions.count).to eq(0)
       expect(miq_policy.events.count).to eq(0)
       post(api_policy_url(nil, miq_policy), :params => gen_request(:edit, miq_policy_contents.merge('conditions_ids' => [])))
-      policy = MiqPolicy.find(ApplicationRecord.uncompress_id(response.parsed_body["id"]))
+      policy = MiqPolicy.find(response.parsed_body["id"])
       expect(response).to have_http_status(:ok)
       expect(policy.actions.count).to eq(1)
       expect(policy.events.count).to eq(1)
@@ -453,7 +453,7 @@ describe "Policies API" do
       api_basic_authorize collection_action_identifier(:policies, :edit)
       expect(miq_policy.description).to_not eq("BAR")
       post(api_policy_url(nil, miq_policy), :params => gen_request(:edit, :description => "BAR"))
-      policy = MiqPolicy.find(ApplicationRecord.uncompress_id(response.parsed_body["id"]))
+      policy = MiqPolicy.find(response.parsed_body["id"])
       expect(response).to have_http_status(:ok)
       expect(policy.description).to eq("BAR")
     end

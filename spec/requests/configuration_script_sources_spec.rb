@@ -16,7 +16,7 @@ RSpec.describe 'Configuration Script Sources API' do
         'count'     => 1,
         'subcount'  => 1,
         'name'      => 'configuration_script_sources',
-        'resources' => [hash_including('href' => api_configuration_script_source_url(nil, repository.compressed_id))]
+        'resources' => [hash_including('href' => api_configuration_script_source_url(nil, repository))]
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -39,7 +39,7 @@ RSpec.describe 'Configuration Script Sources API' do
       get(api_configuration_script_source_url(nil, repository))
 
       expected = {
-        'href' => api_configuration_script_source_url(nil, repository.compressed_id)
+        'href' => api_configuration_script_source_url(nil, repository)
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -455,7 +455,7 @@ RSpec.describe 'Configuration Script Sources API' do
 
       expected = {
         'resources' => [
-          {'href' => a_string_including(api_configuration_script_source_configuration_script_payload_url(nil, config_script_src.compressed_id, payload.compressed_id))}
+          {'href' => api_configuration_script_source_configuration_script_payload_url(nil, config_script_src, payload)}
         ]
       }
       expect(response).to have_http_status(:ok)
@@ -473,7 +473,7 @@ RSpec.describe 'Configuration Script Sources API' do
       expected = {
         'subcount'  => 1,
         'resources' => [
-          {'href' => a_string_including(api_configuration_script_source_configuration_script_payload_url(nil, config_script_src.compressed_id, payload.compressed_id))}
+          {'href' => api_configuration_script_source_configuration_script_payload_url(nil, config_script_src, payload)}
         ]
       }
       expect(response).to have_http_status(:ok)

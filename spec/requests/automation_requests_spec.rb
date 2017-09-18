@@ -38,7 +38,7 @@ describe "Automation Requests API" do
         "count"     => 2,
         "subcount"  => 1,
         "resources" => a_collection_containing_exactly(
-          "href" => api_automation_request_url(nil, automation_request2.compressed_id),
+          "href" => api_automation_request_url(nil, automation_request2),
         )
       }
       expect(response).to have_http_status(:ok)
@@ -58,8 +58,8 @@ describe "Automation Requests API" do
         "count"     => 2,
         "subcount"  => 2,
         "resources" => a_collection_containing_exactly(
-          {"href" => api_automation_request_url(nil, automation_request1.compressed_id)},
-          {"href" => api_automation_request_url(nil, automation_request2.compressed_id)},
+          {"href" => api_automation_request_url(nil, automation_request1)},
+          {"href" => api_automation_request_url(nil, automation_request2)},
         )
       }
       expect(response).to have_http_status(:ok)
@@ -85,8 +85,8 @@ describe "Automation Requests API" do
       get api_automation_request_url(nil, automation_request)
 
       expected = {
-        "id"   => automation_request.compressed_id,
-        "href" => api_automation_request_url(nil, automation_request.compressed_id)
+        "id"   => automation_request.id.to_s,
+        "href" => api_automation_request_url(nil, automation_request)
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -101,7 +101,7 @@ describe "Automation Requests API" do
       expect_result_resources_to_include_keys("results", %w(id approval_state type request_type status options))
       expect_results_to_match_hash("results", [expected_hash])
 
-      task_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      task_id = response.parsed_body["results"].first["id"]
       expect(AutomationRequest.exists?(task_id)).to be_truthy
     end
 
@@ -114,7 +114,7 @@ describe "Automation Requests API" do
       expect_result_resources_to_include_keys("results", %w(id approval_state type request_type status options))
       expect_results_to_match_hash("results", [expected_hash])
 
-      task_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      task_id = response.parsed_body["results"].first["id"]
       expect(AutomationRequest.exists?(task_id)).to be_truthy
     end
 
@@ -127,7 +127,7 @@ describe "Automation Requests API" do
       expect_result_resources_to_include_keys("results", %w(id approval_state type request_type status options))
       expect_results_to_match_hash("results", [expected_hash, expected_hash])
 
-      task_id1, task_id2 = response.parsed_body["results"].collect { |r| ApplicationRecord.uncompress_id(r["id"]) }
+      task_id1, task_id2 = response.parsed_body["results"].collect { |r| r["id"] }
       expect(AutomationRequest.exists?(task_id1)).to be_truthy
       expect(AutomationRequest.exists?(task_id2)).to be_truthy
     end
@@ -150,7 +150,7 @@ describe "Automation Requests API" do
       post(api_automation_request_url(nil, automation_request), :params => { :action => "edit", :options => {:baz => "qux"} })
 
       expected = {
-        "id"      => automation_request.compressed_id,
+        "id"      => automation_request.id.to_s,
         "options" => a_hash_including("foo" => "bar", "baz" => "qux")
       }
       expect(response).to have_http_status(:ok)
@@ -200,7 +200,7 @@ describe "Automation Requests API" do
       post(request1_url, :params => gen_request(:approve, :reason => "approve reason"))
 
       expected_msg = "Automation request #{request1.id} approved"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => api_automation_request_url(nil, request1.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_automation_request_url(nil, request1))
     end
 
     it "supports denying a request" do
@@ -209,7 +209,7 @@ describe "Automation Requests API" do
       post(request2_url, :params => gen_request(:deny, :reason => "deny reason"))
 
       expected_msg = "Automation request #{request2.id} denied"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => api_automation_request_url(nil, request2.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_automation_request_url(nil, request2))
     end
 
     it "supports approving multiple requests" do
@@ -223,12 +223,12 @@ describe "Automation Requests API" do
           {
             "message" => a_string_matching(/Automation request #{request1.id} approved/i),
             "success" => true,
-            "href"    => api_automation_request_url(nil, request1.compressed_id)
+            "href"    => api_automation_request_url(nil, request1)
           },
           {
             "message" => a_string_matching(/Automation request #{request2.id} approved/i),
             "success" => true,
-            "href"    => api_automation_request_url(nil, request2.compressed_id)
+            "href"    => api_automation_request_url(nil, request2)
           }
         )
       }
@@ -247,12 +247,12 @@ describe "Automation Requests API" do
           {
             "message" => a_string_matching(/Automation request #{request1.id} denied/i,),
             "success" => true,
-            "href"    => api_automation_request_url(nil, request1.compressed_id)
+            "href"    => api_automation_request_url(nil, request1)
           },
           {
             "message" => a_string_matching(/Automation request #{request2.id} denied/i),
             "success" => true,
-            "href"    => api_automation_request_url(nil, request2.compressed_id)
+            "href"    => api_automation_request_url(nil, request2)
           }
         )
       }

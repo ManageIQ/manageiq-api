@@ -102,7 +102,7 @@ describe "Service Requests API" do
       post(svcreq1_url, :params => gen_request(:approve, :reason => "approve reason"))
 
       expected_msg = "Service request #{svcreq1.id} approved"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => api_service_request_url(nil, svcreq1.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_service_request_url(nil, svcreq1))
     end
 
     it "supports denying a request" do
@@ -111,7 +111,7 @@ describe "Service Requests API" do
       post(svcreq2_url, :params => gen_request(:deny, :reason => "deny reason"))
 
       expected_msg = "Service request #{svcreq2.id} denied"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => api_service_request_url(nil, svcreq2.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_service_request_url(nil, svcreq2))
     end
 
     it "supports approving multiple requests" do
@@ -125,12 +125,12 @@ describe "Service Requests API" do
           {
             "message" => a_string_matching(/Service request #{svcreq1.id} approved/i),
             "success" => true,
-            "href"    => api_service_request_url(nil, svcreq1.compressed_id)
+            "href"    => api_service_request_url(nil, svcreq1)
           },
           {
             "message" => a_string_matching(/Service request #{svcreq2.id} approved/i),
             "success" => true,
-            "href"    => api_service_request_url(nil, svcreq2.compressed_id)
+            "href"    => api_service_request_url(nil, svcreq2)
           }
         )
       }
@@ -149,12 +149,12 @@ describe "Service Requests API" do
           {
             "message" => a_string_matching(/Service request #{svcreq1.id} denied/i),
             "success" => true,
-            "href"    => api_service_request_url(nil, svcreq1.compressed_id)
+            "href"    => api_service_request_url(nil, svcreq1)
           },
           {
             "message" => a_string_matching(/Service request #{svcreq2.id} denied/i),
             "success" => true,
-            "href"    => api_service_request_url(nil, svcreq2.compressed_id)
+            "href"    => api_service_request_url(nil, svcreq2)
           }
         )
       }
@@ -228,8 +228,8 @@ describe "Service Requests API" do
       get api_service_request_url(nil, service_request)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include("id"   => service_request.compressed_id,
-                                              "href" => api_service_request_url(nil, service_request.compressed_id))
+      expect(response.parsed_body).to include("id"   => service_request.id.to_s,
+                                              "href" => api_service_request_url(nil, service_request))
     end
 
     it "lists all the service requests if you are admin" do
@@ -251,8 +251,8 @@ describe "Service Requests API" do
         "count"     => 2,
         "subcount"  => 2,
         "resources" => a_collection_containing_exactly(
-          {"href" => api_service_request_url(nil, service_request_1.compressed_id)},
-          {"href" => api_service_request_url(nil, service_request_2.compressed_id)},
+          {"href" => api_service_request_url(nil, service_request_1)},
+          {"href" => api_service_request_url(nil, service_request_2)},
         )
       }
       expect(response).to have_http_status(:ok)
@@ -271,8 +271,8 @@ describe "Service Requests API" do
       get api_service_request_url(nil, service_request)
 
       expected = {
-        "id"   => service_request.compressed_id,
-        "href" => api_service_request_url(nil, service_request.compressed_id)
+        "id"   => service_request.id.to_s,
+        "href" => api_service_request_url(nil, service_request)
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -360,7 +360,7 @@ describe "Service Requests API" do
         post(api_service_request_url(nil, service_request), :params => { :action => 'add_approver', :user_id => user.id })
       end.to change(MiqApproval, :count).by(1)
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => service_request.compressed_id)
+      expect(response.parsed_body).to include('id' => service_request.id.to_s)
     end
 
     it 'can add approvers to multiple service requests' do
@@ -375,8 +375,8 @@ describe "Service Requests API" do
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => service_request.compressed_id),
-          a_hash_including('id' => service_request_2.compressed_id)
+          a_hash_including('id' => service_request.id.to_s),
+          a_hash_including('id' => service_request_2.id.to_s)
         )
       }
       expect do
@@ -412,7 +412,7 @@ describe "Service Requests API" do
         post(api_service_request_url(nil, service_request), :params => { :action => 'add_approver', :user => { :id => user.id } })
       end.to change(MiqApproval, :count).by(1)
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => service_request.compressed_id)
+      expect(response.parsed_body).to include('id' => service_request.id.to_s)
     end
 
     it 'supports user reference hash with href' do
@@ -430,7 +430,7 @@ describe "Service Requests API" do
         )
       end.to change(MiqApproval, :count).by(1)
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => service_request.compressed_id)
+      expect(response.parsed_body).to include('id' => service_request.id.to_s)
     end
 
     it 'raises an error if no user is supplied' do
@@ -458,7 +458,7 @@ describe "Service Requests API" do
         post(api_service_request_url(nil, service_request), :params => { :action => 'remove_approver', :user_id => user.id })
       end.to change(MiqApproval, :count).by(-1)
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => service_request.compressed_id)
+      expect(response.parsed_body).to include('id' => service_request.id.to_s)
     end
 
     it 'can remove approvers to multiple service requests' do
@@ -473,8 +473,8 @@ describe "Service Requests API" do
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => service_request.compressed_id),
-          a_hash_including('id' => service_request2.compressed_id)
+          a_hash_including('id' => service_request.id.to_s),
+          a_hash_including('id' => service_request2.id.to_s)
         )
       }
       expect do
@@ -516,7 +516,7 @@ describe "Service Requests API" do
         )
       end.to change(MiqApproval, :count).by(-1)
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => service_request.compressed_id)
+      expect(response.parsed_body).to include('id' => service_request.id.to_s)
     end
 
     it 'raises an error if no user is supplied' do
@@ -540,7 +540,7 @@ describe "Service Requests API" do
 
       post(api_service_request_url(nil, service_request), :params => { :action => 'remove_approver', :user_id => user.id })
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => service_request.compressed_id)
+      expect(response.parsed_body).to include('id' => service_request.id.to_s)
     end
   end
 
@@ -565,7 +565,7 @@ describe "Service Requests API" do
       post(api_service_request_url(nil, service_request), :params => { :action => "edit", :options => {:baz => "qux"} })
 
       expected = {
-        "id"      => service_request.compressed_id,
+        "id"      => service_request.id.to_s,
         "options" => a_hash_including("foo" => "bar")
       }
       expect(response).to have_http_status(:ok)

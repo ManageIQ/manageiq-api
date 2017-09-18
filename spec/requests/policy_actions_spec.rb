@@ -42,7 +42,7 @@ describe "Policy Actions API" do
       expect_query_result(:policy_actions, 4, 4)
       expect_result_resources_to_include_hrefs(
         "resources",
-        MiqAction.select(:id).collect { |ma| api_policy_action_url(nil, ma.compressed_id) }
+        MiqAction.select(:id).collect { |ma| api_policy_action_url(nil, ma) }
       )
     end
 

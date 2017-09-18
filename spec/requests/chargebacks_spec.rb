@@ -8,7 +8,7 @@ RSpec.describe "chargebacks API" do
     get api_chargebacks_url
 
     expect_result_resources_to_include_hrefs(
-      "resources", [api_chargeback_url(nil, chargeback_rate.compressed_id)]
+      "resources", [api_chargeback_url(nil, chargeback_rate)]
     )
     expect_result_to_match_hash(response.parsed_body, "count" => 1)
     expect(response).to have_http_status(:ok)
@@ -24,8 +24,8 @@ RSpec.describe "chargebacks API" do
       response.parsed_body,
       "description" => chargeback_rate.description,
       "guid"        => chargeback_rate.guid,
-      "id"          => chargeback_rate.compressed_id,
-      "href"        => api_chargeback_url(nil, chargeback_rate.compressed_id)
+      "id"          => chargeback_rate.id.to_s,
+      "href"        => api_chargeback_url(nil, chargeback_rate)
     )
     expect(response).to have_http_status(:ok)
   end
@@ -45,7 +45,7 @@ RSpec.describe "chargebacks API" do
     expect_query_result(:rates, 1, 1)
     expect_result_resources_to_include_hrefs(
       "resources",
-      [api_chargeback_rate_url(nil, chargeback_rate.compressed_id, chargeback_rate_detail.compressed_id)]
+      [api_chargeback_rate_url(nil, chargeback_rate, chargeback_rate_detail)]
     )
   end
 
@@ -63,9 +63,9 @@ RSpec.describe "chargebacks API" do
 
     expect_result_to_match_hash(
       response.parsed_body,
-      "chargeback_rate_id" => chargeback_rate.compressed_id,
-      "href"               => api_chargeback_rate_url(nil, chargeback_rate.compressed_id, chargeback_rate_detail.compressed_id),
-      "id"                 => chargeback_rate_detail.compressed_id,
+      "chargeback_rate_id" => chargeback_rate.id.to_s,
+      "href"               => api_chargeback_rate_url(nil, chargeback_rate, chargeback_rate_detail),
+      "id"                 => chargeback_rate_detail.id.to_s,
       "description"        => "rate_1"
     )
     expect(response).to have_http_status(:ok)
@@ -78,7 +78,7 @@ RSpec.describe "chargebacks API" do
     get '/api/currencies'
 
     expect_result_resources_to_include_hrefs(
-      "resources", ["/api/currencies/#{currency.compressed_id}"]
+      "resources", [api_currency_url(nil, currency)]
     )
     expect_result_to_match_hash(response.parsed_body, "count" => 1)
     expect(response).to have_http_status(:ok)
@@ -93,8 +93,8 @@ RSpec.describe "chargebacks API" do
     expect_result_to_match_hash(
       response.parsed_body,
       "name" => currency.name,
-      "id"   => currency.compressed_id,
-      "href" => "/api/currencies/#{currency.compressed_id}"
+      "id"   => currency.id.to_s,
+      "href" => api_currency_url(nil, currency)
     )
     expect(response).to have_http_status(:ok)
   end
@@ -106,7 +106,7 @@ RSpec.describe "chargebacks API" do
     get '/api/measures'
 
     expect_result_resources_to_include_hrefs(
-      "resources", ["/api/measures/#{measure.compressed_id}"]
+      "resources", [api_measure_url(nil, measure)]
     )
     expect_result_to_match_hash(response.parsed_body, "count" => 1)
     expect(response).to have_http_status(:ok)
@@ -121,8 +121,8 @@ RSpec.describe "chargebacks API" do
     expect_result_to_match_hash(
       response.parsed_body,
       "name" => measure.name,
-      "id"   => measure.compressed_id,
-      "href" => "/api/measures/#{measure.compressed_id}",
+      "id"   => measure.id.to_s,
+      "href" => api_measure_url(nil, measure)
     )
     expect(response).to have_http_status(:ok)
   end

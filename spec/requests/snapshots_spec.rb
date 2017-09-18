@@ -14,7 +14,7 @@ RSpec.describe "Snapshots API" do
           "name"      => "snapshots",
           "subcount"  => 1,
           "resources" => [
-            {"href" => api_vm_snapshot_url(nil, vm.compressed_id, snapshot.compressed_id)}
+            {"href" => api_vm_snapshot_url(nil, vm, snapshot)}
           ]
         }
         expect(response.parsed_body).to include(expected)
@@ -43,9 +43,9 @@ RSpec.describe "Snapshots API" do
 
         expected = {
           "create_time"       => create_time.iso8601,
-          "href"              => api_vm_snapshot_url(nil, vm.compressed_id, snapshot.compressed_id),
-          "id"                => snapshot.compressed_id,
-          "vm_or_template_id" => vm.compressed_id
+          "href"              => api_vm_snapshot_url(nil, vm, snapshot),
+          "id"                => snapshot.id.to_s,
+          "vm_or_template_id" => vm.id.to_s
         }
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)
@@ -361,7 +361,7 @@ RSpec.describe "Snapshots API" do
           "name"      => "snapshots",
           "subcount"  => 1,
           "resources" => [
-            {"href" => api_instance_snapshot_url(nil, instance.compressed_id, snapshot.compressed_id)}
+            {"href" => api_instance_snapshot_url(nil, instance, snapshot)}
           ]
         }
         expect(response.parsed_body).to include(expected)
@@ -390,9 +390,9 @@ RSpec.describe "Snapshots API" do
 
         expected = {
           "create_time"       => create_time.iso8601,
-          "href"              => api_instance_snapshot_url(nil, instance.compressed_id, snapshot.compressed_id),
-          "id"                => snapshot.compressed_id,
-          "vm_or_template_id" => instance.compressed_id
+          "href"              => api_instance_snapshot_url(nil, instance, snapshot),
+          "id"                => snapshot.id.to_s,
+          "vm_or_template_id" => instance.id.to_s
         }
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)

@@ -72,7 +72,7 @@ describe "Conditions API" do
 
       expect(response).to have_http_status(:ok)
 
-      condition_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      condition_id = response.parsed_body["results"].first["id"]
 
       expect(Condition.find(condition_id).expression.class).to eq(MiqExpression)
     end
@@ -164,7 +164,7 @@ describe "Conditions API" do
       expect_query_result(:conditions, 3, 3)
       expect_result_resources_to_include_hrefs(
         "resources",
-        Condition.select(:id).collect { |c| api_condition_url(nil, c.compressed_id) }
+        Condition.select(:id).collect { |c| api_condition_url(nil, c) }
       )
     end
 

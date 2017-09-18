@@ -48,7 +48,7 @@ describe 'Notifications API' do
 
         post(notification_url, :params => gen_request(:delete))
         expect(response).to have_http_status(:ok)
-        expect_single_action_result(:success => true, :href => api_notification_url(nil, notification_recipient.compressed_id))
+        expect_single_action_result(:success => true, :href => api_notification_url(nil, notification_recipient))
         expect { notification_recipient.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
@@ -75,7 +75,7 @@ describe 'Notifications API' do
         post(api_notifications_url, :params => gen_request(:delete, :href => notification_url))
         expect(response).to have_http_status(:ok)
         expect_results_to_match_hash('results', [{'success' => true,
-                                                  'href'    => api_notification_url(nil, notification_recipient.compressed_id)}])
+                                                  'href'    => api_notification_url(nil, notification_recipient)}])
         expect { notification_recipient.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
@@ -122,7 +122,7 @@ describe 'Notifications API' do
 
       expect(notification_recipient.seen).to be_falsey
       post(notification_url, :params => gen_request(:mark_as_seen))
-      expect_single_action_result(:success => true, :href => api_notification_url(nil, notification_recipient.compressed_id))
+      expect_single_action_result(:success => true, :href => api_notification_url(nil, notification_recipient))
       expect(notification_recipient.reload.seen).to be_truthy
     end
   end
