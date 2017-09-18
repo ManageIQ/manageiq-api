@@ -112,7 +112,8 @@ module Api
       end
 
       def normalize_array(obj)
-        obj.collect { |item| normalize_attr(@req.subcollection || @req.collection, item) }
+        type = @req.subject
+        obj.collect { |item| normalize_attr(get_reftype(type, type, item), item) }
       end
 
       def new_href(type, current_id, current_href)

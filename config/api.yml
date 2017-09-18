@@ -881,6 +881,36 @@
       :delete:
       - :name: delete
         :identifier: generic_object_definition_delete
+  :generic_objects:
+    :description: Generic Objects
+    :options:
+    - :collection
+    - :subcollection
+    :verbs: *gpd
+    :klass: GenericObject
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: generic_object_show_list
+      :post:
+      - :name: create
+        :identifier: generic_object_new
+      - :name: edit
+        :identifier: generic_object_edit
+      - :name: delete
+        :identifier: generic_object_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: generic_object_view
+      :post:
+      - :name: edit
+        :identifier: generic_object_edit
+      - :name: delete
+        :identifier: generic_object_delete
+      :delete:
+      - :name: delete
+        :identifier: generic_object_delete
   :groups:
     :description: Groups
     :identifier: rbac_group
