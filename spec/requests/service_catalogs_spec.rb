@@ -80,7 +80,7 @@ describe "Service Catalogs API" do
       }
       expect(response.parsed_body).to include(expected)
 
-      sc_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      sc_id = response.parsed_body["results"].first["id"]
 
       expect(ServiceTemplateCatalog.find(sc_id)).to be_truthy
     end
@@ -101,7 +101,7 @@ describe "Service Catalogs API" do
       }
       expect(response.parsed_body).to include(expected)
 
-      sc_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      sc_id = response.parsed_body["results"].first["id"]
 
       expect(ServiceTemplateCatalog.find(sc_id)).to be_truthy
     end
@@ -121,8 +121,8 @@ describe "Service Catalogs API" do
       expect(response.parsed_body).to include(expected)
 
       results = response.parsed_body["results"]
-      sc_id1 = ApplicationRecord.uncompress_id(results.first["id"])
-      sc_id2 = ApplicationRecord.uncompress_id(results.second["id"])
+      sc_id1 = results.first["id"]
+      sc_id2 = results.second["id"]
       expect(ServiceTemplateCatalog.find(sc_id1)).to be_truthy
       expect(ServiceTemplateCatalog.find(sc_id2)).to be_truthy
     end
@@ -149,7 +149,7 @@ describe "Service Catalogs API" do
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results", [{"name" => "sc", "description" => "sc description"}])
 
-      sc_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      sc_id = response.parsed_body["results"].first["id"]
 
       expect(ServiceTemplateCatalog.find(sc_id)).to be_truthy
       expect(ServiceTemplateCatalog.find(sc_id).service_templates.pluck(:id)).to match_array([st1.id, st2.id])
@@ -195,7 +195,7 @@ describe "Service Catalogs API" do
         )
       }
       expect(response.parsed_body).to include(expected)
-      expect_single_resource_query("id" => sc.compressed_id, "name" => "sc", "description" => "updated sc description")
+      expect_single_resource_query("id" => sc.id.to_s, "name" => "sc", "description" => "updated sc description")
       expect(sc.reload.description).to eq("updated sc description")
     end
 
@@ -210,8 +210,8 @@ describe "Service Catalogs API" do
                                                              {"href" => api_service_catalog_url(nil, sc2), "name" => "sc2 updated"}]))
 
       expect_results_to_match_hash("results",
-                                   [{"id" => sc1.compressed_id, "name" => "sc1 updated", "description" => "sc1 description"},
-                                    {"id" => sc2.compressed_id, "name" => "sc2 updated", "description" => "sc2 description"}])
+                                   [{"id" => sc1.id.to_s, "name" => "sc1 updated", "description" => "sc1 description"},
+                                    {"id" => sc2.id.to_s, "name" => "sc2 updated", "description" => "sc2 description"}])
 
       expect(sc1.reload.name).to eq("sc1 updated")
       expect(sc2.reload.name).to eq("sc2 updated")
@@ -261,7 +261,7 @@ describe "Service Catalogs API" do
 
       post(api_service_catalog_url(nil, sc), :params => gen_request(:delete))
 
-      expect_single_action_result(:success => true, :message => "deleting", :href => api_service_catalog_url(nil, sc.compressed_id))
+      expect_single_action_result(:success => true, :message => "deleting", :href => api_service_catalog_url(nil, sc))
       expect { sc.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
@@ -275,7 +275,7 @@ describe "Service Catalogs API" do
                                                             [{"href" => api_service_catalog_url(nil, sc1)},
                                                              {"href" => api_service_catalog_url(nil, sc2)}]))
       expect_multiple_action_result(2)
-      expect_result_resources_to_include_hrefs("results", [api_service_catalog_url(nil, sc1.compressed_id), api_service_catalog_url(nil, sc2.compressed_id)])
+      expect_result_resources_to_include_hrefs("results", [api_service_catalog_url(nil, sc1), api_service_catalog_url(nil, sc2)])
 
       expect { sc1.reload }.to raise_error(ActiveRecord::RecordNotFound)
       expect { sc2.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -307,7 +307,7 @@ describe "Service Catalogs API" do
       post(sc_template_url(sc.id), :params => gen_request(:assign, "href" => api_service_template_url(nil, 999_999)))
 
       expect(response).to have_http_status(:ok)
-      expect_results_to_match_hash("results", [{"success" => false, "href" => api_service_catalog_url(nil, sc.compressed_id)}])
+      expect_results_to_match_hash("results", [{"success" => false, "href" => api_service_catalog_url(nil, sc)}])
     end
 
     it "supports assign requests" do
@@ -316,14 +316,14 @@ describe "Service Catalogs API" do
       sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
       st = FactoryGirl.create(:service_template)
 
-      post(sc_template_url(sc.id), :params => gen_request(:assign, "href" => api_service_template_url(nil, st.compressed_id)))
+      post(sc_template_url(sc.id), :params => gen_request(:assign, "href" => api_service_template_url(nil, st)))
 
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results",
                                    [{"success"               => true,
-                                     "href"                  => api_service_catalog_url(nil, sc.compressed_id),
-                                     "service_template_id"   => st.compressed_id,
-                                     "service_template_href" => /^.*#{api_service_template_url(nil, st.compressed_id)}$/,
+                                     "href"                  => api_service_catalog_url(nil, sc),
+                                     "service_template_id"   => st.id.to_s,
+                                     "service_template_href" => /^.*#{api_service_template_url(nil, st)}$/,
                                      "message"               => /assigning/i}])
       expect(sc.reload.service_templates.pluck(:id)).to eq([st.id])
     end
@@ -341,9 +341,9 @@ describe "Service Catalogs API" do
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results",
                                    [{"success"               => true,
-                                     "href"                  => api_service_catalog_url(nil, sc.compressed_id),
-                                     "service_template_id"   => st1.compressed_id,
-                                     "service_template_href" => /^.*#{api_service_template_url(nil, st1.compressed_id)}$/,
+                                     "href"                  => api_service_catalog_url(nil, sc),
+                                     "service_template_id"   => st1.id.to_s,
+                                     "service_template_href" => /^.*#{api_service_template_url(nil, st1)}$/,
                                      "message"               => /unassigning/i}])
       expect(sc.reload.service_templates.pluck(:id)).to eq([st2.id])
     end

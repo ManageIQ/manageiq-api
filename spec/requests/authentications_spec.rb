@@ -14,7 +14,7 @@ RSpec.describe 'Authentications API' do
         'count'     => 1,
         'subcount'  => 1,
         'name'      => 'authentications',
-        'resources' => [hash_including('href' => api_authentication_url(nil, auth.compressed_id))]
+        'resources' => [hash_including('href' => api_authentication_url(nil, auth))]
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -36,7 +36,7 @@ RSpec.describe 'Authentications API' do
       get(api_authentication_url(nil, auth))
 
       expected = {
-        'href' => api_authentication_url(nil, auth.compressed_id)
+        'href' => api_authentication_url(nil, auth)
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)

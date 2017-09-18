@@ -10,7 +10,7 @@ module Api
         attrs = normalize_select_attributes(obj, opts)
         result = {}
 
-        href = new_href(compress_path(type), compress_if_numeric_id(obj["id"]), obj["href"])
+        href = new_href(type, obj["id"], obj["href"])
         if href.present?
           result["href"] = href
           attrs -= ["href"]
@@ -32,7 +32,7 @@ module Api
         elsif value.respond_to?(:attributes) || value.respond_to?(:keys)
           normalize_hash(attr, value)
         elsif attr == "id" || attr.to_s.ends_with?("_id")
-          ApplicationRecord.compress_id(value)
+          value.to_s
         elsif Api.time_attribute?(attr)
           normalize_time(value)
         elsif Api.url_attribute?(attr)
@@ -78,7 +78,7 @@ module Api
       end
 
       def subcollection_href(type, value)
-        normalize_url("#{@req.collection}/#{ApplicationRecord.compress_id(@req.c_id)}/#{type}/#{value}")
+        normalize_url("#{@req.collection}/#{@req.c_id}/#{type}/#{value}")
       end
 
       def collection_href(type, value)

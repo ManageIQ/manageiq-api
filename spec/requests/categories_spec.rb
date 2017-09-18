@@ -7,7 +7,7 @@ RSpec.describe "categories API" do
 
     expect_result_resources_to_include_hrefs(
       "resources",
-      categories.map { |category| api_category_url(nil, category.compressed_id) }
+      categories.map { |category| api_category_url(nil, category) }
     )
     expect(response).to have_http_status(:ok)
   end
@@ -20,7 +20,7 @@ RSpec.describe "categories API" do
     get api_categories_url, :params => { :filter => ["name=foo"] }
 
     expect_query_result(:categories, 1, 2)
-    expect_result_resources_to_include_hrefs("resources", [api_category_url(nil, category_1.compressed_id)])
+    expect_result_resources_to_include_hrefs("resources", [api_category_url(nil, category_1)])
   end
 
   it "will return a bad request error if the filter name is invalid" do
@@ -40,8 +40,8 @@ RSpec.describe "categories API" do
     expect_result_to_match_hash(
       response.parsed_body,
       "description" => category.description,
-      "href"        => api_category_url(nil, category.compressed_id),
-      "id"          => category.compressed_id
+      "href"        => api_category_url(nil, category),
+      "id"          => category.id.to_s
     )
     expect(response).to have_http_status(:ok)
   end
@@ -67,7 +67,7 @@ RSpec.describe "categories API" do
 
     expect_result_resources_to_include_hrefs(
       "resources",
-      [api_category_tag_url(nil, category.compressed_id, tag.compressed_id)]
+      [api_category_tag_url(nil, category, tag)]
     )
     expect(response).to have_http_status(:ok)
   end
@@ -107,7 +107,7 @@ RSpec.describe "categories API" do
       api_basic_authorize collection_action_identifier(:categories, :create)
 
       post api_categories_url, :params => { :name => "test", :description => "Test" }
-      category = Category.find(ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"]))
+      category = Category.find(response.parsed_body["results"].first["id"])
 
       expect(category.tag.name).to eq("/managed/test")
     end

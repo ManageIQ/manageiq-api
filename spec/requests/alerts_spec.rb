@@ -16,10 +16,10 @@ describe "Alerts API" do
       "subcount"  => 2,
       "resources" => [
         {
-          "href" => api_alert_url(nil, alert_statuses[0].compressed_id)
+          "href" => api_alert_url(nil, alert_statuses[0])
         },
         {
-          "href" => api_alert_url(nil, alert_statuses[1].compressed_id)
+          "href" => api_alert_url(nil, alert_statuses[1])
         }
       ]
     )
@@ -38,8 +38,8 @@ describe "Alerts API" do
     get(api_alert_url(nil, alert_status))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
-      "href" => api_alert_url(nil, alert_status.compressed_id),
-      "id"   => alert_status.compressed_id
+      "href" => api_alert_url(nil, alert_status),
+      "id"   => alert_status.id.to_s
     )
   end
 
@@ -49,7 +49,7 @@ describe "Alerts API" do
     let(:expected_assignee) do
       {
         'results' => a_collection_containing_exactly(
-          a_hash_including("assignee_id" => assignee.compressed_id)
+          a_hash_including("assignee_id" => assignee.id.to_s)
         )
       }
     end
@@ -80,7 +80,7 @@ describe "Alerts API" do
         "subcount"  => 1,
         "resources" => [
           {
-            "href" => api_alert_alert_action_url(nil, alert.compressed_id, alert_action.compressed_id)
+            "href" => api_alert_alert_action_url(nil, alert, alert_action)
           }
         ]
       )
@@ -126,7 +126,7 @@ describe "Alerts API" do
       expect(response).to have_http_status(:ok)
       expected = {
         "results" => [
-          a_hash_including(attributes.merge("user_id" => User.current_user.compressed_id))
+          a_hash_including(attributes.merge("user_id" => User.current_user.id.to_s))
         ]
       }
       expect(response.parsed_body).to include(expected)
@@ -136,7 +136,7 @@ describe "Alerts API" do
     it "create an assignment alert action reference by id" do
       attributes = {
         "action_type" => "assign",
-        "assignee"    => { "id" => assignee.compressed_id }
+        "assignee"    => { "id" => assignee.id.to_s }
       }
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
       post(api_alert_alert_actions_url(nil, alert), :params => attributes)
@@ -147,7 +147,7 @@ describe "Alerts API" do
     it "create an assignment alert action reference by href" do
       attributes = {
         "action_type" => "assign",
-        "assignee"    => { "href" => api_user_url(nil, assignee.compressed_id) }
+        "assignee"    => { "href" => api_user_url(nil, assignee) }
       }
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :create, :post)
       post(api_alert_alert_actions_url(nil, alert), :params => attributes)
@@ -178,10 +178,10 @@ describe "Alerts API" do
       get(api_alert_alert_action_url(nil, alert, alert_action))
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(
-        "href"        => api_alert_alert_action_url(nil, alert.compressed_id, alert_action.compressed_id),
-        "id"          => alert_action.compressed_id,
+        "href"        => api_alert_alert_action_url(nil, alert, alert_action),
+        "id"          => alert_action.id.to_s,
         "action_type" => alert_action.action_type,
-        "user_id"     => user.compressed_id,
+        "user_id"     => user.id.to_s,
         "comment"     => alert_action.comment,
       )
     end

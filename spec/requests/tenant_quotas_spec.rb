@@ -13,8 +13,8 @@ describe "tenant quotas API" do
       expect_result_resources_to_include_hrefs(
         "resources",
         [
-          "/api/tenants/#{tenant.compressed_id}/quotas/#{quota_1.compressed_id}",
-          "/api/tenants/#{tenant.compressed_id}/quotas/#{quota_2.compressed_id}",
+          api_tenant_quota_url(nil, tenant, quota_1),
+          api_tenant_quota_url(nil, tenant, quota_2)
         ]
       )
 
@@ -30,9 +30,9 @@ describe "tenant quotas API" do
 
       expect_result_to_match_hash(
         response.parsed_body,
-        "href"      => "/api/tenants/#{tenant.compressed_id}/quotas/#{quota.compressed_id}",
-        "id"        => quota.compressed_id,
-        "tenant_id" => tenant.compressed_id,
+        "href"      => api_tenant_quota_url(nil, tenant, quota),
+        "id"        => quota.id.to_s,
+        "tenant_id" => tenant.id.to_s,
         "name"      => "cpu_allocated",
         "unit"      => "fixnum",
         "value"     => 1.0
@@ -45,7 +45,7 @@ describe "tenant quotas API" do
 
       expected = {
         'results' => [
-          a_hash_including('href' => a_string_including(api_tenant_quotas_url(nil, tenant.compressed_id)))
+          a_hash_including('href' => a_string_including(api_tenant_quotas_url(nil, tenant)))
         ]
       }
       expect do
@@ -81,7 +81,7 @@ describe "tenant quotas API" do
       expect(response).to have_http_status(:ok)
       quota.reload
       expect(quota.value).to eq(5)
-      expect(response.parsed_body).to include('href' => a_string_including("tenants/#{tenant.compressed_id}/quotas/#{quota.compressed_id}"))
+      expect(response.parsed_body).to include('href' => api_tenant_quota_url(nil, tenant, quota))
     end
 
     it "can update multiple quotas from a tenant with POST" do
@@ -100,8 +100,8 @@ describe "tenant quotas API" do
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash(
         "results",
-        [{"id" => quota_1.compressed_id, "value" => 3},
-         {"id" => quota_2.compressed_id, "value" => 4}]
+        [{"id" => quota_1.id.to_s, "value" => 3},
+         {"id" => quota_2.id.to_s, "value" => 4}]
       )
       expect(quota_1.reload.value).to eq(3)
       expect(quota_2.reload.value).to eq(4)

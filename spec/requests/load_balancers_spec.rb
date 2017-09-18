@@ -9,7 +9,7 @@ RSpec.describe 'LoadBalancers API' do
         'subcount'  => 1,
         'name'      => 'load_balancers',
         'resources' => [
-          hash_including('href' => api_load_balancer_url(nil, load_balancer.compressed_id))
+          hash_including('href' => api_load_balancer_url(nil, load_balancer))
         ]
       }
       get(api_load_balancers_url)
@@ -34,7 +34,7 @@ RSpec.describe 'LoadBalancers API' do
 
       get(api_load_balancer_url(nil, load_balancer))
 
-      expect(response.parsed_body).to include('href' => api_load_balancer_url(nil, load_balancer.compressed_id))
+      expect(response.parsed_body).to include('href' => api_load_balancer_url(nil, load_balancer))
       expect(response).to have_http_status(:ok)
     end
 

@@ -10,7 +10,7 @@ RSpec.describe 'NetworkRouters API' do
         'subcount'  => 1,
         'name'      => 'network_routers',
         'resources' => [
-          hash_including('href' => api_network_router_url(nil, network_router.compressed_id))
+          hash_including('href' => api_network_router_url(nil, network_router))
         ]
       }
       expect(response).to have_http_status(:ok)
@@ -29,7 +29,7 @@ RSpec.describe 'NetworkRouters API' do
       network_router = FactoryGirl.create(:network_router)
       api_basic_authorize action_identifier(:network_routers, :read, :resource_actions, :get)
       get(api_network_router_url(nil, network_router))
-      expect(response.parsed_body).to include('href' => api_network_router_url(nil, network_router.compressed_id))
+      expect(response.parsed_body).to include('href' => api_network_router_url(nil, network_router))
       expect(response).to have_http_status(:ok)
     end
 

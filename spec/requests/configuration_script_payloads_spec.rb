@@ -11,7 +11,7 @@ RSpec.describe 'Configuration Script Payloads API' do
         'subcount'  => 1,
         'name'      => 'configuration_script_payloads',
         'resources' => [
-          hash_including('href' => api_configuration_script_payload_url(nil, script_payload.compressed_id))
+          hash_including('href' => api_configuration_script_payload_url(nil, script_payload))
         ]
       }
       expect(response.parsed_body).to include(expected)
@@ -35,7 +35,7 @@ RSpec.describe 'Configuration Script Payloads API' do
       get(api_configuration_script_payload_url(nil, script_payload))
 
       expect(response.parsed_body)
-        .to include('href' => api_configuration_script_payload_url(nil, script_payload.compressed_id))
+        .to include('href' => api_configuration_script_payload_url(nil, script_payload))
       expect(response).to have_http_status(:ok)
     end
 
@@ -59,7 +59,7 @@ RSpec.describe 'Configuration Script Payloads API' do
 
       expected = {
         'resources' => [
-          a_hash_including('id' => authentication.compressed_id)
+          a_hash_including('id' => authentication.id.to_s)
         ]
       }
       expect(response).to have_http_status(:ok)
@@ -152,7 +152,7 @@ RSpec.describe 'Configuration Script Payloads API' do
       get(api_configuration_script_payload_authentication_url(nil, playbook, authentication))
 
       expected = {
-        'id' => authentication.compressed_id
+        'id' => authentication.id.to_s
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)

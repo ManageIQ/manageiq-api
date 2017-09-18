@@ -66,8 +66,8 @@ RSpec.describe "Requests API" do
       get api_request_url(nil, service_request)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include("id"   => service_request.compressed_id,
-                                              "href" => api_request_url(nil, service_request.compressed_id))
+      expect(response.parsed_body).to include("id"   => service_request.id.to_s,
+                                              "href" => api_request_url(nil, service_request))
     end
 
     it "lists all the service requests if you are admin" do
@@ -89,8 +89,8 @@ RSpec.describe "Requests API" do
         "count"     => 2,
         "subcount"  => 2,
         "resources" => a_collection_containing_exactly(
-          {"href" => api_request_url(nil, service_request_1.compressed_id)},
-          {"href" => api_request_url(nil, service_request_2.compressed_id)},
+          {"href" => api_request_url(nil, service_request_1)},
+          {"href" => api_request_url(nil, service_request_2)},
         )
       }
       expect(response).to have_http_status(:ok)
@@ -109,8 +109,8 @@ RSpec.describe "Requests API" do
       get api_request_url(nil, service_request)
 
       expected = {
-        "id"   => service_request.compressed_id,
-        "href" => api_request_url(nil, service_request.compressed_id)
+        "id"   => service_request.id.to_s,
+        "href" => api_request_url(nil, service_request)
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -192,7 +192,7 @@ RSpec.describe "Requests API" do
             "approval_state" => "pending_approval",
             "type"           => "ServiceReconfigureRequest",
             "requester_name" => api_config(:user_name),
-            "options"        => a_hash_including("src_id" => service.compressed_id)
+            "options"        => a_hash_including("src_id" => service.id.to_s)
           )
         ]
       }
@@ -221,7 +221,7 @@ RSpec.describe "Requests API" do
             "approval_state" => "approved",
             "type"           => "ServiceReconfigureRequest",
             "requester_name" => approver.name,
-            "options"        => a_hash_including("src_id" => service.compressed_id, "other_attr" => "other value")
+            "options"        => a_hash_including("src_id" => service.id.to_s, "other_attr" => "other value")
           )
         ]
       }
@@ -249,7 +249,7 @@ RSpec.describe "Requests API" do
       get api_request_url(nil, request), :params => { :attributes => "workflow,v_allowed_tags,v_workflow_class" }
 
       expected_response = a_hash_including(
-        "id"               => request.compressed_id,
+        "id"               => request.id.to_s,
         "workflow"         => a_hash_including("values"),
         "v_allowed_tags"   => [a_hash_including("children")],
         "v_workflow_class" => a_hash_including(
@@ -280,7 +280,7 @@ RSpec.describe "Requests API" do
       get api_request_url(nil, request), :params => { :attributes => "workflow.values" }
 
       expected_response = a_hash_including(
-        "id"       => request.compressed_id,
+        "id"       => request.id.to_s,
         "workflow" => a_hash_including("values")
       )
 
@@ -300,7 +300,7 @@ RSpec.describe "Requests API" do
       get api_request_url(nil, request), :params => { :attributes => "workflow,v_allowed_tags,v_workflow_class" }
 
       expected_response = a_hash_including(
-        "id"               => request.compressed_id,
+        "id"               => request.id.to_s,
         "v_workflow_class" => {}
       )
 
@@ -343,7 +343,7 @@ RSpec.describe "Requests API" do
       post(api_request_url(nil, request), :params => gen_request(:edit, :options => { :some_option => "some_value" }))
 
       expected = {
-        "id"      => request.compressed_id,
+        "id"      => request.id.to_s,
         "options" => a_hash_including("some_option" => "some_value")
       }
 
@@ -378,7 +378,7 @@ RSpec.describe "Requests API" do
       post(request1_url, :params => gen_request(:approve, :reason => "approval reason"))
 
       expected_msg = "Request #{request1.id} approved"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => api_request_url(nil, request1.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_request_url(nil, request1))
     end
 
     it "fails approving a request if the reason is missing" do
@@ -396,7 +396,7 @@ RSpec.describe "Requests API" do
       post(request1_url, :params => gen_request(:deny, :reason => "denial reason"))
 
       expected_msg = "Request #{request1.id} denied"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => api_request_url(nil, request1.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_request_url(nil, request1))
     end
 
     it "fails denying a request if the reason is missing" do
@@ -419,12 +419,12 @@ RSpec.describe "Requests API" do
           {
             "message" => a_string_matching(/Request #{request1.id} approved/i),
             "success" => true,
-            "href"    => api_request_url(nil, request1.compressed_id)
+            "href"    => api_request_url(nil, request1)
           },
           {
             "message" => a_string_matching(/Request #{request2.id} approved/i),
             "success" => true,
-            "href"    => api_request_url(nil, request2.compressed_id)
+            "href"    => api_request_url(nil, request2)
           }
         )
       }
@@ -443,12 +443,12 @@ RSpec.describe "Requests API" do
           {
             "message" => a_string_matching(/Request #{request1.id} denied/i),
             "success" => true,
-            "href"    => api_request_url(nil, request1.compressed_id)
+            "href"    => api_request_url(nil, request1)
           },
           {
             "message" => a_string_matching(/Request #{request2.id} denied/i),
             "success" => true,
-            "href"    => api_request_url(nil, request2.compressed_id)
+            "href"    => api_request_url(nil, request2)
           }
         )
       }
@@ -466,8 +466,8 @@ RSpec.describe "Requests API" do
       get api_requests_url, :params => { :expand => :resources }
 
       expected = [
-        a_hash_including('href' => a_string_including(api_request_url(nil, provision_request.compressed_id))),
-        a_hash_including('href' => a_string_including(api_request_url(nil, automation_request.compressed_id)))
+        a_hash_including('href' => a_string_including(api_request_url(nil, provision_request))),
+        a_hash_including('href' => a_string_including(api_request_url(nil, automation_request)))
       ]
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['resources']).to match_array(expected)

@@ -521,7 +521,7 @@ describe "Querying" do
 
       get(api_vms_url, :params => { :filter => ["retires_on = 2016-01-02", "vendor_display = VMware"] })
 
-      expected = {"resources" => [{"href" => api_vm_url(nil, vm_2.compressed_id)}]}
+      expected = {"resources" => [{"href" => api_vm_url(nil, vm_2)}]}
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
     end
@@ -533,7 +533,7 @@ describe "Querying" do
 
       get(api_vms_url, :params => { :filter => ["retires_on > 2016-01-01", "vendor_display = VMware"] })
 
-      expected = {"resources" => [{"href" => api_vm_url(nil, vm_2.compressed_id)}]}
+      expected = {"resources" => [{"href" => api_vm_url(nil, vm_2)}]}
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
     end
@@ -545,7 +545,7 @@ describe "Querying" do
 
       get(api_vms_url, :params => { :filter => ["last_scan_on > 2016-01-01T07:59:59Z", "vendor_display = VMware"] })
 
-      expected = {"resources" => [{"href" => api_vm_url(nil, vm_2.compressed_id)}]}
+      expected = {"resources" => [{"href" => api_vm_url(nil, vm_2)}]}
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
     end
@@ -557,7 +557,7 @@ describe "Querying" do
 
       get(api_vms_url, :params => { :filter => ["retires_on < 2016-01-03", "vendor_display = VMware"] })
 
-      expected = {"resources" => [{"href" => api_vm_url(nil, vm_2.compressed_id)}]}
+      expected = {"resources" => [{"href" => api_vm_url(nil, vm_2)}]}
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
     end
@@ -569,7 +569,7 @@ describe "Querying" do
 
       get(api_vms_url, :params => { :filter => ["last_scan_on < 2016-01-01T08:00:00Z", "vendor_display = VMware"] })
 
-      expected = {"resources" => [{"href" => api_vm_url(nil, vm_2.compressed_id)}]}
+      expected = {"resources" => [{"href" => api_vm_url(nil, vm_2)}]}
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
     end
@@ -623,7 +623,7 @@ describe "Querying" do
       expected = {
         "count"     => 2,
         "subcount"  => 1,
-        "resources" => [{"href" => api_tag_url(nil, tag_1.compressed_id)}]
+        "resources" => [{"href" => api_tag_url(nil, tag_1)}]
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -713,8 +713,8 @@ describe "Querying" do
         "subcount"  => 1,
         "resources" => [
           {
-            "id"        => vm.compressed_id,
-            "href"      => api_vm_url(nil, vm.compressed_id),
+            "id"        => vm.id.to_s,
+            "href"      => api_vm_url(nil, vm),
             "href_slug" => "vms/#{vm.compressed_id}",
             "name"      => "aa",
             "vendor"    => anything

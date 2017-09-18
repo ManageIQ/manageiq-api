@@ -23,13 +23,13 @@ RSpec.describe 'Cloud Networks API' do
     let(:provider) { FactoryGirl.create(:ems_amazon_with_cloud_networks) }
 
     it 'queries Providers cloud_networks' do
-      cloud_network_ids = provider.cloud_networks.select(:id).collect(&:compressed_id)
+      cloud_network_ids = provider.cloud_networks.pluck(:id)
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
 
       get api_provider_cloud_networks_url(nil, provider), :params => { :expand => 'resources' }
 
       expect_query_result(:cloud_networks, 2)
-      expect_result_resources_to_include_data('resources', 'id' => cloud_network_ids)
+      expect_result_resources_to_include_data('resources', 'id' => cloud_network_ids.collect(&:to_s))
     end
 
     it "will not list cloud networks of a provider without the appropriate role" do
@@ -46,7 +46,7 @@ RSpec.describe 'Cloud Networks API' do
 
       get(api_provider_cloud_network_url(nil, provider, network))
 
-      expect_single_resource_query('name' => network.name, 'id' => network.compressed_id, 'ems_ref' => network.ems_ref)
+      expect_single_resource_query('name' => network.name, 'id' => network.id.to_s, 'ems_ref' => network.ems_ref)
     end
 
     it "will not show the cloud network of a provider without the appropriate role" do

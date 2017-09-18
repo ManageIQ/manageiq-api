@@ -9,7 +9,7 @@ RSpec.describe "Templates API" do
       end.to change(MiqTemplate, :count).by(-1)
 
       expected = {
-        "href"    => api_template_url(nil, template.compressed_id),
+        "href"    => api_template_url(nil, template),
         "message" => "templates id: #{template.id} deleting",
         "success" => true
       }

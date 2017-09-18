@@ -116,7 +116,7 @@ describe "Roles API" do
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
 
-      role_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      role_id = response.parsed_body["results"].first["id"]
 
       get(api_role_url(nil, role_id), :params => { :expand => "features" })
 
@@ -135,7 +135,7 @@ describe "Roles API" do
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", expected_attributes)
 
-      role_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      role_id = response.parsed_body["results"].first["id"]
       role = MiqUserRole.find(role_id)
       sample_role1['features'].each do |feature|
         expect(role.allows?(feature)).to be_truthy
@@ -151,8 +151,8 @@ describe "Roles API" do
       expect_result_resources_to_include_keys("results", expected_attributes)
 
       results = response.parsed_body["results"]
-      r1_id = ApplicationRecord.uncompress_id(results.first["id"])
-      r2_id = ApplicationRecord.uncompress_id(results.second["id"])
+      r1_id = results.first["id"]
+      r2_id = results.second["id"]
 
       role1 = MiqUserRole.find(r1_id)
       role2 = MiqUserRole.find(r2_id)
@@ -170,7 +170,7 @@ describe "Roles API" do
     it "rejects role edits without appropriate role" do
       role = FactoryGirl.create(:miq_user_role)
       api_basic_authorize
-      post(api_roles_url, :params => gen_request(:edit, "name" => "role name", "href" => api_role_url(nil, role.compressed_id)))
+      post(api_roles_url, :params => gen_request(:edit, "name" => "role name", "href" => api_role_url(nil, role)))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -197,7 +197,7 @@ describe "Roles API" do
         )
       )
 
-      expect_single_resource_query("id"       => role.compressed_id,
+      expect_single_resource_query("id"       => role.id.to_s,
                                    "name"     => "updated role",
                                    "settings" => {"restrictions" => {"vms" => "user_or_group"}})
       expect(role.reload.name).to eq("updated role")
@@ -215,8 +215,8 @@ describe "Roles API" do
                                                   {"href" => api_role_url(nil, r2), "name" => "updated role2"}]))
 
       expect_results_to_match_hash("results",
-                                   [{"id" => r1.compressed_id, "name" => "updated role1"},
-                                    {"id" => r2.compressed_id, "name" => "updated role2"}])
+                                   [{"id" => r1.id.to_s, "name" => "updated role1"},
+                                    {"id" => r2.id.to_s, "name" => "updated role2"}])
 
       expect(r1.reload.name).to eq("updated role1")
       expect(r2.reload.name).to eq("updated role2")

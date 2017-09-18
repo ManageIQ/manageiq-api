@@ -43,8 +43,8 @@ describe "Service Dialogs API" do
       get api_service_dialog_url(nil, dialog1)
 
       expect_single_resource_query(
-        "id"    => dialog1.compressed_id,
-        "href"  => api_service_dialog_url(nil, dialog1.compressed_id),
+        "id"    => dialog1.id.to_s,
+        "href"  => api_service_dialog_url(nil, dialog1),
         "label" => dialog1.label
       )
       expect_result_to_have_keys(%w(content))
@@ -127,13 +127,13 @@ describe "Service Dialogs API" do
           'label'   => 'updated label',
           'content' => {
             'dialog_tabs' => [
-              'id'            => dialog_tab.compressed_id,
+              'id'            => dialog_tab.id.to_s,
               'label'         => 'updated tab label',
               'dialog_groups' => [
                 {
-                  'id'            => dialog_group.compressed_id,
+                  'id'            => dialog_group.id.to_s,
                   'dialog_fields' => [
-                    { 'id' => dialog_field.compressed_id }
+                    { 'id' => dialog_field.id.to_s }
                   ]
                 }
               ]
@@ -142,8 +142,8 @@ describe "Service Dialogs API" do
         }
 
         expected = {
-          'href'        => a_string_including(api_service_dialog_url(nil, dialog.compressed_id)),
-          'id'          => dialog.compressed_id,
+          'href'        => a_string_including(api_service_dialog_url(nil, dialog)),
+          'id'          => dialog.id.to_s,
           'label'       => 'updated label',
           'dialog_tabs' => a_collection_including(
             a_hash_including('label' => 'updated tab label')
@@ -177,11 +177,11 @@ describe "Service Dialogs API" do
         expected = {
           'results' => a_collection_containing_exactly(
             a_hash_including(
-              'id'    => dialog.compressed_id,
+              'id'    => dialog.id.to_s,
               'label' => 'foo bar'
             ),
             a_hash_including(
-              'id'    => dialog2.compressed_id,
+              'id'    => dialog2.id.to_s,
               'label' => 'bar'
             )
           )
@@ -294,7 +294,7 @@ describe "Service Dialogs API" do
       get(api_service_template_service_dialog_url(nil, template, dialog1), :params => { :attributes => "content" })
       expected = {
         'content' => a_collection_including(
-          a_hash_including('id' => dialog1.compressed_id)
+          a_hash_including('id' => dialog1.id.to_s)
         )}
 
       expect(response).to have_http_status(:ok)
@@ -349,7 +349,7 @@ describe "Service Dialogs API" do
       expect(response.parsed_body).to include(
         "success" => true,
         "message" => a_string_matching(/refreshing dialog fields/i),
-        "href"    => api_service_dialog_url(nil, dialog1.compressed_id),
+        "href"    => api_service_dialog_url(nil, dialog1),
         "result"  => hash_including("text1")
       )
     end

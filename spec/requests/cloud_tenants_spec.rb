@@ -10,7 +10,7 @@ RSpec.describe 'CloudTenants API' do
         'subcount'  => 1,
         'name'      => 'cloud_tenants',
         'resources' => [
-          hash_including('href' => api_cloud_tenant_url(nil, cloud_tenant.compressed_id))
+          hash_including('href' => api_cloud_tenant_url(nil, cloud_tenant))
         ]
       }
       expect(response).to have_http_status(:ok)
@@ -33,7 +33,7 @@ RSpec.describe 'CloudTenants API' do
 
       get(api_cloud_tenant_url(nil, cloud_tenant))
 
-      expect(response.parsed_body).to include('href' => api_cloud_tenant_url(nil, cloud_tenant.compressed_id))
+      expect(response.parsed_body).to include('href' => api_cloud_tenant_url(nil, cloud_tenant))
       expect(response).to have_http_status(:ok)
     end
 

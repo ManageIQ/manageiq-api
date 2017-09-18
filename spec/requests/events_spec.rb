@@ -40,7 +40,7 @@ describe "Events API" do
       expect_query_result(:events, 3, 3)
       expect_result_resources_to_include_hrefs(
         "resources",
-        MiqEventDefinition.select(:id).collect { |med| api_event_url(nil, med.compressed_id) }
+        MiqEventDefinition.select(:id).collect { |med| api_event_url(nil, med) }
       )
     end
 

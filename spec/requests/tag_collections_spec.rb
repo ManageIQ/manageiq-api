@@ -56,7 +56,7 @@ describe "Tag Collections API" do
 
       post(api_provider_tags_url(nil, provider), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_provider_url(nil, provider.compressed_id)))
+      expect_tagging_result(tag1_results(api_provider_url(nil, provider)))
     end
 
     it "does not unassign a tag from a Provider without appropriate role" do
@@ -73,7 +73,7 @@ describe "Tag Collections API" do
 
       post(api_provider_tags_url(nil, provider), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_provider_url(nil, provider.compressed_id)))
+      expect_tagging_result(tag1_results(api_provider_url(nil, provider)))
       expect_resource_has_tags(provider, tag2[:path])
     end
   end
@@ -102,7 +102,7 @@ describe "Tag Collections API" do
 
       post(api_host_tags_url(nil, host), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_host_url(nil, host.compressed_id)))
+      expect_tagging_result(tag1_results(api_host_url(nil, host)))
     end
 
     it "does not unassign a tag from a Host without appropriate role" do
@@ -119,7 +119,7 @@ describe "Tag Collections API" do
 
       post(api_host_tags_url(nil, host), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_host_url(nil, host.compressed_id)))
+      expect_tagging_result(tag1_results(api_host_url(nil, host)))
       expect_resource_has_tags(host, tag2[:path])
     end
   end
@@ -150,7 +150,7 @@ describe "Tag Collections API" do
 
       post(api_data_store_tags_url(nil, ds), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_data_store_url(nil, ds.compressed_id)))
+      expect_tagging_result(tag1_results(api_data_store_url(nil, ds)))
     end
 
     it "does not unassign a tag from a Data Store without appropriate role" do
@@ -167,7 +167,7 @@ describe "Tag Collections API" do
 
       post(api_data_store_tags_url(nil, ds), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_data_store_url(nil, ds.compressed_id)))
+      expect_tagging_result(tag1_results(api_data_store_url(nil, ds)))
       expect_resource_has_tags(ds, tag2[:path])
     end
   end
@@ -198,7 +198,7 @@ describe "Tag Collections API" do
 
       post(api_resource_pool_tags_url(nil, rp), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_resource_pool_url(nil, rp.compressed_id)))
+      expect_tagging_result(tag1_results(api_resource_pool_url(nil, rp)))
     end
 
     it "does not unassign a tag from a Resource Pool without appropriate role" do
@@ -215,7 +215,7 @@ describe "Tag Collections API" do
 
       post(api_resource_pool_tags_url(nil, rp), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_resource_pool_url(nil, rp.compressed_id)))
+      expect_tagging_result(tag1_results(api_resource_pool_url(nil, rp)))
       expect_resource_has_tags(rp, tag2[:path])
     end
   end
@@ -252,7 +252,7 @@ describe "Tag Collections API" do
 
       post(api_cluster_tags_url(nil, cluster), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_cluster_url(nil, cluster.compressed_id)))
+      expect_tagging_result(tag1_results(api_cluster_url(nil, cluster)))
     end
 
     it "does not unassign a tag from a Cluster without appropriate role" do
@@ -269,7 +269,7 @@ describe "Tag Collections API" do
 
       post(api_cluster_tags_url(nil, cluster), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_cluster_url(nil, cluster.compressed_id)))
+      expect_tagging_result(tag1_results(api_cluster_url(nil, cluster)))
       expect_resource_has_tags(cluster, tag2[:path])
     end
   end
@@ -300,7 +300,7 @@ describe "Tag Collections API" do
 
       post(api_service_tags_url(nil, service), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_service_url(nil, service.compressed_id)))
+      expect_tagging_result(tag1_results(api_service_url(nil, service)))
     end
 
     it "does not unassign a tag from a Service without appropriate role" do
@@ -317,7 +317,7 @@ describe "Tag Collections API" do
 
       post(api_service_tags_url(nil, service), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_service_url(nil, service.compressed_id)))
+      expect_tagging_result(tag1_results(api_service_url(nil, service)))
       expect_resource_has_tags(service, tag2[:path])
     end
   end
@@ -348,7 +348,7 @@ describe "Tag Collections API" do
 
       post(api_service_template_tags_url(nil, service_template), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_service_template_url(nil, service_template.compressed_id)))
+      expect_tagging_result(tag1_results(api_service_template_url(nil, service_template)))
     end
 
     it "does not unassign a tag from a Service Template without appropriate role" do
@@ -365,7 +365,7 @@ describe "Tag Collections API" do
 
       post(api_service_template_tags_url(nil, service_template), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_service_template_url(nil, service_template.compressed_id)))
+      expect_tagging_result(tag1_results(api_service_template_url(nil, service_template)))
       expect_resource_has_tags(service_template, tag2[:path])
     end
   end
@@ -396,7 +396,7 @@ describe "Tag Collections API" do
 
       post(api_tenant_tags_url(nil, tenant), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_tenant_url(nil, tenant.compressed_id)))
+      expect_tagging_result(tag1_results(api_tenant_url(nil, tenant)))
     end
 
     it "does not unassign a tag from a Tenant without appropriate role" do
@@ -413,7 +413,7 @@ describe "Tag Collections API" do
 
       post(api_tenant_tags_url(nil, tenant), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
 
-      expect_tagging_result(tag1_results(api_tenant_url(nil, tenant.compressed_id)))
+      expect_tagging_result(tag1_results(api_tenant_url(nil, tenant)))
       expect_resource_has_tags(tenant, tag2[:path])
     end
   end
@@ -541,11 +541,11 @@ describe "Tag Collections API" do
       expected = {
         'results' => [
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(api_vm_url(nil, vm1.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm1)),
                            'tag_category' => tag1[:category],
                            'tag_name'     => tag1[:name]),
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(api_vm_url(nil, vm2.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm2)),
                            'tag_category' => tag2[:category],
                            'tag_name'     => tag2[:name])
         ]
@@ -573,11 +573,11 @@ describe "Tag Collections API" do
         'results' => [
           a_hash_including('success' => false, 'message' => a_string_including("Couldn't find Vm")),
           a_hash_including('success'      => false,
-                           'href'         => a_string_including(api_vm_url(nil, vm2.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm2)),
                            'tag_category' => bad_tag[:category],
                            'tag_name'     => bad_tag[:name]),
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(api_vm_url(nil, vm2.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm2)),
                            'tag_category' => tag1[:category],
                            'tag_name'     => tag1[:name])
         ]
@@ -609,11 +609,11 @@ describe "Tag Collections API" do
       expected = {
         'results' => [
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(api_vm_url(nil, vm1.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm1)),
                            'tag_category' => tag1[:category],
                            'tag_name'     => tag1[:name]),
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(api_vm_url(nil, vm2.compressed_id)),
+                           'href'         => a_string_including(api_vm_url(nil, vm2)),
                            'tag_category' => tag2[:category],
                            'tag_name'     => tag2[:name])
         ]
@@ -822,11 +822,11 @@ describe "Tag Collections API" do
       expected = {
         'results' => [
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(api_service_url(nil, service1.compressed_id)),
+                           'href'         => a_string_including(api_service_url(nil, service1)),
                            'tag_category' => tag1[:category],
                            'tag_name'     => tag1[:name]),
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(api_service_url(nil, service2.compressed_id)),
+                           'href'         => a_string_including(api_service_url(nil, service2)),
                            'tag_category' => tag2[:category],
                            'tag_name'     => tag2[:name])
         ]
@@ -850,11 +850,11 @@ describe "Tag Collections API" do
       expected = {
         'results' => [
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(api_service_url(nil, service1.compressed_id)),
+                           'href'         => a_string_including(api_service_url(nil, service1)),
                            'tag_category' => tag1[:category],
                            'tag_name'     => tag1[:name]),
           a_hash_including('success'      => true,
-                           'href'         => a_string_including(api_service_url(nil, service2.compressed_id)),
+                           'href'         => a_string_including(api_service_url(nil, service2)),
                            'tag_category' => tag2[:category],
                            'tag_name'     => tag2[:name])
         ]

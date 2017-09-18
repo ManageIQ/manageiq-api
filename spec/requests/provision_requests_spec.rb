@@ -104,7 +104,7 @@ describe "Provision Requests API" do
         )
       )
 
-      task_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      task_id = response.parsed_body["results"].first["id"]
       expect(MiqProvisionRequest.exists?(task_id)).to be_truthy
     end
 
@@ -132,7 +132,7 @@ describe "Provision Requests API" do
         )
       )
 
-      task_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      task_id = response.parsed_body["results"].first["id"]
       expect(MiqProvisionRequest.exists?(task_id)).to be_truthy
     end
 
@@ -161,7 +161,7 @@ describe "Provision Requests API" do
         )
       )
 
-      task_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      task_id = response.parsed_body["results"].first["id"]
       expect(MiqProvisionRequest.exists?(task_id)).to be_truthy
     end
   end
@@ -214,7 +214,7 @@ describe "Provision Requests API" do
         "count"     => 2,
         "subcount"  => 1,
         "resources" => a_collection_containing_exactly(
-          "href" => api_provision_request_url(nil, provision_request2.compressed_id),
+          "href" => api_provision_request_url(nil, provision_request2),
         )
       }
       expect(response).to have_http_status(:ok)
@@ -234,8 +234,8 @@ describe "Provision Requests API" do
         "count"     => 2,
         "subcount"  => 2,
         "resources" => a_collection_containing_exactly(
-          {"href" => api_provision_request_url(nil, provision_request1.compressed_id)},
-          {"href" => api_provision_request_url(nil, provision_request2.compressed_id)},
+          {"href" => api_provision_request_url(nil, provision_request1)},
+          {"href" => api_provision_request_url(nil, provision_request2)},
         )
       }
       expect(response).to have_http_status(:ok)
@@ -261,8 +261,8 @@ describe "Provision Requests API" do
       get api_provision_request_url(nil, provision_request)
 
       expected = {
-        "id"   => provision_request.compressed_id,
-        "href" => api_provision_request_url(nil, provision_request.compressed_id)
+        "id"   => provision_request.id.to_s,
+        "href" => api_provision_request_url(nil, provision_request)
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -286,7 +286,7 @@ describe "Provision Requests API" do
       expect_result_resources_to_include_keys("results", expected_attributes)
       expect_results_to_match_hash("results", [expected_hash])
 
-      task_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      task_id = response.parsed_body["results"].first["id"]
       expect(MiqProvisionRequest.exists?(task_id)).to be_truthy
     end
 
@@ -300,7 +300,7 @@ describe "Provision Requests API" do
       expect_result_resources_to_include_keys("results", expected_attributes)
       expect_results_to_match_hash("results", [expected_hash])
 
-      task_id = ApplicationRecord.uncompress_id(response.parsed_body["results"].first["id"])
+      task_id = response.parsed_body["results"].first["id"]
       expect(MiqProvisionRequest.exists?(task_id)).to be_truthy
     end
 
@@ -314,7 +314,7 @@ describe "Provision Requests API" do
       expect_result_resources_to_include_keys("results", expected_attributes)
       expect_results_to_match_hash("results", [expected_hash, expected_hash])
 
-      task_id1, task_id2 = response.parsed_body["results"].collect { |r| ApplicationRecord.uncompress_id(r["id"]) }
+      task_id1, task_id2 = response.parsed_body["results"].collect { |r| r["id"] }
       expect(MiqProvisionRequest.exists?(task_id1)).to be_truthy
       expect(MiqProvisionRequest.exists?(task_id2)).to be_truthy
     end
@@ -336,7 +336,7 @@ describe "Provision Requests API" do
         post(api_provision_request_url(nil, provision_request), :params => { :action => "edit", :options => {:baz => "qux"} })
 
         expected = {
-          "id"      => provision_request.compressed_id,
+          "id"      => provision_request.id.to_s,
           "options" => a_hash_including("foo" => "bar", "baz" => "qux")
         }
         expect(response).to have_http_status(:ok)
@@ -392,7 +392,7 @@ describe "Provision Requests API" do
       post(provreq1_url, :params => gen_request(:approve))
 
       expected_msg = "Provision request #{provreq1.id} approved"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq1.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq1))
     end
 
     it "supports denying a request" do
@@ -401,7 +401,7 @@ describe "Provision Requests API" do
       post(provreq2_url, :params => gen_request(:deny))
 
       expected_msg = "Provision request #{provreq2.id} denied"
-      expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq2.compressed_id))
+      expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq2))
     end
 
     it "supports approving multiple requests" do
@@ -414,12 +414,12 @@ describe "Provision Requests API" do
           {
             "message" => a_string_matching(/Provision request #{provreq1.id} approved/i),
             "success" => true,
-            "href"    => api_provision_request_url(nil, provreq1.compressed_id)
+            "href"    => api_provision_request_url(nil, provreq1)
           },
           {
             "message" => a_string_matching(/Provision request #{provreq2.id} approved/i),
             "success" => true,
-            "href"    => api_provision_request_url(nil, provreq2.compressed_id)
+            "href"    => api_provision_request_url(nil, provreq2)
           }
         )
       }
@@ -437,12 +437,12 @@ describe "Provision Requests API" do
           {
             "message" => a_string_matching(/Provision request #{provreq1.id} denied/i),
             "success" => true,
-            "href"    => api_provision_request_url(nil, provreq1.compressed_id)
+            "href"    => api_provision_request_url(nil, provreq1)
           },
           {
             "message" => a_string_matching(/Provision request #{provreq2.id} denied/i),
             "success" => true,
-            "href"    => api_provision_request_url(nil, provreq2.compressed_id)
+            "href"    => api_provision_request_url(nil, provreq2)
           }
         )
       }

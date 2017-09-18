@@ -44,7 +44,7 @@ describe "Service Templates API" do
       )
 
       expect_query_result(:resource_actions, 1, 2)
-      expect_result_resources_to_match_hash(["id" => ra1.compressed_id, "action" => ra1.action, "dialog_id" => dialog1.compressed_id])
+      expect_result_resources_to_match_hash(["id" => ra1.id.to_s, "action" => ra1.action, "dialog_id" => dialog1.id.to_s])
     end
 
     it "allows queries of the related picture" do
@@ -53,7 +53,7 @@ describe "Service Templates API" do
       get api_service_template_url(nil, template), :params => { :attributes => "picture" }
 
       expect_result_to_have_keys(%w(id href picture))
-      expected = {"id" => template.compressed_id, "href" => api_service_template_url(nil, template.compressed_id)}
+      expected = {"id" => template.id.to_s, "href" => api_service_template_url(nil, template)}
       expect_result_to_match_hash(response.parsed_body, expected)
     end
 
@@ -64,8 +64,8 @@ describe "Service Templates API" do
 
       expect_result_to_have_keys(%w(id href picture))
       expect_result_to_match_hash(response.parsed_body["picture"],
-                                  "id"          => picture.compressed_id,
-                                  "resource_id" => template.compressed_id,
+                                  "id"          => picture.id.to_s,
+                                  "resource_id" => template.id.to_s,
                                   "image_href"  => /^http:.*#{picture.image_href}$/)
     end
 
@@ -77,10 +77,10 @@ describe "Service Templates API" do
       expected = {
         'config_info' => a_hash_including(
           "provision"  => a_hash_including(
-            "dialog_id" => dialog1.compressed_id
+            "dialog_id" => dialog1.id.to_s
           ),
           "retirement" => a_hash_including(
-            "dialog_id" => dialog2.compressed_id
+            "dialog_id" => dialog2.id.to_s
           )
         )
       }
@@ -138,7 +138,7 @@ describe "Service Templates API" do
       st = FactoryGirl.create(:service_template, :name => "st1")
       post(api_service_template_url(nil, st), :params => gen_request(:edit, updated_catalog_item_options))
 
-      expect_single_resource_query("id" => st.compressed_id, "href" => api_service_template_url(nil, st.compressed_id), "name" => "Updated Template Name")
+      expect_single_resource_query("id" => st.id.to_s, "href" => api_service_template_url(nil, st), "name" => "Updated Template Name")
       expect(st.reload.name).to eq("Updated Template Name")
     end
 
@@ -153,8 +153,8 @@ describe "Service Templates API" do
 
       expect(response).to have_http_status(:ok)
       expect_results_to_match_hash("results",
-                                   [{"id" => st1.compressed_id, "name" => "Updated Template Name"},
-                                    {"id" => st2.compressed_id, "name" => "Updated Template Name"}])
+                                   [{"id" => st1.id.to_s, "name" => "Updated Template Name"},
+                                    {"id" => st2.id.to_s, "name" => "Updated Template Name"}])
       expect(st1.reload.name).to eq("Updated Template Name")
       expect(st2.reload.name).to eq("Updated Template Name")
     end
@@ -166,7 +166,7 @@ describe "Service Templates API" do
       post(api_service_template_url(nil, st1), :params => gen_request(:edit, 'name' => 'updated template'))
 
       expected = {
-        'id'   => st1.compressed_id,
+        'id'   => st1.id.to_s,
         'name' => 'updated template'
       }
       expect(response).to have_http_status(:ok)
@@ -219,7 +219,7 @@ describe "Service Templates API" do
       end.to change(ServiceTemplate, :count).by(-1)
 
       expected = {
-        "href"    => api_service_template_url(nil, service_template.compressed_id),
+        "href"    => api_service_template_url(nil, service_template),
         "message" => "service_templates id: #{service_template.id} deleting",
         "success" => true
       }
@@ -249,7 +249,7 @@ describe "Service Templates API" do
                                                               {"href" => api_service_template_url(nil, st2)}]))
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results",
-                                               [api_service_template_url(nil, st1.compressed_id), api_service_template_url(nil, st2.compressed_id)])
+                                               [api_service_template_url(nil, st1), api_service_template_url(nil, st2)])
 
       expect { st1.reload }.to raise_error(ActiveRecord::RecordNotFound)
       expect { st2.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -285,7 +285,7 @@ describe "Service Templates API" do
         "resources" => [
           {
             "href" => a_string_matching(
-              api_service_template_service_request_url(nil, service_template.compressed_id, service_request.compressed_id)
+              api_service_template_service_request_url(nil, service_template, service_request)
             )
           }
         ]

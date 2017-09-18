@@ -15,7 +15,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
 
     it 'lists all generic object definitions with an appropriate role' do
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :read, :get)
-      object_def_href = api_generic_object_definition_url(nil, object_def.compressed_id)
+      object_def_href = api_generic_object_definition_url(nil, object_def)
 
       get(api_generic_object_definitions_url)
 
@@ -36,7 +36,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'does not let you query object definitions without an appropriate role' do
       api_basic_authorize
 
-      get(api_generic_object_definition_url(nil, object_def.compressed_id))
+      get(api_generic_object_definition_url(nil, object_def))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -47,7 +47,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
       get(api_generic_object_definition_url(nil, object_def))
 
       expected = {
-        'id'   => object_def.compressed_id,
+        'id'   => object_def.id.to_s,
         'name' => object_def.name
       }
       expect(response).to have_http_status(:ok)
@@ -60,7 +60,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
       get(api_generic_object_definition_url(nil, object_def.name))
 
       expected = {
-        'id'   => object_def.compressed_id,
+        'id'   => object_def.id.to_s,
         'name' => object_def.name
       }
       expect(response).to have_http_status(:ok)
@@ -135,17 +135,17 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'action'    => 'edit',
         'resources' => [
           { 'name' => object_def.name, 'resource' => { 'name' => 'updated 1' } },
-          { 'id' => object_def2.compressed_id, 'resource' => { 'name' => 'updated 2' }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id), 'resource' => { 'name' => 'updated 3' }}
+          { 'id' => object_def2.id.to_s, 'resource' => { 'name' => 'updated 2' }},
+          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'name' => 'updated 3' }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.compressed_id, 'name' => 'updated 1'),
-          a_hash_including('id' => object_def2.compressed_id, 'name' => 'updated 2'),
-          a_hash_including('id' => object_def3.compressed_id, 'name' => 'updated 3')
+          a_hash_including('id' => object_def.id.to_s, 'name' => 'updated 1'),
+          a_hash_including('id' => object_def2.id.to_s, 'name' => 'updated 2'),
+          a_hash_including('id' => object_def3.id.to_s, 'name' => 'updated 3')
         )
       }
       expect(response).to have_http_status(:ok)
@@ -159,17 +159,17 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'action'    => 'add_associations',
         'resources' => [
           { 'name' => object_def.name, 'resource' => { 'associations' => { 'association1' => 'AvailabilityZone' } } },
-          { 'id' => object_def2.compressed_id, 'resource' => { 'associations' => { 'association2' => 'AvailabilityZone' } }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id), 'resource' => { 'associations' => { 'association3' => 'AvailabilityZone' } }}
+          { 'id' => object_def2.id.to_s, 'resource' => { 'associations' => { 'association2' => 'AvailabilityZone' } }},
+          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'associations' => { 'association3' => 'AvailabilityZone' } }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.compressed_id, 'properties' => a_hash_including('associations' => {'association1' => 'AvailabilityZone'})),
-          a_hash_including('id' => object_def2.compressed_id, 'properties' => a_hash_including('associations' => {'association2' => 'AvailabilityZone'})),
-          a_hash_including('id' => object_def3.compressed_id, 'properties' => a_hash_including('associations' => {'association3' => 'AvailabilityZone'}))
+          a_hash_including('id' => object_def.id.to_s, 'properties' => a_hash_including('associations' => {'association1' => 'AvailabilityZone'})),
+          a_hash_including('id' => object_def2.id.to_s, 'properties' => a_hash_including('associations' => {'association2' => 'AvailabilityZone'})),
+          a_hash_including('id' => object_def3.id.to_s, 'properties' => a_hash_including('associations' => {'association3' => 'AvailabilityZone'}))
         )
       }
       expect(response).to have_http_status(:ok)
@@ -194,17 +194,17 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'action'    => 'remove_associations',
         'resources' => [
           { 'name' => object_def.name, 'resource' => { 'associations' => { 'association1' => 'AvailabilityZone' } } },
-          { 'id' => object_def2.compressed_id, 'resource' => { 'associations' => { 'association2' => 'AvailabilityZone' } }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id), 'resource' => { 'associations' => { 'association3' => 'AvailabilityZone' } }}
+          { 'id' => object_def2.id.to_s, 'resource' => { 'associations' => { 'association2' => 'AvailabilityZone' } }},
+          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'associations' => { 'association3' => 'AvailabilityZone' } }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.compressed_id, 'properties' => a_hash_including('associations' => {})),
-          a_hash_including('id' => object_def2.compressed_id, 'properties' => a_hash_including('associations' => {})),
-          a_hash_including('id' => object_def3.compressed_id, 'properties' => a_hash_including('associations' => {}))
+          a_hash_including('id' => object_def.id.to_s, 'properties' => a_hash_including('associations' => {})),
+          a_hash_including('id' => object_def2.id.to_s, 'properties' => a_hash_including('associations' => {})),
+          a_hash_including('id' => object_def3.id.to_s, 'properties' => a_hash_including('associations' => {}))
         )
       }
       expect(response).to have_http_status(:ok)
@@ -226,17 +226,17 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'action'    => 'add_attributes',
         'resources' => [
           { 'name' => object_def.name, 'resource' => { 'attributes' => { 'attr1' => 'string' } } },
-          { 'id' => object_def2.compressed_id, 'resource' => { 'attributes' => { 'attr2' => 'string' } }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id), 'resource' => { 'attributes' => { 'attr3' => 'string' } }}
+          { 'id' => object_def2.id.to_s, 'resource' => { 'attributes' => { 'attr2' => 'string' } }},
+          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'attributes' => { 'attr3' => 'string' } }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.compressed_id, 'properties' => a_hash_including('attributes' => {'attr1' => 'string'})),
-          a_hash_including('id' => object_def2.compressed_id, 'properties' => a_hash_including('attributes' => {'attr2' => 'string'})),
-          a_hash_including('id' => object_def3.compressed_id, 'properties' => a_hash_including('attributes' => {'attr3' => 'string'}))
+          a_hash_including('id' => object_def.id.to_s, 'properties' => a_hash_including('attributes' => {'attr1' => 'string'})),
+          a_hash_including('id' => object_def2.id.to_s, 'properties' => a_hash_including('attributes' => {'attr2' => 'string'})),
+          a_hash_including('id' => object_def3.id.to_s, 'properties' => a_hash_including('attributes' => {'attr3' => 'string'}))
         )
       }
       expect(response).to have_http_status(:ok)
@@ -261,17 +261,17 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'action'    => 'remove_attributes',
         'resources' => [
           { 'name' => object_def.name, 'resource' => { 'attributes' => { 'attr1' => 'string' } } },
-          { 'id' => object_def2.compressed_id, 'resource' => { 'attributes' => { 'attr2' => 'string' } }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id), 'resource' => { 'attributes' => { 'attr3' => 'string' } }}
+          { 'id' => object_def2.id.to_s, 'resource' => { 'attributes' => { 'attr2' => 'string' } }},
+          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'attributes' => { 'attr3' => 'string' } }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.compressed_id, 'properties' => a_hash_including('attributes' => {})),
-          a_hash_including('id' => object_def2.compressed_id, 'properties' => a_hash_including('attributes' => {})),
-          a_hash_including('id' => object_def3.compressed_id, 'properties' => a_hash_including('attributes' => {}))
+          a_hash_including('id' => object_def.id.to_s, 'properties' => a_hash_including('attributes' => {})),
+          a_hash_including('id' => object_def2.id.to_s, 'properties' => a_hash_including('attributes' => {})),
+          a_hash_including('id' => object_def3.id.to_s, 'properties' => a_hash_including('attributes' => {}))
         )
       }
       expect(response).to have_http_status(:ok)
@@ -293,17 +293,17 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'action'    => 'add_methods',
         'resources' => [
           { 'name' => object_def.name, 'resource' => { 'methods' => ['method1'] } },
-          { 'id' => object_def2.compressed_id, 'resource' => { 'methods' => ['method2'] }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id), 'resource' => { 'methods' => ['method3'] }}
+          { 'id' => object_def2.id.to_s, 'resource' => { 'methods' => ['method2'] }},
+          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'methods' => ['method3'] }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.compressed_id, 'properties' => a_hash_including('methods' => ['method1'])),
-          a_hash_including('id' => object_def2.compressed_id, 'properties' => a_hash_including('methods' => ['method2'])),
-          a_hash_including('id' => object_def3.compressed_id, 'properties' => a_hash_including('methods' => ['method3']))
+          a_hash_including('id' => object_def.id.to_s, 'properties' => a_hash_including('methods' => ['method1'])),
+          a_hash_including('id' => object_def2.id.to_s, 'properties' => a_hash_including('methods' => ['method2'])),
+          a_hash_including('id' => object_def3.id.to_s, 'properties' => a_hash_including('methods' => ['method3']))
         )
       }
       expect(response).to have_http_status(:ok)
@@ -370,7 +370,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           ]
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
+      post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(request.except('action'))
@@ -387,7 +387,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
+      post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
         'error' => a_hash_including(
@@ -410,7 +410,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'can delete an object definition by id' do
       api_basic_authorize action_identifier(:generic_object_definitions, :delete)
 
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => { :action => 'delete' })
+      post(api_generic_object_definition_url(nil, object_def), :params => { :action => 'delete' })
 
       expect(response).to have_http_status(:ok)
     end
@@ -438,17 +438,17 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'action'    => 'delete',
         'resources' => [
           { 'name' => object_def.name },
-          { 'id' => object_def2.compressed_id},
-          { 'href' => api_generic_object_definition_url(nil, object_def3.compressed_id)}
+          { 'id' => object_def2.id.to_s},
+          { 'href' => api_generic_object_definition_url(nil, object_def3)}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.compressed_id),
-          a_hash_including('id' => object_def2.compressed_id),
-          a_hash_including('id' => object_def3.compressed_id)
+          a_hash_including('id' => object_def.id.to_s),
+          a_hash_including('id' => object_def2.id.to_s),
+          a_hash_including('id' => object_def3.id.to_s)
         )
       }
       expect(response).to have_http_status(:ok)
@@ -467,7 +467,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
+      post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
         'attributes' => {
@@ -490,7 +490,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
+      post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
         'error' => a_hash_including(
@@ -515,7 +515,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
+      post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
         'attributes' => {
@@ -535,7 +535,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           'methods' => ['foo', 'bar']
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
+      post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
         'methods' => ['foo', 'bar']
@@ -555,7 +555,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           'methods' => ['foo']
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
+      post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
         'methods' => ['bar']
@@ -584,7 +584,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
+      post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
         'associations' => {
@@ -608,7 +608,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
+      post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
         'error' => a_hash_including(
@@ -631,7 +631,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           'associations' => { 'az' => 'AvailabilityZone' }
         }
       }
-      post(api_generic_object_definition_url(nil, object_def.compressed_id), :params => request)
+      post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
         'associations' => { 'chargeback' => 'ChargebackVm' }
@@ -645,7 +645,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     it 'can delete a generic_object_definition by id' do
       api_basic_authorize action_identifier(:generic_object_definitions, :delete, :resource_actions, :delete)
 
-      delete(api_generic_object_definition_url(nil, object_def.compressed_id))
+      delete(api_generic_object_definition_url(nil, object_def))
 
       expect(response).to have_http_status(:no_content)
     end

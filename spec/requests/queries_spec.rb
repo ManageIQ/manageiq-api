@@ -48,7 +48,7 @@ describe "Queries API" do
       get api_vms_url, :params => { :expand => "resources", :attributes => "guid" }
 
       expect_query_result(:vms, 1, 1)
-      expect_result_resources_to_match_hash([{"id" => vm1.compressed_id, "href" => api_vm_url(nil, vm1.compressed_id), "guid" => vm1.guid}])
+      expect_result_resources_to_match_hash([{"id" => vm1.id.to_s, "href" => api_vm_url(nil, vm1), "guid" => vm1.guid}])
     end
   end
 
@@ -59,7 +59,7 @@ describe "Queries API" do
 
       get vm1_url
 
-      expect_single_resource_query("id" => vm1.compressed_id, "href" => api_vm_url(nil, vm1.compressed_id), "guid" => vm1.guid)
+      expect_single_resource_query("id" => vm1.id.to_s, "href" => api_vm_url(nil, vm1), "guid" => vm1.guid)
     end
 
     it 'supports compressed ids' do
@@ -67,7 +67,7 @@ describe "Queries API" do
 
       get api_vm_url(nil, vm1.compressed_id)
 
-      expect_single_resource_query("id" => vm1.compressed_id, "href" => api_vm_url(nil, vm1.compressed_id), "guid" => vm1.guid)
+      expect_single_resource_query("id" => vm1.id.to_s, "href" => api_vm_url(nil, vm1), "guid" => vm1.guid)
     end
 
     it 'returns 404 on url with trailing garbage' do
@@ -98,8 +98,8 @@ describe "Queries API" do
 
       expect_query_result(:accounts, 2)
       expect_result_resources_to_include_hrefs("resources",
-                                               [api_vm_account_url(nil, vm1.compressed_id, acct1.compressed_id),
-                                                api_vm_account_url(nil, vm1.compressed_id, acct2.compressed_id)])
+                                               [api_vm_account_url(nil, vm1, acct1),
+                                                api_vm_account_url(nil, vm1, acct2)])
     end
 
     it "includes both id and href when getting a single resource" do
@@ -108,8 +108,8 @@ describe "Queries API" do
       get acct1_url
 
       expect_single_resource_query(
-        "id"   => acct1.compressed_id,
-        "href" => api_vm_account_url(nil, vm1.compressed_id, acct1.compressed_id),
+        "id"   => acct1.id.to_s,
+        "href" => api_vm_account_url(nil, vm1, acct1),
         "name" => acct1.name
       )
     end
@@ -125,9 +125,9 @@ describe "Queries API" do
       expect_query_result(:accounts, 2)
       expect_result_resources_to_include_keys("resources", %w(id href))
       expect_result_resources_to_include_hrefs("resources",
-                                               [api_vm_account_url(nil, vm1.compressed_id, acct1.compressed_id),
-                                                api_vm_account_url(nil, vm1.compressed_id, acct2.compressed_id)])
-      expect_result_resources_to_include_data("resources", "id" => [acct1.compressed_id, acct2.compressed_id])
+                                               [api_vm_account_url(nil, vm1, acct1),
+                                                api_vm_account_url(nil, vm1, acct2)])
+      expect_result_resources_to_include_data("resources", "id" => [acct1.id.to_s, acct2.id.to_s])
     end
 
     it 'supports compressed ids' do
@@ -136,8 +136,8 @@ describe "Queries API" do
       get(api_vm_account_url(nil, vm1.compressed_id, acct1))
 
       expect_single_resource_query(
-        "id"   => acct1.compressed_id,
-        "href" => api_vm_account_url(nil, vm1.compressed_id, acct1.compressed_id),
+        "id"   => acct1.id.to_s,
+        "href" => api_vm_account_url(nil, vm1, acct1),
         "name" => acct1.name
       )
     end
