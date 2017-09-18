@@ -6,10 +6,6 @@ module Spec
   module Support
     module Api
       module Helpers
-        def resources_include_suffix?(resources, key, suffix)
-          resources.any? { |r| r.key?(key) && r[key].match("#{suffix}$") }
-        end
-
         def api_config(param)
           @api_config ||= {
             :user       => "api_user_id",
@@ -123,11 +119,12 @@ module Spec
         end
 
         def expect_result_resources_to_include_hrefs(collection, hrefs)
-          expect(response.parsed_body).to have_key(collection)
-          expect(response.parsed_body[collection].size).to eq(hrefs.size)
-          hrefs.each do |href|
-            expect(resources_include_suffix?(response.parsed_body[collection], "href", href)).to be_truthy
-          end
+          expected = {
+            collection => a_collection_containing_exactly(
+              *hrefs.collect { |href| a_hash_including("href" => href) }
+            )
+          }
+          expect(response.parsed_body).to include(expected)
         end
 
         def expect_result_to_have_keys(keys)
