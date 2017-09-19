@@ -761,8 +761,8 @@ describe "Vms API" do
 
       expect_query_result(:custom_attributes, 2)
       expect_result_resources_to_include_hrefs("resources",
-                                               [api_vm_custom_attributes_url(nil, vm, ca1),
-                                                api_vm_custom_attributes_url(nil, vm, ca2)])
+                                               [api_vm_custom_attribute_url(nil, vm, ca1),
+                                                api_vm_custom_attribute_url(nil, vm, ca2)])
     end
 
     it "getting custom_attributes from a vm in expanded form" do

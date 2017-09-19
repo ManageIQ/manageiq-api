@@ -224,8 +224,8 @@ describe "Alerts Definition Profiles API" do
     expect(response).to have_http_status(:ok)
     expect_result_resources_to_include_hrefs(
       "resources",
-      [api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile, alert_definitions.first),
-       api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile, alert_definitions.first)]
+      [api_alert_definition_profile_alert_definition_url(nil, alert_definition_profile, alert_definitions.first),
+       api_alert_definition_profile_alert_definition_url(nil, alert_definition_profile, alert_definitions.second)]
     )
   end
 
