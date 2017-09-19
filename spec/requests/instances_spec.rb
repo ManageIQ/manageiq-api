@@ -517,8 +517,8 @@ RSpec.describe "Instances API" do
 
       expect_query_result(:custom_attributes, 2)
       expect_result_resources_to_include_hrefs("resources",
-                                               [api_instance_custom_attributes_url(nil, instance.compressed_id, ca1.compressed_id),
-                                                api_instance_custom_attributes_url(nil, instance.compressed_id, ca2.compressed_id)])
+                                               [api_instance_custom_attribute_url(nil, instance, ca1),
+                                                api_instance_custom_attribute_url(nil, instance, ca2)])
     end
 
     it "getting custom_attributes from an instance in expanded form" do
