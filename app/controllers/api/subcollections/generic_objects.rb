@@ -2,7 +2,15 @@ module Api
   module Subcollections
     module GenericObjects
       def generic_objects_query_resource(object_definition)
-        object_definition.generic_objects
+        generic_objects = object_definition.generic_objects
+        go_attrs = attribute_selection_for('generic_objects')
+
+        return generic_objects if go_attrs.blank?
+
+        generic_objects.collect do |go|
+          attributes_hash = create_resource_attributes_hash(go_attrs, go)
+          go.as_json.merge(attributes_hash)
+        end
       end
 
       def generic_objects_create_resource(object, _type, _id, data)

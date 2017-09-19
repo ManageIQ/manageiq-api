@@ -27,17 +27,6 @@ module Api
 
     private
 
-    def set_additional_attributes
-      @additional_attributes = %w(property_attributes)
-    end
-
-    def set_associations
-      return unless params[:associations]
-      params[:associations].split(',').each do |prop|
-        @additional_attributes << prop
-      end
-    end
-
     def retrieve_generic_object_definition(data)
       definition_id = parse_id(data['generic_object_definition'], :generic_object_definitions)
       resource_search(definition_id, :generic_object_definitions, collection_class(:generic_object_definitions))
