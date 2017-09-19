@@ -1,5 +1,6 @@
 module Api
   class InstancesController < BaseController
+    include Subcollections::CustomAttributes
     include Subcollections::LoadBalancers
     include Subcollections::Snapshots
 

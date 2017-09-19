@@ -14,6 +14,7 @@ RSpec.describe "Instances API" do
   let(:instance2_url) { api_instance_url(nil, instance2) }
   let(:invalid_instance_url) { api_instance_url(nil, 999_999) }
   let(:instances_list) { [instance1_url, instance2_url] }
+  let(:instance_guid) { instance.guid }
 
   context "Instance index" do
     it "lists only the cloud instances (no infrastructure vms)" do
@@ -491,6 +492,128 @@ RSpec.describe "Instances API" do
       get(api_instance_load_balancer_url(nil, @vm, @load_balancer))
 
       expect(response).to have_http_status(:forbidden)
+    end
+  end
+
+  context "instance custom_attributes" do
+    let(:ca1) { FactoryGirl.create(:custom_attribute, :name => "name1", :value => "value1") }
+    let(:ca2) { FactoryGirl.create(:custom_attribute, :name => "name2", :value => "value2") }
+    let(:ca1_url)        { api_instance_custom_attribute_url(nil, instance, ca1) }
+    let(:ca2_url)        { api_instance_custom_attribute_url(nil, instance, ca2) }
+
+    it "getting custom_attributes from an instance with no custom_attributes" do
+      api_basic_authorize
+
+      get(api_instance_custom_attributes_url(nil, instance))
+
+      expect_empty_query_result(:custom_attributes)
+    end
+
+    it "getting custom_attributes from an instance" do
+      api_basic_authorize
+      instance.custom_attributes = [ca1, ca2]
+
+      get api_instance_custom_attributes_url(nil, instance)
+
+      expect_query_result(:custom_attributes, 2)
+      expect_result_resources_to_include_hrefs("resources",
+                                               [api_instance_custom_attribute_url(nil, instance, ca1),
+                                                api_instance_custom_attribute_url(nil, instance, ca2)])
+    end
+
+    it "getting custom_attributes from an instance in expanded form" do
+      api_basic_authorize
+      instance.custom_attributes = [ca1, ca2]
+
+      get api_instance_custom_attributes_url(nil, instance), :params => { :expand => "resources" }
+
+      expect_query_result(:custom_attributes, 2)
+      expect_result_resources_to_include_data("resources", "name" => %w(name1 name2))
+    end
+
+    it "getting custom_attributes from an instance using expand" do
+      api_basic_authorize action_identifier(:instances, :read, :resource_actions, :get)
+      instance.custom_attributes = [ca1, ca2]
+
+      get instance_url, :params => { :expand => "custom_attributes" }
+
+      expect_single_resource_query("guid" => instance_guid)
+      expect_result_resources_to_include_data("custom_attributes", "name" => %w(name1 name2))
+    end
+
+    it "delete a custom_attribute without appropriate role" do
+      api_basic_authorize
+      instance.custom_attributes = [ca1]
+
+      post(api_instance_custom_attributes_url(nil, instance), :params => gen_request(:delete, nil, instance_url))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "delete a custom_attribute from an instance via the delete action" do
+      api_basic_authorize subcollection_action_identifier(:instances, :custom_attributes, :delete)
+      instance.custom_attributes = [ca1]
+
+      post(api_instance_custom_attributes_url(nil, instance), :params => gen_request(:delete, nil, ca1_url))
+
+      expect(response).to have_http_status(:ok)
+      expect(instance.reload.custom_attributes).to be_empty
+    end
+
+    it "add custom attribute to an instance without a name" do
+      api_basic_authorize subcollection_action_identifier(:instances, :custom_attributes, :edit)
+
+      post(api_instance_custom_attributes_url(nil, instance), :params => gen_request(:add, "value" => "value1"))
+
+      expect_bad_request("Must specify a name")
+    end
+
+    it "add custom attributes to an instance" do
+      api_basic_authorize subcollection_action_identifier(:instances, :custom_attributes, :edit)
+
+      post(api_instance_custom_attributes_url(nil, instance),
+           :params => gen_request(:add, [{"name" => "name1", "value" => "value1"},
+                                         {"name" => "name2", "value" => "value2"}]))
+
+      expect(response).to have_http_status(:ok)
+      expect_result_resources_to_include_data("results", "name" => %w(name1 name2))
+      expect(instance.custom_attributes.size).to eq(2)
+      expect(instance.custom_attributes.pluck(:value).sort).to eq(%w(value1 value2))
+    end
+
+    it "edit a custom attribute by name" do
+      api_basic_authorize subcollection_action_identifier(:instances, :custom_attributes, :edit)
+      instance.custom_attributes = [ca1]
+
+      post(api_instance_custom_attributes_url(nil, instance), :params => gen_request(:edit, "name" => "name1", "value" => "value one"))
+
+      expect(response).to have_http_status(:ok)
+      expect_result_resources_to_include_data("results", "value" => ["value one"])
+      expect(instance.reload.custom_attributes.first.value).to eq("value one")
+    end
+
+    it "edit a custom attribute by href" do
+      api_basic_authorize subcollection_action_identifier(:instances, :custom_attributes, :edit)
+      instance.custom_attributes = [ca1]
+
+      post(api_instance_custom_attributes_url(nil, instance), :params => gen_request(:edit, "href" => ca1_url, "value" => "new value1"))
+
+      expect(response).to have_http_status(:ok)
+      expect_result_resources_to_include_data("results", "value" => ["new value1"])
+      expect(instance.reload.custom_attributes.first.value).to eq("new value1")
+    end
+
+    it "edit multiple custom attributes" do
+      api_basic_authorize subcollection_action_identifier(:instances, :custom_attributes, :edit)
+      instance.custom_attributes = [ca1, ca2]
+
+      post(api_instance_custom_attributes_url(nil, instance),
+           :params => gen_request(:edit, [{"name" => "name1", "value" => "new value1"},
+                                          {"name" => "name2", "value" => "new value2"}]))
+
+      expect(response).to have_http_status(:ok)
+      expect_result_resources_to_include_data("results", "value" => ["new value1", "new value2"])
+      expect(instance.reload.custom_attributes.pluck(:value).sort).to eq(["new value1", "new value2"])
     end
   end
 end
