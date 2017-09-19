@@ -41,4 +41,9 @@ module Api
   def self.compressed_id?(thing)
     !!(ApplicationRecord::RE_COMPRESSED_ID =~ thing.to_s)
   end
+
+  def self.uncompress_id(id)
+    $api_log.warn("The use of compressed ids is deprecated, and the support for which will be removed in a future release.")
+    ApplicationRecord.uncompress_id(id)
+  end
 end
