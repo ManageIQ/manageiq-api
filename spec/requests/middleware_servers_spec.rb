@@ -1,12 +1,11 @@
 describe 'Middleware Servers API' do
   let(:server) { FactoryGirl.create(:middleware_server) }
 
-
   describe '/' do
     it 'forbids access without an appropriate role' do
       api_basic_authorize
 
-      run_get api_middleware_servers_url
+      get api_middleware_servers_url
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -14,7 +13,7 @@ describe 'Middleware Servers API' do
     it 'returns an empty listing of servers' do
       api_basic_authorize collection_action_identifier(:middleware_servers, :read, :get)
 
-      run_get api_middleware_servers_url
+      get api_middleware_servers_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq(
@@ -30,7 +29,7 @@ describe 'Middleware Servers API' do
 
       api_basic_authorize collection_action_identifier(:middleware_servers, :read, :get)
 
-      run_get api_middleware_servers_url
+      get api_middleware_servers_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq(
@@ -45,10 +44,18 @@ describe 'Middleware Servers API' do
   end
 
   describe '/:id' do
-    it 'returns the attributes of one server' do
+    it 'forbids access to a server without an appropriate role' do
       api_basic_authorize
 
-      run_get api_middleware_server_url(nil, server.id)
+      get api_middleware_server_url(nil, server.compressed_id)
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'returns the attributes of one server' do
+      api_basic_authorize action_identifier(:middleware_servers, :read, :resource_actions, :get)
+
+      get api_middleware_server_url(nil, server.id)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['id']).to eq server.compressed_id

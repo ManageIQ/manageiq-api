@@ -5,7 +5,7 @@ describe 'Middleware Datasources API' do
     it 'forbids access without an appropriate role' do
       api_basic_authorize
 
-      run_get api_middleware_datasources_url
+      get api_middleware_datasources_url
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -13,7 +13,7 @@ describe 'Middleware Datasources API' do
     it 'returns an empty listing of datasources' do
       api_basic_authorize collection_action_identifier(:middleware_datasources, :read, :get)
 
-      run_get api_middleware_datasources_url
+      get api_middleware_datasources_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq(
@@ -24,12 +24,12 @@ describe 'Middleware Datasources API' do
       )
     end
 
-    it 'returns a a listing of datasources' do
+    it 'returns a listing of datasources' do
       datasource
 
       api_basic_authorize collection_action_identifier(:middleware_datasources, :read, :get)
 
-      run_get api_middleware_datasources_url
+      get api_middleware_datasources_url
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq(
@@ -44,10 +44,18 @@ describe 'Middleware Datasources API' do
   end
 
   describe '/:id' do
-    it 'returns the attributes of one datasource' do
+    it 'forbids access to a datasource without an appropriate role' do
       api_basic_authorize
 
-      run_get api_middleware_datasource_url(nil, datasource.compressed_id)
+      get api_middleware_datasource_url(nil, datasource.compressed_id)
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'returns the attributes of one datasource' do
+      api_basic_authorize action_identifier(:middleware_datasources, :read, :resource_actions, :get)
+
+      get api_middleware_datasource_url(nil, datasource.compressed_id)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['id']).to eq datasource.compressed_id
