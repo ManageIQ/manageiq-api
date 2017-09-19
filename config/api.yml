@@ -1074,6 +1074,7 @@
     :options:
     - :collection
     :subcollections:
+    - :custom_attributes 
     - :load_balancers
     - :snapshots
     :collection_actions:
@@ -1139,6 +1140,14 @@
       :delete:
       - :name: delete
         :identifier: cloud_volume_snapshot_delete
+    :custom_attributes_subcollection_actions:
+      :post:
+      - :name: add
+        :identifier: instance_edit
+      - :name: edit
+        :identifier: instance_edit
+      - :name: delete
+        :identifier: instance_edit
   :load_balancers:
     :description: Load Balancers
     :options:
