@@ -319,6 +319,11 @@ describe "Rest API Collections" do
       FactoryGirl.create(:physical_server)
       test_collection_query(:physical_servers, physical_servers_url, PhysicalServer)
     end
+
+    it 'query ConfigurationTemplates' do
+      FactoryGirl.create(:configuration_template)
+      test_collection_query(:configuration_templates, configuration_templates_url, ConfigurationTemplate)
+    end
   end
 
   context "Collections Bulk Queries" do
@@ -599,6 +604,11 @@ describe "Rest API Collections" do
     it 'bulk query PhysicalServers' do
       FactoryGirl.create(:physical_server)
       test_collection_bulk_query(:physical_servers, physical_servers_url, PhysicalServer)
+    end
+
+    it 'bulk query ConfigurationTemplates' do
+      FactoryGirl.create(:configuration_template)
+      test_collection_bulk_query(:configuration_templates, configuration_templates_url, ConfigurationTemplate)
     end
   end
 end
