@@ -33,8 +33,32 @@ describe Api::BaseController do
         end
       end
 
+      context "with a partial URL that starts with 'api/...'" do
+        let(:href) { "api/collection/123" }
+
+        it "returns ['collection', 123]" do
+          expect(subject.parse_href(href)).to eq([:collection, 123])
+        end
+      end
+
+      context "with a partial URL that starts with 'api/v1.2.3/...'" do
+        let(:href) { "api/v1.2.3/collection/123" }
+
+        it "returns ['collection', 123]" do
+          expect(subject.parse_href(href)).to eq([:collection, 123])
+        end
+      end
+
       context "with a partial URL without '/api/...'" do
         let(:href) { "collection/123" }
+
+        it "returns ['collection', 123]" do
+          expect(subject.parse_href(href)).to eq([:collection, 123])
+        end
+      end
+
+      context "with a partial URL without '/api/...' and a leading slash" do
+        let(:href) { "/collection/123" }
 
         it "returns ['collection', 123]" do
           expect(subject.parse_href(href)).to eq([:collection, 123])

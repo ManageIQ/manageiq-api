@@ -62,7 +62,8 @@ module Api
       def parse_href(href)
         if href
           path = href.match(/^http/) ? URI.parse(href).path.sub(/\/*$/, '') : href
-          path = "/api/#{path}" unless path.match("/api")
+          path.prepend("/")     unless path.start_with?("/")
+          path = "/api#{path}" unless path.match("/api")
           path = path.sub(/\/*$/, '')
           return href_collection_id(path)
         end
