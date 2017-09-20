@@ -16,7 +16,7 @@ describe 'Middleware Domains API' do
       get api_middleware_domains_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
+      expect(response.parsed_body).to include(
         'name'      => 'middleware_domains',
         'count'     => 0,
         'resources' => [],
@@ -32,11 +32,11 @@ describe 'Middleware Domains API' do
       get api_middleware_domains_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
+      expect(response.parsed_body).to include(
         'name'      => 'middleware_domains',
         'count'     => 1,
         'resources' => [{
-          'href' => api_middleware_domain_url(nil, domain.compressed_id)
+          'href' => api_middleware_domain_url(nil, domain)
         }],
         'subcount'  => 1
       )
@@ -47,7 +47,7 @@ describe 'Middleware Domains API' do
     it 'forbids access to a domain without an appropriate role' do
       api_basic_authorize
 
-      get api_middleware_domain_url(nil, domain.compressed_id)
+      get api_middleware_domain_url(nil, domain)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -55,12 +55,12 @@ describe 'Middleware Domains API' do
     it 'returns the attributes of one domain' do
       api_basic_authorize action_identifier(:middleware_domains, :read, :resource_actions, :get)
 
-      get api_middleware_domain_url(nil, domain.id)
+      get api_middleware_domain_url(nil, domain)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['id']).to eq domain.compressed_id
       expect(response.parsed_body).to include(
-        'href' => api_middleware_domain_url(nil, domain.compressed_id),
+        'id'   => domain.id.to_s,
+        'href' => api_middleware_domain_url(nil, domain),
         'name' => domain.name
       )
     end

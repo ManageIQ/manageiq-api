@@ -16,7 +16,7 @@ describe 'Middleware Messagings API' do
       get api_middleware_messagings_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
+      expect(response.parsed_body).to include(
         'name'      => 'middleware_messagings',
         'count'     => 0,
         'resources' => [],
@@ -32,11 +32,11 @@ describe 'Middleware Messagings API' do
       get api_middleware_messagings_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
+      expect(response.parsed_body).to include(
         'name'      => 'middleware_messagings',
         'count'     => 1,
         'resources' => [{
-          'href' => api_middleware_messaging_url(nil, messaging.compressed_id)
+          'href' => api_middleware_messaging_url(nil, messaging)
         }],
         'subcount'  => 1
       )
@@ -47,7 +47,7 @@ describe 'Middleware Messagings API' do
     it 'forbids access to a messaging without an appropriate role' do
       api_basic_authorize
 
-      get api_middleware_messaging_url(nil, messaging.compressed_id)
+      get api_middleware_messaging_url(nil, messaging)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -55,11 +55,13 @@ describe 'Middleware Messagings API' do
     it 'returns the attributes of one messaging' do
       api_basic_authorize action_identifier(:middleware_messagings, :read, :resource_actions, :get)
 
-      get api_middleware_messaging_url(nil, messaging.id)
+      get api_middleware_messaging_url(nil, messaging)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['id']).to eq messaging.compressed_id
-      expect(response.parsed_body).to include('href' => api_middleware_messaging_url(nil, messaging.compressed_id))
+      expect(response.parsed_body).to include(
+        'id'   => messaging.id.to_s,
+        'href' => api_middleware_messaging_url(nil, messaging)
+      )
     end
   end
 end

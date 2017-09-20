@@ -1,10 +1,6 @@
 describe 'Middleware Deployments API' do
   let(:deployment) { FactoryGirl.create(:middleware_deployment) }
 
-  def match_compressed(field)
-    eq ApplicationRecord.compress_id(deployment.send(field)).to_s
-  end
-
   describe '/' do
     it 'forbids access without an appropriate role' do
       api_basic_authorize
@@ -20,7 +16,7 @@ describe 'Middleware Deployments API' do
       get api_middleware_deployments_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
+      expect(response.parsed_body).to include(
         'name'      => 'middleware_deployments',
         'count'     => 0,
         'resources' => [],
@@ -36,11 +32,11 @@ describe 'Middleware Deployments API' do
       get api_middleware_deployments_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
+      expect(response.parsed_body).to include(
         'name'      => 'middleware_deployments',
         'count'     => 1,
         'resources' => [{
-          'href' => api_middleware_deployment_url(nil, deployment.compressed_id)
+          'href' => api_middleware_deployment_url(nil, deployment)
         }],
         'subcount'  => 1
       )
@@ -51,7 +47,7 @@ describe 'Middleware Deployments API' do
     it 'forbids access to a deployment without an appropriate role' do
       api_basic_authorize
 
-      get api_middleware_deployment_url(nil, deployment.compressed_id)
+      get api_middleware_deployment_url(nil, deployment)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -59,14 +55,14 @@ describe 'Middleware Deployments API' do
     it 'returns the attributes of one deployment' do
       api_basic_authorize action_identifier(:middleware_deployments, :read, :resource_actions, :get)
 
-      get api_middleware_deployment_url(nil, deployment.id)
+      get api_middleware_deployment_url(nil, deployment)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['id']).to match_compressed(:id)
-      expect(response.parsed_body['ems_id']).to match_compressed(:ems_id)
       expect(response.parsed_body).to include(
-        'href' => api_middleware_deployment_url(nil, deployment.compressed_id),
-        'name' => deployment.name
+        'id'     => deployment.id.to_s,
+        'ems_id' => deployment.ems_id.to_s,
+        'href'   => api_middleware_deployment_url(nil, deployment),
+        'name'   => deployment.name
       )
     end
   end

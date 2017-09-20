@@ -16,7 +16,7 @@ describe 'Middleware Servers API' do
       get api_middleware_servers_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
+      expect(response.parsed_body).to include(
         'name'      => 'middleware_servers',
         'count'     => 0,
         'resources' => [],
@@ -32,11 +32,11 @@ describe 'Middleware Servers API' do
       get api_middleware_servers_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
+      expect(response.parsed_body).to include(
         'name'      => 'middleware_servers',
         'count'     => 1,
         'resources' => [{
-          'href' => api_middleware_server_url(nil, server.compressed_id)
+          'href' => api_middleware_server_url(nil, server)
         }],
         'subcount'  => 1
       )
@@ -47,7 +47,7 @@ describe 'Middleware Servers API' do
     it 'forbids access to a server without an appropriate role' do
       api_basic_authorize
 
-      get api_middleware_server_url(nil, server.compressed_id)
+      get api_middleware_server_url(nil, server)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -55,12 +55,12 @@ describe 'Middleware Servers API' do
     it 'returns the attributes of one server' do
       api_basic_authorize action_identifier(:middleware_servers, :read, :resource_actions, :get)
 
-      get api_middleware_server_url(nil, server.id)
+      get api_middleware_server_url(nil, server)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['id']).to eq server.compressed_id
       expect(response.parsed_body).to include(
-        'href'       => api_middleware_server_url(nil, server.compressed_id),
+        'id'         => server.id.to_s,
+        'href'       => api_middleware_server_url(nil, server),
         'name'       => server.name,
         'feed'       => server.feed,
         'properties' => server.properties,

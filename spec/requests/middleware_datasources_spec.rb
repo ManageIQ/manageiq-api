@@ -16,7 +16,7 @@ describe 'Middleware Datasources API' do
       get api_middleware_datasources_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
+      expect(response.parsed_body).to include(
         'name'      => 'middleware_datasources',
         'count'     => 0,
         'resources' => [],
@@ -32,11 +32,11 @@ describe 'Middleware Datasources API' do
       get api_middleware_datasources_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(
+      expect(response.parsed_body).to include(
         'name'      => 'middleware_datasources',
         'count'     => 1,
         'resources' => [{
-          'href' => api_middleware_datasource_url(nil, datasource.compressed_id)
+          'href' => api_middleware_datasource_url(nil, datasource)
         }],
         'subcount'  => 1
       )
@@ -47,7 +47,7 @@ describe 'Middleware Datasources API' do
     it 'forbids access to a datasource without an appropriate role' do
       api_basic_authorize
 
-      get api_middleware_datasource_url(nil, datasource.compressed_id)
+      get api_middleware_datasource_url(nil, datasource)
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -55,11 +55,13 @@ describe 'Middleware Datasources API' do
     it 'returns the attributes of one datasource' do
       api_basic_authorize action_identifier(:middleware_datasources, :read, :resource_actions, :get)
 
-      get api_middleware_datasource_url(nil, datasource.compressed_id)
+      get api_middleware_datasource_url(nil, datasource)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['id']).to eq datasource.compressed_id
-      expect(response.parsed_body).to include('href' => api_middleware_datasource_url(nil, datasource.compressed_id))
+      expect(response.parsed_body).to include(
+        'id'   => datasource.id.to_s,
+        'href' => api_middleware_datasource_url(nil, datasource)
+      )
     end
   end
 end
