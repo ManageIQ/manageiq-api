@@ -888,6 +888,8 @@
     - :subcollection
     :verbs: *gpd
     :klass: GenericObject
+    :subcollections:
+    - :tags
     :collection_actions:
       :get:
       - :name: read
@@ -911,6 +913,12 @@
       :delete:
       - :name: delete
         :identifier: generic_object_delete
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: generic_object_edit
+      - :name: unassign
+        :identifier: generic_object_edit
   :groups:
     :description: Groups
     :identifier: rbac_group

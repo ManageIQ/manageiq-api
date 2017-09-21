@@ -1,5 +1,7 @@
 module Api
   class GenericObjectsController < BaseController
+    include Subcollections::Tags
+
     ADDITIONAL_ATTRS = %w(generic_object_definition associations).freeze
 
     before_action :set_additional_attributes

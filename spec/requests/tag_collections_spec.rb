@@ -1108,4 +1108,77 @@ describe "Tag Collections API" do
       expect(response.parsed_body).to include(expected)
     end
   end
+
+  context 'Generic Objects subcollection' do
+    let(:object) { FactoryGirl.create(:generic_object) }
+
+    describe 'POST /api/generic_objects/:id/tags' do
+      it 'cannot assign tags without an appropriate role' do
+        api_basic_authorize
+
+        post(api_generic_object_tags_url(nil, object), :params => { :action => 'assign' })
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it 'can assign tags with an appropriate role' do
+        api_basic_authorize(subcollection_action_identifier(:generic_objects, :tags, :assign))
+
+        post(api_generic_object_tags_url(nil, object), :params => { :action => 'assign', :category => tag1[:category], :name => tag1[:name]})
+
+        expected = {
+          'results' => [
+            a_hash_including('success' => true, 'message' => a_string_including('Assigning Tag'))
+          ]
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it 'cannot assign tags without an appropriate role' do
+        api_basic_authorize
+
+        post(api_generic_object_tags_url(nil, object), :params => { :action => 'unassign' })
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it 'can unassign tags with an appropriate role' do
+        Classification.classify(object, tag1[:category], tag1[:name])
+        api_basic_authorize(subcollection_action_identifier(:generic_objects, :tags, :assign))
+
+        post(api_generic_object_tags_url(nil, object), :params => { :action => 'unassign', :category => tag1[:category], :name => tag1[:name]})
+
+        expected = {
+          'results' => [
+            a_hash_including('success' => true, 'message' => a_string_including('Unassigning Tag'))
+          ]
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+    end
+
+    describe 'GET /api/generic_objects/:id/tags' do
+      before do
+        Classification.classify(object, tag1[:category], tag1[:name])
+      end
+
+      it 'returns tags for a generic object' do
+        api_basic_authorize
+
+        get(api_generic_object_tags_url(nil, object))
+
+        expected = {
+          'name'      => 'tags',
+          'subcount'  => 1,
+          'resources' => [
+            { 'href' => a_string_including(api_generic_object_tags_url(nil, object)) }
+          ]
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+    end
+  end
 end
