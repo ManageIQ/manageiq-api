@@ -1144,4 +1144,45 @@ describe "Providers API" do
       expect(response.parsed_body["data"]["provider_settings"]["kubernetes"]["proxy_settings"]["settings"]["http_proxy"]["label"]).to eq(N_('HTTP Proxy'))
     end
   end
+
+  context 'GET /api/providers/:id/vms' do
+    it 'returns the vms for a provider with an appropriate role' do
+      ems = FactoryGirl.create(:ext_management_system)
+      vm = FactoryGirl.create(:vm_amazon, :ext_management_system => ems)
+      api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
+
+      get(api_provider_vms_url(nil, ems))
+
+      expected = {
+        'name'      => 'vms',
+        'subcount'  => 1,
+        'resources' => [
+          {'href' => api_provider_vm_url(nil, ems, vm)}
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'allows for expansion of vms on a provider' do
+      ems = FactoryGirl.create(:ext_management_system)
+      vm = FactoryGirl.create(:vm_amazon, :ext_management_system => ems)
+      api_basic_authorize collection_action_identifier(:providers, :read, :get)
+      get(api_providers_url, :params => { :expand => 'resources,vms' })
+
+      expected = {
+        'name'      => 'providers',
+        'resources' => [
+          a_hash_including(
+            'href' => api_provider_url(nil, ems),
+            'vms'  => [
+              a_hash_including('href' => api_provider_vm_url(nil, ems, vm))
+            ]
+          )
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
 end
