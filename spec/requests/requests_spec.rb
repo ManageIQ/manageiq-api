@@ -191,7 +191,7 @@ RSpec.describe "Requests API" do
             "description"    => "Service Reconfigure for: #{service.name}",
             "approval_state" => "pending_approval",
             "type"           => "ServiceReconfigureRequest",
-            "requester_name" => api_config(:user_name),
+            "requester_name" => @user.name,
             "options"        => a_hash_including("src_id" => service.id.to_s)
           )
         ]

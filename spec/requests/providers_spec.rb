@@ -162,12 +162,12 @@ describe "Providers API" do
 
     context 'with restricted user' do
       let(:user) do
-        FactoryGirl.create(:user, :miq_groups => [group], :password => api_config(:password), :userid => api_config(:user), :name => api_config(:user_name))
+        FactoryGirl.create(:user, :miq_groups => [group], :password => "api_user_password", :userid => "api_user_id", :name => "API User")
       end
 
       def define_user
         @role = role
-        user
+        @user = user
       end
 
       it 'lists only CloudTenant for the restricted user(indirect association)' do
