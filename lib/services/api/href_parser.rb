@@ -38,10 +38,10 @@ module Api
     end
 
     def href_collection_id
-      cidx = version? ? 3 : 2
-
-      collection, c_id    = path_parts[cidx..cidx + 1]
-      subcollection, s_id = path_parts[cidx + 2..cidx + 3]
+      collection     = path_parts[version? ? 3 : 2]
+      c_id           = path_parts[version? ? 4 : 3]
+      subcollection  = path_parts[version? ? 5 : 4]
+      s_id           = path_parts[version? ? 6 : 5]
 
       subcollection ? [subcollection.to_sym, ApplicationRecord.uncompress_id(s_id)] : [collection.to_sym, ApplicationRecord.uncompress_id(c_id)]
     end
