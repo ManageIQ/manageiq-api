@@ -7,38 +7,27 @@ describe "Automate Workspaces API" do
     let(:aw) { FactoryGirl.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
     it 'should not allow fetching using id' do
       api_basic_authorize action_identifier(:automate_workspaces, :read, :resource_actions, :get)
-
-      run_get(automate_workspaces_url(aw.id))
+      get(api_automate_workspace_url(nil, aw.id))
 
       expect(response).to have_http_status(:not_found)
     end
 
     it 'should allow fetching using guid' do
       api_basic_authorize action_identifier(:automate_workspaces, :read, :resource_actions, :get)
-
-      run_get(automate_workspaces_url(aw.guid))
+      get(api_automate_workspace_url(nil, aw.guid))
 
       expect(response).to have_http_status(:ok)
-    end
-
-    it "forbids listing of all automate workspaces" do
-      api_basic_authorize action_identifier(:automate_workspaces, :read, :resource_actions, :get)
-
-      run_get(automate_workspaces_url)
-
-      expect(response).to have_http_status(:bad_request)
     end
   end
 
   describe 'POST' do
     let(:user) { FactoryGirl.create(:user_with_group, :userid => "admin") }
     let(:aw) { FactoryGirl.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
-    let(:output) { { 'workspace' => { 'root' => { 'a' => '1'} }, 'state_var' => {'b' => 2}} }
+    let(:output) { { 'workspace' => { 'root' => { 'a' => '1'} }, 'state_vars' => {'b' => 2}} }
 
     it 'should allow updating the object with valid data' do
       api_basic_authorize action_identifier(:automate_workspaces, :edit)
-
-      run_post(automate_workspaces_url(aw.guid), :action => 'edit', :resource => output)
+      post(api_automate_workspace_url(nil, aw.guid), :params => {:action => 'edit', :resource => output})
 
       expect(response).to have_http_status(:ok)
     end
@@ -46,7 +35,7 @@ describe "Automate Workspaces API" do
     it 'should send bad request with invalid data' do
       api_basic_authorize action_identifier(:automate_workspaces, :edit)
 
-      run_post(automate_workspaces_url(aw.guid), :action => 'edit', :resource => {})
+      post(api_automate_workspace_url(nil, aw.guid), :params => {:action => 'edit', :resource => {}})
 
       expect(response).to have_http_status(:bad_request)
     end

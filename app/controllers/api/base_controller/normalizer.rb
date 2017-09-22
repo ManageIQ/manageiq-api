@@ -10,12 +10,7 @@ module Api
         attrs = normalize_select_attributes(obj, opts)
         result = {}
 
-        href = if type == :automate_workspaces && obj['href'] 
-                  obj['href']
-               elsif type == :automate_workspaces
-                normalize_href(type, obj['guid'])
-               end
-        href ||= new_href(type, obj["id"], obj["href"])
+        href = new_href(type, obj["id"], obj["href"])
         if href.present?
           result["href"] = href
           attrs -= ["href"]
