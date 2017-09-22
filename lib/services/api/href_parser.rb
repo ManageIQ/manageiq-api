@@ -1,6 +1,14 @@
 module Api
   class HrefParser
     def self.parse(href)
+      new(href).parse
+    end
+
+    def initialize(href)
+      @href = href
+    end
+
+    def parse
       if href
         path = href.match(/^http/) ? URI.parse(href).path.sub!(/\/*$/, '') : href.dup
         path.prepend("/")     unless path.start_with?("/")
@@ -11,7 +19,11 @@ module Api
       [nil, nil]
     end
 
-    def self.href_collection_id(path)
+    private
+
+    attr_reader :href
+
+    def href_collection_id(path)
       path_array = path.split('/')
       cidx = path_array[2] && path_array[2].match(Api::VERSION_REGEX) ? 3 : 2
 
@@ -20,6 +32,5 @@ module Api
 
       subcollection ? [subcollection.to_sym, ApplicationRecord.uncompress_id(s_id)] : [collection.to_sym, ApplicationRecord.uncompress_id(c_id)]
     end
-    private_class_method :href_collection_id
   end
 end
