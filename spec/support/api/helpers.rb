@@ -10,11 +10,10 @@ module Spec
           @role  = FactoryGirl.create(:miq_user_role, :name => "Api User Role")
           @group = FactoryGirl.create(:miq_group, :description => "Api User Group", :miq_user_role => @role)
           @user  = FactoryGirl.create(:user,
-                                      :name             => "API User",
-                                      :userid           => "api_user_id",
-                                      :password         => "api_user_password",
-                                      :miq_groups       => [@group],
-                                      :current_group_id => @group.id)
+                                      :name       => "API User",
+                                      :userid     => "api_user_id",
+                                      :password   => "api_user_password",
+                                      :miq_groups => [@group])
         end
 
         def init_api_spec_env
