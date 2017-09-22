@@ -161,13 +161,9 @@ describe "Providers API" do
     let!(:vm_1)  { FactoryGirl.create(:vm_openstack, :ext_management_system => ems_cinder) }
 
     context 'with restricted user' do
-      let(:user) do
-        FactoryGirl.create(:user, :miq_groups => [group], :password => "api_user_password", :userid => "api_user_id", :name => "API User")
-      end
-
-      def define_user
+      before do
+        @user.update(:miq_groups => [group])
         @role = role
-        @user = user
       end
 
       it 'lists only CloudTenant for the restricted user(indirect association)' do
