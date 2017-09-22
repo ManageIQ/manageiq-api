@@ -1573,6 +1573,7 @@
     - :cloud_tenants
     - :custom_attributes
     - :load_balancers
+    - :vms
     :collection_actions:
       :get:
       - :name: read
