@@ -10,12 +10,20 @@ module Api
 
     def parse
       return [nil, nil] unless href
-      href_collection_id
+      if subcollection?
+        [subcollection.to_sym, ApplicationRecord.uncompress_id(subcollection_id)]
+      else
+        [collection.to_sym, ApplicationRecord.uncompress_id(collection_id)]
+      end
     end
 
     private
 
     attr_reader :href
+
+    def subcollection?
+      !!subcollection
+    end
 
     def path
       path = fully_qualified? ? URI.parse(href).path : ensure_prefix(href)
@@ -35,10 +43,6 @@ module Api
       result.prepend("/")     unless result.start_with?("/")
       result.prepend("/api")  unless result.start_with?("/api")
       result
-    end
-
-    def href_collection_id
-      subcollection ? [subcollection.to_sym, ApplicationRecord.uncompress_id(subcollection_id)] : [collection.to_sym, ApplicationRecord.uncompress_id(collection_id)]
     end
 
     def collection
