@@ -7,7 +7,7 @@ module Api
 
       def metric_rollups_query_resource(object)
         params[:offset] ||= 0
-        params[:limit] ||= Settings.api.metrics_default_limit
+        params[:limit] ||= Settings.api.large_collection_default_limit
         params[:resource_type] = RESOURCE_TYPES[@req.collection] || object.class.to_s
         params[:resource_ids] ||= [object.id]
 
