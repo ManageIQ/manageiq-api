@@ -18,14 +18,14 @@ module Api
     attr_reader :href
 
     def path
-      path = if href =~ /^http/
-               URI.parse(href).path.sub!(/\/*$/, '')
-             else
-               href.dup
-             end
-      path.prepend("/")     unless path.start_with?("/")
-      path.prepend("/api")  unless path.start_with?("/api")
-      path.sub!(/\/*$/, '')
+      if href =~ /^http/
+        URI.parse(href).path.sub!(/\/*$/, '')
+      else
+        path = href.dup
+        path.prepend("/")     unless path.start_with?("/")
+        path.prepend("/api")  unless path.start_with?("/api")
+        path.sub!(/\/*$/, '')
+      end
     end
 
     def href_collection_id(path)
