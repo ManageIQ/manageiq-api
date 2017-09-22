@@ -2,7 +2,7 @@ module Api
   class MetricRollupsController < BaseController
     def index
       params[:offset] ||= 0
-      params[:limit] ||= Settings.api.metrics_default_limit
+      params[:limit] ||= Settings.api.large_collection_default_limit
 
       rollups_service = MetricRollupsService.new(params)
       resources = rollups_service.query_metric_rollups
