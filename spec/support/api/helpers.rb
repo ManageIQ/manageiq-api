@@ -12,8 +12,7 @@ module Spec
             :password   => "api_user_password",
             :user_name  => "API User",
             :group_name => "API User Group",
-            :role_name  => "API User Role",
-            :entrypoint => "/api"
+            :role_name  => "API User Role"
           }
           @api_config[param]
         end
