@@ -10,16 +10,19 @@ module Api
 
     def parse
       return [nil, nil] unless href
-      path = href =~ /^http/ ? URI.parse(href).path.sub!(/\/*$/, '') : href.dup
-      path.prepend("/")     unless path.start_with?("/")
-      path.prepend("/api")  unless path.start_with?("/api")
-      path.sub!(/\/*$/, '')
       href_collection_id(path)
     end
 
     private
 
     attr_reader :href
+
+    def path
+      path = href =~ /^http/ ? URI.parse(href).path.sub!(/\/*$/, '') : href.dup
+      path.prepend("/")     unless path.start_with?("/")
+      path.prepend("/api")  unless path.start_with?("/api")
+      path.sub!(/\/*$/, '')
+    end
 
     def href_collection_id(path)
       path_array = path.split('/')
