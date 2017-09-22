@@ -10,7 +10,7 @@ module Api
 
     def parse
       return [nil, nil] unless href
-      href_collection_id(path)
+      href_collection_id
     end
 
     private
@@ -37,7 +37,7 @@ module Api
       result
     end
 
-    def href_collection_id(path)
+    def href_collection_id
       path_array = path.split('/')
       cidx = path_array[2] && path_array[2].match(Api::VERSION_REGEX) ? 3 : 2
 
