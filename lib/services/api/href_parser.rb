@@ -21,15 +21,19 @@ module Api
       if href =~ /^http/
         remove_trailing_slashes(URI.parse(href).path)
       else
-        path = href.dup
-        path.prepend("/")     unless path.start_with?("/")
-        path.prepend("/api")  unless path.start_with?("/api")
-        remove_trailing_slashes(path)
+        remove_trailing_slashes(ensure_prefix(href))
       end
     end
 
     def remove_trailing_slashes(str)
       str.sub(/\/*$/, '')
+    end
+
+    def ensure_prefix(str)
+      result = str.dup
+      result.prepend("/")     unless result.start_with?("/")
+      result.prepend("/api")  unless result.start_with?("/api")
+      result
     end
 
     def href_collection_id(path)
