@@ -18,11 +18,15 @@ module Api
     attr_reader :href
 
     def path
-      if href =~ /^http/
+      if fully_qualified?
         remove_trailing_slashes(URI.parse(href).path)
       else
         remove_trailing_slashes(ensure_prefix(href))
       end
+    end
+
+    def fully_qualified?
+      href =~ /^http/
     end
 
     def remove_trailing_slashes(str)
