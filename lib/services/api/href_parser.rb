@@ -10,9 +10,9 @@ module Api
 
     def parse
       if href
-        path = href.match(/^http/) ? URI.parse(href).path.sub!(/\/*$/, '') : href.dup
+        path = href =~ /^http/ ? URI.parse(href).path.sub!(/\/*$/, '') : href.dup
         path.prepend("/")     unless path.start_with?("/")
-        path.prepend("/api")  unless path.match("/api")
+        path.prepend("/api")  unless path.start_with?("/api")
         path.sub!(/\/*$/, '')
         return href_collection_id(path)
       end
