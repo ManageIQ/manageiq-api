@@ -18,7 +18,11 @@ module Api
     attr_reader :href
 
     def path
-      path = href =~ /^http/ ? URI.parse(href).path.sub!(/\/*$/, '') : href.dup
+      path = if href =~ /^http/
+               URI.parse(href).path.sub!(/\/*$/, '')
+             else
+               href.dup
+             end
       path.prepend("/")     unless path.start_with?("/")
       path.prepend("/api")  unless path.start_with?("/api")
       path.sub!(/\/*$/, '')
