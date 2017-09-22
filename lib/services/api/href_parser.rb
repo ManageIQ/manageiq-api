@@ -9,14 +9,12 @@ module Api
     end
 
     def parse
-      if href
-        path = href =~ /^http/ ? URI.parse(href).path.sub!(/\/*$/, '') : href.dup
-        path.prepend("/")     unless path.start_with?("/")
-        path.prepend("/api")  unless path.start_with?("/api")
-        path.sub!(/\/*$/, '')
-        return href_collection_id(path)
-      end
-      [nil, nil]
+      return [nil, nil] unless href
+      path = href =~ /^http/ ? URI.parse(href).path.sub!(/\/*$/, '') : href.dup
+      path.prepend("/")     unless path.start_with?("/")
+      path.prepend("/api")  unless path.start_with?("/api")
+      path.sub!(/\/*$/, '')
+      href_collection_id(path)
     end
 
     private
