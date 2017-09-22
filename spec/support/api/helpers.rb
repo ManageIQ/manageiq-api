@@ -6,7 +6,9 @@ module Spec
   module Support
     module Api
       module Helpers
-        def define_user
+        def init_api_spec_env
+          @guid, @server, @zone = EvmSpecHelper.create_guid_miq_server_zone
+          @region = FactoryGirl.create(:miq_region, :region => ApplicationRecord.my_region_number)
           @role  = FactoryGirl.create(:miq_user_role, :name => "Api User Role")
           @group = FactoryGirl.create(:miq_group, :description => "Api User Group", :miq_user_role => @role)
           @user  = FactoryGirl.create(:user,
@@ -14,13 +16,6 @@ module Spec
                                       :userid     => "api_user_id",
                                       :password   => "api_user_password",
                                       :miq_groups => [@group])
-        end
-
-        def init_api_spec_env
-          @guid, @server, @zone = EvmSpecHelper.create_guid_miq_server_zone
-          @region = FactoryGirl.create(:miq_region, :region => ApplicationRecord.my_region_number)
-
-          define_user
         end
 
         def api_basic_authorize(*identifiers)
