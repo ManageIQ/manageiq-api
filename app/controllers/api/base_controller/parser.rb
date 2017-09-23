@@ -39,22 +39,6 @@ module Api
         send("validate_#{@req.method}_method")
       end
 
-      #
-      # Given an HREF, return the related collection,id pair
-      # or subcollection,id pair if it represents a subcollection.
-      #   [http://.../api[/v#.#]]/<collection>/<c_id>
-      #   [http://.../api[/v#.#]]/collection/c_id/<subcollection>/<s_id>
-      #
-      #   [/api/v#.#]/<collection>/<c_id>
-      #   [/api/v#.#]/collection/c_id/<subcollection>/<s_id>
-      #
-      #   <collection>/<c_id>
-      #   collection/c_id/<subcollection>/<s_id>
-      #
-      def parse_href(href)
-        HrefParser.parse(href)
-      end
-
       def parse_id(resource, collection)
         return nil if resource.blank?
 
