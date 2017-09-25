@@ -252,6 +252,23 @@
       :post:
       - :name: refresh_from_source
         :identifier: miq_ae_git_refresh
+  :automate_workspaces:
+    :description: Automate Workspaces
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: AutomateWorkspace
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_ae_domain_view
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: miq_ae_domain_view
+      :post:
+      - :name: edit
+        :identifier: miq_ae_domain_view
   :automation_requests:
     :description: Automation Requests
     :options:
