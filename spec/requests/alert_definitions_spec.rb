@@ -71,7 +71,7 @@ describe "Alerts Definitions API" do
     sample_alert_definition = {
       "description" => "Test Alert Definition",
       "db"          => "ContainerNode",
-      "expression"  => { "eval_method" => "dwh_generic", "mode" => "internal", "options" => {} },
+      "expression"  => {"exp" => {"=" => {"field" => "Vm-name", "value" => "foo"}}, "context_type" => nil},
       "options"     => { "notifications" => {"delay_next_evaluation" => 600, "evm_event" => {} } },
       "enabled"     => true
     }
@@ -89,6 +89,66 @@ describe "Alerts Definitions API" do
         "exp" => sample_alert_definition["expression"]
       )
     )
+  end
+
+  it "creates an alert definition with miq_expression" do
+    sample_alert_definition = {
+      "description"    => "Test Alert Definition",
+      "db"             => "ContainerNode",
+      "miq_expression" => {"exp" => {"=" => {"field" => "Vm-name", "value" => "foo"}}, "context_type" => nil},
+      "options"        => { "notifications" => {"delay_next_evaluation" => 600, "evm_event" => {} } },
+      "enabled"        => true
+    }
+    api_basic_authorize collection_action_identifier(:alert_definitions, :create)
+    post(api_alert_definitions_url, :params => sample_alert_definition)
+    expect(response).to have_http_status(:ok)
+    alert_definition = MiqAlert.find(response.parsed_body["results"].first["id"])
+    expect(alert_definition).to be_truthy
+    expect(alert_definition.expression.class).to eq(MiqExpression)
+    expect(alert_definition.expression.exp).to eq(sample_alert_definition["miq_expression"])
+    expect(response.parsed_body["results"].first).to include(
+      "description" => sample_alert_definition["description"],
+      "db"          => sample_alert_definition["db"],
+      "expression"  => a_hash_including(
+        "exp" => sample_alert_definition["miq_expression"]
+      )
+    )
+  end
+
+  it "creates an alert definition with hash_expression" do
+    sample_alert_definition = {
+      "description"     => "Test Alert Definition",
+      "db"              => "ContainerNode",
+      "hash_expression" => { "eval_method" => "dwh_generic", "mode" => "internal", "options" => {} },
+      "options"         => { "notifications" => {"delay_next_evaluation" => 0, "evm_event" => {} } },
+      "enabled"         => true
+    }
+    api_basic_authorize collection_action_identifier(:alert_definitions, :create)
+    post(api_alert_definitions_url, :params => sample_alert_definition)
+    expect(response).to have_http_status(:ok)
+    alert_definition = MiqAlert.find(response.parsed_body["results"].first["id"])
+    expect(alert_definition).to be_truthy
+    expect(alert_definition.expression.class).to eq(Hash)
+    expect(alert_definition.expression).to eq(sample_alert_definition["hash_expression"].deep_symbolize_keys)
+    expect(response.parsed_body["results"].first).to include(
+      "description" => sample_alert_definition["description"],
+      "db"          => sample_alert_definition["db"],
+      "expression"  => sample_alert_definition["hash_expression"]
+    )
+  end
+
+  it "fails to create an alert definition with more than one expression" do
+    sample_alert_definition = {
+      "description"     => "Test Alert Definition",
+      "db"              => "ContainerNode",
+      "hash_expression" => { "eval_method" => "nothing", "mode" => "internal", "options" => {} },
+      "miq_expression"  => { "exp" => {"=" => {"field" => "Vm-name", "value" => "foo"}}, "context_type" => nil },
+      "options"         => { "notifications" => {"delay_next_evaluation" => 600, "evm_event" => {} } },
+      "enabled"         => true
+    }
+    api_basic_authorize collection_action_identifier(:alert_definitions, :create)
+    post(api_alert_definitions_url, :params => sample_alert_definition)
+    expect(response).to have_http_status(:bad_request)
   end
 
   it "deletes an alert definition via POST" do
@@ -122,7 +182,7 @@ describe "Alerts Definitions API" do
     api_basic_authorize(action_identifier(:alert_definitions, :edit, :resource_actions, :post))
     alert_definition = FactoryGirl.create(
       :miq_alert,
-      :expression => { :eval_method => "mw_heap_used", :mode => "internal", :options => {} },
+      :expression => { "exp" => {"=" => {"field" => "Vm-name", "value" => "foo"}}},
       :options    => { :notifications => {:delay_next_evaluation => 0, :evm_event => {} } }
     )
 
@@ -140,11 +200,7 @@ describe "Alerts Definitions API" do
     )
 
     expected = {
-      "expression" => {
-        "eval_method" => "mw_heap_used",
-        "mode"        => "internal",
-        "options"     => {}
-      },
+      "expression" => alert_definition.expression,
       "options"    => {
         "notifications" => {
           "delay_next_evaluation" => 60,
@@ -154,6 +210,74 @@ describe "Alerts Definitions API" do
     }
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(expected)
+  end
+
+  it "edits an alert definition with miq_expression" do
+    api_basic_authorize(action_identifier(:alert_definitions, :edit, :resource_actions, :post))
+    alert_definition = FactoryGirl.create(
+      :miq_alert,
+      :miq_expression => MiqExpression.new("exp" => {"=" => {"field" => "Vm-name", "value" => "foo"}}),
+      :options        => { :notifications => {:delay_next_evaluation => 0, :evm_event => {} } }
+    )
+
+    exp = { :eval_method => "nothing", :mode => "internal", :options => {} }
+
+    post(
+      api_alert_definition_url(nil, alert_definition),
+      :params => {
+        :action          => "edit",
+        :miq_expression  => nil,
+        :hash_expression => exp
+      }
+    )
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include("hash_expression" => exp.stringify_keys)
+  end
+
+  it "edits an alert definition with hash_expression to replace with miq_expression" do
+    api_basic_authorize(action_identifier(:alert_definitions, :edit, :resource_actions, :post))
+    alert_definition = FactoryGirl.create(
+      :miq_alert,
+      :hash_expression => { :eval_method => "nothing", :mode => "internal", :options => {} },
+      :options         => { :notifications => {:delay_next_evaluation => 0, :evm_event => {} } }
+    )
+
+    exp = {"=" => {"field" => "Vm-name", "value" => "foo"}}
+
+    post(
+      api_alert_definition_url(nil, alert_definition),
+      :params => {
+        :action          => "edit",
+        :miq_expression  => exp,
+        :hash_expression => nil
+      }
+    )
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include(
+      "miq_expression" => {"exp" => exp, "context_type" => nil}
+    )
+  end
+
+  it "fails to edit an alert definition with more than one expression" do
+    api_basic_authorize(action_identifier(:alert_definitions, :edit, :resource_actions, :post))
+    alert_definition = FactoryGirl.create(
+      :miq_alert,
+      :hash_expression => { :eval_method => "nothing", :mode => "internal", :options => {} },
+      :options         => { :notifications => {:delay_next_evaluation => 0, :evm_event => {} } }
+    )
+
+    post(
+      api_alert_definition_url(nil, alert_definition),
+      :params => {
+        :action          => "edit",
+        :hash_expression => { :eval_method => "event_threshold", :mode => "internal", :options => {} },
+        :miq_expression  => { "exp" => {"=" => {"field" => "Vm-name", "value" => "foo"} } }
+      }
+    )
+
+    expect(response).to have_http_status(:bad_request)
   end
 
   it "edits alert definitions" do
