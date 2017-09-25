@@ -91,8 +91,8 @@ module Api
                                end
                              end
 
-      if filter_attr =~ /[_]?id$/ && ApplicationRecord.compressed_id?(filter_value)
-        filter_value = ApplicationRecord.uncompress_id(filter_value)
+      if filter_attr =~ /[_]?id$/ && Api.compressed_id?(filter_value)
+        filter_value = Api.uncompress_id(filter_value)
       end
 
       if filter_value =~ /%|\*/

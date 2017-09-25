@@ -33,4 +33,17 @@ module Api
   def self.resource_attribute?(attr)
     Environment.resource_attributes.include?(attr.to_s)
   end
+
+  # Since `ApplicationRecord.compressed_id?` returns truthy for
+  # uncompressed ids (it should be more properly named `cid_or_id?` or
+  # similar), we need a way to distinquish compressed ids from
+  # anything else so that we can deprecate their usage.
+  def self.compressed_id?(thing)
+    !!(ApplicationRecord::RE_COMPRESSED_ID =~ thing.to_s)
+  end
+
+  def self.uncompress_id(id)
+    $api_log.warn("The use of compressed ids is deprecated, and the support for which will be removed in a future release.")
+    ApplicationRecord.uncompress_id(id)
+  end
 end

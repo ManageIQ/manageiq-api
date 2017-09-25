@@ -2,15 +2,15 @@
 # REST API Logging Tests
 #
 describe "Logging" do
+  before do
+    @log = StringIO.new
+    @logger = Logger.new(@log)
+    $api_log.loggers << @logger
+  end
+
+  after { $api_log.loggers.delete(@logger) }
+
   describe "Successful Requests logging" do
-    before do
-      @log = StringIO.new
-      @logger = Logger.new(@log)
-      $api_log.loggers << @logger
-    end
-
-    after { $api_log.loggers.delete(@logger) }
-
     it "logs hashed details about the request" do
       api_basic_authorize collection_action_identifier(:users, :read, :get)
 
@@ -62,6 +62,77 @@ describe "Logging" do
           'Authentication: {:type=>"system", :token=>nil, :x_miq_group=>nil, :user=>"api_user_id"}'
         )
       end
+    end
+  end
+
+  describe "deprecations" do
+    it "logs the deprecated use of compressed ids in the collection id portion of the URL" do
+      vm = FactoryGirl.create(:vm_vmware)
+      api_basic_authorize(action_identifier(:vms, :read, :resource_actions, :get))
+
+      get(api_vm_url(nil, vm.compressed_id))
+
+      expect(@log.string).to include("The use of compressed ids is deprecated")
+    end
+
+    it "logs the deprecated use of compressed ids in the subcollection id portion of the URL" do
+      vm = FactoryGirl.create(:vm_vmware)
+      snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
+      api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :read, :get))
+
+      get(api_vm_snapshot_url(nil, vm, snapshot.compressed_id))
+
+      expect(@log.string).to include("The use of compressed ids is deprecated")
+    end
+
+    it "logs the deprecated use of compressed ids in the resource body" do
+      notification = FactoryGirl.create(:notification, :initiator => @user)
+      notification_recipient = notification.notification_recipients.first
+      api_basic_authorize
+
+      post(api_notifications_url, :params => {:action => :delete, :id => notification_recipient.compressed_id})
+
+      expect(@log.string).to include("The use of compressed ids is deprecated")
+    end
+
+    it "logs the deprecated use of compressed ids in hrefs in the resource body" do
+      notification = FactoryGirl.create(:notification, :initiator => @user)
+      notification_recipient = notification.notification_recipients.first
+      api_basic_authorize
+
+      post(
+        api_notifications_url,
+        :params => {
+          :action => :delete,
+          :href   => api_notification_url(nil, notification_recipient.compressed_id)
+        }
+      )
+
+      expect(@log.string).to include("The use of compressed ids is deprecated")
+    end
+
+    specify "uncompressed ids in hrefs in the resource body are not deprecated" do
+      notification = FactoryGirl.create(:notification, :initiator => @user)
+      notification_recipient = notification.notification_recipients.first
+      api_basic_authorize
+
+      post(
+        api_notifications_url,
+        :params => {
+          :action => :delete,
+          :href   => api_notification_url(nil, notification_recipient)
+        }
+      )
+
+      expect(@log.string).not_to include("The use of compressed ids is deprecated")
+    end
+
+    it "logs the deprecated use of compressed ids in the filter" do
+      api_basic_authorize(collection_action_identifier(:vms, :read, :get))
+
+      get(api_vms_url, :params => {:filter => ["id = 1r1"]})
+
+      expect(@log.string).to include("The use of compressed ids is deprecated")
     end
   end
 end

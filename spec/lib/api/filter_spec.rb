@@ -68,7 +68,7 @@ RSpec.describe Api::Filter do
 
       actual = described_class.parse(filters, Vm)
 
-      expected = {"<" => {"field" => "Vm-id", "value" => 1_000_000_000_123}}
+      expected = {"<" => {"field" => "Vm-id", "value" => "1000000000123"}}
       expect(actual.exp).to eq(expected)
     end
 
@@ -77,7 +77,7 @@ RSpec.describe Api::Filter do
 
       actual = described_class.parse(filters, Vm)
 
-      expected = {"<=" => {"field" => "Vm-id", "value" => 1_000_000_000_123}}
+      expected = {"<=" => {"field" => "Vm-id", "value" => "1000000000123"}}
       expect(actual.exp).to eq(expected)
     end
 
@@ -86,7 +86,7 @@ RSpec.describe Api::Filter do
 
       actual = described_class.parse(filters, Vm)
 
-      expected = {">" => {"field" => "Vm-id", "value" => 1_000_000_000_123}}
+      expected = {">" => {"field" => "Vm-id", "value" => "1000000000123"}}
       expect(actual.exp).to eq(expected)
     end
 
@@ -95,7 +95,7 @@ RSpec.describe Api::Filter do
 
       actual = described_class.parse(filters, Vm)
 
-      expected = {">=" => {"field" => "Vm-id", "value" => 1_000_000_000_123}}
+      expected = {">=" => {"field" => "Vm-id", "value" => "1000000000123"}}
       expect(actual.exp).to eq(expected)
     end
 
@@ -106,8 +106,8 @@ RSpec.describe Api::Filter do
 
       expected = {
         "OR" => [
-          {"=" => {"field" => "Vm-id", "value" => 1_000_000_000_123}},
-          {">" => {"field" => "Vm-id", "value" => 1_000_000_000_456}}
+          {"=" => {"field" => "Vm-id", "value" => "1000000000123"}},
+          {">" => {"field" => "Vm-id", "value" => "1000000000456"}}
         ]
       }
       expect(actual.exp).to eq(expected)
@@ -120,7 +120,7 @@ RSpec.describe Api::Filter do
 
       expected = {
         "AND" => [
-          {"=" => {"field" => "Vm-id", "value" => 1_000_000_000_123}},
+          {"=" => {"field" => "Vm-id", "value" => "1000000000123"}},
           {"=" => {"field" => "Vm-name", "value" => "foo"}}
         ]
       }
@@ -136,11 +136,11 @@ RSpec.describe Api::Filter do
         "OR" => [
           {
             "AND" => [
-              {"=" => {"field" => "Vm-id", "value" => 1_000_000_000_123}},
+              {"=" => {"field" => "Vm-id", "value" => "1000000000123"}},
               {"=" => {"field" => "Vm-name", "value" => "foo"}}
             ]
           },
-          {">" => {"field" => "Vm-id", "value" => 1_000_000_000_456}}
+          {">" => {"field" => "Vm-id", "value" => "1000000000456"}}
         ]
       }
       expect(actual.exp).to eq(expected)
