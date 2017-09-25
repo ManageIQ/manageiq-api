@@ -207,6 +207,34 @@ RSpec.describe "users API" do
       expect(user1.reload.miq_groups).to match_array([group2, group3])
     end
 
+    it "allows for editing of multiple miq_groups and current_user of authenticated user" do
+      api_basic_authorize collection_action_identifier(:users, :edit)
+      group3 = FactoryGirl.create(:miq_group)
+
+      request = {
+        "action"    => "edit",
+        "resources" => [{
+          "href"          => api_user_url(nil, @user),
+          "miq_groups"    => [
+            { "id" => group2.id.to_s },
+            { "href" => api_group_url(nil, group3) },
+          ],
+          "current_group" => {
+            "href" => api_group_url(nil, group3)
+          }
+        }]
+      }
+      post(api_users_url, :params => request)
+
+      expected = {
+        'results' => [
+          a_hash_including("current_group_id" => group3.id.to_s)
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
     it "rejects user edits without appropriate role" do
       api_basic_authorize
 

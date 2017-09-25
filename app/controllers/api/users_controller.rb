@@ -2,7 +2,7 @@ module Api
   class UsersController < BaseController
     INVALID_USER_ATTRS = %w(id href current_group_id settings).freeze # Cannot update other people's settings
     INVALID_SELF_USER_ATTRS = %w(id href current_group_id).freeze
-    EDITABLE_ATTRS = %w(password email settings group current_group).freeze
+    EDITABLE_ATTRS = %w(password email settings group current_group miq_groups).freeze
 
     include Subcollections::Tags
 
