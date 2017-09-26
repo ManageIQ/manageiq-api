@@ -1099,7 +1099,7 @@
     :options:
     - :collection
     :subcollections:
-    - :custom_attributes 
+    - :custom_attributes
     - :load_balancers
     - :snapshots
     :collection_actions:
