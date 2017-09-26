@@ -2,3 +2,4 @@
   :token_ttl: 10.minutes
   :authentication_timeout: 30.seconds
   :metrics_default_limit: 1000
+  :event_streams_default_limit: 1000
