@@ -256,6 +256,7 @@
     :description: Automate Workspaces
     :options:
     - :collection
+    - :hide_resources
     :verbs: *gp
     :klass: AutomateWorkspace
     :collection_actions:

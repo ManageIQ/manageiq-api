@@ -5,6 +5,16 @@ describe "Automate Workspaces API" do
   describe 'GET' do
     let(:user) { FactoryGirl.create(:user_with_group, :userid => "admin") }
     let(:aw) { FactoryGirl.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
+
+    it 'should not return resources when fetching the collection' do
+      api_basic_authorize collection_action_identifier(:automate_workspaces, :read, :get)
+      aw
+      get(api_automate_workspaces_url)
+
+      expect(response.parsed_body).not_to include("resources")
+      expect(response).to have_http_status(:ok)
+    end
+
     it 'should not allow fetching using id' do
       api_basic_authorize action_identifier(:automate_workspaces, :read, :resource_actions, :get)
       get(api_automate_workspace_url(nil, aw.id))
