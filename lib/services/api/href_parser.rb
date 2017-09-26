@@ -26,8 +26,7 @@ module Api
     end
 
     def path
-      path = fully_qualified? ? URI.parse(href).path : ensure_prefix(href)
-      remove_trailing_slashes(path)
+      @path ||= remove_trailing_slashes(fully_qualified? ? URI.parse(href).path : ensure_prefix(href))
     end
 
     def fully_qualified?
@@ -66,7 +65,7 @@ module Api
     end
 
     def path_parts
-      path.split("/")
+      @path_parts ||= path.split("/")
     end
   end
 end
