@@ -23,7 +23,7 @@ describe "Automate Workspaces API" do
   describe 'POST' do
     let(:user) { FactoryGirl.create(:user_with_group, :userid => "admin") }
     let(:aw) { FactoryGirl.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
-    let(:output) { { 'workspace' => { 'root' => { 'a' => '1'} }, 'state_vars' => {'b' => 2}} }
+    let(:output) { { 'objects' => { 'root' => { 'a' => '1'} }, 'state_vars' => {'b' => 2}} }
 
     it 'should allow updating the object with valid data' do
       api_basic_authorize action_identifier(:automate_workspaces, :edit)
