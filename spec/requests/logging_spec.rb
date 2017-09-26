@@ -49,7 +49,7 @@ describe "Logging" do
     it "logs additional system authentication with miq_token" do
       Timecop.freeze("2017-01-01 00:00:00 UTC") do
         server_guid = MiqServer.first.guid
-        userid = api_config(:user)
+        userid = @user.userid
         timestamp = Time.now.utc
 
         miq_token = MiqPassword.encrypt({:server_guid => server_guid, :userid => userid, :timestamp => timestamp}.to_yaml)

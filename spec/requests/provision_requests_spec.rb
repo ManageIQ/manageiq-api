@@ -61,8 +61,8 @@ describe "Provision Requests API" do
 
     let(:expected_provreq_hash) do
       {
-        "userid"         => api_config(:user),
-        "requester_name" => api_config(:user_name),
+        "userid"         => @user.userid,
+        "requester_name" => @user.name,
         "approval_state" => "pending_approval",
         "type"           => "MiqProvisionRequest",
         "request_type"   => "template",
@@ -185,15 +185,15 @@ describe "Provision Requests API" do
       {
         "template_fields" => {"guid" => template.guid},
         "vm_fields"       => {"number_of_cpus" => 1, "vm_name" => "api_test"},
-        "requester"       => {"user_name" => api_config(:user)}
+        "requester"       => {"user_name" => @user.userid}
       }
     end
 
     let(:expected_attributes) { %w(id options) }
     let(:expected_hash) do
       {
-        "userid"         => api_config(:user),
-        "requester_name" => api_config(:user_name),
+        "userid"         => @user.userid,
+        "requester_name" => @user.name,
         "approval_state" => "pending_approval",
         "type"           => "MiqProvisionRequest",
         "request_type"   => "template",

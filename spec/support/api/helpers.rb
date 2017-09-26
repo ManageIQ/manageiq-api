@@ -6,39 +6,21 @@ module Spec
   module Support
     module Api
       module Helpers
-        def api_config(param)
-          @api_config ||= {
-            :user       => "api_user_id",
-            :password   => "api_user_password",
-            :user_name  => "API User",
-            :group_name => "API User Group",
-            :role_name  => "API User Role",
-            :entrypoint => "/api"
-          }
-          @api_config[param]
-        end
-
-        def define_user
-          @role  = FactoryGirl.create(:miq_user_role, :name => api_config(:role_name))
-          @group = FactoryGirl.create(:miq_group, :description => api_config(:group_name), :miq_user_role => @role)
-          @user  = FactoryGirl.create(:user,
-                                      :name             => api_config(:user_name),
-                                      :userid           => api_config(:user),
-                                      :password         => api_config(:password),
-                                      :miq_groups       => [@group],
-                                      :current_group_id => @group.id)
-        end
-
         def init_api_spec_env
           @guid, @server, @zone = EvmSpecHelper.create_guid_miq_server_zone
           @region = FactoryGirl.create(:miq_region, :region => ApplicationRecord.my_region_number)
-
-          define_user
+          @role  = FactoryGirl.create(:miq_user_role, :name => "Api User Role")
+          @group = FactoryGirl.create(:miq_group, :description => "Api User Group", :miq_user_role => @role)
+          @user  = FactoryGirl.create(:user,
+                                      :name       => "API User",
+                                      :userid     => "api_user_id",
+                                      :password   => "api_user_password",
+                                      :miq_groups => [@group])
         end
 
         def api_basic_authorize(*identifiers)
           update_user_role(@role, *identifiers)
-          basic_authorize api_config(:user), api_config(:password)
+          basic_authorize @user.userid, @user.password
         end
 
         def basic_authorize(user, password)

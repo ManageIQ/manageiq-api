@@ -260,7 +260,7 @@ describe "Authentication API" do
     it "authentication using a token with a bad server guid" do
       get(
         api_entrypoint_url,
-        :headers => {Api::HttpHeaders::MIQ_TOKEN => systoken("bad_server_guid", api_config(:user), Time.now.utc)}
+        :headers => {Api::HttpHeaders::MIQ_TOKEN => systoken("bad_server_guid", @user.userid, Time.now.utc)}
       )
 
       expect(response).to have_http_status(:unauthorized)
@@ -282,7 +282,7 @@ describe "Authentication API" do
     end
 
     it "authentication using a token with an old timestamp" do
-      miq_token = systoken(MiqServer.first.guid, api_config(:user), 10.minutes.ago.utc)
+      miq_token = systoken(MiqServer.first.guid, @user.userid, 10.minutes.ago.utc)
 
       get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
 
@@ -293,7 +293,7 @@ describe "Authentication API" do
     end
 
     it "authentication using a valid token succeeds" do
-      miq_token = systoken(MiqServer.first.guid, api_config(:user), Time.now.utc)
+      miq_token = systoken(MiqServer.first.guid, @user.userid, Time.now.utc)
 
       get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
 

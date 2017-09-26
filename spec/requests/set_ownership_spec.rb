@@ -51,7 +51,7 @@ describe "Set Ownership" do
     it "to a service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"userid" => @user.userid}))
 
       expect_set_ownership_success(svc, api_service_url(nil, svc), @user)
     end
@@ -99,7 +99,7 @@ describe "Set Ownership" do
     it "with owner and group to a service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_service_url(nil, svc), :params => gen_request(:set_ownership, "owner" => {"userid" => @user.userid}))
 
       expect_set_ownership_success(svc, api_service_url(nil, svc), @user)
     end
@@ -111,7 +111,7 @@ describe "Set Ownership" do
       svc2 = FactoryGirl.create(:service, :name => "svc2", :description => "svc2 description")
 
       svc_urls = [api_service_url(nil, svc1), api_service_url(nil, svc2)]
-      post(api_services_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => api_config(:user)}}, *svc_urls))
+      post(api_services_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => @user.userid}}, *svc_urls))
 
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_service_url(nil, svc1), api_service_url(nil, svc2)])
@@ -158,7 +158,7 @@ describe "Set Ownership" do
     it "to a vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"userid" => @user.userid}))
 
       expect_set_ownership_success(vm, api_vm_url(nil, vm), @user)
     end
@@ -206,7 +206,7 @@ describe "Set Ownership" do
     it "with owner and group to a vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_vm_url(nil, vm), :params => gen_request(:set_ownership, "owner" => {"userid" => @user.userid}))
 
       expect_set_ownership_success(vm, api_vm_url(nil, vm), @user)
     end
@@ -218,7 +218,7 @@ describe "Set Ownership" do
       vm2 = FactoryGirl.create(:vm, :name => "vm2", :description => "vm2 description")
 
       vm_urls = [api_vm_url(nil, vm1), api_vm_url(nil, vm2)]
-      post(api_vms_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => api_config(:user)}}, *vm_urls))
+      post(api_vms_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => @user.userid}}, *vm_urls))
 
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
@@ -265,7 +265,7 @@ describe "Set Ownership" do
     it "to a template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"userid" => @user.userid}))
 
       expect_set_ownership_success(template, api_template_url(nil, template), @user)
     end
@@ -314,7 +314,7 @@ describe "Set Ownership" do
     it "with owner and group to a template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"userid" => api_config(:user)}))
+      post(api_template_url(nil, template), :params => gen_request(:set_ownership, "owner" => {"userid" => @user.userid}))
 
       expect_set_ownership_success(template, api_template_url(nil, template), @user)
     end
@@ -326,7 +326,7 @@ describe "Set Ownership" do
       template2 = FactoryGirl.create(:template_vmware, :name => "template2")
 
       template_urls = [api_template_url(nil, template1), api_template_url(nil, template2)]
-      post(api_templates_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => api_config(:user)}}, *template_urls))
+      post(api_templates_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => @user.userid}}, *template_urls))
 
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_template_url(nil, template1), api_template_url(nil, template2)])

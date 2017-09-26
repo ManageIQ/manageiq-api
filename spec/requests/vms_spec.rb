@@ -721,7 +721,7 @@ describe "Vms API" do
     it "set_owner to a vm" do
       api_basic_authorize action_identifier(:vms, :set_owner)
 
-      post(vm_url, :params => gen_request(:set_owner, "owner" => api_config(:user)))
+      post(vm_url, :params => gen_request(:set_owner, "owner" => @user.userid))
 
       expect_single_action_result(:success => true, :message => "setting owner", :href => api_vm_url(nil, vm))
       expect(vm.reload.evm_owner).to eq(@user)
@@ -730,7 +730,7 @@ describe "Vms API" do
     it "set_owner to multiple vms" do
       api_basic_authorize action_identifier(:vms, :set_owner)
 
-      post(api_vms_url, :params => gen_request(:set_owner, {"owner" => api_config(:user)}, vm1_url, vm2_url))
+      post(api_vms_url, :params => gen_request(:set_owner, {"owner" => @user.userid}, vm1_url, vm2_url))
 
       expect_multiple_action_result(2)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])

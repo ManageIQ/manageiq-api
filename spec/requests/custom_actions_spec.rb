@@ -26,7 +26,7 @@ describe "Custom Actions API" do
                        :name        => "button1",
                        :description => "button one",
                        :applies_to  => template1,
-                       :userid      => api_config(:user))
+                       :userid      => @user.userid)
   end
 
   let(:button2) do
@@ -34,7 +34,7 @@ describe "Custom Actions API" do
                        :name        => "button2",
                        :description => "button two",
                        :applies_to  => template1,
-                       :userid      => api_config(:user))
+                       :userid      => @user.userid)
   end
 
   let(:button3) do
@@ -42,7 +42,7 @@ describe "Custom Actions API" do
                        :name        => "button3",
                        :description => "button three",
                        :applies_to  => template1,
-                       :userid      => api_config(:user))
+                       :userid      => @user.userid)
   end
 
   let(:button_group1) do
@@ -200,7 +200,7 @@ describe "Custom Actions API" do
       template2 = FactoryGirl.create(:service_template, :name => "template2")
       dialog2   = FactoryGirl.create(:dialog, :label => "dialog2")
       ra2       = FactoryGirl.create(:resource_action, :dialog_id => dialog2.id)
-      button2   = FactoryGirl.create(:custom_button, :applies_to => template2, :userid => api_config(:user))
+      button2   = FactoryGirl.create(:custom_button, :applies_to => template2, :userid => @user.userid)
       svc2      = FactoryGirl.create(:service, :name => "svc2", :service_template_id => template2.id)
       button2.resource_action = ra2
 
