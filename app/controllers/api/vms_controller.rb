@@ -5,6 +5,7 @@ module Api
     include Subcollections::PolicyProfiles
     include Subcollections::Accounts
     include Subcollections::CustomAttributes
+    include Subcollections::SecurityGroups
     include Subcollections::Software
     include Subcollections::Snapshots
     include Subcollections::MetricRollups
