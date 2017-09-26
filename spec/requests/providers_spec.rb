@@ -1108,6 +1108,53 @@ describe "Providers API" do
     end
   end
 
+  context 'security groups subcollection' do
+    before do
+      @provider = FactoryGirl.create(:ems_openstack)
+      @security_group = FactoryGirl.create(:security_group, :ext_management_system => @provider)
+    end
+
+    it 'queries all security groups' do
+      api_basic_authorize subcollection_action_identifier(:providers, :security_groups, :read, :get)
+
+      get(api_provider_security_groups_url(nil, @provider))
+
+      expected = {
+        'resources' => [
+          { 'href' => api_provider_security_group_url(nil, @provider, @security_group) }
+        ]
+
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "will not show a provider's security groups without the appropriate role" do
+      api_basic_authorize
+
+      get(api_provider_security_groups_url(nil, @provider))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'queries a single security group' do
+      api_basic_authorize action_identifier(:security_groups, :read, :subresource_actions, :get)
+
+      get(api_provider_security_group_url(nil, @provider, @security_group))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include('id' => @security_group.id.to_s)
+    end
+
+    it "will not show a provider's security group without the appropriate role" do
+      api_basic_authorize
+
+      get(api_provider_security_group_url(nil, @provider, @security_group))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   describe 'edit custom_attributes on providers' do
     context 'provider_class=provider' do
       let(:generic_provider) { FactoryGirl.create(:provider) }
