@@ -208,7 +208,8 @@ module Api
         action_result(false, err.to_s)
       end
 
-      def validate_id(id, klass)
+      def validate_id(id, type, klass)
+        return if collection_config.resource_identifier(type) != "id"
         raise NotFoundError, "Invalid #{klass} id #{id} specified" unless id.kind_of?(Integer) || id =~ /\A\d+\z/
       end
     end

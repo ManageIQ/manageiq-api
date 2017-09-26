@@ -256,6 +256,7 @@
     :options:
     - :collection
     - :hide_resources
+    :resource_identifier: guid
     :verbs: *gp
     :klass: AutomateWorkspace
     :collection_actions:

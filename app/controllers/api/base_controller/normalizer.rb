@@ -10,7 +10,8 @@ module Api
         attrs = normalize_select_attributes(obj, opts)
         result = {}
 
-        href = new_href(type, obj["id"], obj["href"])
+        key_id = collection_config.resource_identifier(type)
+        href = new_href(type, obj[key_id], obj["href"])
         if href.present?
           result["href"] = href
           attrs -= ["href"]
