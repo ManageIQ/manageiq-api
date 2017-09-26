@@ -75,19 +75,19 @@
       - :name: delete
         :identifier: action_delete
   :alert_actions:
-     :description: Alert Actions
-     :identifier: alert_action
-     :options:
-     - :subcollection
-     :verbs: *gp
-     :klass: MiqAlertStatusAction
-     :subcollection_actions:
-       :get:
-       - :name: read
-         :identifier: alert_status_action_show_list
-       :post:
-       - :name: create
-         :identifier: alert_status_action_new
+    :description: Alert Actions
+    :identifier: alert_action
+    :options:
+    - :subcollection
+    :verbs: *gp
+    :klass: MiqAlertStatusAction
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: alert_status_action_show_list
+      :post:
+      - :name: create
+        :identifier: alert_status_action_new
   :alert_definition_profiles:
     :description: Alert Definition Profiles
     :identifier: alert_definition_profile
@@ -625,7 +625,7 @@
     :verbs: *g
     :klass: ConfigurationScriptPayload
     :subcollections:
-      - :authentications
+    - :authentications
     :collection_actions:
       :get:
       - :name: read
@@ -652,7 +652,7 @@
     :verbs: *gpppd
     :klass: ConfigurationScriptSource
     :subcollections:
-      - :configuration_script_payloads
+    - :configuration_script_payloads
     :collection_actions:
       :get:
       - :name: read
@@ -1243,87 +1243,87 @@
     :description: Middleware Datasources
     :klass: MiddlewareDatasource
     :options:
-      - :collection
+    - :collection
     :verbs: *gp
     :collection_actions:
       :get:
-        - :name: read
-          :identifier: middleware_datasource_show_list
+      - :name: read
+        :identifier: middleware_datasource_show_list
       :post:
-        - :name: query
-          :identifier: middleware_datasource_show_list
+      - :name: query
+        :identifier: middleware_datasource_show_list
     :resource_actions:
       :get:
-        - :name: read
-          :identifier: middleware_datasource_show
+      - :name: read
+        :identifier: middleware_datasource_show
   :middleware_deployments:
     :description: Middleware Deployments
     :klass: MiddlewareDeployment
     :options:
-      - :collection
+    - :collection
     :verbs: *gp
     :collection_actions:
       :get:
-        - :name: read
-          :identifier: middleware_deployment_show_list
+      - :name: read
+        :identifier: middleware_deployment_show_list
       :post:
-        - :name: query
-          :identifier: middleware_deployment_show_list
+      - :name: query
+        :identifier: middleware_deployment_show_list
     :resource_actions:
       :get:
-        - :name: read
-          :identifier: middleware_deployment_show
+      - :name: read
+        :identifier: middleware_deployment_show
   :middleware_domains:
     :description: Middleware Domains
     :klass: MiddlewareDomain
     :options:
-      - :collection
+    - :collection
     :verbs: *gp
     :collection_actions:
       :get:
-        - :name: read
-          :identifier: middleware_domain_show_list
+      - :name: read
+        :identifier: middleware_domain_show_list
       :post:
-        - :name: query
-          :identifier: middleware_domain_show_list
+      - :name: query
+        :identifier: middleware_domain_show_list
     :resource_actions:
       :get:
-        - :name: read
-          :identifier: middleware_domain_show
+      - :name: read
+        :identifier: middleware_domain_show
   :middleware_messagings:
     :description: Middleware Messagings
     :klass: MiddlewareMessaging
     :options:
-      - :collection
+    - :collection
     :verbs: *gp
     :collection_actions:
       :get:
-        - :name: read
-          :identifier: middleware_messaging_show_list
+      - :name: read
+        :identifier: middleware_messaging_show_list
       :post:
-        - :name: query
-          :identifier: middleware_messaging_show_list
+      - :name: query
+        :identifier: middleware_messaging_show_list
     :resource_actions:
       :get:
-        - :name: read
-          :identifier: middleware_messaging_show
+      - :name: read
+        :identifier: middleware_messaging_show
   :middleware_servers:
     :description: Middleware Servers
     :klass: MiddlewareServer
     :options:
-      - :collection
+    - :collection
     :verbs: *gp
     :collection_actions:
       :get:
-        - :name: read
-          :identifier: middleware_server_show_list
+      - :name: read
+        :identifier: middleware_server_show_list
       :post:
-        - :name: query
-          :identifier: middleware_server_show_list
+      - :name: query
+        :identifier: middleware_server_show_list
     :resource_actions:
       :get:
-        - :name: read
-          :identifier: middleware_server_show
+      - :name: read
+        :identifier: middleware_server_show
   :network_routers:
     :description: Network_Routers
     :identifier: network_router
@@ -2389,8 +2389,8 @@
     - :collection
     :verbs: *g
     :categories:
-      - product
-      - prototype
+    - product
+    - prototype
     :collection_actions:
       :get:
       - :name: read
