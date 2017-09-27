@@ -44,6 +44,7 @@ module Api
         :role_href  => "#{@req.api_prefix}/roles/#{group.miq_user_role.id}",
         :tenant     => group.tenant.name,
         :groups     => user.miq_groups.pluck(:description),
+        :miq_groups => normalize_array(user.miq_groups, :groups)
       }
     end
 
