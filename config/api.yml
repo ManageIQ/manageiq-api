@@ -2032,6 +2032,14 @@
       :get:
       - :name: read
         :identifier: security_group_show
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: security_group_show_list
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: security_group_show
   :servers:
     :description: EVM Servers
     :options:

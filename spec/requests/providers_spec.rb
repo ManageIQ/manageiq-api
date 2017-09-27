@@ -1130,7 +1130,7 @@ describe "Providers API" do
       expect(response.parsed_body).to include(expected)
     end
 
-    it 'does not error when querying  a provider that does not respond to security_groups' do
+    it 'does not error when querying a provider that does not respond to security_groups' do
       api_basic_authorize subcollection_action_identifier(:providers, :security_groups, :read, :get)
 
       get(api_provider_security_groups_url(nil, @infra_provider))
