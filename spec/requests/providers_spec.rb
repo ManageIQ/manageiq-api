@@ -1111,10 +1111,11 @@ describe "Providers API" do
   context 'security groups subcollection' do
     before do
       @provider = FactoryGirl.create(:ems_openstack)
+      @infra_provider = FactoryGirl.create(:ems_openstack_infra)
       @security_group = FactoryGirl.create(:security_group, :ext_management_system => @provider)
     end
 
-    it 'queries all security groups' do
+    it 'queries all security groups from a provider that responds to security_groups' do
       api_basic_authorize subcollection_action_identifier(:providers, :security_groups, :read, :get)
 
       get(api_provider_security_groups_url(nil, @provider))
@@ -1123,6 +1124,19 @@ describe "Providers API" do
         'resources' => [
           { 'href' => api_provider_security_group_url(nil, @provider, @security_group) }
         ]
+
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'does not error when querying  a provider that does not respond to security_groups' do
+      api_basic_authorize subcollection_action_identifier(:providers, :security_groups, :read, :get)
+
+      get(api_provider_security_groups_url(nil, @infra_provider))
+
+      expected = {
+        'resources' => []
 
       }
       expect(response).to have_http_status(:ok)
