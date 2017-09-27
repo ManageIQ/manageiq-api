@@ -104,7 +104,11 @@ describe "Authentication API" do
         "group_href" => "/api/groups/#{group2.id}",
         "role"       => @role.name,
         "role_href"  => "/api/roles/#{group2.miq_user_role.id}",
-        "tenant"     => @group.tenant.name
+        "tenant"     => @group.tenant.name,
+        "groups"     => @user.miq_groups.pluck(:description),
+        "miq_groups" => a_collection_including(
+          hash_including("href" => api_group_url(nil, @user.miq_groups.first))
+        )
       )
       expect(response.parsed_body["identity"]["groups"]).to match_array(@user.miq_groups.pluck(:description))
     end
