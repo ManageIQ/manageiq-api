@@ -43,7 +43,7 @@ module Api
 
           json.set! 'pages', link_builder.pages if link_builder.links?
 
-          unless @req.hide?("resources")
+          unless @req.hide?("resources") || collection_option?(:hide_resources)
             json.resources resources.collect do |resource|
               if opts[:expand_resources]
                 add_hash json, resource_to_jbuilder(type, reftype, resource, opts).attributes!
