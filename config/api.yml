@@ -2311,6 +2311,7 @@
     - :vms
     - :orchestration_stacks
     - :metric_rollups
+    - :custom_attributes
     :collection_actions:
       :get:
       - :name: read
@@ -2382,6 +2383,14 @@
         :identifier: service_tag
       - :name: unassign
         :identifier: service_tag
+    :custom_attributes_subcollection_actions:
+      :post:
+      - :name: add
+        :identifier: service_edit
+      - :name: edit
+        :identifier: service_edit
+      - :name: delete
+        :identifier: service_edit
   :settings:
     :description: Settings
     :identifier: ops_settings
