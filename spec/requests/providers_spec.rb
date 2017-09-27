@@ -1110,7 +1110,7 @@ describe "Providers API" do
 
   context 'security groups subcollection' do
     before do
-      @provider = FactoryGirl.create(:ems_openstack)
+      @provider = FactoryGirl.create(:ems_openstack).network_manager
       @infra_provider = FactoryGirl.create(:ems_openstack_infra)
       @security_group = FactoryGirl.create(:security_group, :ext_management_system => @provider)
     end
