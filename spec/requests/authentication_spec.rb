@@ -43,6 +43,18 @@ describe "Authentication API" do
 
       expect(response).to have_http_status(:unauthorized)
     end
+
+    it "returns a correctly formatted versions href" do
+      version_ident = "v#{Api::ApiConfig.base.version}"
+      api_basic_authorize
+
+      get api_entrypoint_url(version_ident)
+
+      expected = {
+        "versions" => [a_hash_including("href" => api_entrypoint_url(version_ident))]
+      }
+      expect(response.parsed_body).to include(expected)
+    end
   end
 
   context "Basic Authentication with Group Authorization" do
