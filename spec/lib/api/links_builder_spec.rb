@@ -1,4 +1,12 @@
 RSpec.describe Api::LinksBuilder do
+  describe ".new" do
+    it "validates limit is not zero when offset is also specified" do
+      expect do
+        described_class.new({"offset" => 5, "limit" => 0}, '/api/collection/', nil)
+      end.to raise_error(Api::BadRequestError, "Limit must be greater than zero if offset is specified")
+    end
+  end
+
   describe "#links" do
     it "returns self, first, next, and last links when it is the first page" do
       offsets = { "offset" => 0, "limit" => 2 }
