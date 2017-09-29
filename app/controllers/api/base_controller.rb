@@ -25,6 +25,7 @@ module Api
                   :validate_api_request
     before_action :validate_api_action, :except => [:options]
     before_action :validate_response_format, :except => [:destroy]
+    before_action :redirect_on_compressed_path
     after_action :log_api_response
 
     respond_to :json
@@ -45,6 +46,13 @@ module Api
     rescue_from(ArgumentError)                  { |e| api_error(:bad_request, e) }
 
     private
+
+    def redirect_on_compressed_path
+      return unless [params[:c_id], params[:s_id]].any? { |id| Api.compressed_id?(id) }
+      url = request.original_url.sub(params[:c_id], Api.uncompress_id(params[:c_id]).to_s)
+      url.sub!(params[:s_id], Api.uncompress_id(params[:s_id]).to_s) if params[:s_id]
+      redirect_to(url, :status => :moved_permanently)
+    end
 
     def set_gettext_locale
       FastGettext.set_locale(LocaleResolver.resolve(User.current_user, headers))
