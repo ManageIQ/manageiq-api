@@ -123,7 +123,7 @@ module Api
         end
 
         def version_override?
-          @params[:version] && @params[:version].match(ApiConfig.version[:regex]) # v#.# version signature
+          @params[:version] && @params[:version].match(Api::VERSION_REGEX) # v#.# version signature
         end
 
         def fullpath
