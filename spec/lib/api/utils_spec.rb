@@ -1,4 +1,16 @@
 RSpec.describe Api::Utils do
+  describe ".build_href_slug" do
+    it "builds the href slug" do
+      actual = Api::Utils.build_href_slug(Vm, 1_000_000_000_123)
+      expect(actual).to eq("vms/1r123")
+    end
+
+    it "returns nil if the collection can't be found" do
+      actual = Api::Utils.build_href_slug(VmOrTemplate, 1_000_000_000_123)
+      expect(actual).to be_nil
+    end
+  end
+
   describe ".resource_search_by_href_slug" do
     before { allow(User).to receive_messages(:server_timezone => "UTC") }
 
