@@ -2,7 +2,7 @@ RSpec.describe Api::Utils do
   describe ".build_href_slug" do
     it "builds the href slug" do
       actual = Api::Utils.build_href_slug(Vm, 1_000_000_000_123)
-      expect(actual).to eq("vms/1r123")
+      expect(actual).to eq("vms/1000000000123")
     end
 
     it "returns nil if the collection can't be found" do

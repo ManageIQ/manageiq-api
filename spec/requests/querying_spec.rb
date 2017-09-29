@@ -715,7 +715,7 @@ describe "Querying" do
           {
             "id"        => vm.id.to_s,
             "href"      => api_vm_url(nil, vm),
-            "href_slug" => "vms/#{vm.compressed_id}",
+            "href_slug" => "vms/#{vm.id}",
             "name"      => "aa",
             "vendor"    => anything
           }

@@ -3,7 +3,7 @@ module Api
     def self.build_href_slug(klass, id)
       return unless id
       collection = Api::CollectionConfig.new.name_for_subclass(klass)
-      "#{collection}/#{ApplicationRecord.compress_id(id)}" if collection
+      "#{collection}/#{id}" if collection
     end
 
     def self.resource_search_by_href_slug(href_slug, user = User.current_user)
