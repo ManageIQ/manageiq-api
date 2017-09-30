@@ -1082,7 +1082,7 @@ describe "Services API" do
 
       get service_url, :params => { :expand => "custom_attributes" }
 
-      expect_single_resource_query("guid" => service_guid)
+      expect_single_resource_query("id" => svc.id.to_s)
       expect_result_resources_to_include_data("custom_attributes", "name" => %w(name1 name2))
     end
 
