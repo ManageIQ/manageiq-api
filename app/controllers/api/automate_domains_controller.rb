@@ -27,6 +27,10 @@ module Api
       end
     end
 
+    def fetch_automate_domains_href_slug(resource)
+      "automate_domains/#{resource.id}"
+    end
+
     private
 
     def automate_domain_ident(domain)
