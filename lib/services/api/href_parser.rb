@@ -1,6 +1,7 @@
 module Api
   class HrefParser
     def self.parse(href)
+      return [nil, nil] unless href
       new(href).parse
     end
 
@@ -9,7 +10,6 @@ module Api
     end
 
     def parse
-      return [nil, nil] unless href
       [subject, subject_id]
     end
 
