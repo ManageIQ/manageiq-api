@@ -2,20 +2,13 @@ module Api
   class HrefParser
     def self.parse(href)
       return [nil, nil] unless href
-      new(href).parse
+      h = new(href)
+      [h.subject, h.subject_id]
     end
 
     def initialize(href)
       @href = href
     end
-
-    def parse
-      [subject, subject_id]
-    end
-
-    private
-
-    attr_reader :href
 
     def subject
       (subcollection? ? subcollection : collection).to_sym
@@ -24,6 +17,10 @@ module Api
     def subject_id
       subcollection? ? subcollection_id : collection_id
     end
+
+    private
+
+    attr_reader :href
 
     def subcollection?
       !!subcollection
