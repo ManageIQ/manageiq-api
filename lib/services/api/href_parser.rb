@@ -11,15 +11,19 @@ module Api
     def parse
       return [nil, nil] unless href
       if subcollection?
-        [subcollection.to_sym, subcollection_id]
+        [subject, subcollection_id]
       else
-        [collection.to_sym, collection_id]
+        [subject, collection_id]
       end
     end
 
     private
 
     attr_reader :href
+
+    def subject
+      (subcollection? ? subcollection : collection).to_sym
+    end
 
     def subcollection?
       !!subcollection
