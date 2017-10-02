@@ -11,9 +11,9 @@ module Api
     def parse
       return [nil, nil] unless href
       if subcollection?
-        [subject, subcollection_id]
+        [subject, subject_id]
       else
-        [subject, collection_id]
+        [subject, subject_id]
       end
     end
 
@@ -23,6 +23,10 @@ module Api
 
     def subject
       (subcollection? ? subcollection : collection).to_sym
+    end
+
+    def subject_id
+      subcollection? ? subcollection_id : collection_id
     end
 
     def subcollection?
