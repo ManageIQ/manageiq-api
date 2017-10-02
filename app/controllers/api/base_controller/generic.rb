@@ -2,46 +2,6 @@ module Api
   class BaseController
     module Generic
       #
-      # Primary Methods
-      #
-
-      def index
-        klass = collection_class(@req.subject)
-        res, subquery_count = collection_search(@req.subcollection?, @req.subject, klass)
-        opts = {
-          :name             => @req.subject,
-          :is_subcollection => @req.subcollection?,
-          :expand_actions   => true,
-          :expand_resources => @req.expand?(:resources),
-          :counts           => Api::QueryCounts.new(klass.count, res.count, subquery_count)
-        }
-        render_collection(@req.subject, res, opts)
-      end
-
-      def show
-        klass = collection_class(@req.subject)
-        opts  = {:name => @req.subject, :is_subcollection => @req.subcollection?, :expand_actions => true}
-        render_resource(@req.subject, resource_search(@req.subject_id, @req.subject, klass), opts)
-      end
-
-      def update
-        render_normal_update @req.collection.to_sym, update_collection(@req.subject.to_sym, @req.subject_id)
-      end
-
-      def destroy
-        if @req.subcollection?
-          delete_subcollection_resource @req.subcollection.to_sym, @req.s_id
-        else
-          delete_resource(@req.collection.to_sym, @req.c_id)
-        end
-        render_normal_destroy
-      end
-
-      def options
-        render_options(@req.collection)
-      end
-
-      #
       # Action Helper Methods
       #
       # Name: <action>_resource
