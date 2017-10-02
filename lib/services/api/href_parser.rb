@@ -11,9 +11,9 @@ module Api
     def parse
       return [nil, nil] unless href
       if subcollection?
-        [subcollection.to_sym, Api.uncompress_id(subcollection_id)]
+        [subcollection.to_sym, subcollection_id]
       else
-        [collection.to_sym, Api.uncompress_id(collection_id)]
+        [collection.to_sym, collection_id]
       end
     end
 
@@ -49,7 +49,7 @@ module Api
     end
 
     def collection_id
-      path_parts[version? ? 4 : 3]
+      ensure_uncompressed(path_parts[version? ? 4 : 3])
     end
 
     def subcollection
@@ -57,7 +57,11 @@ module Api
     end
 
     def subcollection_id
-      path_parts[version? ? 6 : 5]
+      ensure_uncompressed(path_parts[version? ? 6 : 5])
+    end
+
+    def ensure_uncompressed(id)
+      Api.compressed_id?(id) ? Api.uncompress_id(id) : id
     end
 
     def version?
