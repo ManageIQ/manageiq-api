@@ -36,8 +36,12 @@ module Api
       !!subcollection
     end
 
+    def version
+      path_parts[2] if version?
+    end
+
     def version?
-      @version ||= !!(Api::VERSION_REGEX =~ path_parts[2])
+      @has_version ||= !!(Api::VERSION_REGEX =~ path_parts[2])
     end
 
     private

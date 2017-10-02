@@ -69,7 +69,7 @@ module Api
 
         def version
           @version ||= if version?
-                         @params[:version][1..-1] # Switching API Version
+                         href.version[1..-1] # Switching API Version
                        else
                          ApiConfig.base[:version] # Default API Version
                        end
@@ -82,7 +82,7 @@ module Api
         def prefix(version = true)
           prefix = "/#{path.split('/')[1]}" # /api
           return prefix unless version
-          version? ? "#{prefix}/#{@params[:version]}" : prefix
+          version? ? "#{prefix}/#{href.version}" : prefix
         end
 
         def href
