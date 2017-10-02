@@ -10,7 +10,7 @@ module Api
         def to_hash
           [:method, :action, :fullpath, :url, :base,
            :path, :prefix, :version, :api_prefix,
-           :collection, :c_suffix, :c_id, :subcollection, :s_id]
+           :collection, :c_suffix, :collection_id, :subcollection, :subcollection_id]
             .each_with_object({}) { |attr, hash| hash[attr] = send(attr) }
         end
 
@@ -57,7 +57,7 @@ module Api
           @params[:c_suffix]
         end
 
-        def c_id
+        def collection_id
           href.collection_id
         end
 
@@ -65,7 +65,7 @@ module Api
           href.subcollection
         end
 
-        def s_id
+        def subcollection_id
           href.subcollection_id
         end
 

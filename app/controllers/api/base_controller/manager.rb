@@ -20,7 +20,7 @@ module Api
 
       def parent_resource_obj
         type = @req.collection.to_sym
-        resource_search(@req.c_id, type, collection_class(type))
+        resource_search(@req.collection_id, type, collection_class(type))
       end
 
       def collection_class(type)

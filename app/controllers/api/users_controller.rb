@@ -15,7 +15,7 @@ module Api
           raise BadRequestError,
                 "Cannot update attributes other than #{EDITABLE_ATTRS.join(', ')} for the authenticated user"
         end
-        render_normal_update :users, update_collection(:users, @req.c_id)
+        render_normal_update :users, update_collection(:users, @req.collection_id)
       else
         validate_api_action
         super
@@ -51,7 +51,7 @@ module Api
     private
 
     def update_target_is_api_user?
-      User.current_user.id == @req.c_id.to_i
+      User.current_user.id == @req.collection_id.to_i
     end
 
     def parse_set_group(data)

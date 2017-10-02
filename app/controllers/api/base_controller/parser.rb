@@ -159,7 +159,7 @@ module Api
 
       def validate_method_action(method_name, action_name)
         cname, target = if collection_option?(:arbitrary_resource_path)
-                          [@req.collection, (@req.c_id ? :resource : :collection)]
+                          [@req.collection, (@req.collection_id ? :resource : :collection)]
                         else
                           [@req.subject, request_type_target.last]
                         end
@@ -179,9 +179,9 @@ module Api
 
       def request_type_target
         if @req.subcollection
-          @req.s_id ? [:resource, :subresource] : [:collection, :subcollection]
+          @req.subcollection_id ? [:resource, :subresource] : [:collection, :subcollection]
         else
-          @req.c_id ? [:resource, :resource] : [:collection, :collection]
+          @req.collection_id ? [:resource, :resource] : [:collection, :collection]
         end
       end
 
@@ -220,7 +220,7 @@ module Api
           ctype = "Collection"
           raise BadRequestError, "Unsupported #{ctype} #{cname} specified" unless collection_config[cname]
           if collection_config.primary?(cname)
-            if "#{@req.c_id}#{@req.subcollection}#{@req.s_id}".present?
+            if "#{@req.collection_id}#{@req.subcollection}#{@req.subcollection_id}".present?
               raise BadRequestError, "Invalid request for #{ctype} #{cname} specified"
             end
           else
@@ -247,7 +247,7 @@ module Api
         return if cname == @req.collection
         return if collection_config.subcollection_denied?(@req.collection, cname)
 
-        aspec = collection_config.typed_subcollection_actions(@req.collection, cname, @req.s_id ? :subresource : :subcollection)
+        aspec = collection_config.typed_subcollection_actions(@req.collection, cname, @req.subcollection_id ? :subresource : :subcollection)
         return unless aspec
 
         action_hash = fetch_action_hash(aspec, mname, aname)
