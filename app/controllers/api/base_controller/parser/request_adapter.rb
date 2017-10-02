@@ -101,7 +101,7 @@ module Api
         end
 
         def path
-          URI.parse(url).path.sub(%r{/*$}, '') # /api/...
+          href.path
         end
 
         def version
@@ -123,6 +123,10 @@ module Api
         end
 
         private
+
+        def href
+          @href ||= Href.new(url)
+        end
 
         def expand_requested
           @expand ||= @params['expand'].to_s.split(',')

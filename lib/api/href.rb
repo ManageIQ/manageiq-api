@@ -12,16 +12,16 @@ module Api
       subcollection? ? subcollection_id : collection_id
     end
 
+    def path
+      @path ||= remove_trailing_slashes(fully_qualified? ? URI.parse(href).path : ensure_prefix(href))
+    end
+
     private
 
     attr_reader :href
 
     def subcollection?
       !!subcollection
-    end
-
-    def path
-      @path ||= remove_trailing_slashes(fully_qualified? ? URI.parse(href).path : ensure_prefix(href))
     end
 
     def fully_qualified?
