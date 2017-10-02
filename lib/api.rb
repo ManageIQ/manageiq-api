@@ -1,6 +1,6 @@
 module Api
-  # Semantic Versioning Regex for API, i.e. vMajor.minor.patch[-pre]
-  VERSION_REGEX = /v[\d]+(\.[\da-zA-Z]+)*(\-[\da-zA-Z]+)?/
+  VERSION_CONSTRAINT = /v[\d]+(\.[\da-zA-Z]+)*(\-[\da-zA-Z\-\.]+)?/
+  VERSION_REGEX = /\A#{VERSION_CONSTRAINT}\z/
 
   VERBS_ACTIONS_MAP = {
     :get     => "show",
