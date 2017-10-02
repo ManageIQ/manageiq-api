@@ -10,11 +10,7 @@ module Api
 
     def parse
       return [nil, nil] unless href
-      if subcollection?
-        [subject, subject_id]
-      else
-        [subject, subject_id]
-      end
+      [subject, subject_id]
     end
 
     private
