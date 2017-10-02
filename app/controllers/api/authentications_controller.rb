@@ -55,9 +55,9 @@ module Api
     def validate_auth_attrs(data)
       raise 'must supply a manager resource' unless data['manager_resource']
       attrs = data.dup.except('manager_resource')
-      manager_collection, manager_id = HrefParser.parse(data['manager_resource']['href'])
-      raise 'invalid manger_resource href specified' unless manager_collection && manager_id
-      manager_resource = resource_search(manager_id, manager_collection, collection_class(manager_collection))
+      href = HrefParser.new(data['manager_resource']['href'])
+      raise 'invalid manger_resource href specified' unless href.subject && href.subject_id
+      manager_resource = resource_search(href.subject_id, href.subject, collection_class(href.subject))
       [manager_resource, attrs]
     end
   end

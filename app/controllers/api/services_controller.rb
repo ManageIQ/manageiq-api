@@ -124,11 +124,11 @@ module Api
       resource_href = data.fetch_path("resource", "href")
       raise "Must specify a resource reference" unless resource_href
 
-      resource_type, resource_id = HrefParser.parse(resource_href)
-      raise "Invalid resource href specified #{resource_href}" unless resource_type && resource_id
+      href = HrefParser.new(resource_href)
+      raise "Invalid resource href specified #{resource_href}" unless href.subject && href.subject_id
 
-      resource = resource_search(resource_id, resource_type, collection_class(resource_type))
-      [resource_type, resource]
+      resource = resource_search(href.subject_id, href.subject, collection_class(href.subject))
+      [href.subject, resource]
     end
 
     def build_service_attributes(data)

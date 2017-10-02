@@ -289,9 +289,9 @@ module Api
     end
 
     def fetch_relationship(href)
-      collection, id = HrefParser.parse(href)
-      raise "Invalid relationship type #{collection}" unless RELATIONSHIP_COLLECTIONS.include?(collection)
-      resource_search(id, collection, collection_class(collection))
+      href = HrefParser.new(href)
+      raise "Invalid relationship type #{href.subject}" unless RELATIONSHIP_COLLECTIONS.include?(href.subject)
+      resource_search(href.subject_id, href.subject, collection_class(href.subject))
     end
 
     def valid_custom_attrs
