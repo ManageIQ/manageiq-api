@@ -41,13 +41,6 @@ module Api
           url.partition(fullpath)[0] # http://target
         end
 
-        #
-        # c_path_parts returns: [collection, c_id, subcollection, s_id, ...]
-        #
-        def c_path_parts
-          @c_path_parts ||= version_override? ? path.split('/')[3..-1] : path.split('/')[2..-1]
-        end
-
         def subject
           href.subject
         end
