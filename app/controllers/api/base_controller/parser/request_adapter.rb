@@ -61,7 +61,7 @@ module Api
         end
 
         def c_suffix
-          @params[:c_suffix] || Array(c_path_parts[1..-1]).join('/')
+          @params[:c_suffix]
         end
 
         def c_id
