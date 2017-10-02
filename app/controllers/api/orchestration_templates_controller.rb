@@ -4,7 +4,7 @@ module Api
       klass    = collection_class(type)
       resource = resource_search(id, type, klass)
       result = super
-      resource.raw_destroy if resource.kind_of?(OrchestrationTemplateVnfd)
+      resource.raw_destroy if resource.kind_of?(ManageIQ::Providers::Openstack::CloudManager::VnfdTemplate)
       result
     end
 
