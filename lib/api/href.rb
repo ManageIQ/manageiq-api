@@ -36,6 +36,10 @@ module Api
       !!subcollection
     end
 
+    def version?
+      @version ||= !!(Api::VERSION_REGEX =~ path_parts[2])
+    end
+
     private
 
     attr_reader :href
@@ -57,10 +61,6 @@ module Api
 
     def ensure_uncompressed(id)
       Api.compressed_id?(id) ? Api.uncompress_id(id) : id
-    end
-
-    def version?
-      @version ||= !!(Api::VERSION_REGEX =~ path_parts[2])
     end
 
     def path_parts

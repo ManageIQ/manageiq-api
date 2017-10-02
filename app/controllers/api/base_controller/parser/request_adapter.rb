@@ -2,7 +2,7 @@ module Api
   class BaseController
     module Parser
       class RequestAdapter
-        delegate :subject, :subject_id, :collection, :collection_id, :subcollection, :subcollection_id, :subcollection?, :path, :to => :href
+        delegate :subject, :subject_id, :collection, :collection_id, :subcollection, :subcollection_id, :subcollection?, :path, :version?, :to => :href
 
         def initialize(req, params)
           @request = req
@@ -68,7 +68,7 @@ module Api
         end
 
         def version
-          @version ||= if version_override?
+          @version ||= if version?
                          @params[:version][1..-1] # Switching API Version
                        else
                          ApiConfig.base[:version] # Default API Version
@@ -82,7 +82,7 @@ module Api
         def prefix(version = true)
           prefix = "/#{path.split('/')[1]}" # /api
           return prefix unless version
-          version_override? ? "#{prefix}/#{@params[:version]}" : prefix
+          version? ? "#{prefix}/#{@params[:version]}" : prefix
         end
 
         def href
@@ -93,10 +93,6 @@ module Api
 
         def expand_requested
           @expand ||= @params['expand'].to_s.split(',')
-        end
-
-        def version_override?
-          @params[:version] && @params[:version].match(Api::VERSION_REGEX) # v#.# version signature
         end
 
         def fullpath
