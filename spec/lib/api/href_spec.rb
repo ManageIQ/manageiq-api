@@ -63,5 +63,10 @@ RSpec.describe Api::Href do
         expect(described_class.new(href)).to have_attributes(:subject => :collection, :subject_id => "123")
       end
     end
+
+    it "can parse entrypoint urls" do
+      href = "http://localhost:3000/api"
+      expect(described_class.new(href).subject).to be_nil
+    end
   end
 end

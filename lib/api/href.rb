@@ -5,7 +5,7 @@ module Api
     end
 
     def subject
-      (subcollection? ? subcollection : collection).to_sym
+      (subcollection? ? subcollection : collection)&.to_sym
     end
 
     def subject_id
