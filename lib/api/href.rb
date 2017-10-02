@@ -16,29 +16,6 @@ module Api
       @path ||= remove_trailing_slashes(fully_qualified? ? URI.parse(href).path : ensure_prefix(href))
     end
 
-    private
-
-    attr_reader :href
-
-    def subcollection?
-      !!subcollection
-    end
-
-    def fully_qualified?
-      href =~ /^http/
-    end
-
-    def remove_trailing_slashes(str)
-      str.sub(/\/*$/, '')
-    end
-
-    def ensure_prefix(str)
-      result = str.dup
-      result.prepend("/")     unless result.start_with?("/")
-      result.prepend("/api")  unless result.start_with?("/api")
-      result
-    end
-
     def collection
       path_parts[version? ? 3 : 2]
     end
@@ -53,6 +30,29 @@ module Api
 
     def subcollection_id
       ensure_uncompressed(path_parts[version? ? 6 : 5])
+    end
+
+    def subcollection?
+      !!subcollection
+    end
+
+    private
+
+    attr_reader :href
+
+    def fully_qualified?
+      href =~ /^http/
+    end
+
+    def remove_trailing_slashes(str)
+      str.sub(/\/*$/, '')
+    end
+
+    def ensure_prefix(str)
+      result = str.dup
+      result.prepend("/")     unless result.start_with?("/")
+      result.prepend("/api")  unless result.start_with?("/api")
+      result
     end
 
     def ensure_uncompressed(id)

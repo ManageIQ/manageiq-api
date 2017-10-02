@@ -49,15 +49,15 @@ module Api
         end
 
         def subject
-          subcollection || collection
+          href.subject
         end
 
         def subject_id
-          subcollection? ? s_id : c_id
+          href.subject_id
         end
 
         def collection
-          @collection ||= c_path_parts[0]
+          href.collection
         end
 
         def c_suffix
@@ -65,19 +65,19 @@ module Api
         end
 
         def c_id
-          @params[:c_id] || c_path_parts[1]
+          href.collection_id
         end
 
         def subcollection
-          @subcollection ||= c_path_parts[2]
+          href.subcollection
         end
 
         def s_id
-          @params[:s_id] || c_path_parts[3]
+          href.subcollection_id
         end
 
         def subcollection?
-          !!subcollection
+          href.subcollection?
         end
 
         def expand?(what)
