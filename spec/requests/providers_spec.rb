@@ -148,7 +148,7 @@ describe "Providers API" do
 
   context 'Provider\'s virtual attributes(= direct or indirect associations) with RBAC' do
     let(:ems_openstack)  { FactoryGirl.create(:ems_openstack, :tenant_mapping_enabled => true) }
-    let(:ems_cinder)     { FactoryGirl.create(:ems_cinder, :parent_manager => ems_openstack) }
+    let(:ems_cinder)     { ManageIQ::Providers::StorageManager::CinderManager.find_by(:parent_manager => ems_openstack) }
     let(:ems_cinder_url) { api_provider_url(nil, ems_cinder) }
 
     let(:tenant) { FactoryGirl.create(:tenant, :source_type => 'CloudTenant') }
