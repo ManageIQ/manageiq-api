@@ -64,7 +64,7 @@ module Api
 
       def href_collection_id(path)
         path_array = path.split('/')
-        cidx = path_array[2] && path_array[2].match(ApiConfig.version.regex) ? 3 : 2
+        cidx = path_array[2] && path_array[2].match(Api::VERSION_REGEX) ? 3 : 2
 
         collection, c_id    = path_array[cidx..cidx + 1]
         subcollection, s_id = path_array[cidx + 2..cidx + 3]
