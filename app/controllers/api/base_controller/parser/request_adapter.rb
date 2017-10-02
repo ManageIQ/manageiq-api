@@ -2,6 +2,8 @@ module Api
   class BaseController
     module Parser
       class RequestAdapter
+        delegate :subject, :subject_id, :collection, :collection_id, :subcollection, :subcollection_id, :subcollection?, :path, :to => :href
+
         def initialize(req, params)
           @request = req
           @params = params
@@ -41,36 +43,8 @@ module Api
           url.partition(fullpath)[0] # http://target
         end
 
-        def subject
-          href.subject
-        end
-
-        def subject_id
-          href.subject_id
-        end
-
-        def collection
-          href.collection
-        end
-
         def c_suffix
           @params[:c_suffix]
-        end
-
-        def collection_id
-          href.collection_id
-        end
-
-        def subcollection
-          href.subcollection
-        end
-
-        def subcollection_id
-          href.subcollection_id
-        end
-
-        def subcollection?
-          href.subcollection?
         end
 
         def expand?(what)
@@ -93,10 +67,6 @@ module Api
           @method ||= @request.request_method.downcase.to_sym # :get, :patch, ...
         end
 
-        def path
-          href.path
-        end
-
         def version
           @version ||= if version_override?
                          @params[:version][1..-1] # Switching API Version
@@ -115,11 +85,11 @@ module Api
           version_override? ? "#{prefix}/#{@params[:version]}" : prefix
         end
 
-        private
-
         def href
           @href ||= Href.new(url)
         end
+
+        private
 
         def expand_requested
           @expand ||= @params['expand'].to_s.split(',')
