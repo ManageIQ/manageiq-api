@@ -1,11 +1,5 @@
 module Api
   class HrefParser
-    def self.parse(href)
-      return [nil, nil] unless href
-      h = new(href)
-      [h.subject, h.subject_id]
-    end
-
     def initialize(href)
       @href = href
     end
