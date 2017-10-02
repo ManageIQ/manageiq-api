@@ -1,4 +1,4 @@
-RSpec.describe Api::HrefParser do
+RSpec.describe Api::Href do
   describe ".new" do
     context "with a full url for the href" do
       let(:href) { "http://localhost:3000/api/collection/123" }

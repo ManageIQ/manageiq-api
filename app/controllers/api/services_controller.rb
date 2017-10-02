@@ -124,7 +124,7 @@ module Api
       resource_href = data.fetch_path("resource", "href")
       raise "Must specify a resource reference" unless resource_href
 
-      href = HrefParser.new(resource_href)
+      href = Href.new(resource_href)
       raise "Invalid resource href specified #{resource_href}" unless href.subject && href.subject_id
 
       resource = resource_search(href.subject_id, href.subject, collection_class(href.subject))

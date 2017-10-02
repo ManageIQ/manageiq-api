@@ -1,5 +1,5 @@
 module Api
-  class HrefParser
+  class Href
     def initialize(href)
       @href = href
     end

@@ -128,7 +128,7 @@ module Api
           raise BadRequestError, "Cannot assign #{sc} to a #{type} resource" unless respond_to?(typed_target)
           sc_data.each do |sr|
             next if sr.blank?
-            href = HrefParser.new(sr["href"])
+            href = Href.new(sr["href"])
             if href.subject == sc && href.subject_id
               sr.delete("id")
               sr.delete("href")
