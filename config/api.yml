@@ -724,6 +724,39 @@
       - :name: delete
       :delete:
       - :name: delete
+  :custom_button_sets:
+    :description: Custom Button Sets
+    :identifier: ab_buttons_accord
+    :options:
+    - :collection
+    :verbs: *gpppd
+    :klass: CustomButtonSet
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: ab_group
+      :post:
+      - :name: create
+        :identifier: ab_group_new
+      - :name: edit
+        :identifier: ab_group_edit
+      - :name: delete
+        :identifier: ab_group_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: ab_group
+      :post:
+      - :name: edit
+        :identifier: ab_group_edit
+      - :name: delete
+        :identifier: ab_group_delete
+      :put:
+      - :name: edit
+        :identifier: ab_group_edit
+      :delete:
+      - :name: delete
+        :identifier: ab_group_delete
   :data_stores:
     :description: Datastores
     :identifier: storage
