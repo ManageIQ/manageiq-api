@@ -17,19 +17,19 @@ module Api
     end
 
     def collection
-      path_parts[version? ? 3 : 2]
+      path_segments[version? ? 3 : 2]
     end
 
     def collection_id
-      ensure_uncompressed(path_parts[version? ? 4 : 3])
+      ensure_uncompressed(path_segments[version? ? 4 : 3])
     end
 
     def subcollection
-      path_parts[version? ? 5 : 4]
+      path_segments[version? ? 5 : 4]
     end
 
     def subcollection_id
-      ensure_uncompressed(path_parts[version? ? 6 : 5])
+      ensure_uncompressed(path_segments[version? ? 6 : 5])
     end
 
     def subcollection?
@@ -37,11 +37,11 @@ module Api
     end
 
     def version
-      path_parts[2] if version?
+      path_segments[2] if version?
     end
 
     def version?
-      @has_version ||= !!(Api::VERSION_REGEX =~ path_parts[2])
+      @has_version ||= !!(Api::VERSION_REGEX =~ path_segments[2])
     end
 
     private
@@ -67,8 +67,8 @@ module Api
       Api.compressed_id?(id) ? Api.uncompress_id(id) : id
     end
 
-    def path_parts
-      @path_parts ||= path.split("/")
+    def path_segments
+      @path_segments ||= path.split("/")
     end
   end
 end
