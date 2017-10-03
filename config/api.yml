@@ -2400,6 +2400,8 @@
         :identifier: service_edit
       - :name: remove_resource
         :identifier: service_edit
+      - :name: add_provider_vms
+        :identifier: service_edit
     :resource_actions:
       :get:
       - :name: read
@@ -2428,6 +2430,8 @@
       - :name: remove_all_resources
         :identifier: service_edit
       - :name: remove_resource
+        :identifier: service_edit
+      - :name: add_provider_vms
         :identifier: service_edit
       :delete:
       - :name: delete

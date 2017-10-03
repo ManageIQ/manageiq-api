@@ -120,6 +120,19 @@ module Api
       end
     end
 
+    def add_provider_vms_resource(type, id, data)
+      service = resource_search(id, type, collection_class(type))
+
+      provider_id = parse_id(data['provider'], :providers)
+      raise 'Must specify a valid provider href or id' unless provider_id
+      provider = resource_search(provider_id, :providers, collection_class(:providers))
+
+      task_id = service.add_provider_vms(provider, data['uid_ems']).miq_task_id
+      action_result(true, "Adding provider vms for #{service_ident(service)}", :task_id => task_id)
+    rescue => err
+      action_result(false, err.to_s)
+    end
+
     private
 
     def validate_resource(data)
