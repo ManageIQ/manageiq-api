@@ -1,5 +1,11 @@
 module Api
   class GenericObjectDefinitionsController < BaseController
+    include Api::Mixins::GenericObjects
+    include Subcollections::GenericObjects
+
+    before_action :set_additional_attributes, :if => :generic_objects_request?
+    before_action :set_associations, :only => [:index, :show], :if => :generic_objects_request?
+
     def create_resource(_type, _id, data)
       klass = collection_class(:generic_object_definitions)
       klass.create!(data.deep_symbolize_keys)
@@ -113,6 +119,10 @@ module Api
     end
 
     private
+
+    def generic_objects_request?
+      @req.subject == 'generic_objects'
+    end
 
     def fetch_generic_object_definition(type, id, data)
       id ||= data['name']

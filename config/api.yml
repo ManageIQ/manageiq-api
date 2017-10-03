@@ -865,6 +865,8 @@
     - :collection
     :verbs: *gpppd
     :klass: GenericObjectDefinition
+    :subcollections:
+    - :generic_objects
     :collection_actions:
       :get:
       - :name: read
@@ -947,6 +949,13 @@
       :delete:
       - :name: delete
         :identifier: generic_object_delete
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: generic_object_show_list
+      :post:
+      - :name: create
+        identifier: generic_object_new
     :tags_subcollection_actions:
       :post:
       - :name: assign
@@ -2310,6 +2319,7 @@
     - :vms
     - :orchestration_stacks
     - :metric_rollups
+    - :generic_objects
     :collection_actions:
       :get:
       - :name: read
@@ -2381,6 +2391,10 @@
         :identifier: service_tag
       - :name: unassign
         :identifier: service_tag
+    :generic_objects_subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: generic_object_show_list
   :settings:
     :description: Settings
     :identifier: ops_settings

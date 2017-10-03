@@ -10,7 +10,7 @@ module Api
         return vms if vm_attrs.blank? && vm_decorators.blank?
 
         vms.collect do |vm|
-          attributes_hash = create_vm_attributes_hash(vm_attrs, vm)
+          attributes_hash = create_resource_attributes_hash(vm_attrs, vm)
           decorators_hash = create_vm_decorators_hash(vm_decorators, vm)
 
           conflictless_hash = attributes_hash.merge(decorators_hash || {}) do |key, _, _|

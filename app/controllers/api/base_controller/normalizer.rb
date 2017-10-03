@@ -119,6 +119,12 @@ module Api
       def new_href(type, current_id, current_href)
         normalize_href(type, current_id) if current_id.present? && current_href.blank?
       end
+
+      def create_resource_attributes_hash(attributes, resource)
+        attributes.each_with_object({}) do |attr, hash|
+          hash[attr] = resource.public_send(attr.to_sym) if resource.respond_to?(attr.to_sym)
+        end
+      end
     end
   end
 end

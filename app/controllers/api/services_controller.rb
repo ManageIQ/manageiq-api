@@ -5,6 +5,7 @@ module Api
     include Subcollections::Vms
     include Subcollections::OrchestrationStacks
     include Subcollections::MetricRollups
+    include Subcollections::GenericObjects
 
     def create_resource(_type, _id, data)
       validate_service_data(data)

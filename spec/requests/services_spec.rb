@@ -1038,4 +1038,62 @@ describe "Services API" do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  describe "Generic Objects Subcollection" do
+    let(:generic_object_definition) { FactoryGirl.create(:generic_object_definition) }
+    let(:generic_object) { FactoryGirl.create(:generic_object, :generic_object_definition => generic_object_definition) }
+
+    before do
+      svc.add_resource(generic_object)
+      svc.save!
+    end
+
+    it "returns generic objects associatied with a service" do
+      api_basic_authorize subcollection_action_identifier(:services, :generic_objects, :read, :get)
+
+      get(api_service_generic_objects_url(nil, svc))
+
+      expected = {
+        'name'      => 'generic_objects',
+        'resources' => [
+          { 'href' => api_service_generic_object_url(nil, svc, generic_object) }
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "does not return a service's generic objects without an appropriate role" do
+      api_basic_authorize
+
+      get(api_service_generic_objects_url(nil, svc))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "allows expansion of generic objects and specification of generic object attributes" do
+      api_basic_authorize(action_identifier(:services, :read, :resource_actions, :get))
+
+      get api_services_url, :params => { :expand => 'resources,generic_objects', :attributes => 'generic_objects.generic_object_definition' }
+
+      expected = {
+        'name'      => 'services',
+        'count'     => 1,
+        'subcount'  => 1,
+        'resources' => [
+          a_hash_including(
+            'href'            => api_service_url(nil, svc),
+            'generic_objects' => [
+              a_hash_including(
+                'href'                      => api_service_generic_object_url(nil, svc, generic_object),
+                'generic_object_definition' => a_hash_including('id' => generic_object_definition.id.to_s)
+              )
+            ]
+          )
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
 end
