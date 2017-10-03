@@ -62,12 +62,13 @@ describe "Queries API" do
       expect_single_resource_query("id" => vm1.id.to_s, "href" => api_vm_url(nil, vm1), "guid" => vm1.guid)
     end
 
-    it 'supports compressed ids' do
+    specify 'support for compressed ids has been deprecated' do
       api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
 
       get api_vm_url(nil, vm1.compressed_id)
 
-      expect_single_resource_query("id" => vm1.id.to_s, "href" => api_vm_url(nil, vm1), "guid" => vm1.guid)
+      expect(response).to have_http_status(:moved_permanently)
+      expect(response.redirect_url).to eq(api_vm_url(nil, vm1))
     end
 
     it 'returns 404 on url with trailing garbage' do
@@ -130,16 +131,13 @@ describe "Queries API" do
       expect_result_resources_to_include_data("resources", "id" => [acct1.id.to_s, acct2.id.to_s])
     end
 
-    it 'supports compressed ids' do
+    specify 'support for compressed ids has been deprecated' do
       api_basic_authorize
 
       get(api_vm_account_url(nil, vm1.compressed_id, acct1))
 
-      expect_single_resource_query(
-        "id"   => acct1.id.to_s,
-        "href" => api_vm_account_url(nil, vm1, acct1),
-        "name" => acct1.name
-      )
+      expect(response).to have_http_status(:moved_permanently)
+      expect(response.redirect_url).to eq(api_vm_account_url(nil, vm1, acct1))
     end
 
     it 'returns 404 on url with trailing garbage' do

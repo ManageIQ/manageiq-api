@@ -65,7 +65,7 @@ module Api
         end
 
         def c_id
-          @c_id ||= ensure_uncompressed(@params[:c_id] || c_path_parts[1])
+          @params[:c_id] || c_path_parts[1]
         end
 
         def subcollection
@@ -73,7 +73,7 @@ module Api
         end
 
         def s_id
-          @s_id ||= ensure_uncompressed(@params[:s_id] || c_path_parts[3])
+          @params[:s_id] || c_path_parts[3]
         end
 
         def subcollection?
@@ -133,10 +133,6 @@ module Api
         def prefix
           prefix = "/#{path.split('/')[1]}" # /api
           version_override? ? "#{prefix}/#{@params[:version]}" : prefix
-        end
-
-        def ensure_uncompressed(id)
-          Api.compressed_id?(id) ? Api.uncompress_id(id) : id
         end
       end
     end
