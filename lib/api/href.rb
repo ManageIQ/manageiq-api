@@ -64,7 +64,7 @@ module Api
     end
 
     def ensure_uncompressed(id)
-      Api.compressed_id?(id) ? Api.uncompress_id(id) : id
+      Api.compressed_id?(id) ? Api.uncompress_id(id).to_s : id
     end
 
     def path_segments
