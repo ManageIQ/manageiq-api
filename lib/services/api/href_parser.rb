@@ -11,9 +11,9 @@ module Api
     def parse
       return [nil, nil] unless href
       if subcollection?
-        [subcollection.to_sym, ApplicationRecord.uncompress_id(subcollection_id)]
+        [subcollection.to_sym, Api.uncompress_id(subcollection_id)]
       else
-        [collection.to_sym, ApplicationRecord.uncompress_id(collection_id)]
+        [collection.to_sym, Api.uncompress_id(collection_id)]
       end
     end
 
