@@ -4,7 +4,7 @@ RSpec.describe Api::Href do
       let(:href) { "http://localhost:3000/api/collection/123" }
 
       it "can parse the resource and resource id" do
-        expect(described_class.new(href)).to have_attributes(:subject => :collection, :subject_id => "123")
+        expect(described_class.new(href)).to have_attributes(:subject => "collection", :subject_id => "123")
       end
     end
 
@@ -12,7 +12,7 @@ RSpec.describe Api::Href do
       let(:href) { "http://localhost:3000/api/v1.2.3/collection/123" }
 
       it "can parse the resource and resource id" do
-        expect(described_class.new(href)).to have_attributes(:subject => :collection, :subject_id => "123")
+        expect(described_class.new(href)).to have_attributes(:subject => "collection", :subject_id => "123")
       end
     end
 
@@ -20,7 +20,7 @@ RSpec.describe Api::Href do
       let(:href) { "/api/collection/123" }
 
       it "can parse the resource and resource id" do
-        expect(described_class.new(href)).to have_attributes(:subject => :collection, :subject_id => "123")
+        expect(described_class.new(href)).to have_attributes(:subject => "collection", :subject_id => "123")
       end
     end
 
@@ -28,7 +28,7 @@ RSpec.describe Api::Href do
       let(:href) { "/api/v1.2.3/collection/123" }
 
       it "can parse the resource and resource id" do
-        expect(described_class.new(href)).to have_attributes(:subject => :collection, :subject_id => "123")
+        expect(described_class.new(href)).to have_attributes(:subject => "collection", :subject_id => "123")
       end
     end
 
@@ -36,7 +36,7 @@ RSpec.describe Api::Href do
       let(:href) { "api/collection/123" }
 
       it "can parse the resource and resource id" do
-        expect(described_class.new(href)).to have_attributes(:subject => :collection, :subject_id => "123")
+        expect(described_class.new(href)).to have_attributes(:subject => "collection", :subject_id => "123")
       end
     end
 
@@ -44,7 +44,7 @@ RSpec.describe Api::Href do
       let(:href) { "api/v1.2.3/collection/123" }
 
       it "can parse the resource and resource id" do
-        expect(described_class.new(href)).to have_attributes(:subject => :collection, :subject_id => "123")
+        expect(described_class.new(href)).to have_attributes(:subject => "collection", :subject_id => "123")
       end
     end
 
@@ -52,7 +52,7 @@ RSpec.describe Api::Href do
       let(:href) { "collection/123" }
 
       it "can parse the resource and resource id" do
-        expect(described_class.new(href)).to have_attributes(:subject => :collection, :subject_id => "123")
+        expect(described_class.new(href)).to have_attributes(:subject => "collection", :subject_id => "123")
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe Api::Href do
       let(:href) { "/collection/123" }
 
       it "can parse the resource and resource id" do
-        expect(described_class.new(href)).to have_attributes(:subject => :collection, :subject_id => "123")
+        expect(described_class.new(href)).to have_attributes(:subject => "collection", :subject_id => "123")
       end
     end
 
