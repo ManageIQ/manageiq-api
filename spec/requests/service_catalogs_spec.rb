@@ -354,6 +354,7 @@ describe "Service Catalogs API" do
       {"type"           => "ServiceTemplateProvisionRequest",
        "description"    => /provisioning service/i,
        "approval_state" => "pending_approval",
+       "href"           => /#{api_service_requests_url}/i,
        "status"         => "Ok"}
     end
 
