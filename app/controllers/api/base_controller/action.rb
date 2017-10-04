@@ -25,6 +25,7 @@ module Api
           :instance_id => object.id,
           :args        => options[:args] || [],
           :role        => options[:role] || nil,
+          :user_id     => User.current_user.id,
         }
 
         queue_options[:zone] = object.my_zone if %w(ems_operations smartstate).include?(options[:role])

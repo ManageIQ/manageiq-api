@@ -52,7 +52,6 @@ module Api
 
     def queue_args(action, data)
       {
-        :user       => User.current_user,
         :action     => action,
         :parameters => data['parameters']
       }
