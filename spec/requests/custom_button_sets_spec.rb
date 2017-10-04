@@ -22,7 +22,7 @@ RSpec.describe 'CustomButtonSets API' do
         'subcount'  => 1,
         'name'      => 'custom_button_sets',
         'resources' => [
-          hash_including('href' => a_string_matching(cb_set_href))
+          hash_including('href' => cb_set_href)
         ]
       }
       expect(response).to have_http_status(:ok)
@@ -46,7 +46,7 @@ RSpec.describe 'CustomButtonSets API' do
 
       expected = {
         'id'   => cb_set.id.to_s,
-        'name' => cb_set.name
+        'name' => "custom_button_set"
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
