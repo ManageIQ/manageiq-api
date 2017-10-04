@@ -26,7 +26,7 @@ module Api
       ApiConfig.version.definitions.select(&:ident).collect do |version_specification|
         {
           :name => version_specification[:name],
-          :href => "#{@req.api_prefix}/#{version_specification[:ident]}"
+          :href => "#{@req.base}#{@req.prefix(false)}/#{version_specification[:ident]}"
         }
       end
     end
