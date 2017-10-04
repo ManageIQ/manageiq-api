@@ -169,4 +169,31 @@ RSpec.describe 'CustomButtonSets API' do
       expect(response.parsed_body).to include(expected)
     end
   end
+
+  describe 'PATCH /api/custom_button_sets/:id' do
+    it 'can edit a custom button set' do
+      api_basic_authorize action_identifier(:custom_button_sets, :edit)
+
+      request = [
+        {
+          'action' => 'edit',
+          'path'   => 'name',
+          'value'  => 'Generic Object Custom Button Set Updated',
+        },
+        {
+          'action' => 'edit',
+          'path'   => 'description',
+          'value'  => 'Generic Object Custom Button Set Description Updated',
+        }
+      ]
+      patch(api_custom_button_set_url(nil, cb_set), :params => request)
+
+      expected = {
+        'name'        => 'Generic Object Custom Button Set Updated',
+        'description' => 'Generic Object Custom Button Set Description Updated',
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
 end
