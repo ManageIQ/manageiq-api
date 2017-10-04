@@ -415,6 +415,13 @@ describe "Providers API" do
   end
 
   describe "Providers create" do
+    before(:each) do
+      require "ovirtsdk4" # incase it hasn't been autoloaded yet
+
+      allow(OvirtSDK4::Probe).to receive(:probe)
+        .and_return([OvirtSDK4::ProbeResult.new(:version => '3')])
+    end
+
     it "rejects creation without appropriate role" do
       api_basic_authorize
 
@@ -596,6 +603,13 @@ describe "Providers API" do
   end
 
   describe "Providers edit" do
+    before(:each) do
+      require "ovirtsdk4" # incase it hasn't been autoloaded yet
+
+      allow(OvirtSDK4::Probe).to receive(:probe)
+        .and_return([OvirtSDK4::ProbeResult.new(:version => '3')])
+    end
+
     it "rejects resource edits without appropriate role" do
       api_basic_authorize
 
