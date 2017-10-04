@@ -25,6 +25,7 @@ module Api
                   :validate_api_request
     before_action :validate_api_action, :except => [:options]
     before_action :validate_response_format, :except => [:destroy]
+    before_action :redirect_on_compressed_path
     after_action :log_api_response
 
     respond_to :json
@@ -44,7 +45,50 @@ module Api
     rescue_from(UnsupportedMediaTypeError)      { |e| api_error(:unsupported_media_type, e) }
     rescue_from(ArgumentError)                  { |e| api_error(:bad_request, e) }
 
+    def index
+      klass = collection_class(@req.subject)
+      res, subquery_count = collection_search(@req.subcollection?, @req.subject, klass)
+      opts = {
+        :name             => @req.subject,
+        :is_subcollection => @req.subcollection?,
+        :expand_actions   => true,
+        :expand_resources => @req.expand?(:resources),
+        :counts           => Api::QueryCounts.new(klass.count, res.count, subquery_count)
+      }
+      render_collection(@req.subject, res, opts)
+    end
+
+    def show
+      klass = collection_class(@req.subject)
+      opts  = {:name => @req.subject, :is_subcollection => @req.subcollection?, :expand_actions => true}
+      render_resource(@req.subject, resource_search(@req.subject_id, @req.subject, klass), opts)
+    end
+
+    def update
+      render_normal_update @req.collection.to_sym, update_collection(@req.subject.to_sym, @req.subject_id)
+    end
+
+    def destroy
+      if @req.subcollection?
+        delete_subcollection_resource @req.subcollection.to_sym, @req.s_id
+      else
+        delete_resource(@req.collection.to_sym, @req.c_id)
+      end
+      render_normal_destroy
+    end
+
+    def options
+      render_options(@req.collection)
+    end
+
     private
+
+    def redirect_on_compressed_path
+      return unless [params[:c_id], params[:s_id]].any? { |id| Api.compressed_id?(id) }
+      url = request.original_url.sub(params[:c_id], Api.uncompress_id(params[:c_id]).to_s)
+      url.sub!(params[:s_id], Api.uncompress_id(params[:s_id]).to_s) if params[:s_id]
+      redirect_to(url, :status => :moved_permanently)
+    end
 
     def set_gettext_locale
       FastGettext.set_locale(LocaleResolver.resolve(User.current_user, headers))

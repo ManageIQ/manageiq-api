@@ -148,7 +148,7 @@ describe "Providers API" do
 
   context 'Provider\'s virtual attributes(= direct or indirect associations) with RBAC' do
     let(:ems_openstack)  { FactoryGirl.create(:ems_openstack, :tenant_mapping_enabled => true) }
-    let(:ems_cinder)     { FactoryGirl.create(:ems_cinder, :parent_manager => ems_openstack) }
+    let(:ems_cinder)     { ManageIQ::Providers::StorageManager::CinderManager.find_by(:parent_manager => ems_openstack) }
     let(:ems_cinder_url) { api_provider_url(nil, ems_cinder) }
 
     let(:tenant) { FactoryGirl.create(:tenant, :source_type => 'CloudTenant') }
@@ -415,6 +415,13 @@ describe "Providers API" do
   end
 
   describe "Providers create" do
+    before(:each) do
+      require "ovirtsdk4" # incase it hasn't been autoloaded yet
+
+      allow(OvirtSDK4::Probe).to receive(:probe)
+        .and_return([OvirtSDK4::ProbeResult.new(:version => '3')])
+    end
+
     it "rejects creation without appropriate role" do
       api_basic_authorize
 
@@ -596,6 +603,13 @@ describe "Providers API" do
   end
 
   describe "Providers edit" do
+    before(:each) do
+      require "ovirtsdk4" # incase it hasn't been autoloaded yet
+
+      allow(OvirtSDK4::Probe).to receive(:probe)
+        .and_return([OvirtSDK4::ProbeResult.new(:version => '3')])
+    end
+
     it "rejects resource edits without appropriate role" do
       api_basic_authorize
 

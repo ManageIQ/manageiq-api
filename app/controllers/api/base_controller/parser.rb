@@ -39,39 +39,6 @@ module Api
         send("validate_#{@req.method}_method")
       end
 
-      #
-      # Given an HREF, return the related collection,id pair
-      # or subcollection,id pair if it represents a subcollection.
-      #   [http://.../api[/v#.#]]/<collection>/<c_id>
-      #   [http://.../api[/v#.#]]/collection/c_id/<subcollection>/<s_id>
-      #
-      #   [/api/v#.#]/<collection>/<c_id>
-      #   [/api/v#.#]/collection/c_id/<subcollection>/<s_id>
-      #
-      #   <collection>/<c_id>
-      #   collection/c_id/<subcollection>/<s_id>
-      #
-      def parse_href(href)
-        if href
-          path = href.match(/^http/) ? URI.parse(href).path.sub!(/\/*$/, '') : href.dup
-          path.prepend("/")     unless path.start_with?("/")
-          path.prepend("/api")  unless path.match("/api")
-          path.sub!(/\/*$/, '')
-          return href_collection_id(path)
-        end
-        [nil, nil]
-      end
-
-      def href_collection_id(path)
-        path_array = path.split('/')
-        cidx = path_array[2] && path_array[2].match(ApiConfig.version.regex) ? 3 : 2
-
-        collection, c_id    = path_array[cidx..cidx + 1]
-        subcollection, s_id = path_array[cidx + 2..cidx + 3]
-
-        subcollection ? [subcollection.to_sym, ApplicationRecord.uncompress_id(s_id)] : [collection.to_sym, ApplicationRecord.uncompress_id(c_id)]
-      end
-
       def parse_id(resource, collection)
         return nil if resource.blank?
 

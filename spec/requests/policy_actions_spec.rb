@@ -55,6 +55,21 @@ describe "Policy Actions API" do
       expect_query_result(:policy_actions, 4, 4)
       expect_result_resources_to_include_data("resources", "guid" => miq_action_guid_list)
     end
+
+    it "returns the correct href_slug" do
+      policy = FactoryGirl.create(:miq_action, :name => "action_policy_1")
+      api_basic_authorize collection_action_identifier(:policy_actions, :read, :get)
+
+      get(api_policy_actions_url, :params => { :expand => "resources", :attributes => 'href_slug' })
+
+      expected = {
+        'resources' => [
+          a_hash_including('href_slug' => "policy_actions/#{policy.id}")
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
   end
 
   context "Policy Action subcollection" do

@@ -5,7 +5,6 @@
   :description: REST API
   :version: '3.0.0-pre'
 :version:
-  :regex: !ruby/regexp /^v[0-9]+(?>\\.[0-9a-zA-Z]+)*(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?/
   :definitions:
   - :name: '3.0.0-pre'
     :ident: 'v3.0.0-pre'
@@ -866,6 +865,8 @@
     - :collection
     :verbs: *gpppd
     :klass: GenericObjectDefinition
+    :subcollections:
+    - :generic_objects
     :collection_actions:
       :get:
       - :name: read
@@ -948,6 +949,13 @@
       :delete:
       - :name: delete
         :identifier: generic_object_delete
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: generic_object_show_list
+      :post:
+      - :name: create
+        identifier: generic_object_new
     :tags_subcollection_actions:
       :post:
       - :name: assign
@@ -2311,6 +2319,7 @@
     - :vms
     - :orchestration_stacks
     - :metric_rollups
+    - :generic_objects
     - :custom_attributes
     :collection_actions:
       :get:
@@ -2383,6 +2392,10 @@
         :identifier: service_tag
       - :name: unassign
         :identifier: service_tag
+    :generic_objects_subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: generic_object_show_list
     :custom_attributes_subcollection_actions:
       :post:
       - :name: add

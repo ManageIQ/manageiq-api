@@ -5,7 +5,9 @@ module Api
     include Subcollections::Vms
     include Subcollections::OrchestrationStacks
     include Subcollections::MetricRollups
+    include Subcollections::GenericObjects
     include Subcollections::CustomAttributes
+
 
     def create_resource(_type, _id, data)
       validate_service_data(data)
@@ -124,7 +126,7 @@ module Api
       resource_href = data.fetch_path("resource", "href")
       raise "Must specify a resource reference" unless resource_href
 
-      resource_type, resource_id = parse_href(resource_href)
+      resource_type, resource_id = HrefParser.parse(resource_href)
       raise "Invalid resource href specified #{resource_href}" unless resource_type && resource_id
 
       resource = resource_search(resource_id, resource_type, collection_class(resource_type))

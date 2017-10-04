@@ -3,9 +3,9 @@ RSpec.describe 'Orchestration Template API' do
 
   context 'orchestration_template index' do
     it 'can list the orchestration_template' do
-      FactoryGirl.create(:orchestration_template_cfn_with_content)
-      FactoryGirl.create(:orchestration_template_hot_with_content)
-      FactoryGirl.create(:orchestration_template_vnfd_with_content)
+      FactoryGirl.create(:orchestration_template_amazon_in_json)
+      FactoryGirl.create(:orchestration_template_openstack_in_yaml)
+      FactoryGirl.create(:vnfd_template_openstack_in_yaml)
 
       api_basic_authorize collection_action_identifier(:orchestration_templates, :read, :get)
       get(api_orchestration_templates_url)
@@ -16,21 +16,21 @@ RSpec.describe 'Orchestration Template API' do
   context 'orchestration_template create' do
     let :request_body_hot do
       {:name      => "OrchestrationTemplateHot1",
-       :type      => "OrchestrationTemplateHot",
+       :type      => "ManageIQ::Providers::Openstack::CloudManager::OrchestrationTemplate",
        :orderable => true,
        :content   => ""}
     end
 
     let :request_body_cfn do
       {:name      => "OrchestrationTemplateCfn1",
-       :type      => "OrchestrationTemplateCfn",
+       :type      => "ManageIQ::Providers::Amazon::CloudManager::OrchestrationTemplate",
        :orderable => true,
        :content   => ""}
     end
 
     let :request_body_vnfd do
       {:name      => "OrchestrationTemplateVnfd1",
-       :type      => "OrchestrationTemplateVnfd",
+       :type      => "ManageIQ::Providers::Openstack::CloudManager::VnfdTemplate",
        :ems_id    => ems.id,
        :orderable => true,
        :content   => ""}
@@ -49,7 +49,7 @@ RSpec.describe 'Orchestration Template API' do
 
       expect do
         post(api_orchestration_templates_url, :params => request_body_hot)
-      end.to change(OrchestrationTemplateHot, :count).by(1)
+      end.to change(ManageIQ::Providers::Openstack::CloudManager::OrchestrationTemplate, :count).by(1)
     end
 
     it 'supports single CFN orchestration_template creation' do
@@ -57,7 +57,7 @@ RSpec.describe 'Orchestration Template API' do
 
       expect do
         post(api_orchestration_templates_url, :params => request_body_cfn)
-      end.to change(OrchestrationTemplateCfn, :count).by(1)
+      end.to change(ManageIQ::Providers::Amazon::CloudManager::OrchestrationTemplate, :count).by(1)
     end
 
     it 'supports single VNFd orchestration_template creation' do
@@ -65,7 +65,7 @@ RSpec.describe 'Orchestration Template API' do
 
       expect do
         post(api_orchestration_templates_url, :params => request_body_vnfd)
-      end.to change(OrchestrationTemplateVnfd, :count).by(1)
+      end.to change(ManageIQ::Providers::Openstack::CloudManager::VnfdTemplate, :count).by(1)
     end
 
     it 'supports orchestration_template creation via action' do
@@ -73,7 +73,7 @@ RSpec.describe 'Orchestration Template API' do
 
       expect do
         post(api_orchestration_templates_url, :params => gen_request(:create, request_body_hot))
-      end.to change(OrchestrationTemplateHot, :count).by(1)
+      end.to change(ManageIQ::Providers::Openstack::CloudManager::OrchestrationTemplate, :count).by(1)
     end
 
     it 'rejects a request with an id' do
@@ -87,7 +87,7 @@ RSpec.describe 'Orchestration Template API' do
 
   context 'orchestration_template edit' do
     it 'supports single orchestration_template edit' do
-      hot = FactoryGirl.create(:orchestration_template_hot_with_content, :name => "New Hot Template")
+      hot = FactoryGirl.create(:orchestration_template_openstack_in_yaml, :name => "New Hot Template")
 
       api_basic_authorize collection_action_identifier(:orchestration_templates, :edit)
 
@@ -102,7 +102,7 @@ RSpec.describe 'Orchestration Template API' do
     it 'supports single orchestration_template delete' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
 
-      cfn = FactoryGirl.create(:orchestration_template_cfn_with_content)
+      cfn = FactoryGirl.create(:orchestration_template_amazon_in_json)
 
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
 
@@ -115,9 +115,9 @@ RSpec.describe 'Orchestration Template API' do
     it 'runs callback before_destroy on the model' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
 
-      cfn = FactoryGirl.create(:orchestration_template_vnfd_with_content)
+      cfn = FactoryGirl.create(:vnfd_template_openstack_in_yaml)
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
-      expect_any_instance_of(OrchestrationTemplateVnfd).to receive(:raw_destroy).with(no_args) # callback on the model
+      expect_any_instance_of(ManageIQ::Providers::Openstack::CloudManager::VnfdTemplate).to receive(:raw_destroy).with(no_args) # callback on the model
       delete(api_orchestration_template_url(nil, cfn))
 
       expect(response).to have_http_status(:no_content)
@@ -127,8 +127,8 @@ RSpec.describe 'Orchestration Template API' do
     it 'supports multiple orchestration_template delete' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
 
-      cfn = FactoryGirl.create(:orchestration_template_cfn_with_content)
-      hot = FactoryGirl.create(:orchestration_template_hot_with_content)
+      cfn = FactoryGirl.create(:orchestration_template_amazon_in_json)
+      hot = FactoryGirl.create(:orchestration_template_openstack_in_yaml)
 
       post(
         api_orchestration_templates_url,
@@ -152,7 +152,7 @@ RSpec.describe 'Orchestration Template API' do
     it 'forbids orchestration template copy without an appropriate role' do
       api_basic_authorize
 
-      orchestration_template = FactoryGirl.create(:orchestration_template_cfn)
+      orchestration_template = FactoryGirl.create(:orchestration_template_amazon)
       new_content            = "{ 'Description': 'Test content 1' }\n"
 
       post(
@@ -166,7 +166,7 @@ RSpec.describe 'Orchestration Template API' do
     it 'forbids orchestration template copy with no content specified' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :copy)
 
-      orchestration_template = FactoryGirl.create(:orchestration_template_cfn)
+      orchestration_template = FactoryGirl.create(:orchestration_template_amazon)
 
       post(api_orchestration_template_url(nil, orchestration_template), :params => gen_request(:copy))
 
@@ -176,7 +176,7 @@ RSpec.describe 'Orchestration Template API' do
     it 'can copy single orchestration template with a different content' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :copy)
 
-      orchestration_template = FactoryGirl.create(:orchestration_template_cfn)
+      orchestration_template = FactoryGirl.create(:orchestration_template_amazon)
       new_content            = "{ 'Description': 'Test content 1' }\n"
 
       expected = {
@@ -192,7 +192,7 @@ RSpec.describe 'Orchestration Template API' do
           api_orchestration_template_url(nil, orchestration_template),
           :params => gen_request(:copy, :content => new_content)
         )
-      end.to change(OrchestrationTemplateCfn, :count).by(1)
+      end.to change(ManageIQ::Providers::Amazon::CloudManager::OrchestrationTemplate, :count).by(1)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -202,9 +202,9 @@ RSpec.describe 'Orchestration Template API' do
     it 'can copy multiple orchestration templates with a different content' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :copy)
 
-      orchestration_template   = FactoryGirl.create(:orchestration_template_cfn)
+      orchestration_template   = FactoryGirl.create(:orchestration_template_amazon)
       new_content              = "{ 'Description': 'Test content 1' }\n"
-      orchestration_template_2 = FactoryGirl.create(:orchestration_template_cfn)
+      orchestration_template_2 = FactoryGirl.create(:orchestration_template_amazon)
       new_content_2            = "{ 'Description': 'Test content 2' }\n"
 
       expected = {
@@ -225,7 +225,7 @@ RSpec.describe 'Orchestration Template API' do
             ]
           )
         )
-      end.to change(OrchestrationTemplateCfn, :count).by(2)
+      end.to change(ManageIQ::Providers::Amazon::CloudManager::OrchestrationTemplate, :count).by(2)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
