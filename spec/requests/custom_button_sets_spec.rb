@@ -1,5 +1,5 @@
 RSpec.describe 'CustomButtonSets API' do
-  let(:cb_set) { FactoryGirl.create(:custom_button_set, :name => 'custom_button_set1') }
+  let(:cb_set) { FactoryGirl.create(:custom_button_set, :name => 'custom_button_set') }
   let(:cb_set2) { FactoryGirl.create(:custom_button_set, :name => 'custom_button_set2') }
 
   describe 'GET /api/custom_button_sets' do
@@ -80,7 +80,7 @@ RSpec.describe 'CustomButtonSets API' do
       request = {
         'action'    => 'edit',
         'resources' => [
-          { 'id' => cb_set.id.to_s, 'resource' => { 'name' => 'updated 1' }},
+          { 'id' => cb_set.id.to_s, 'name' => 'updated 1' },
         ]
       }
       post(api_custom_button_sets_url, :params => request)
@@ -132,7 +132,8 @@ RSpec.describe 'CustomButtonSets API' do
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => cb_set.id.to_s),
+          a_hash_including('success' => true, 'message' => "custom_button_sets id: #{cb_set.id} deleting"),
+          a_hash_including('success' => true, 'message' => "custom_button_sets id: #{cb_set2.id} deleting"),
         )
       }
       expect(response).to have_http_status(:ok)
