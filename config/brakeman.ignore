@@ -1,0 +1,26 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Redirect",
+      "warning_code": 18,
+      "fingerprint": "c4e3ce0effae8c1aeaa0801edf16bee3a6d513fbc7e88789bb67a2aa89dfbaca",
+      "check_name": "Redirect",
+      "message": "Possible unprotected redirect",
+      "file": "app/controllers/api/base_controller.rb",
+      "line": 90,
+      "link": "http://brakemanscanner.org/docs/warning_types/redirect/",
+      "code": "redirect_to(request.original_url.sub(params[:c_id], Api.uncompress_id(params[:c_id]).to_s), :status => :moved_permanently)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Api::BaseController",
+        "method": "redirect_on_compressed_path"
+      },
+      "user_input": "params[:c_id]",
+      "confidence": "Weak",
+      "note": "This is to warn you about indiscriminately passing `params` to `redirect_to`, which can be exploited by modifying the host. Since we're not doing that, this should be OK."
+    }
+  ],
+  "updated": "2017-10-04 11:11:29 -0700",
+  "brakeman_version": "3.7.2"
+}
