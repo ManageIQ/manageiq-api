@@ -35,7 +35,7 @@ module Api
     def invoke_custom_action(type, resource, action, data)
       result = begin
                  desc = "Invoked method #{action} for Generic Object id: #{resource.id}"
-                 task_id = queue_object_action(resource, desc, :method_name => "call_queued_method", :role => "automate", :args => queue_args(action, data))
+                 task_id = queue_object_action(resource, desc, queue_args(action, data))
                  action_result(true, desc, :task_id => task_id)
                rescue => err
                  action_result(false, err.to_s)
@@ -51,9 +51,16 @@ module Api
     end
 
     def queue_args(action, data)
+      current_user = User.current_user
       {
-        :action     => action,
-        :parameters => data['parameters']
+        :method_name => action,
+        :args        => data['parameters'],
+        :role        => 'automate',
+        :user        => {
+          :user_id   => current_user.id,
+          :group_id  => current_user.current_group.id,
+          :tenant_id => current_user.current_tenant.id
+        }
       }
     end
   end
