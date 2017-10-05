@@ -264,7 +264,7 @@ RSpec.describe 'Authentications API' do
         'results' => [
           a_hash_including(
             'success' => false,
-            'message' => 'invalid manger_resource href specified',
+            'message' => 'invalid manager_resource href specified',
           )
         ]
       }
