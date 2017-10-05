@@ -46,4 +46,51 @@ RSpec.describe 'CloudTenants API' do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  context 'security groups subcollection' do
+    before do
+      @cloud_tenant = FactoryGirl.create(:cloud_tenant)
+      @security_group = FactoryGirl.create(:security_group, :cloud_tenant => @cloud_tenant)
+    end
+
+    it 'queries all security groups from a cloud tenant' do
+      api_basic_authorize subcollection_action_identifier(:cloud_tenants, :security_groups, :read, :get)
+
+      get(api_cloud_tenant_security_groups_url(nil, @cloud_tenant))
+
+      expected = {
+        'resources' => [
+          { 'href' => api_cloud_tenant_security_group_url(nil, @cloud_tenant, @security_group) }
+        ]
+
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "will not show a cloud tenant's security groups without the appropriate role" do
+      api_basic_authorize
+
+      get(api_cloud_tenant_security_groups_url(nil, @cloud_tenant))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'queries a single security group' do
+      api_basic_authorize action_identifier(:security_groups, :read, :subresource_actions, :get)
+
+      get(api_cloud_tenant_security_group_url(nil, @cloud_tenant, @security_group))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include('id' => @security_group.id.to_s)
+    end
+
+    it "will not show a cloud tenant's security group without the appropriate role" do
+      api_basic_authorize
+
+      get(api_cloud_tenant_security_group_url(nil, @cloud_tenant, @security_group))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
 end
