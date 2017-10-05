@@ -21,7 +21,7 @@ module Api
       # We want reftype to reflect subcollection if targeting as such.
       #
       def gen_reftype(type, opts)
-        opts[:is_subcollection] ? "#{@req.collection}/#{@req.c_id}/#{type}" : type
+        opts[:is_subcollection] ? "#{@req.collection}/#{@req.collection_id}/#{type}" : type
       end
 
       # Methods for Serialization as Jbuilder Objects.

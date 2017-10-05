@@ -18,8 +18,8 @@ describe "Logging" do
 
       @log.rewind
       request_log_line = @log.readlines.detect { |l| l =~ /MIQ\(.*\) Request:/ }
-      expect(request_log_line).to include(':path=>"/api/users"', ':collection=>"users"', ":c_id=>nil",
-                                          ":subcollection=>nil", ":s_id=>nil")
+      expect(request_log_line).to include(':path=>"/api/users"', ':collection=>"users"', ":collection_id=>nil",
+                                          ":subcollection=>nil", ":subcollection_id=>nil")
     end
 
     it "logs all hash entries about the request" do
@@ -30,8 +30,8 @@ describe "Logging" do
       @log.rewind
       request_log_line = @log.readlines.detect { |l| l =~ /MIQ\(.*\) Request:/ }
       expect(request_log_line).to include(":method", ":action", ":fullpath", ":url", ":base", ":path", ":prefix",
-                                          ":version", ":api_prefix", ":collection", ":c_suffix", ":c_id",
-                                          ":subcollection", ":s_id")
+                                          ":version", ":api_prefix", ":collection", ":c_suffix", ":collection_id",
+                                          ":subcollection", ":subcollection_id")
     end
 
     it "filters password attributes in nested parameters" do

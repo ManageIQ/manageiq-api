@@ -2,6 +2,8 @@ module Api
   class BaseController
     module Parser
       class RequestAdapter
+        delegate :subject, :subject_id, :collection, :collection_id, :subcollection, :subcollection_id, :subcollection?, :path, :version?, :to => :href
+
         def initialize(req, params)
           @request = req
           @params = params
@@ -10,7 +12,7 @@ module Api
         def to_hash
           [:method, :action, :fullpath, :url, :base,
            :path, :prefix, :version, :api_prefix,
-           :collection, :c_suffix, :c_id, :subcollection, :s_id]
+           :collection, :c_suffix, :collection_id, :subcollection, :subcollection_id]
             .each_with_object({}) { |attr, hash| hash[attr] = send(attr) }
         end
 
@@ -41,43 +43,8 @@ module Api
           url.partition(fullpath)[0] # http://target
         end
 
-        #
-        # c_path_parts returns: [collection, c_id, subcollection, s_id, ...]
-        #
-        def c_path_parts
-          @c_path_parts ||= version_override? ? path.split('/')[3..-1] : path.split('/')[2..-1]
-        end
-
-        def subject
-          subcollection || collection
-        end
-
-        def subject_id
-          subcollection? ? s_id : c_id
-        end
-
-        def collection
-          @collection ||= c_path_parts[0]
-        end
-
         def c_suffix
-          @params[:c_suffix] || Array(c_path_parts[1..-1]).join('/')
-        end
-
-        def c_id
-          @params[:c_id] || c_path_parts[1]
-        end
-
-        def subcollection
-          @subcollection ||= c_path_parts[2]
-        end
-
-        def s_id
-          @params[:s_id] || c_path_parts[3]
-        end
-
-        def subcollection?
-          !!subcollection
+          @params[:c_suffix]
         end
 
         def expand?(what)
@@ -100,13 +67,9 @@ module Api
           @method ||= @request.request_method.downcase.to_sym # :get, :patch, ...
         end
 
-        def path
-          URI.parse(url).path.sub(%r{/*$}, '') # /api/...
-        end
-
         def version
-          @version ||= if version_override?
-                         @params[:version][1..-1] # Switching API Version
+          @version ||= if version?
+                         href.version[1..-1] # Switching API Version
                        else
                          ApiConfig.base[:version] # Default API Version
                        end
@@ -119,17 +82,17 @@ module Api
         def prefix(version = true)
           prefix = "/#{path.split('/')[1]}" # /api
           return prefix unless version
-          version_override? ? "#{prefix}/#{@params[:version]}" : prefix
+          version? ? "#{prefix}/#{href.version}" : prefix
+        end
+
+        def href
+          @href ||= Href.new(url)
         end
 
         private
 
         def expand_requested
           @expand ||= @params['expand'].to_s.split(',')
-        end
-
-        def version_override?
-          @params[:version] && @params[:version].match(Api::VERSION_REGEX) # v#.# version signature
         end
 
         def fullpath

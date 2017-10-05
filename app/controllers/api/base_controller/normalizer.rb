@@ -79,7 +79,7 @@ module Api
       end
 
       def subcollection_href(type, value)
-        normalize_url("#{@req.collection}/#{@req.c_id}/#{type}/#{value}")
+        normalize_url("#{@req.collection}/#{@req.collection_id}/#{type}/#{value}")
       end
 
       def collection_href(type, value)

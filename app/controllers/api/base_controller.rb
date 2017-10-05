@@ -70,9 +70,9 @@ module Api
 
     def destroy
       if @req.subcollection?
-        delete_subcollection_resource @req.subcollection.to_sym, @req.s_id
+        delete_subcollection_resource @req.subcollection.to_sym, @req.subcollection_id
       else
-        delete_resource(@req.collection.to_sym, @req.c_id)
+        delete_resource(@req.collection.to_sym, @req.collection_id)
       end
       render_normal_destroy
     end

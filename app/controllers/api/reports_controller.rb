@@ -51,7 +51,7 @@ module Api
     private
 
     def set_additional_attributes
-      if @req.subcollection == "results" && (@req.s_id || @req.expand?(:resources)) && attribute_selection == "all"
+      if @req.subcollection == "results" && (@req.subcollection_id || @req.expand?(:resources)) && attribute_selection == "all"
         @additional_attributes = %w(result_set)
       end
     end

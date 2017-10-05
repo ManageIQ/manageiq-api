@@ -18,8 +18,8 @@ module Api
 
         data['associations'].each do |association, resource_refs|
           resources = resource_refs.collect do |ref|
-            collection, id = HrefParser.parse(ref['href'])
-            resource_search(id, collection, collection_class(collection))
+            href = Href.new(ref['href'])
+            resource_search(href.subject_id, href.subject, collection_class(href.subject))
           end
           generic_object.send("#{association}=", resources)
         end

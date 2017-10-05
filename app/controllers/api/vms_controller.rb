@@ -10,7 +10,7 @@ module Api
     include Subcollections::MetricRollups
 
     VALID_EDIT_ATTRS = %w(description child_resources parent_resource).freeze
-    RELATIONSHIP_COLLECTIONS = [:vms, :templates].freeze
+    RELATIONSHIP_COLLECTIONS = %w(vms templates).freeze
 
     def start_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
@@ -289,9 +289,9 @@ module Api
     end
 
     def fetch_relationship(href)
-      collection, id = HrefParser.parse(href)
-      raise "Invalid relationship type #{collection}" unless RELATIONSHIP_COLLECTIONS.include?(collection)
-      resource_search(id, collection, collection_class(collection))
+      href = Href.new(href)
+      raise "Invalid relationship type #{href.subject}" unless RELATIONSHIP_COLLECTIONS.include?(href.subject)
+      resource_search(href.subject_id, href.subject, collection_class(href.subject))
     end
 
     def valid_custom_attrs

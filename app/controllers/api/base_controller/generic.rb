@@ -54,7 +54,7 @@ module Api
 
       def delete_resource(type, id = nil, _data = nil)
         klass = collection_class(type)
-        id ||= @req.c_id
+        id ||= @req.collection_id
         raise BadRequestError, "Must specify an id for deleting a #{type} resource" unless id
         delete_resource_action(klass, type, id)
       end
@@ -85,7 +85,7 @@ module Api
 
       def custom_action_resource(type, id, data = nil)
         action = @req.action.downcase
-        id ||= @req.c_id
+        id ||= @req.collection_id
         if id.blank?
           raise BadRequestError, "Must specify an id for invoking the custom action #{action} on a #{type} resource"
         end
@@ -128,12 +128,12 @@ module Api
           raise BadRequestError, "Cannot assign #{sc} to a #{type} resource" unless respond_to?(typed_target)
           sc_data.each do |sr|
             next if sr.blank?
-            collection, rid = HrefParser.parse(sr["href"])
-            if collection == sc && rid
+            href = Href.new(sr["href"])
+            if href.subject == sc && href.subject_id
               sr.delete("id")
               sr.delete("href")
             end
-            send(typed_target, resource, type, rid.to_i, sr)
+            send(typed_target, resource, type, href.subject_id.to_i, sr)
           end
         end
       end
