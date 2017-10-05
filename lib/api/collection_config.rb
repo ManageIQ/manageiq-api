@@ -8,7 +8,7 @@ module Api
       # Config::Options implements a system method causing self[:system] to error.
       # i.e. subcollection name system in an arbitraty path /api/automate/manageiq/system
       @cfg[collection_name.to_sym]
-    rescue => _err
+    rescue
       nil
     end
 
