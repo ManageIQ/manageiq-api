@@ -1642,4 +1642,54 @@ describe "Vms API" do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  context 'security groups subcollection' do
+    before do
+      @network_port = FactoryGirl.create(:network_port, :device => vm_openstack)
+      @security_group = FactoryGirl.create(:security_group, :cloud_tenant => @cloud_tenant)
+      @network_port_security_group = FactoryGirl.create(:network_port_security_group,
+                                                        :network_port   => @network_port,
+                                                        :security_group => @security_group)
+    end
+
+    it 'queries all security groups from a vm' do
+      api_basic_authorize subcollection_action_identifier(:vms, :security_groups, :read, :get)
+
+      get(api_vm_security_groups_url(nil, vm_openstack))
+
+      expected = {
+        'resources' => [
+          { 'href' => api_vm_security_group_url(nil, vm_openstack, @security_group) }
+        ]
+
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "will not show a vm's security groups without the appropriate role" do
+      api_basic_authorize
+
+      get(api_vm_security_groups_url(nil, vm_openstack))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'queries a single security group' do
+      api_basic_authorize action_identifier(:security_groups, :read, :subresource_actions, :get)
+
+      get(api_vm_security_group_url(nil, vm_openstack, @security_group))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include('id' => @security_group.id.to_s)
+    end
+
+    it "will not show a vm's security group without the appropriate role" do
+      api_basic_authorize
+
+      get(api_vm_security_group_url(nil, vm_openstack, @security_group))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
 end

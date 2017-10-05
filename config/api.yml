@@ -494,6 +494,8 @@
     - :subcollection
     :verbs: *gp
     :klass: CloudTenant
+    :subcollections:
+    - :security_groups
     :collection_actions:
       :get:
       - :name: read
@@ -1650,6 +1652,7 @@
     - :cloud_tenants
     - :custom_attributes
     - :load_balancers
+    - :security_groups
     - :vms
     :collection_actions:
       :get:
@@ -2069,6 +2072,14 @@
       - :name: query
         :identifier: security_group_show_list
     :resource_actions:
+      :get:
+      - :name: read
+        :identifier: security_group_show
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: security_group_show_list
+    :subresource_actions:
       :get:
       - :name: read
         :identifier: security_group_show
@@ -2707,6 +2718,7 @@
     - :policy_profiles
     - :accounts
     - :custom_attributes
+    - :security_groups
     - :software
     - :snapshots
     - :metric_rollups
