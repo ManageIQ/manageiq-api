@@ -1,9 +1,6 @@
 module Api
   class MetricRollupsController < BaseController
     def index
-      params[:offset] ||= 0
-      params[:limit] ||= Settings.api.max_results_per_page
-
       rollups_service = MetricRollupsService.new(params)
       resources = rollups_service.query_metric_rollups
       res = collection_filterer(resources, :metric_rollups, MetricRollup).flatten

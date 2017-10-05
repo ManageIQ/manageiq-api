@@ -6,8 +6,6 @@ module Api
       }.freeze
 
       def metric_rollups_query_resource(object)
-        params[:offset] ||= 0
-        params[:limit] ||= Settings.api.max_results_per_page
         params[:resource_type] = RESOURCE_TYPES[@req.collection] || object.class.to_s
         params[:resource_ids] ||= [object.id]
 

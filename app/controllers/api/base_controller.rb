@@ -26,6 +26,7 @@ module Api
     before_action :validate_api_action, :except => [:options]
     before_action :validate_response_format, :except => [:destroy]
     before_action :redirect_on_compressed_path
+    before_action :ensure_pagination, :only => :index
     after_action :log_api_response
 
     respond_to :json
@@ -117,6 +118,11 @@ module Api
 
       render :json => ErrorSerializer.new(type, error).serialize, :status => Rack::Utils.status_code(type)
       log_api_response
+    end
+
+    def ensure_pagination
+      params["limit"] ||= Settings.api.max_results_per_page
+      params["offset"] ||= 0
     end
   end
 end
