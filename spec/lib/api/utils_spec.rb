@@ -12,6 +12,12 @@ RSpec.describe Api::Utils do
   end
 
   describe ".resource_search_by_href_slug" do
+    let(:aw_user) { FactoryGirl.create(:user_with_group) }
+    let(:aw) do
+      FactoryGirl.create(:automate_workspace,
+                         :user   => aw_user,
+                         :tenant => aw_user.current_tenant)
+    end
     before { allow(User).to receive_messages(:server_timezone => "UTC") }
 
     it "returns nil when nil is specified" do
@@ -122,6 +128,17 @@ RSpec.describe Api::Utils do
       actual = described_class.resource_search_by_href_slug("vms/#{vm.compressed_id}", owner)
 
       expect(actual).to eq(vm)
+    end
+
+    it "fetch automate workspace based on guid in href_slug" do
+      actual = described_class.resource_search_by_href_slug(aw.href_slug, aw_user)
+      expect(actual).to eq(aw)
+    end
+
+    it "raises error for automate workspace with invalid href_slug" do
+      expect do
+        described_class.resource_search_by_href_slug("automate_workspaces/99999", aw_user)
+      end.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end

@@ -16,7 +16,9 @@ module Api
       raise _("User must be defined") unless user
 
       klass = collection_config.klass(collection)
-      Rbac.filtered_object(klass.find(ApplicationRecord.uncompress_id(id)), :user => user, :class => klass)
+      key_id = collection_config.resource_identifier(collection)
+      target = key_id == "id" ? klass.find(ApplicationRecord.uncompress_id(id)) : klass.find_by!(key_id => id)
+      Rbac.filtered_object(target, :user => user, :class => klass)
     end
   end
 end
