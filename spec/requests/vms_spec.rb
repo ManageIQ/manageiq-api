@@ -1648,7 +1648,7 @@ describe "Vms API" do
       @network_port = FactoryGirl.create(:network_port, :device => vm_openstack)
       @security_group = FactoryGirl.create(:security_group, :cloud_tenant => @cloud_tenant)
       @network_port_security_group = FactoryGirl.create(:network_port_security_group,
-                                                        :network_port => @network_port,
+                                                        :network_port   => @network_port,
                                                         :security_group => @security_group)
     end
 
