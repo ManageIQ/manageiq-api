@@ -2354,6 +2354,7 @@
     - :orchestration_stacks
     - :metric_rollups
     - :generic_objects
+    - :custom_attributes
     :collection_actions:
       :get:
       - :name: read
@@ -2429,6 +2430,14 @@
       :get:
       - :name: read
         :identifier: generic_object_show_list
+    :custom_attributes_subcollection_actions:
+      :post:
+      - :name: add
+        :identifier: service_edit
+      - :name: edit
+        :identifier: service_edit
+      - :name: delete
+        :identifier: service_edit
   :settings:
     :description: Settings
     :identifier: ops_settings
