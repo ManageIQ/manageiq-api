@@ -2,42 +2,11 @@ RSpec.describe "Event Streams" do
   describe "GET /api/event_streams" do
     around { |example| Timecop.freeze("2017-01-05 12:00 UTC") { example.run } }
 
-    specify "target_type is a required filter" do
-      api_basic_authorize(action_identifier(:event_streams, :read, :collection_actions, :get))
-      FactoryGirl.create(:miq_event)
-
-      get(api_event_streams_url, :params => {:filter => ["timestamp>2017-01-01"]})
-
-      expect(response.parsed_body).to include_error_with_message("Must specify target_type")
-      expect(response).to have_http_status(:bad_request)
-    end
-
-    specify "event streams must be filtered by timestamp occurring after a certain date" do
-      api_basic_authorize(action_identifier(:event_streams, :read, :collection_actions, :get))
-      FactoryGirl.create(:miq_event)
-
-      get(api_event_streams_url, :params => {:filter => ["target_type=VmOrTemplate"]})
-
-      expect(response.parsed_body).to include_error_with_message("Must specify a minimum value for timestamp")
-      expect(response).to have_http_status(:bad_request)
-    end
-
-    it "will aggregate required filter messages" do
-      api_basic_authorize(action_identifier(:event_streams, :read, :collection_actions, :get))
-      FactoryGirl.create(:miq_event)
-
-      get(api_event_streams_url)
-
-      expect(response.parsed_body).to include_error_with_message("Must specify target_type, must specify a minimum value for timestamp")
-      expect(response).to have_http_status(:bad_request)
-    end
-
     it "returns a list of event streams with the appropriate role" do
       api_basic_authorize(action_identifier(:event_streams, :read, :collection_actions, :get))
-      vm = FactoryGirl.create(:vm_vmware)
-      event_stream = FactoryGirl.create(:miq_event, :target => vm, :timestamp => Time.zone.now)
+      event_stream = FactoryGirl.create(:miq_event)
 
-      get(api_event_streams_url, :params => {:filter => ["target_type=VmOrTemplate", "timestamp>2017-01-01"]})
+      get(api_event_streams_url)
 
       expected = {"resources" => [{"href" => api_event_stream_url(nil, event_stream)}]}
       expect(response.parsed_body).to include(expected)
@@ -46,20 +15,10 @@ RSpec.describe "Event Streams" do
 
     it "can filter by event type" do
       api_basic_authorize(action_identifier(:event_streams, :read, :collection_actions, :get))
-      vm = FactoryGirl.create(:vm_vmware)
-      start_event = FactoryGirl.create(:miq_event, :target => vm, :timestamp => Time.zone.now, :event_type => "vm_start")
-      _stop_event = FactoryGirl.create(:miq_event, :target => vm, :timestamp => Time.zone.now, :event_type => "vm_stop")
+      start_event = FactoryGirl.create(:miq_event, :event_type => "vm_start")
+      _stop_event = FactoryGirl.create(:miq_event, :event_type => "vm_stop")
 
-      get(
-        api_event_streams_url,
-        :params => {
-          :filter => [
-            "target_type=VmOrTemplate",
-            "timestamp>2017-01-01",
-            "event_type=vm_start"
-          ]
-        }
-      )
+      get(api_event_streams_url, :params => {:filter => ["event_type=vm_start"]})
 
       expected = {"resources" => [a_hash_including("href" => api_event_stream_url(nil, start_event))]}
       expect(response.parsed_body).to include(expected)
@@ -68,22 +27,12 @@ RSpec.describe "Event Streams" do
 
     it "can filter by timestamp" do
       api_basic_authorize(action_identifier(:event_streams, :read, :collection_actions, :get))
-      vm = FactoryGirl.create(:vm_vmware)
-      _event1 = FactoryGirl.create(:miq_event, :target => vm, :timestamp => 2.days.ago.end_of_day)
-      event2 = FactoryGirl.create(:miq_event, :target => vm, :timestamp => 1.day.ago.beginning_of_day)
-      event3 = FactoryGirl.create(:miq_event, :target => vm, :timestamp => 1.day.ago.end_of_day)
-      _event4 = FactoryGirl.create(:miq_event, :target => vm, :timestamp => Time.zone.today.beginning_of_day)
+      _event1 = FactoryGirl.create(:miq_event, :timestamp => 2.days.ago.end_of_day)
+      event2 = FactoryGirl.create(:miq_event, :timestamp => 1.day.ago.beginning_of_day)
+      event3 = FactoryGirl.create(:miq_event, :timestamp => 1.day.ago.end_of_day)
+      _event4 = FactoryGirl.create(:miq_event, :timestamp => Time.zone.today.beginning_of_day)
 
-      get(
-        api_event_streams_url,
-        :params => {
-          :filter => [
-            "target_type=VmOrTemplate",
-            "timestamp>2017-01-03",
-            "timestamp<2017-01-05"
-          ]
-        }
-      )
+      get(api_event_streams_url, :params => {:filter => ["timestamp>2017-01-03", "timestamp<2017-01-05"]})
 
       expected = {
         "resources" => a_collection_containing_exactly(
@@ -99,18 +48,10 @@ RSpec.describe "Event Streams" do
       api_basic_authorize(action_identifier(:event_streams, :read, :collection_actions, :get))
       vm = FactoryGirl.create(:vm_vmware)
       host = FactoryGirl.create(:host_vmware)
-      vm_event = FactoryGirl.create(:miq_event, :timestamp => Time.zone.now, :target => vm)
-      _host_event = FactoryGirl.create(:miq_event, :timestamp => Time.zone.now, :target => host)
+      vm_event = FactoryGirl.create(:miq_event, :target => vm)
+      _host_event = FactoryGirl.create(:miq_event, :target => host)
 
-      get(
-        api_event_streams_url,
-        :params => {
-          :filter => [
-            "target_type=VmOrTemplate",
-            "timestamp>2017-01-01"
-          ]
-        }
-      )
+      get(api_event_streams_url, :params => {:filter => ["target_type=VmOrTemplate"]})
 
       expected = {"resources" => [a_hash_including("href" => api_event_stream_url(nil, vm_event))]}
       expect(response.parsed_body).to include(expected)
@@ -121,17 +62,16 @@ RSpec.describe "Event Streams" do
       api_basic_authorize(action_identifier(:event_streams, :read, :collection_actions, :get))
       vm1, vm2 = FactoryGirl.create_list(:vm_vmware, 2)
       host = FactoryGirl.create(:host_vmware)
-      vm1_event = FactoryGirl.create(:miq_event, :timestamp => Time.zone.now, :target => vm1)
-      _vm2_event = FactoryGirl.create(:miq_event, :timestamp => Time.zone.now, :target => vm2)
-      _host_event = FactoryGirl.create(:miq_event, :timestamp => Time.zone.now, :target => host)
+      vm1_event = FactoryGirl.create(:miq_event, :target => vm1)
+      _vm2_event = FactoryGirl.create(:miq_event, :target => vm2)
+      _host_event = FactoryGirl.create(:miq_event, :target => host)
 
       get(
         api_event_streams_url,
         :params => {
           :filter => [
             "target_id=#{vm1.id}",
-            "target_type=VmOrTemplate",
-            "timestamp>2017-01-01"
+            "target_type=VmOrTemplate"
           ]
         }
       )
