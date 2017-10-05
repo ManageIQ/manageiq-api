@@ -22,4 +22,10 @@ RSpec.describe Api::CollectionConfig do
       expect(subject.name_for_subclass(String)).to be_nil
     end
   end
+
+  describe "[]" do
+    it "returns nil for :system" do
+      expect(subject[:system]).to be_nil
+    end
+  end
 end

@@ -5,7 +5,11 @@ module Api
     end
 
     def [](collection_name)
+      # Config::Options implements a system method causing self[:system] to error.
+      # i.e. subcollection name system in an arbitraty path /api/automate/manageiq/system
       @cfg[collection_name.to_sym]
+    rescue
+      nil
     end
 
     def option?(collection_name, option_name)
@@ -88,6 +92,10 @@ module Api
       @cfg.each_with_object({}) do |(collection, cspec), result|
         result[collection] = cspec[:description] if cspec[:options].include?(:collection)
       end
+    end
+
+    def resource_identifier(collection_name)
+      self[collection_name].try(:resource_identifier) || "id"
     end
 
     private

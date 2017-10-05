@@ -28,6 +28,23 @@ describe "Automate Workspaces API" do
 
       expect(response).to have_http_status(:ok)
     end
+
+    it 'fetching by guid should return resources with guid based references' do
+      api_basic_authorize action_identifier(:automate_workspaces, :read, :resource_actions, :get)
+      get(api_automate_workspace_url(nil, aw.guid))
+
+      expect(response.parsed_body).to include(
+        "href"    => api_automate_workspace_url(nil, aw.guid),
+        "id"      => aw.id.to_s,
+        "guid"    => aw.guid,
+        "actions" => a_collection_including(
+          "name"   => "edit",
+          "method" => "post",
+          "href"   => api_automate_workspace_url(nil, aw.guid)
+        )
+      )
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   describe 'POST' do

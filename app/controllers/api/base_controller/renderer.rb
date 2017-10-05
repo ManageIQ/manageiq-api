@@ -44,11 +44,12 @@ module Api
           json.set! 'pages', link_builder.pages if link_builder.links?
 
           unless @req.hide?("resources") || collection_option?(:hide_resources)
+            key_id = collection_config.resource_identifier(type)
             json.resources resources.collect do |resource|
               if opts[:expand_resources]
                 add_hash json, resource_to_jbuilder(type, reftype, resource, opts).attributes!
               else
-                json.href normalize_href(reftype, resource["id"])
+                json.href normalize_href(reftype, resource[key_id])
               end
             end
           end
@@ -140,8 +141,15 @@ module Api
       private
 
       def resource_search(id, type, klass)
-        validate_id(id, klass)
-        target = respond_to?("find_#{type}") ? public_send("find_#{type}", id) : klass.find(id)
+        validate_id(id, type, klass)
+        key_id = collection_config.resource_identifier(type)
+        target =
+          if respond_to?("find_#{type}")
+            public_send("find_#{type}", id)
+          else
+            key_id == "id" ? klass.find(id) : klass.find_by(key_id => id)
+          end
+        raise NotFoundError, "Couldn't find #{klass} with '#{key_id}'=#{id}" unless target
         filter_resource(target, type, klass)
       end
 
@@ -400,12 +408,13 @@ module Api
           }
           json.set! sc.to_s, collection_to_jbuilder(sc.to_sym, sctype, subresources, copts)
         else
+          sc_key_id = collection_config.resource_identifier(sctype)
           json.set! sc.to_s do |js|
             subresources.each do |scr|
-              if @req.expand?(sc) || scr["id"].nil?
+              if @req.expand?(sc) || scr[sc_key_id].nil?
                 add_child js, normalize_hash(sctype, scr)
               else
-                js.child! { |jsc| jsc.href normalize_href(sctype, scr["id"]) }
+                js.child! { |jsc| jsc.href normalize_href(sctype, scr[sc_key_id]) }
               end
             end
           end
