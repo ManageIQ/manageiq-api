@@ -207,6 +207,27 @@ RSpec.describe "users API" do
       expect(user1.reload.miq_groups).to match_array([group2, group3])
     end
 
+    it "does not allow setting of empty miq_groups" do
+      api_basic_authorize collection_action_identifier(:users, :edit)
+
+      request = {
+        "action"    => "edit",
+        "resources" => [{
+          "href"       => api_user_url(nil, user1),
+          "miq_groups" => []
+        }]
+      }
+      post(api_users_url, :params => request)
+
+      expected = {
+        'error' => a_hash_including(
+          'message' => 'Users must be assigned groups'
+        )
+      }
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include(expected)
+    end
+
     it "rejects user edits without appropriate role" do
       api_basic_authorize
 

@@ -82,6 +82,7 @@ module Api
     def validate_user_data(data = {})
       bad_attrs = data.keys.select { |k| INVALID_USER_ATTRS.include?(k) }.compact.join(", ")
       raise BadRequestError, "Invalid attribute(s) #{bad_attrs} specified for a user" if bad_attrs.present?
+      raise BadRequestError, "Users must be assigned groups" if data.key?("miq_groups") && data["miq_groups"].empty?
     end
 
     def validate_self_user_data(data = {})
