@@ -301,6 +301,10 @@
         :identifier: miq_request_approval
       - :name: edit
         :identifier: miq_request_edit
+    :request_tasks_subcollection_actions:
+      :post:
+      - :name: edit
+        :identifier: miq_request_edit
   :availability_zones:
     :description: Availability Zones
     :identifier: availability_zone
@@ -1767,6 +1771,10 @@
         :identifier: miq_request_approval
       - :name: edit
         :identifier: miq_request_edit
+    :request_tasks_subcollection_actions:
+      :post:
+      - :name: edit
+        :identifier: miq_request_edit
   :quotas:
     :description: TenantQuotas
     :options:
@@ -1883,8 +1891,19 @@
     :options:
     - :collection
     - :subcollection
-    :verbs: *g
+    :verbs: *gp
     :klass: MiqRequestTask
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_request_show
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_request_show
+    :subresource_actions:
+      :post:
+      - :name: edit
   :requests:
     :description: Requests
     :identifier: miq_request
@@ -1935,6 +1954,10 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
+    :request_tasks_subcollection_actions:
+      :post:
+      - :name: edit
+        :identifier: miq_request_edit
   :resource_actions:
     :description: Resource Actions
     :options:
@@ -2274,6 +2297,10 @@
       :post:
       - :name: remove
         :identifier: svc_catalog_provision
+    :request_tasks_subcollection_actions:
+      :post:
+      - :name: edit
+        :identifier: miq_request_edit
   :service_templates:
     :description: Service Templates
     :identifier: catalog_items_accord

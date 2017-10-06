@@ -452,7 +452,9 @@ describe "Provision Requests API" do
   end
 
   context 'Tasks subcollection' do
-    let(:provision_request) { FactoryGirl.create(:miq_provision_request) }
+    let(:provision_request) { FactoryGirl.create(:miq_provision_request, :requester => @user) }
+    let(:task) { FactoryGirl.create(:miq_request_task, :miq_request_id => provision_request.id) }
+    let(:params) { gen_request(:edit, :options => { :a => "1" }) }
 
     it 'redirects to request_tasks subcollection' do
       FactoryGirl.create(:miq_request_task, :miq_request_id => provision_request.id)
@@ -465,13 +467,36 @@ describe "Provision Requests API" do
     end
 
     it 'redirects to request_tasks subresources' do
-      task = FactoryGirl.create(:miq_request_task, :miq_request_id => provision_request.id)
       api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
 
       get("#{api_provision_request_url(nil, provision_request)}/tasks/#{task.id}")
 
       expect(response).to have_http_status(:moved_permanently)
       expect(response.redirect_url).to include("#{api_provision_request_url(nil, provision_request)}/request_tasks/#{task.id}")
+    end
+
+    it 'does not allow direct edit of provision task' do
+      api_basic_authorize
+
+      post(api_request_task_url(nil, task), :params => params)
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'allows access to underlying provision task' do
+      api_basic_authorize collection_action_identifier(:provision_requests, :read, :get)
+
+      get("#{api_request_url(nil, provision_request)}/request_tasks/#{task.id}")
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'allows edit of task as a subcollection of provision request' do
+      tasks_url = "#{api_provision_request_url(nil, provision_request)}/request_tasks/#{task.id}"
+      api_basic_authorize subcollection_action_identifier(:provision_requests, :request_tasks, :edit)
+      post(tasks_url, :params => params)
+
+      expect(response).to have_http_status(:ok)
     end
   end
 end
