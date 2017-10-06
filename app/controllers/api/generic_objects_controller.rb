@@ -27,9 +27,41 @@ module Api
 
     private
 
+    def resource_custom_action_names(resource)
+      return [] unless resource.respond_to?(:property_methods)
+      resource.property_methods
+    end
+
+    def invoke_custom_action(type, resource, action, data)
+      result = begin
+                 desc = "Invoked method #{action} for Generic Object id: #{resource.id}"
+                 task_id = queue_object_action(resource, desc, queue_args(action, data))
+                 action_result(true, desc, :task_id => task_id)
+               rescue => err
+                 action_result(false, err.to_s)
+               end
+      add_href_to_result(result, type, resource.id)
+      log_result(result)
+      result
+    end
+
     def retrieve_generic_object_definition(data)
       definition_id = parse_id(data['generic_object_definition'], :generic_object_definitions)
       resource_search(definition_id, :generic_object_definitions, collection_class(:generic_object_definitions))
+    end
+
+    def queue_args(action, data)
+      current_user = User.current_user
+      {
+        :method_name => action,
+        :args        => data['parameters'],
+        :role        => 'automate',
+        :user        => {
+          :user_id   => current_user.id,
+          :group_id  => current_user.current_group.id,
+          :tenant_id => current_user.current_tenant.id
+        }
+      }
     end
   end
 end

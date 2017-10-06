@@ -68,14 +68,20 @@ RSpec.describe 'GenericObjects API' do
       object.add_to_property_association('services', service)
     end
 
-    it 'returns a generic object with property_attributes' do
-      api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get)
+    it 'returns a generic object with property_attributes and custom method actions' do
+      api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get),
+                          action_identifier(:generic_objects, :delete, :resource_actions, :delete)
 
       get(api_generic_object_url(nil, object))
 
       expected = {
         'name'                => 'object 1',
-        'property_attributes' => { 'widget' => 'a widget string', 'is_something' => true }
+        'property_attributes' => { 'widget' => 'a widget string', 'is_something' => true },
+        'actions'             => a_collection_including(
+          { 'name' => 'delete', 'method' => 'post', 'href' => api_generic_object_url(nil, object)},
+          { 'name' => 'method_a', 'method' => 'post', 'href' => api_generic_object_url(nil, object)},
+          { 'name' => 'method_b', 'method' => 'post', 'href' => api_generic_object_url(nil, object) }
+        )
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -278,6 +284,20 @@ RSpec.describe 'GenericObjects API' do
       expected = {
         'success' => true,
         'message' => a_string_including("generic_objects id: #{object.id} deleting")
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'can call a custom action on a generic object' do
+      api_basic_authorize
+
+      post(api_generic_object_url(nil, object), :params => { :action => 'method_a' })
+
+      expected = {
+        'success'   => true,
+        'message'   => "Invoked method method_a for Generic Object id: #{object.id}",
+        'task_href' => a_string_including(api_tasks_url)
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)

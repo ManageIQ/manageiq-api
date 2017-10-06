@@ -958,6 +958,7 @@
     :options:
     - :collection
     - :subcollection
+    - :custom_actions
     :verbs: *gpd
     :klass: GenericObject
     :subcollections:
