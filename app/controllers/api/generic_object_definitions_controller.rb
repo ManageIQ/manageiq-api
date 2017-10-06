@@ -8,6 +8,7 @@ module Api
 
     def create_resource(_type, _id, data)
       klass = collection_class(:generic_object_definitions)
+      data['picture'] = add_picture_resource(data['picture']) if data.key?('picture')
       klass.create!(data.deep_symbolize_keys)
     rescue => err
       raise BadRequestError, "Failed to create new generic object definition - #{err}"
@@ -15,8 +16,9 @@ module Api
 
     def edit_resource(type, id, data)
       go_def = fetch_generic_object_definition(type, id, data)
-      updated_data = data['resource'].try(:deep_symbolize_keys) || data.deep_symbolize_keys
-      go_def.update_attributes!(updated_data) if data.present?
+      updated_data = data['resource'] || data
+      updated_data['picture'] = add_picture_resource(updated_data['picture']) if updated_data.key?('picture')
+      go_def.update_attributes!(updated_data.deep_symbolize_keys) if data.present?
       go_def
     rescue => err
       raise BadRequestError, "Failed to update generic object definition - #{err}"
@@ -119,6 +121,12 @@ module Api
     end
 
     private
+
+    def add_picture_resource(data)
+      id = parse_id(data, :pictures)
+      return resource_search(id, :pictures, collection_class(:pictures)) if id
+      Picture.create_from_base64(data)
+    end
 
     def generic_objects_request?
       @req.subject == 'generic_objects'

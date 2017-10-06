@@ -3,6 +3,21 @@ RSpec.describe 'GenericObjectDefinitions API' do
   let(:object_def) { FactoryGirl.create(:generic_object_definition, :name => 'foo') }
   let(:object_def2) { FactoryGirl.create(:generic_object_definition, :name => 'foo 2') }
   let(:object_def3) { FactoryGirl.create(:generic_object_definition, :name => 'foo 3') }
+  let(:picture) { FactoryGirl.create(:picture, :extension => 'png') }
+  let(:content) do
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGP"\
+      "C/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3Cc"\
+      "ulE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2Jl"\
+      "LnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIg"\
+      "eDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpy"\
+      "ZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1u"\
+      "cyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAg"\
+      "ICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYv"\
+      "MS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3Jp"\
+      "ZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpS"\
+      "REY+CjwveDp4bXBtZXRhPgpMwidZAAAADUlEQVQIHWNgYGCwBQAAQgA+3N0+"\
+      "xQAAAABJRU5ErkJggg=="
+  end
 
   describe 'GET /api/generic_object_definitions' do
     it 'does not list object definitions without an appropriate role' do
@@ -152,7 +167,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
   end
 
   describe 'POST /api/generic_object_definitions' do
-    it 'can create a new generic_object_definition' do
+    it 'can create a new generic_object_definition with new picture resource' do
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :create)
 
       object_definition = {
@@ -171,12 +186,44 @@ RSpec.describe 'GenericObjectDefinitions API' do
             'add_vm',
             'remove_vm'
           ]
+        },
+        'picture'     => {
+          'extension' => 'png',
+          'content'   => content
         }
       }
       post(api_generic_object_definitions_url, :params => object_definition)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['results'].first).to include(object_definition)
+      expect(response.parsed_body['results'].first).to include(object_definition.except('picture'))
+    end
+
+    it 'supports creating a new generic object definition with picture href specified' do
+      api_basic_authorize collection_action_identifier(:generic_object_definitions, :create)
+
+      object_definition = {
+        'name'        => 'LoadBalancer',
+        'description' => 'LoadBalancer description',
+        'picture'     => { 'href' => api_picture_url(nil, picture) }
+      }
+      post(api_generic_object_definitions_url, :params => object_definition)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['results'].first).to include(object_definition.except('picture'))
+    end
+
+    it 'supports creating a new generic object definition with picture id specified' do
+      api_basic_authorize collection_action_identifier(:generic_object_definitions, :create)
+
+      object_definition = {
+        'name'        => 'LoadBalancer',
+        'description' => 'LoadBalancer description',
+        'picture'     => { 'id' => picture.id }
+      }
+      post(api_generic_object_definitions_url, :params => object_definition)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['results'].first).to include(object_definition.except('picture'))
     end
 
     it 'cannot create an invalid generic_object_definition' do
@@ -203,15 +250,16 @@ RSpec.describe 'GenericObjectDefinitions API' do
       expect(response.parsed_body).to include(expected)
     end
 
-    it 'can edit generic_object_definitions by id, name, or href' do
+    it 'can edit generic_object_definitions by id, name, or href and with picture resources specified' do
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :edit)
+      picture2 = FactoryGirl.create(:picture, :extension => 'jpg')
 
       request = {
         'action'    => 'edit',
         'resources' => [
-          { 'name' => object_def.name, 'resource' => { 'name' => 'updated 1' } },
-          { 'id' => object_def2.id.to_s, 'resource' => { 'name' => 'updated 2' }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'name' => 'updated 3' }}
+          { 'name' => object_def.name, 'resource' => { 'name' => 'updated 1', 'picture' => { 'href' => api_picture_url(nil, picture) } } },
+          { 'id' => object_def2.id.to_s, 'resource' => { 'name' => 'updated 2', 'picture' => { 'id' => picture2.id } }},
+          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'name' => 'updated 3', 'picture' => { 'content' => content, 'extension' => 'jpg' } }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
