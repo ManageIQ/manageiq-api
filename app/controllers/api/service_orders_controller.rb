@@ -85,7 +85,7 @@ module Api
     end
 
     def check_validation(validation)
-      if validation[:errors].present?
+      if validation.present? && validation[:errors].present?
         raise BadRequestError, "Invalid service request - #{validation[:errors].join(", ")}"
       end
     end
