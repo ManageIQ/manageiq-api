@@ -53,6 +53,22 @@ RSpec.describe "service orders API" do
     expect(response).to have_http_status(:ok)
   end
 
+  it "can specify service_template_hrefs when creating a service order" do
+    dialog = FactoryGirl.create(:dialog, :label => "ServiceDialog1")
+    resource_action = FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog)
+    service_template = FactoryGirl.create(:service_template, :resource_actions => [resource_action])
+
+    api_basic_authorize collection_action_identifier(:service_orders, :create)
+
+    post(api_service_orders_url, :params => { :service_requests => [{ :service_template_href => api_service_template_url(nil, service_template) }] })
+
+    expected = {
+      'results' => [a_hash_including('href' => a_string_including(api_service_orders_url))]
+    }
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include(expected)
+  end
+
   specify "the default state for a service order is 'cart'" do
     api_basic_authorize collection_action_identifier(:service_orders, :create)
 
