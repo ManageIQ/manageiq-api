@@ -128,7 +128,7 @@ describe "Custom Actions API" do
 
       expect_result_to_have_keys(%w(id href actions))
       action_specs = response.parsed_body["actions"]
-      expect(action_specs.size).to eq(1)
+      expect(action_specs.size).to eq(3)
       expect(action_specs.first["name"]).to eq("edit")
     end
 
