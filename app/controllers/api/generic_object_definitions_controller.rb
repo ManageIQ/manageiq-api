@@ -123,6 +123,7 @@ module Api
     private
 
     def add_picture_resource(data)
+      return nil if data.empty?
       id = parse_id(data, :pictures)
       return resource_search(id, :pictures, collection_class(:pictures)) if id
       Picture.create_from_base64(data)

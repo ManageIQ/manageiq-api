@@ -275,6 +275,28 @@ RSpec.describe 'GenericObjectDefinitions API' do
       expect(response.parsed_body).to include(expected)
     end
 
+    it 'can remove a picture via edit' do
+      api_basic_authorize collection_action_identifier(:generic_object_definitions, :edit)
+      object_def.update_attributes!(:picture => picture)
+
+      request = {
+        'action'    => 'edit',
+        'resources' => [
+          { 'name' => object_def.name, 'resource' => { 'name' => 'updated 1', 'picture' => {} } }
+        ]
+      }
+      post(api_generic_object_definitions_url, :params => request)
+
+      expected = {
+        'results' => a_collection_including(
+          a_hash_including('id' => object_def.id.to_s, 'name' => 'updated 1')
+        )
+      }
+      expect(object_def.reload.picture).to be_nil
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
     it 'can add associations by id, name, or href' do
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :add_associations)
 
