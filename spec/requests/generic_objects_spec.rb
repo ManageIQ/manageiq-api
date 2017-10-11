@@ -296,7 +296,7 @@ RSpec.describe 'GenericObjects API' do
 
       expected = {
         'success'   => true,
-        'message'   => "Invoked method method_a for Generic Object id: #{object.id}",
+        'message'   => "Invoked method #{object.generic_object_definition.name}#method_a for Generic Object id: #{object.id} name: #{object.name}",
         'task_href' => a_string_including(api_tasks_url)
       }
       expect(response).to have_http_status(:ok)

@@ -34,15 +34,19 @@ module Api
 
     def invoke_custom_action(type, resource, action, data)
       result = begin
-                 desc = "Invoked method #{action} for Generic Object id: #{resource.id}"
-                 task_id = queue_object_action(resource, desc, queue_args(action, data))
-                 action_result(true, desc, :task_id => task_id)
+                 description = method_description(resource, action)
+                 task_id = queue_object_action(resource, description, queue_args(action, data))
+                 action_result(true, description, :task_id => task_id)
                rescue => err
                  action_result(false, err.to_s)
                end
       add_href_to_result(result, type, resource.id)
       log_result(result)
       result
+    end
+
+    def method_description(resource, action)
+      "Invoked method #{resource.generic_object_definition.name}##{action} for Generic Object id: #{resource.id} name: #{resource.name}"
     end
 
     def retrieve_generic_object_definition(data)
