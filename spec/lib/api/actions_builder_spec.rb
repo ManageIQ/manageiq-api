@@ -23,9 +23,10 @@ RSpec.describe Api::ActionsBuilder do
           {'name' => 'delete', 'method' => :post, 'href' => href},
           {'name' => 'add_resource', 'method' => :post, 'href' => href},
           {'name' => 'remove_all_resources', 'method' => :post, 'href' => href},
-          {'name' => 'remove_resource', 'method' => :post, 'href' => href}
+          {'name' => 'remove_resource', 'method' => :post, 'href' => href},
+          {'name' => 'add_provider_vms', 'method' => :post, 'href' => href}
         ]
-        expect(described_class.new(request, href, :services).collection_actions).to match(expected)
+        expect(described_class.new(request, href, :services).actions).to match(expected)
       end
     end
 
@@ -40,7 +41,7 @@ RSpec.describe Api::ActionsBuilder do
           {'name' => 'assign', 'method' => :post, 'href' => href},
           {'name' => 'unassign', 'method' => :post, 'href' => href}
         ]
-        expect(described_class.new(request, href, :tags).collection_actions).to match(expected)
+        expect(described_class.new(request, href, :tags).actions).to match(expected)
       end
     end
   end
@@ -48,6 +49,7 @@ RSpec.describe Api::ActionsBuilder do
   describe '#resource_actions' do
     context 'resources' do
       let(:href) { '/api/services/:id' }
+      let(:service) { instance_double(Service) }
       before do
         allow(request).to receive(:subcollection).and_return(nil)
         allow(request).to receive(:collection).and_return('services')
@@ -62,19 +64,18 @@ RSpec.describe Api::ActionsBuilder do
           {'name' => 'stop', 'method' => :post, 'href' => href},
           {'name' => 'suspend', 'method' => :post, 'href' => href}
         ]
-        expect(described_class.new(request, href, :services).resource_actions).to match(expected)
+        expect(described_class.new(request, href, :services, service).actions).to match(expected)
       end
 
       it 'only returns validated actions' do
         update_user_roles('service_reconfigure')
-        service = instance_double(Service)
         action_builder = described_class.new(request, href, :services, service)
 
         allow(service).to receive(:validate_reconfigure).and_return(false)
-        expect(action_builder.resource_actions).to be_empty
+        expect(action_builder.actions).to be_empty
 
         allow(service).to receive(:validate_reconfigure).and_return(true)
-        expect(action_builder.resource_actions).to eq([{'name' => 'reconfigure', 'method' => :post, 'href' => href }])
+        expect(action_builder.actions).to eq([{'name' => 'reconfigure', 'method' => :post, 'href' => href }])
       end
 
       it 'returns put and patch actions when specified' do
@@ -85,12 +86,14 @@ RSpec.describe Api::ActionsBuilder do
           {'name' => 'edit', 'method' => :patch, 'href' => href},
           {'name' => 'edit', 'method' => :put, 'href' => href}
         ]
-        expect(described_class.new(request, href, :services).resource_actions).to include(*expected)
+        described_class.new(request, href, :services, service).actions
+        expect(described_class.new(request, href, :services, service).actions).to include(*expected)
       end
     end
 
     context 'subresources' do
       it 'returns the permitted subresource actions' do
+        snapshot = instance_double(Snapshot)
         allow(request).to receive(:subcollection).and_return('snapshots')
         allow(request).to receive(:collection).and_return('vms')
         update_user_roles('vm_snapshot_revert', 'vm_snapshot_delete')
@@ -101,7 +104,7 @@ RSpec.describe Api::ActionsBuilder do
           {'name' => 'delete', 'method' => :post, 'href' => href},
           {'name' => 'delete', 'method' => :delete, 'href' => href}
         ]
-        expect(described_class.new(request, href, :snapshots).resource_actions).to match(expected)
+        expect(described_class.new(request, href, :snapshots, snapshot).actions).to match(expected)
       end
     end
   end

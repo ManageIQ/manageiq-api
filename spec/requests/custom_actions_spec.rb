@@ -75,7 +75,7 @@ describe "Custom Actions API" do
       get api_service_url(nil, svc1)
 
       expect_result_to_have_keys(%w(id href actions))
-      expect(response.parsed_body["actions"].collect { |a| a["name"] }).to match_array(%w(edit add_resource remove_resource remove_all_resources add_provider_vms))
+      expect(response.parsed_body["actions"].collect { |a| a["name"] }).to match_array(%w(edit edit edit add_resource remove_resource remove_all_resources add_provider_vms))
     end
   end
 
@@ -91,7 +91,7 @@ describe "Custom Actions API" do
       get api_service_url(nil, svc1)
 
       expect_result_to_have_keys(%w(id href actions))
-      expect(response.parsed_body["actions"].collect { |a| a["name"] }).to match_array(%w(edit button1 button2 button3 add_resource remove_resource remove_all_resources add_provider_vms))
+      expect(response.parsed_body["actions"].collect { |a| a["name"] }).to match_array(%w(edit edit edit button1 button2 button3 add_resource remove_resource remove_all_resources add_provider_vms))
     end
 
     it "supports the custom_actions attribute" do

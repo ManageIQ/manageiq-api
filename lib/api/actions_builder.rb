@@ -12,30 +12,16 @@ module Api
       @resource = resource
     end
 
-    def collection_actions
+    def actions
       return unless cspec
-      targets = subcollection.nil? ? cspec[:collection_actions] : subcollection_actions
+      targets = collection? ? collection_targets : subcollection_targets
       return [] unless targets
-      targets.each.collect do |method, action_definitions|
+      targets.each.collect do |method, actions|
         next unless render_actions_for_method?(method)
-        action_defs = typed_subcollection_actions(method) || action_definitions
-        action_defs.each.collect do |action|
-          next unless !action[:disabled] && user_role_allows?(action[:identifier])
-          { 'name' => action[:name], 'method' => method, 'href' => href }
-        end
-      end.flatten.compact
-    end
-
-    def resource_actions
-      targets = subcollection.nil? ? cspec[:resource_actions] : subresource_actions
-      return [] unless targets
-      targets.each.collect do |method, action_definitions|
-        next unless render_actions_for_method?(method)
-        action_defs = action_definitions || typed_subcollection_actions(method)
-        action_defs.each.collect do |action|
-          next unless !action[:disabled] && user_role_allows?(action[:identifier]) && action_validated?(action)
+        action_definitions(method, actions).each.collect do |action|
+          next unless enabled_action?(action)
           actions = [{ 'name' => action[:name], 'method' => method, 'href' => href }]
-          actions = gen_put_patch(actions) if action[:name] == 'edit'
+          actions = gen_put_patch(actions) if action[:name] == 'edit' && !collection?
           actions
         end
       end.flatten.compact
@@ -43,7 +29,32 @@ module Api
 
     private
 
+    def collection?
+      @is_collection ||= resource.nil?
+    end
+
+    def action_definitions(method, action_definitions)
+      if collection?
+        typed_subcollection_actions(method) || action_definitions
+      else
+        action_definitions || typed_subcollection_actions(method)
+      end
+    end
+
+    def enabled_action?(action)
+      !action[:disabled] && user_role_allows?(action[:identifier]) && action_validated?(action)
+    end
+
+    def collection_targets
+      subcollection.nil? ? cspec[:collection_actions] : subcollection_actions
+    end
+
+    def subcollection_targets
+      subcollection.nil? ? cspec[:resource_actions] : subresource_actions
+    end
+
     def action_validated?(action_spec)
+      return true if collection?
       if action_spec[:options] && action_spec[:options].include?(:validate_action)
         validate_method = "validate_#{action_spec[:name]}"
         return resource.respond_to?(validate_method) && resource.public_send(validate_method)

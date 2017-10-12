@@ -54,7 +54,7 @@ module Api
             end
           end
 
-          aspecs = Api::ActionsBuilder.new(@req, reftype, type).collection_actions
+          aspecs = Api::ActionsBuilder.new(@req, reftype, type).actions
           add_actions(json, aspecs, reftype)
 
           if link_builder.links?
@@ -348,7 +348,7 @@ module Api
         return unless render_actions(physical_attrs)
 
         href = json.attributes!["href"]
-        aspecs = Api::ActionsBuilder.new(@req, href, type, resource).resource_actions
+        aspecs = Api::ActionsBuilder.new(@req, href, type, resource).actions
         add_actions(json, aspecs, type)
       end
 
