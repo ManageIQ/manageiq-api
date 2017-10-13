@@ -1039,6 +1039,68 @@ describe "Services API" do
     end
   end
 
+  describe 'add_provider_vms_resource' do
+    it 'cannot add_provider_vms without an appropriate role' do
+      api_basic_authorize
+
+      post(api_service_url(nil, svc), :params => { :action => 'add_provider_vms'})
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'can add the provider vms to the queue' do
+      api_basic_authorize action_identifier(:services, :add_provider_vms)
+      svc.update_attributes!(:evm_owner => @user)
+
+      post(api_service_url(nil, svc), :params => { :action => 'add_provider_vms',
+                                                   :provider => { :href => api_provider_url(nil, ems) }, :uid_ems => ['uids'] })
+
+      expected = {
+        'success'   => true,
+        'message'   => a_string_including('Adding provider vms for Service'),
+        'task_id'   => a_kind_of(String),
+        'task_href' => a_string_including('/api/tasks/')
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'requires a valid provider href' do
+      api_basic_authorize action_identifier(:services, :add_provider_vms)
+
+      post(api_service_url(nil, svc), :params => { :action  => 'add_provider_vms',
+                                                   :uid_ems => ['uids'] })
+
+      expected = {
+        'success' => false,
+        'message' => a_string_including('Must specify a valid provider href or id')
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'can bulk add_provider_vms' do
+      api_basic_authorize action_identifier(:services, :add_provider_vms)
+      svc.update_attributes!(:evm_owner => @user)
+      svc2.update_attributes!(:evm_owner => @user)
+
+      post(api_services_url, :params => { :action    => 'add_provider_vms',
+                                          :resources => [
+                                            { :href => api_service_url(nil, svc), :provider => { :href => api_provider_url(nil, ems) }, :uid_ems => ['uids'] },
+                                            { :href => api_service_url(nil, svc2), :provider => { :href => api_provider_url(nil, ems) }, :uid_ems => ['uids']}
+                                          ]})
+
+      expected = {
+        'results' => [
+          {'success' => true, 'message' => a_string_including("Adding provider vms for Service id:#{svc.id}"), 'task_id' => a_kind_of(String), 'task_href' => a_string_including(api_tasks_url)},
+          {'success' => true, 'message' => a_string_including("Adding provider vms for Service id:#{svc2.id}"), 'task_id' => a_kind_of(String), 'task_href' => a_string_including(api_tasks_url)},
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
+
   describe "Generic Objects Subcollection" do
     let(:generic_object_definition) { FactoryGirl.create(:generic_object_definition) }
     let(:generic_object) { FactoryGirl.create(:generic_object, :generic_object_definition => generic_object_definition) }
