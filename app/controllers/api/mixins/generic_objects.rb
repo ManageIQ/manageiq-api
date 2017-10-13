@@ -1,12 +1,13 @@
 module Api
   module Mixins
     module GenericObjects
-      ADDITIONAL_ATTRS = %w(generic_object_definition associations).freeze
+      ADDITIONAL_ATTRS = %w(associations).freeze
 
       private
 
       def create_generic_object(object_definition, data)
-        object_definition.create_object(data.except(*ADDITIONAL_ATTRS)).tap do |generic_object|
+        data['generic_object_definition'] = object_definition
+        GenericObject.new(data.except(*ADDITIONAL_ATTRS)).tap do |generic_object|
           add_associations(generic_object, data, object_definition) if data.key?('associations')
           generic_object.save!
         end
