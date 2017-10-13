@@ -170,7 +170,9 @@ RSpec.describe 'GenericObjects API' do
           ]
         }
       }
-      post(api_generic_objects_url, :params => generic_object)
+      expect do
+        post(api_generic_objects_url, :params => generic_object)
+      end.to_not change(GenericObject, :count)
 
       expected = {
         'error' => a_hash_including(
