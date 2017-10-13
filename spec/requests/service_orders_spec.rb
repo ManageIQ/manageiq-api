@@ -25,6 +25,20 @@ RSpec.describe "service orders API" do
     expect(response.parsed_body).to include(expected)
   end
 
+  it "will not create a new cart if one already exists for the user" do
+    api_basic_authorize collection_action_identifier(:service_orders, :create)
+    FactoryGirl.create(:service_order, :state => ServiceOrder::STATE_CART, :user => @user)
+
+    post api_service_orders_url, :params => { :name => "service order" }
+    expected = {
+      "error" => a_hash_including(
+        "message" => "Cart for user #{@user.name} already exists"
+      )
+    }
+    expect(response).to have_http_status(:bad_request)
+    expect(response.parsed_body).to include(expected)
+  end
+
   it "can create a service order" do
     api_basic_authorize collection_action_identifier(:service_orders, :create)
 

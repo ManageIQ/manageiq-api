@@ -7,6 +7,7 @@ module Api
       raise BadRequestError, "Can't create an ordered service order" if data["state"] == ServiceOrder::STATE_ORDERED
       service_requests = data.delete("service_requests")
       data["state"] ||= ServiceOrder::STATE_CART
+      raise BadRequestError, "Cart for user #{User.current_user.name} already exists" if cart?
       if service_requests.blank?
         super
       else
@@ -55,6 +56,12 @@ module Api
     end
 
     private
+
+    def cart?
+      ServiceOrder.cart_for(User.current_user)
+    rescue ActiveRecord::RecordNotFound
+      false
+    end
 
     def add_request_to_cart(workflow)
       workflow.add_request_to_cart
