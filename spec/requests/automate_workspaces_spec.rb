@@ -2,10 +2,20 @@
 # REST API Request Tests - /api/automate_workspaces
 #
 describe "Automate Workspaces API" do
-  describe 'GET' do
-    let(:user) { FactoryGirl.create(:user_with_group, :userid => "admin") }
-    let(:aw) { FactoryGirl.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
+  let(:user) { FactoryGirl.create(:user_with_group, :userid => "admin") }
+  let(:aw) do
+    FactoryGirl.create(:automate_workspace, :user   => user,
+                                            :tenant => user.current_tenant,
+                                            :input  => input)
+  end
+  let(:password) { "secret" }
+  let(:encrypted) { MiqAePassword.encrypt(password) }
+  let(:input) do
+    { 'objects'           => {'root' => { 'var1' => '1', 'var2' => "password::#{encrypted}"}},
+      'method_parameters' => {'arg1' => "password::#{encrypted}"} }
+  end
 
+  describe 'GET' do
     it 'should not return resources when fetching the collection' do
       api_basic_authorize collection_action_identifier(:automate_workspaces, :read, :get)
       aw
@@ -48,9 +58,17 @@ describe "Automate Workspaces API" do
   end
 
   describe 'POST' do
-    let(:user) { FactoryGirl.create(:user_with_group, :userid => "admin") }
-    let(:aw) { FactoryGirl.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
     let(:output) { { 'objects' => { 'root' => { 'a' => '1'} }, 'state_vars' => {'b' => 2}} }
+
+    let(:decrypt_params) do
+      {:action   => 'decrypt',
+       :resource => {'object' => 'root', 'attribute' => 'var2'}}
+    end
+
+    let(:encrypt_params) do
+      {:action   => 'encrypt',
+       :resource => {'object' => 'root', 'attribute' => 'var3', 'value' => password }}
+    end
 
     it 'should allow updating the object with valid data' do
       api_basic_authorize action_identifier(:automate_workspaces, :edit)
@@ -65,6 +83,25 @@ describe "Automate Workspaces API" do
       post(api_automate_workspace_url(nil, aw.guid), :params => {:action => 'edit', :resource => {}})
 
       expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'decrypt a password' do
+      api_basic_authorize action_identifier(:automate_workspaces, :decrypt)
+
+      post(api_automate_workspace_url(nil, aw.guid), :params => decrypt_params)
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)['result']).to eq(password)
+    end
+
+    it 'encrypt' do
+      api_basic_authorize action_identifier(:automate_workspaces, :encrypt)
+
+      post(api_automate_workspace_url(nil, aw.guid), :params => encrypt_params)
+
+      aw.reload
+      expect(response).to have_http_status(:ok)
+      expect(aw.output.fetch_path('objects', 'root', 'var3')).to eq("password::#{encrypted}")
     end
   end
 end
