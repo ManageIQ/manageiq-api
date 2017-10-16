@@ -62,6 +62,33 @@ describe "Pictures" do
     end
   end
 
+  describe 'GET /api/pictures' do
+    it 'returns image_href, extension when resources are expanded' do
+      api_basic_authorize
+
+      expected = {
+        'resources' => [
+          a_hash_including('image_href' => a_string_including(picture.image_href), 'extension' => picture.extension)
+        ]
+      }
+      get(api_pictures_url, :params => { :expand => 'resources' })
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
+
+  describe 'GET /api/pictures/:id' do
+    it 'returns image_href, extension by default' do
+      api_basic_authorize
+
+      get(api_picture_url(nil, picture))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include('image_href' => a_string_including(picture.image_href), 'extension' => picture.extension)
+    end
+  end
+
   describe 'POST /api/pictures' do
     # Valid base64 image
     let(:content) do
