@@ -1,14 +1,15 @@
 module Api
   class BaseSerializer
-    def self.serialize(model)
+    def self.serialize(model, options = {})
       Environment.fetch_encrypted_attribute_names(model.class)
-      new(model).serialize
+      new(model, options).serialize
     end
 
-    attr_reader :model
+    attr_reader :model, :extra
 
-    def initialize(model)
+    def initialize(model, options = {})
       @model = model
+      @extra = options.fetch(:extra, [])
     end
 
     def serialize
@@ -19,7 +20,7 @@ module Api
     end
 
     def attributes
-      model.attributes.keys - model.class.virtual_attribute_names + additional_attributes
+      model.attributes.keys - model.class.virtual_attribute_names + additional_attributes + extra
     end
 
     def coerce(attr, value)

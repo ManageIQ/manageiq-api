@@ -16,5 +16,13 @@ RSpec.describe Api::BaseSerializer do
         expect(actual).not_to include("password_digest")
       end
     end
+
+    specify "additional attributes can be requested" do
+      vm = FactoryGirl.create(:vm, :vendor => "vmware")
+
+      actual = described_class.serialize(vm, :extra => ["vendor_display"])
+
+      expect(actual).to include("vendor_display" => "VMware")
+    end
   end
 end
