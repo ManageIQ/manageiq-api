@@ -24,5 +24,14 @@ RSpec.describe Api::BaseSerializer do
 
       expect(actual).to include("vendor_display" => "VMware")
     end
+
+    specify "only whitelisted attributes can be requested" do
+      vm = FactoryGirl.create(:vm)
+
+      actual = described_class.serialize(vm, :extra => ["destroy"])
+
+      expect(actual).not_to include("destroy")
+      expect { vm.reload }.not_to raise_error
+    end
   end
 end
