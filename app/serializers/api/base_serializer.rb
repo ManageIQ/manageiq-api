@@ -25,7 +25,7 @@ module Api
         only
       else
         model.attributes.keys + additional_attributes + extra
-      end & whitelisted_attributes
+      end & whitelist
     end
 
     def coerce(attr, value)
@@ -46,7 +46,7 @@ module Api
       []
     end
 
-    def whitelisted_attributes
+    def whitelist
       model.attributes.keys + model.class.virtual_attribute_names + additional_attributes
     end
   end
