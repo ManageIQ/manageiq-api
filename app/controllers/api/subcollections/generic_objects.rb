@@ -9,6 +9,12 @@ module Api
 
         generic_objects.collect do |go|
           attributes_hash = create_resource_attributes_hash(go_attrs, go)
+
+          if attributes_hash['picture']
+            picture = attributes_hash['picture']
+            attributes_hash['picture'] = picture.attributes.merge('image_href' => picture.image_href, 'extension' => picture.extension)
+          end
+
           go.as_json.merge(attributes_hash)
         end
       end

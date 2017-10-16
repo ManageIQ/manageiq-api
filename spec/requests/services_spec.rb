@@ -1102,7 +1102,8 @@ describe "Services API" do
   end
 
   describe "Generic Objects Subcollection" do
-    let(:generic_object_definition) { FactoryGirl.create(:generic_object_definition) }
+    let(:picture) { FactoryGirl.create(:picture) }
+    let(:generic_object_definition) { FactoryGirl.create(:generic_object_definition, :picture => picture) }
     let(:generic_object) { FactoryGirl.create(:generic_object, :generic_object_definition => generic_object_definition) }
 
     before do
@@ -1136,7 +1137,7 @@ describe "Services API" do
     it "allows expansion of generic objects and specification of generic object attributes" do
       api_basic_authorize(action_identifier(:services, :read, :resource_actions, :get))
 
-      get api_services_url, :params => { :expand => 'resources,generic_objects', :attributes => 'generic_objects.generic_object_definition' }
+      get api_services_url, :params => { :expand => 'resources,generic_objects', :attributes => 'generic_objects.generic_object_definition,generic_objects.picture' }
 
       expected = {
         'name'      => 'services',
@@ -1148,7 +1149,8 @@ describe "Services API" do
             'generic_objects' => [
               a_hash_including(
                 'href'                      => api_service_generic_object_url(nil, svc, generic_object),
-                'generic_object_definition' => a_hash_including('id' => generic_object_definition.id.to_s)
+                'generic_object_definition' => a_hash_including('id' => generic_object_definition.id.to_s),
+                'picture'                   => a_hash_including('image_href' => a_string_including(picture.image_href), 'extension' => picture.extension)
               )
             ]
           )
