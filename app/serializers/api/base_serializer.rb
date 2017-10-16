@@ -5,11 +5,12 @@ module Api
       new(model, options).serialize
     end
 
-    attr_reader :model, :extra
+    attr_reader :model, :extra, :only
 
     def initialize(model, options = {})
       @model = model
       @extra = options.fetch(:extra, [])
+      @only = options.fetch(:only, [])
     end
 
     def serialize
@@ -20,7 +21,11 @@ module Api
     end
 
     def attributes
-      (model.attributes.keys + additional_attributes + extra) & whitelisted_attributes
+      if only.any?
+        only
+      else
+        model.attributes.keys + additional_attributes + extra
+      end & whitelisted_attributes
     end
 
     def coerce(attr, value)

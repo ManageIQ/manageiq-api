@@ -33,5 +33,22 @@ RSpec.describe Api::BaseSerializer do
       expect(actual).not_to include("destroy")
       expect { vm.reload }.not_to raise_error
     end
+
+    it "can serialize only the requested attributes" do
+      user = FactoryGirl.create(:user, :name => "Alice")
+
+      actual = described_class.serialize(user, :only => ["name"])
+
+      expect(actual).to eq("name" => "Alice")
+    end
+
+    specify "only whitelisted attributes can be used with :only" do
+      user = FactoryGirl.create(:user)
+
+      actual = described_class.serialize(user, :only => ["destroy"])
+
+      expect(actual).not_to include("destroy")
+      expect { user.reload }.not_to raise_error
+    end
   end
 end
