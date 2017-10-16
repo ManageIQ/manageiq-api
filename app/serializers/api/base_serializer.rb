@@ -1,7 +1,6 @@
 module Api
   class BaseSerializer
     def self.serialize(model, options = {})
-      Environment.fetch_encrypted_attribute_names(model.class)
       new(model, options).serialize
     end
 
@@ -35,8 +34,6 @@ module Api
       elsif Api.time_attribute?(attr)
         return Time.at(value).utc.iso8601 if value.kind_of?(Integer)
         value.respond_to?(:utc) ? value.utc.iso8601 : value
-      elsif Api.encrypted_attribute?(attr)
-        nil
       else
         value
       end
@@ -47,7 +44,7 @@ module Api
     end
 
     def whitelist
-      model.attributes.keys + model.class.virtual_attribute_names + additional_attributes
+      model.attributes.keys + model.class.virtual_attribute_names + additional_attributes - Array(model.try(:encrypted_attributes))
     end
   end
 end
