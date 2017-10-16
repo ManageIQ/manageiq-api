@@ -19,7 +19,7 @@ module Api
     end
 
     def attributes
-      model.attributes.keys - model.class.virtual_attribute_names
+      model.attributes.keys - model.class.virtual_attribute_names + additional_attributes
     end
 
     def coerce(attr, value)
@@ -34,6 +34,10 @@ module Api
       else
         value
       end
+    end
+
+    def additional_attributes
+      []
     end
   end
 end
