@@ -29,7 +29,7 @@ module Api
 
     def coerce(attr, value)
       return if value.nil?
-      if attr == "id" || attr.to_s.ends_with?("_id")
+      if model.class.primary_key == attr || foreign_keys.include?(attr.to_s)
         value.to_s
       elsif %i[date datetime].include?(model.class.columns_hash[attr].try(:type))
         value.utc.iso8601
@@ -44,6 +44,10 @@ module Api
 
     def whitelist
       model.attributes.keys + model.class.virtual_attribute_names + additional_attributes - Array(model.try(:encrypted_attributes))
+    end
+
+    def foreign_keys
+      model.class.reflect_on_all_associations(:belongs_to).collect(&:foreign_key)
     end
   end
 end
