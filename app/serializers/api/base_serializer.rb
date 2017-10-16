@@ -31,9 +31,8 @@ module Api
       return if value.nil?
       if attr == "id" || attr.to_s.ends_with?("_id")
         value.to_s
-      elsif Api.time_attribute?(attr)
-        return Time.at(value).utc.iso8601 if value.kind_of?(Integer)
-        value.respond_to?(:utc) ? value.utc.iso8601 : value
+      elsif %i[date datetime].include?(model.class.columns_hash[attr].try(:type))
+        value.utc.iso8601
       else
         value
       end
