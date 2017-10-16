@@ -13,10 +13,7 @@ module Api
     end
 
     def serialize
-      attributes.each_with_object({}) do |a, result|
-        value = coerce(a, model.public_send(a))
-        result[a] = value unless value.nil?
-      end
+      attributes.each_with_object({}) { |a, result| result[a] = coerce(a, model.public_send(a)) }.compact
     end
 
     def attributes
