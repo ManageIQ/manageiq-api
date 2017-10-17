@@ -15,7 +15,7 @@ module Api
     end
 
     def self.foreign_keys
-      @foreign_keys ||= model.reflect_on_all_associations(:belongs_to).collect(&:foreign_key)
+      @foreign_keys ||= %i[belongs_to has_one].flat_map { |type| model.reflect_on_all_associations(type).collect(&:foreign_key) }
     end
 
     def self.attributes
