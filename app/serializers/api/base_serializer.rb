@@ -4,6 +4,34 @@ module Api
       new(model, options).serialize
     end
 
+    def self.model
+      @model ||= name.demodulize.sub(/Serializer/, "").safe_constantize
+    end
+
+    def self.primary_key
+      @primary_key ||= model.primary_key
+    end
+
+    def self.foreign_keys
+      @foreign_keys ||= model.reflect_on_all_associations(:belongs_to).collect(&:foreign_key)
+    end
+
+    def self.attributes
+      @attributes ||= model.column_names
+    end
+
+    def self.virtual_attributes
+      @virtual_attributes ||= model.virtual_attribute_names
+    end
+
+    def self.date_or_time_attributes
+      @date_or_time_attributes ||= Set.new(model.columns_hash.select { |_k, v| v.type.in?(%i[date datetime]) }.collect(&:first))
+    end
+
+    def self.encrypted_attributes
+      @encrypted_attributes ||= Array(model.try(:encrypted_attributes))
+    end
+
     attr_reader :model, :extra, :only
 
     def initialize(model, options = {})
@@ -20,15 +48,15 @@ module Api
       if only.any?
         only
       else
-        model.attributes.keys + additional_attributes + extra
+        self.class.attributes + additional_attributes + extra
       end & whitelist
     end
 
     def coerce(attr, value)
       return if value.nil?
-      if model.class.primary_key == attr || foreign_keys.include?(attr.to_s)
+      if key?(attr)
         value.to_s
-      elsif %i[date datetime].include?(model.class.columns_hash[attr].try(:type))
+      elsif date_or_time?(attr)
         value.utc.iso8601
       else
         value
@@ -40,11 +68,15 @@ module Api
     end
 
     def whitelist
-      model.attributes.keys + model.class.virtual_attribute_names + additional_attributes - Array(model.try(:encrypted_attributes))
+      self.class.attributes + self.class.virtual_attributes + additional_attributes - self.class.encrypted_attributes
     end
 
-    def foreign_keys
-      model.class.reflect_on_all_associations(:belongs_to).collect(&:foreign_key)
+    def key?(attribute)
+      self.class.primary_key == attribute || self.class.foreign_keys.include?(attribute)
+    end
+
+    def date_or_time?(attribute)
+      self.class.date_or_time_attributes.include?(attribute)
     end
   end
 end
