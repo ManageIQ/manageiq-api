@@ -19,9 +19,21 @@ module Api
           end
         end
 
-        attrs.each do |k|
-          value = normalize_attr(k, obj.kind_of?(ActiveRecord::Base) ? obj.try(k) : obj[k])
-          result[k] = value unless value.nil?
+        case obj
+        when ActiveRecord::Base
+          result = if opts[:render_attributes]
+                     Api.serialize(obj, :only => opts[:render_attributes].without("href"))
+                   else
+                     Api.serialize(obj)
+                   end
+          if href.present?
+            result["href"] = href
+          end
+        when Hash
+          attrs.each do |k|
+            value = normalize_attr(k, obj[k])
+            result[k] = value unless value.nil?
+          end
         end
         result
       end

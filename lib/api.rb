@@ -19,6 +19,18 @@ module Api
   NotFoundError = Class.new(ApiError)
   UnsupportedMediaTypeError = Class.new(ApiError)
 
+  def self.serialize(model, options = {})
+    model_name = case model
+                 when ExtManagementSystem then "ExtManagementSystem"
+                 when Authentication then "Authentication"
+                 else
+                   model.class.name.demodulize
+                 end
+    serializer_name = "#{model_name}Serializer"
+    serializer = "Api::#{serializer_name}".safe_constantize
+    serializer.serialize(model, options)
+  end
+
   def self.encrypted_attribute?(attr)
     Environment.encrypted_attributes.include?(attr.to_s) || attr.to_s.include?('password')
   end
