@@ -68,6 +68,8 @@ module Api
         value.to_s
       elsif date_or_time?(attr)
         value.utc.iso8601
+      elsif value.kind_of?(Hash)
+        HashSerializer.serialize(value)
       else
         value
       end
