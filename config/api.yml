@@ -703,6 +703,24 @@
       :get:
       - :name: read
         :identifier: container_deployment_show
+  :container_nodes:
+    :description: Container Nodes
+    :identifier: container_node
+    :klass: ContainerNode
+    :verbs: *gp
+    :options:
+    - :collection
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: container_node_show_list
+      :post:
+      - :name: query
+        :identifier: container_node_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: container_node_show
   :currencies:
     :description: Currencies
     :identifier: currency
