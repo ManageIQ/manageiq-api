@@ -1,5 +1,7 @@
 module Api
   class BaseSerializer
+    ADDITIONAL_ATTRIBUTES = [].freeze
+
     def self.serialize(model, options = {})
       new(model, options).serialize
     end
@@ -22,6 +24,10 @@ module Api
 
     def self.virtual_attributes
       @virtual_attributes ||= model.virtual_attribute_names
+    end
+
+    def self.additional_attributes
+      ADDITIONAL_ATTRIBUTES
     end
 
     def self.date_or_time_attributes
@@ -48,7 +54,7 @@ module Api
       if only.any?
         only
       else
-        self.class.attributes + additional_attributes + extra
+        self.class.attributes + self.class.additional_attributes + extra
       end & whitelist
     end
 
@@ -63,12 +69,8 @@ module Api
       end
     end
 
-    def additional_attributes
-      []
-    end
-
     def whitelist
-      self.class.attributes + self.class.virtual_attributes + additional_attributes - self.class.encrypted_attributes
+      self.class.attributes + self.class.virtual_attributes + self.class.additional_attributes - self.class.encrypted_attributes
     end
 
     def key?(attribute)
