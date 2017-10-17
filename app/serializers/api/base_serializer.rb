@@ -55,11 +55,11 @@ module Api
     end
 
     def attributes
-      if only.any?
-        only
-      else
-        self.class.attributes + self.class.additional_attributes + extra
-      end & self.class.safelist
+      (only.any? ? only : default_attributes) & self.class.safelist
+    end
+
+    def default_attributes
+      self.class.attributes + self.class.additional_attributes + extra
     end
 
     def coerce(attr, value)
