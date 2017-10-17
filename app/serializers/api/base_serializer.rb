@@ -38,6 +38,10 @@ module Api
       @encrypted_attributes ||= Array(model.try(:encrypted_attributes))
     end
 
+    def self.safelist
+      @safelist ||= attributes + virtual_attributes + additional_attributes - encrypted_attributes
+    end
+
     attr_reader :model, :extra, :only
 
     def initialize(model, options = {})
@@ -55,7 +59,7 @@ module Api
         only
       else
         self.class.attributes + self.class.additional_attributes + extra
-      end & whitelist
+      end & self.class.safelist
     end
 
     def coerce(attr, value)
@@ -67,10 +71,6 @@ module Api
       else
         value
       end
-    end
-
-    def whitelist
-      self.class.attributes + self.class.virtual_attributes + self.class.additional_attributes - self.class.encrypted_attributes
     end
 
     def key?(attribute)
