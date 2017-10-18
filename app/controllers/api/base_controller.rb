@@ -74,7 +74,7 @@ module Api
       else
         delete_resource(@req.collection.to_sym, @req.collection_id)
       end
-      render_normal_destroy
+      head :no_content
     end
 
     def options
