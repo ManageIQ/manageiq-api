@@ -1,20 +1,9 @@
 RSpec.describe 'GenericObjects API' do
-  let(:object_definition) { FactoryGirl.create(:generic_object_definition, :name => 'object def') }
+  let(:object_definition) { FactoryGirl.create(:generic_object_definition, :with_methods_attributes_associations) }
   let(:vm) { FactoryGirl.create(:vm_amazon) }
   let(:vm2) { FactoryGirl.create(:vm_amazon) }
   let(:service) { FactoryGirl.create(:service) }
   let(:object) { FactoryGirl.create(:generic_object, :name => 'object 1', :generic_object_definition => object_definition) }
-
-  before do
-    object_definition.add_property_attribute('widget', 'string')
-    object_definition.add_property_attribute('is_something', 'boolean')
-
-    object_definition.add_property_association('services', 'Service')
-    object_definition.add_property_association('vms', 'Vm')
-
-    object_definition.add_property_method('method_a')
-    object_definition.add_property_method('method_b')
-  end
 
   describe 'GET /api/generic_objects' do
     it 'will return all generic objects' do
@@ -61,7 +50,7 @@ RSpec.describe 'GenericObjects API' do
   describe 'GET /api/generic_objects/:id' do
     before do
       object.widget = 'a widget string'
-      object.is_something = true
+      object.powered_on = true
       object.save!
 
       object.add_to_property_association('vms', [vm, vm2])
@@ -76,11 +65,11 @@ RSpec.describe 'GenericObjects API' do
 
       expected = {
         'name'                => 'object 1',
-        'property_attributes' => { 'widget' => 'a widget string', 'is_something' => true },
+        'property_attributes' => { 'widget' => 'a widget string', 'powered_on' => true },
         'actions'             => a_collection_including(
           { 'name' => 'delete', 'method' => 'post', 'href' => api_generic_object_url(nil, object)},
-          { 'name' => 'method_a', 'method' => 'post', 'href' => api_generic_object_url(nil, object)},
-          { 'name' => 'method_b', 'method' => 'post', 'href' => api_generic_object_url(nil, object) }
+          { 'name' => 'add_vms', 'method' => 'post', 'href' => api_generic_object_url(nil, object)},
+          { 'name' => 'remove_vms', 'method' => 'post', 'href' => api_generic_object_url(nil, object) }
         )
       }
       expect(response).to have_http_status(:ok)
@@ -94,7 +83,7 @@ RSpec.describe 'GenericObjects API' do
 
       expected = {
         'name'                => 'object 1',
-        'property_attributes' => { 'widget' => 'a widget string', 'is_something' => true },
+        'property_attributes' => { 'widget' => 'a widget string', 'powered_on' => true },
         'services'            => a_collection_containing_exactly(a_hash_including('href' => api_service_url(nil, service), 'id' => service.id.to_s)),
         'vms'                 => a_collection_containing_exactly(
           a_hash_including('href' => api_instance_url(nil, vm), 'id' => vm.id.to_s),
@@ -123,8 +112,8 @@ RSpec.describe 'GenericObjects API' do
         'name'                      => 'go_name1',
         'uid'                       => 'optional_uid',
         'property_attributes'       => {
-          'widget'       => 'widget value',
-          'is_something' => false
+          'widget'     => 'widget value',
+          'powered_on' => false
         },
         'associations'              => {
           'vms'      => [
@@ -157,8 +146,8 @@ RSpec.describe 'GenericObjects API' do
         'name'                      => 'go_name1',
         'uid'                       => 'optional_uid',
         'property_attributes'       => {
-          'widget'       => 'widget value',
-          'is_something' => false
+          'widget'     => 'widget value',
+          'powered_on' => false
         },
         'associations'              => {
           'not_an_association' => [
@@ -254,8 +243,8 @@ RSpec.describe 'GenericObjects API' do
         'resource' => {
           'name'                => 'updated object',
           'property_attributes' => {
-            'widget'       => 'updated widget val',
-            'is_something' => false
+            'widget'     => 'updated widget val',
+            'powered_on' => false
           },
           'associations'        => {
             'vms'      => [{'href' => api_vm_url(nil, vm3)}],
@@ -268,8 +257,8 @@ RSpec.describe 'GenericObjects API' do
       expected = {
         'name'                => 'updated object',
         'property_attributes' => {
-          'widget'       => 'updated widget val',
-          'is_something' => false
+          'widget'     => 'updated widget val',
+          'powered_on' => false
         }
       }
       expect(response.parsed_body).to include(expected)
@@ -294,11 +283,11 @@ RSpec.describe 'GenericObjects API' do
     it 'can call a custom action on a generic object' do
       api_basic_authorize
 
-      post(api_generic_object_url(nil, object), :params => { :action => 'method_a' })
+      post(api_generic_object_url(nil, object), :params => { :action => 'add_vms' })
 
       expected = {
         'success'   => true,
-        'message'   => "Invoked method #{object.generic_object_definition.name}#method_a for Generic Object id: #{object.id} name: #{object.name}",
+        'message'   => "Invoked method #{object.generic_object_definition.name}#add_vms for Generic Object id: #{object.id} name: #{object.name}",
         'task_href' => a_string_including(api_tasks_url)
       }
       expect(response).to have_http_status(:ok)
