@@ -121,7 +121,7 @@ module Api
     end
 
     def ensure_pagination
-      params["limit"] ||= Settings.api.max_results_per_page
+      params["limit"] = [Settings.api.max_results_per_page, params["limit"]].compact.collect(&:to_i).min
       params["offset"] ||= 0
     end
   end
