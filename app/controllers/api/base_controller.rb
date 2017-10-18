@@ -65,7 +65,7 @@ module Api
     end
 
     def update
-      render_normal_update @req.collection.to_sym, update_collection(@req.subject.to_sym, @req.subject_id)
+      render_resource(@req.collection.to_sym, update_collection(@req.subject.to_sym, @req.subject_id))
     end
 
     def destroy
