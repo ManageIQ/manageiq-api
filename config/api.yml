@@ -882,7 +882,8 @@
     :identifier: flavor
     :options:
     - :collection
-    :verbs: *gp
+    - :subcollection
+    :verbs: *gpd
     :klass: Flavor
     :collection_actions:
       :get:
@@ -894,7 +895,28 @@
     :resource_actions:
       :get:
       - :name: read
+        :identifier: flavor_show    
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: flavor_show_list
+      :post:
+      - :name: delete
+        :identifier: flavor_delete
+      - :name: query
+        :identifier: flavor_show_list
+      - :name: create
+        :identifier: flavor_create
+    :subresource_actions:
+      :get:
+      - :name: read
         :identifier: flavor_show
+      :post:
+      - :name: delete
+        :identifier: flavor_delete
+      :delete:
+      - :name: delete
+        :identifier: flavor_delete
   :floating_ips:
     :description: Floating IPs
     :identifier: floating_ip
@@ -1673,6 +1695,7 @@
     - :load_balancers
     - :security_groups
     - :vms
+    - :flavors
     :collection_actions:
       :get:
       - :name: read
