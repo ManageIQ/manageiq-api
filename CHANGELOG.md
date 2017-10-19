@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 71 ending 2017-10-16
+
+### Added
+- Return image_href and extension for Pictures [(#127)](https://github.com/ManageIQ/manageiq-api/pull/127)
+- Return picture href for generic objects subcollections [(#126)](https://github.com/ManageIQ/manageiq-api/pull/126)
+- Update task description for Generic Object methods [(#118)](https://github.com/ManageIQ/manageiq-api/pull/118)
+- Allow generic object definition picture to be removed via edit [(#116)](https://github.com/ManageIQ/manageiq-api/pull/116)
+- Picture support for Generic Object Definitions [(#114)](https://github.com/ManageIQ/manageiq-api/pull/114)
+- Remove required filters from event streams [(#112)](https://github.com/ManageIQ/manageiq-api/pull/112)
+- Search for resources based on href_slug  for automate workspace [(#109)](https://github.com/ManageIQ/manageiq-api/pull/109)
+- Custom Button Set CRUD API [(#101)](https://github.com/ManageIQ/manageiq-api/pull/101)
+- add_provider_vms action for Services [(#100)](https://github.com/ManageIQ/manageiq-api/pull/100)
+- Generic Object method calling  [(#93)](https://github.com/ManageIQ/manageiq-api/pull/93)
+- Add ability to set custom attributes on services via api [(#85)](https://github.com/ManageIQ/manageiq-api/pull/85)
+- Added support for arbitrary resource identifier. [(#83)](https://github.com/ManageIQ/manageiq-api/pull/83)
+- Add security group subcollection to providers and vms [(#81)](https://github.com/ManageIQ/manageiq-api/pull/81)
+- Generic Objects Subcollection [(#57)](https://github.com/ManageIQ/manageiq-api/pull/57)
+
+### Fixed
+- Fix Generic Object Creation [(#122)](https://github.com/ManageIQ/manageiq-api/pull/122)
+- Allow service templates to be specified for service orders [(#115)](https://github.com/ManageIQ/manageiq-api/pull/115)
+- Fix return of orchestration stacks for a service [(#110)](https://github.com/ManageIQ/manageiq-api/pull/110)
+- Do not allow removal of all miq groups  [(#107)](https://github.com/ManageIQ/manageiq-api/pull/107)
+- Return correct version href  [(#87)](https://github.com/ManageIQ/manageiq-api/pull/87)
+
 ## Unreleased as of Sprint 70 ending 2017-10-02
 
 ### Added
