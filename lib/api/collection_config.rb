@@ -1,5 +1,7 @@
 module Api
   class CollectionConfig
+    BLACKLISTED = [:system, :display].freeze
+
     def initialize
       @cfg = ApiConfig.collections
     end
@@ -7,9 +9,9 @@ module Api
     def [](collection_name)
       # Config::Options implements a system method causing self[:system] to error.
       # i.e. subcollection name system in an arbitraty path /api/automate/manageiq/system
+      collection_name = collection_name.to_sym
+      return if BLACKLISTED.include?(collection_name)
       @cfg[collection_name.to_sym]
-    rescue
-      nil
     end
 
     def option?(collection_name, option_name)
