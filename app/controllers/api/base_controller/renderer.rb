@@ -117,20 +117,6 @@ module Api
       end
 
       #
-      # Render nothing for normal resource deletes.
-      #
-      def render_normal_destroy
-        head :no_content
-      end
-
-      #
-      # Render nothing for normal update.
-      #
-      def render_normal_update(type, res = {})
-        render_resource type, res
-      end
-
-      #
       # Method name for optional accessor of virtual attributes
       #
       def virtual_attribute_accessor(type, attr)

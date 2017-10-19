@@ -17,8 +17,7 @@ module Api
 
     def destroy
       api_token_mgr.invalidate_token(request.headers[HttpHeaders::AUTH_TOKEN])
-
-      render_normal_destroy
+      head :no_content
     end
 
     private
