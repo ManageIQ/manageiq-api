@@ -121,6 +121,9 @@ module Api
     end
 
     def ensure_pagination
+      if params["limit"].to_i > Settings.api.max_results_per_page
+        $api_log.warn("The limit specified (#{params["limit"]}) exceeded the maximum (#{Settings.api.max_results_per_page}). Applying the maximum limit instead.")
+      end
       params["limit"] = [Settings.api.max_results_per_page, params["limit"]].compact.collect(&:to_i).min
       params["offset"] ||= 0
     end
