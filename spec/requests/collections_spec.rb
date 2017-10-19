@@ -659,5 +659,10 @@ describe "Rest API Collections" do
       FactoryGirl.create(:guest_device)
       test_collection_bulk_query(:guest_devices, api_guest_devices_url, GuestDevice)
     end
+
+    it 'bulk query container nodes' do
+      FactoryGirl.create(:container_node)
+      test_collection_bulk_query(:container_nodes, api_container_nodes_url, ContainerNode)
+    end
   end
 end
