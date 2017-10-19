@@ -82,7 +82,7 @@ RSpec.describe "Event Streams" do
     end
 
     it "limits the resources returned" do
-      stub_settings_merge(:api => {:event_streams_default_limit => 2})
+      stub_settings_merge(:api => {:max_results_per_page => 2})
       api_basic_authorize(action_identifier(:event_streams, :read, :collection_actions, :get))
       vm = FactoryGirl.create(:vm_vmware)
       FactoryGirl.create_list(:miq_event, 3, :target => vm, :timestamp => Time.zone.now)

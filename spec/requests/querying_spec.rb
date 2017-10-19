@@ -34,6 +34,15 @@ describe "Querying" do
       expect_query_result(:vms, 2, 3)
     end
 
+    specify "a user cannot exceed the maximum allowed page size" do
+      stub_settings_merge(:api => {:max_results_per_page => 2})
+      FactoryGirl.create_list(:vm, 3)
+
+      get api_vms_url, :params => { :limit => 3 }
+
+      expect(response.parsed_body).to include("count" => 3, "subcount" => 2)
+    end
+
     it "supports offset and limit" do
       create_vms_by_name(%w(aa bb cc))
 
@@ -116,12 +125,12 @@ describe "Querying" do
       expect(response.parsed_body["links"].keys).to match_array(%w(self previous first last))
     end
 
-    it "only returns paging links if both offset and limit are specified" do
+    it "returns `self`, `first` and `last` links when result set size < max results" do
       create_vms_by_name %w(aa bb)
 
-      get api_vms_url, :params => { :offset => 0, :expand => :resources }
+      get api_vms_url
 
-      expect(response.parsed_body.keys).to eq(%w(name count subcount resources actions))
+      expect(response.parsed_body).to include("links" => a_hash_including("self", "first", "last"))
     end
 
     it "returns the correct page count" do

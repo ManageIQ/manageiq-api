@@ -26,6 +26,7 @@ module Api
     before_action :validate_api_action, :except => [:options]
     before_action :validate_response_format, :except => [:destroy]
     before_action :redirect_on_compressed_path
+    before_action :ensure_pagination, :only => :index
     after_action :log_api_response
 
     respond_to :json
@@ -117,6 +118,14 @@ module Api
 
       render :json => ErrorSerializer.new(type, error).serialize, :status => Rack::Utils.status_code(type)
       log_api_response
+    end
+
+    def ensure_pagination
+      if params["limit"].to_i > Settings.api.max_results_per_page
+        $api_log.warn("The limit specified (#{params["limit"]}) exceeded the maximum (#{Settings.api.max_results_per_page}). Applying the maximum limit instead.")
+      end
+      params["limit"] = [Settings.api.max_results_per_page, params["limit"]].compact.collect(&:to_i).min
+      params["offset"] ||= 0
     end
   end
 end
