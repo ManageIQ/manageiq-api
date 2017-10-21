@@ -2,6 +2,7 @@ module Api
   class InstancesController < BaseController
     include Subcollections::CustomAttributes
     include Subcollections::LoadBalancers
+    include Subcollections::SecurityGroups
     include Subcollections::Snapshots
 
     def terminate_resource(type, id = nil, _data = nil)

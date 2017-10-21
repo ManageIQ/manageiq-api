@@ -616,4 +616,95 @@ RSpec.describe "Instances API" do
       expect(instance.reload.custom_attributes.pluck(:value).sort).to eq(["new value1", "new value2"])
     end
   end
+
+  context 'security groups subcollection' do
+    before do
+      @network_port = FactoryGirl.create(:network_port, :device => instance)
+      @security_group = FactoryGirl.create(:security_group, :cloud_tenant => @cloud_tenant)
+      @security_group_new = FactoryGirl.create(:security_group, :cloud_tenant => @cloud_tenant)
+      @network_port_security_group = FactoryGirl.create(:network_port_security_group,
+                                                        :network_port   => @network_port,
+                                                        :security_group => @security_group)
+    end
+
+    it 'queries all security groups from an instance' do
+      api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :read, :get)
+
+      get(api_instance_security_groups_url(nil, instance))
+
+      expected = {
+        'resources' => [
+          { 'href' => api_instance_security_group_url(nil, instance, @security_group) }
+        ]
+
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "will not show an instance's security groups without the appropriate role" do
+      api_basic_authorize
+
+      get(api_instance_security_groups_url(nil, instance))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'queries a single security group' do
+      api_basic_authorize action_identifier(:security_groups, :read, :subresource_actions, :get)
+
+      get(api_instance_security_group_url(nil, instance, @security_group))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include('id' => @security_group.id.to_s)
+    end
+
+    it "will not show an instance's security group without the appropriate role" do
+      api_basic_authorize
+
+      get(api_instance_security_group_url(nil, instance, @security_group))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "will add a security group to an instance" do
+      api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :add)
+
+      post(api_instance_security_groups_url(nil, instance),
+           :params => gen_request(:add, "security_group" => "security_group_name"))
+
+      expect(response).to have_http_status(:ok)
+      expected = {
+        "results" => [
+          a_hash_including(
+            "success"   => true,
+            "message"   => a_string_matching('Adding security group'),
+            "task_id"   => anything,
+            "task_href" => a_string_matching(api_tasks_url)
+          )
+        ]
+      }
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "will remove a security group from an instance" do
+      api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :remove)
+
+      post(api_instance_security_groups_url(nil, instance),
+           :params => gen_request(:remove, "security_group" => "security_group_name"))
+
+      expect(response).to have_http_status(:ok)
+      expected = {
+        "results" => [
+          a_hash_including(
+            "success"   => true,
+            "message"   => a_string_matching('Removing security group'),
+            "task_id"   => anything,
+            "task_href" => a_string_matching(api_tasks_url)
+          )
+        ]
+      }
+      expect(response.parsed_body).to include(expected)
+    end
+  end
 end
