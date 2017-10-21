@@ -486,6 +486,33 @@
       :get:
       - :name: read
         :identifier: cloud_tenant_show
+  :cloud_templates:
+    :description: Cloud Templates
+    :identifier: image
+    :options:
+      - :collection
+      - :subcollection
+    :verbs: *gp
+    :klass: ManageIQ::Providers::CloudManager::Template
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: image_show_list
+      :post:
+      - :name: query
+        :identifier: image_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: image_show
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: image_show_list
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: image_show
   :cloud_tenants:
     :description: Cloud Tenants
     :identifier: cloud_tenant
@@ -1696,6 +1723,7 @@
     - :security_groups
     - :vms
     - :flavors
+    - :cloud_templates
     :collection_actions:
       :get:
       - :name: read
