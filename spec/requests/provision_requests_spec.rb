@@ -487,7 +487,7 @@ describe "Provision Requests API" do
     it 'allows access to underlying provision task' do
       api_basic_authorize collection_action_identifier(:provision_requests, :read, :get)
 
-      get("#{api_request_request_task_url(nil, provision_request, task)}")
+      get(api_request_request_task_url(nil, provision_request, task))
 
       expect(response).to have_http_status(:ok)
     end

@@ -635,7 +635,7 @@ describe "Service Requests API" do
     it 'allows access to underlying service task' do
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      get("#{api_request_request_task_url(nil, service_request, task)}")
+      get(api_request_request_task_url(nil, service_request, task))
 
       expect(response).to have_http_status(:ok)
     end

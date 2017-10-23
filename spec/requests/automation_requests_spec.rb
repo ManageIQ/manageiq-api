@@ -297,7 +297,7 @@ describe "Automation Requests API" do
     it 'allows access to underlying automation task' do
       api_basic_authorize collection_action_identifier(:automation_requests, :read, :get)
 
-      get("#{api_request_request_task_url(nil, automation_request, task)}")
+      get(api_request_request_task_url(nil, automation_request, task))
 
       expect(response).to have_http_status(:ok)
     end
