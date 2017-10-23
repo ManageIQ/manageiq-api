@@ -602,8 +602,9 @@ describe "Service Requests API" do
   end
 
   context 'Tasks subcollection' do
-    let(:task) { FactoryGirl.create(:miq_request_task, :miq_request_id => service_request.id) }
-    let(:params) { gen_request(:edit, :options => { :a => "1" }) }
+    let(:task) { FactoryGirl.create(:miq_request_task, :miq_request => service_request) }
+    let(:options) { { "a" => 1 } }
+    let(:params) { gen_request(:edit, :options => options) }
     it 'redirects to request_tasks subcollection' do
       FactoryGirl.create(:miq_request_task, :miq_request_id => service_request.id)
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
@@ -634,17 +635,18 @@ describe "Service Requests API" do
     it 'allows access to underlying service task' do
       api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
 
-      get("#{api_request_url(nil, service_request)}/request_tasks/#{task.id}")
+      get("#{api_request_request_task_url(nil, service_request, task)}")
 
       expect(response).to have_http_status(:ok)
     end
 
     it 'allows edit of task as a subcollection of service request' do
-      tasks_url = "#{api_service_request_url(nil, service_request)}/request_tasks/#{task.id}"
+      tasks_url = api_request_request_task_url(nil, service_request, task)
       api_basic_authorize subcollection_action_identifier(:service_requests, :request_tasks, :edit)
       post(tasks_url, :params => params)
 
       expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['options']).to match(hash_including(options))
     end
   end
 end
