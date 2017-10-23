@@ -745,13 +745,13 @@
       - :name: delete
       :delete:
       - :name: delete
-  :custom_buttons:
-    :description: Custom Buttons
+  :custom_button_sets:
+    :description: Custom Button Sets
     :identifier: ab_buttons_accord
     :options:
     - :collection
     :verbs: *gpppd
-    :klass: CustomButton
+    :klass: CustomButtonSet
     :collection_actions:
       :get:
       - :name: read
@@ -778,13 +778,13 @@
       :delete:
       - :name: delete
         :identifier: ab_group_delete
-  :custom_button_sets:
-    :description: Custom Button Sets
+  :custom_buttons:
+    :description: Custom Buttons
     :identifier: ab_buttons_accord
     :options:
     - :collection
     :verbs: *gpppd
-    :klass: CustomButtonSet
+    :klass: CustomButton
     :collection_actions:
       :get:
       - :name: read
