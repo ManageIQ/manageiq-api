@@ -66,11 +66,15 @@ RSpec.describe 'CustomButtons API' do
           'button_color' => '#4727ff',
           'display'      => true,
         },
+        'resource_action'  => {
+          'ae_namespace' => 'SYSTEM',
+          'ae_class'     => 'PROCESS'
+        }
       }
       post(api_custom_buttons_url, :params => cb_rec)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['results'].first).to include(cb_rec)
+      expect(response.parsed_body['results'].first).to eq(true)
     end
 
     it 'can edit custom buttons by id' do
@@ -79,7 +83,7 @@ RSpec.describe 'CustomButtons API' do
       request = {
         'action'    => 'edit',
         'resources' => [
-            { 'id' => cb.id.to_s, 'name' => 'updated 1' },
+          { 'id' => cb.id.to_s, 'resource' => {'name' => 'updated 1', 'resource_action' => {'ae_namespace' => 'SYSTEM2'}}},
         ]
       }
       post(api_custom_buttons_url, :params => request)
