@@ -361,11 +361,6 @@ describe "Rest API Collections" do
       test_collection_bulk_query(:availability_zones, api_availability_zones_url, AvailabilityZone)
     end
 
-    it "bulk query Blueprints" do
-      FactoryGirl.create(:blueprint)
-      test_collection_bulk_query(:blueprints, api_blueprints_url, Blueprint)
-    end
-
     it "bulk query Categories" do
       FactoryGirl.create(:category)
       test_collection_bulk_query(:categories, api_categories_url, Category)
