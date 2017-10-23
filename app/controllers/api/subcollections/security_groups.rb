@@ -10,7 +10,7 @@ module Api
 
         begin
           message = "Adding security group #{security_group} to #{parent.name}"
-          task_id = queue_object_action(parent, message, {:method_name => "add_security_group", :args => [security_group]})
+          task_id = queue_object_action(parent, message, :method_name => "add_security_group", :args => [security_group])
           action_result(true, message, :task_id => task_id)
         rescue => e
           action_result(false, e.to_s)
@@ -22,7 +22,7 @@ module Api
 
         begin
           message = "Removing security group #{security_group} from #{parent.name}"
-          task_id = queue_object_action(parent, message, {:method_name => "remove_security_group", :args => [security_group]})
+          task_id = queue_object_action(parent, message, :method_name => "remove_security_group", :args => [security_group])
           action_result(true, message, :task_id => task_id)
         rescue => e
           action_result(false, e.to_s)
