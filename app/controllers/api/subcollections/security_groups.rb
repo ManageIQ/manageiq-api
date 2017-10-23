@@ -7,6 +7,7 @@ module Api
 
       def security_groups_add_resource(parent, _type, _id, data)
         security_group = data["security_group"]
+        raise "Cannot add #{security_group} to #{parent.name}" unless parent.respond_to? :add_security_group
 
         begin
           message = "Adding security group #{security_group} to #{parent.name}"
@@ -19,6 +20,7 @@ module Api
 
       def security_groups_remove_resource(parent, _type, _id, data)
         security_group = data["security_group"]
+        raise "Cannot remove #{security_group} from #{parent.name}" unless parent.respond_to? :remove_security_group
 
         begin
           message = "Removing security group #{security_group} from #{parent.name}"

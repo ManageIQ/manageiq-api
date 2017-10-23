@@ -636,7 +636,6 @@ RSpec.describe "Instances API" do
         'resources' => [
           { 'href' => api_instance_security_group_url(nil, instance, @security_group) }
         ]
-
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
