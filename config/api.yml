@@ -1899,6 +1899,7 @@
     :subresource_actions:
       :post:
       - :name: edit
+        :identifier: miq_request_edit
   :requests:
     :description: Requests
     :identifier: miq_request
