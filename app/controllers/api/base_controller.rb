@@ -77,9 +77,8 @@ module Api
           create_resource(@req.subject.to_sym, nil, r)
         end
       end
-      created = {"results" => results}
 
-      render_resource(@req.collection.to_sym, created)
+      render_resource(@req.collection.to_sym, "results" => results)
     end
 
     def show
