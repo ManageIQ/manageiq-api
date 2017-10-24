@@ -1949,10 +1949,6 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
-    :request_tasks_subcollection_actions:
-      :post:
-      - :name: edit
-        :identifier: miq_request_edit
   :resource_actions:
     :description: Resource Actions
     :options:
