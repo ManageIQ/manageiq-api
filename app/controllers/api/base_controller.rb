@@ -81,7 +81,7 @@ module Api
         if @req.subcollection?
           send(target, parent_resource_obj, @req.subject.to_sym, nil, r)
         else
-          send(target, @req.subject.to_sym, nil, r)
+          create_resource(@req.subject.to_sym, nil, r)
         end
       end
       created = {"results" => results}
