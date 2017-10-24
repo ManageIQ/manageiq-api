@@ -262,7 +262,10 @@ describe "Automation Requests API" do
   end
 
   context 'Tasks subcollection' do
-    let(:automation_request) { FactoryGirl.create(:automation_request) }
+    let(:automation_request) { FactoryGirl.create(:automation_request, :requester => @user) }
+    let(:task) { FactoryGirl.create(:miq_request_task, :miq_request => automation_request) }
+    let(:options) { { 'a' => 1 } }
+    let(:params) { gen_request(:edit, :options => options) }
 
     it 'redirects to request_tasks subcollection' do
       FactoryGirl.create(:miq_request_task, :miq_request_id => automation_request.id)
@@ -275,13 +278,37 @@ describe "Automation Requests API" do
     end
 
     it 'redirects to request_tasks subresources' do
-      task = FactoryGirl.create(:miq_request_task, :miq_request_id => automation_request.id)
       api_basic_authorize
 
       get("#{api_automation_request_url(nil, automation_request)}/tasks/#{task.id}")
 
       expect(response).to have_http_status(:moved_permanently)
       expect(response.redirect_url).to include("#{api_automation_request_url(nil, automation_request)}/request_tasks/#{task.id}")
+    end
+
+    it 'does not allow direct edit of automation task' do
+      api_basic_authorize
+
+      post(api_request_task_url(nil, task), :params => params)
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'allows access to underlying automation task' do
+      api_basic_authorize collection_action_identifier(:automation_requests, :read, :get)
+
+      get(api_request_request_task_url(nil, automation_request, task))
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'allows edit of task as a subcollection of automation request' do
+      tasks_url = api_request_request_task_url(nil, automation_request, task)
+      api_basic_authorize subcollection_action_identifier(:automation_requests, :request_tasks, :edit)
+      post(tasks_url, :params => params)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['options']).to match(hash_including(options))
     end
   end
 end

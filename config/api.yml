@@ -1924,8 +1924,23 @@
     :options:
     - :collection
     - :subcollection
-    :verbs: *g
+    :verbs: *gp
     :klass: MiqRequestTask
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_request_show
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_request_show
+      :post:
+      - :name: edit
+        :identifier: miq_request_edit
+    :subresource_actions:
+      :post:
+      - :name: edit
+        :identifier: miq_request_edit
   :requests:
     :description: Requests
     :identifier: miq_request

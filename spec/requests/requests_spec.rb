@@ -481,6 +481,8 @@ RSpec.describe "Requests API" do
                          :source_id   => template.id,
                          :source_type => template.class.name)
     end
+    let(:task) { FactoryGirl.create(:miq_request_task, :miq_request_id => request.id) }
+    let(:params) { gen_request(:edit, :options => { :a => "1" }) }
 
     it 'redirects to request_tasks subcollection' do
       FactoryGirl.create(:miq_request_task, :miq_request_id => request.id)
@@ -493,13 +495,36 @@ RSpec.describe "Requests API" do
     end
 
     it 'redirects to request_tasks subresources' do
-      task = FactoryGirl.create(:miq_request_task, :miq_request_id => request.id)
       api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
 
       get("#{api_request_url(nil, request)}/tasks/#{task.id}")
 
       expect(response).to have_http_status(:moved_permanently)
       expect(response.redirect_url).to include("#{api_request_url(nil, request)}/request_tasks/#{task.id}")
+    end
+
+    it 'does not allow direct edit of task' do
+      api_basic_authorize
+
+      post(api_request_task_url(nil, task), :params => params)
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'allows access to underlying task' do
+      api_basic_authorize collection_action_identifier(:requests, :read, :get)
+
+      get("#{api_request_url(nil, request)}/request_tasks/#{task.id}")
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'allows edit of task as a subcollection of request' do
+      tasks_url = "#{api_request_url(nil, request)}/request_tasks/#{task.id}"
+      api_basic_authorize subcollection_action_identifier(:requests, :request_tasks, :edit)
+      post(tasks_url, :params => params)
+
+      expect(response).to have_http_status(:ok)
     end
   end
 end
