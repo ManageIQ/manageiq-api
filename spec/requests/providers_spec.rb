@@ -339,7 +339,7 @@ describe "Providers API" do
     end
 
     it "rejects requests with invalid provider_class" do
-      api_basic_authorize
+      api_basic_authorize(action_identifier(:providers, :read, :collection_actions, :get))
 
       get api_providers_url, :params => { :provider_class => "bad_class" }
 
