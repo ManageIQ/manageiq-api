@@ -59,6 +59,10 @@ module Api
       render_collection(@req.subject, res, opts)
     end
 
+    def create
+      render_resource(@req.collection.to_sym, update_collection(@req.subject.to_sym, @req.subject_id))
+    end
+
     def show
       klass = collection_class(@req.subject)
       opts  = {:name => @req.subject, :is_subcollection => @req.subcollection?, :expand_actions => true}
