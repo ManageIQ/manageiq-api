@@ -5,10 +5,15 @@ RSpec.describe "Instances API" do
 
   let(:zone) { FactoryGirl.create(:zone, :name => "api_zone") }
   let(:ems) { FactoryGirl.create(:ems_openstack_infra, :zone => zone) }
+  let(:ems_vmware) { FactoryGirl.create(:ems_vmware, :zone => zone) }
   let(:host) { FactoryGirl.create(:host_openstack_infra) }
-  let(:instance) { FactoryGirl.create(:vm_openstack, :ems_id => ems.id, :host => host) }
+  let(:host_vmware) { FactoryGirl.create(:host_vmware) }
+  let(:host_vmware) { FactoryGirl.create(:host_vmware) }
+  let(:cloud_tenant) { FactoryGirl.create(:cloud_tenant_openstack) }
+  let(:instance) { FactoryGirl.create(:vm_openstack, :ems_id => ems.id, :host => host, :cloud_tenant => cloud_tenant) }
   let(:instance1) { FactoryGirl.create(:vm_openstack, :ems_id => ems.id, :host => host) }
   let(:instance2) { FactoryGirl.create(:vm_openstack, :ems_id => ems.id, :host => host) }
+  let(:instance_vmware) { FactoryGirl.create(:vm_vmware_cloud, :ems_id => ems_vmware.id, :host => host_vmware) }
   let(:instance_url) { api_instance_url(nil, instance) }
   let(:instance1_url) { api_instance_url(nil, instance1) }
   let(:instance2_url) { api_instance_url(nil, instance2) }
@@ -620,8 +625,8 @@ RSpec.describe "Instances API" do
   context 'security groups subcollection' do
     before do
       @network_port = FactoryGirl.create(:network_port, :device => instance)
-      @security_group = FactoryGirl.create(:security_group, :cloud_tenant => @cloud_tenant)
-      @security_group_new = FactoryGirl.create(:security_group, :cloud_tenant => @cloud_tenant)
+      @security_group = FactoryGirl.create(:security_group, :cloud_tenant => cloud_tenant)
+      @security_group_new = FactoryGirl.create(:security_group, :cloud_tenant => cloud_tenant)
       @network_port_security_group = FactoryGirl.create(:network_port_security_group,
                                                         :network_port   => @network_port,
                                                         :security_group => @security_group)
@@ -666,7 +671,7 @@ RSpec.describe "Instances API" do
       expect(response).to have_http_status(:forbidden)
     end
 
-    it "will add a security group to an instance" do
+    it "will add a security group to an instance that supports it" do
       api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :add)
 
       post(api_instance_security_groups_url(nil, instance),
@@ -686,7 +691,7 @@ RSpec.describe "Instances API" do
       expect(response.parsed_body).to include(expected)
     end
 
-    it "will remove a security group from an instance" do
+    it "will remove a security group from an instance that supports it" do
       api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :remove)
 
       post(api_instance_security_groups_url(nil, instance),
@@ -700,6 +705,42 @@ RSpec.describe "Instances API" do
             "message"   => a_string_matching('Removing security group'),
             "task_id"   => anything,
             "task_href" => a_string_matching(api_tasks_url)
+          )
+        ]
+      }
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "will fail to add a security group to an instance that does not support it" do
+      api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :add)
+
+      post(api_instance_security_groups_url(nil, instance_vmware),
+           :params => gen_request(:add, "security_group" => "security_group_name"))
+
+      expect(response).to have_http_status(:ok)
+      expected = {
+        "results" => [
+          a_hash_including(
+            "success"   => false,
+            "message"   => a_string_matching('Cannot add'),
+          )
+        ]
+      }
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "will fail to remove a security group from an instance that does not support it" do
+      api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :remove)
+
+      post(api_instance_security_groups_url(nil, instance_vmware),
+           :params => gen_request(:remove, "security_group" => "security_group_name"))
+
+      expect(response).to have_http_status(:ok)
+      expected = {
+        "results" => [
+          a_hash_including(
+            "success"   => false,
+            "message"   => a_string_matching('Cannot remove'),
           )
         ]
       }
