@@ -67,7 +67,20 @@ module Api
       else
         resources << json_body_resource
       end
-      created = update_multiple_collections(@req.subcollection?, target, @req.subject.to_sym, resources)
+
+      if resources.all?(&:blank?)
+        raise BadRequestError, "No #{@req.subject} resources were specified for the create action"
+      end
+
+      results = resources.collect do |r|
+        next if r.blank?
+        if parse_id(r, @req.subject.to_sym)
+          raise BadRequestError, "Resource id or href should not be specified for creating a new #{@req.subject}"
+        end
+        update_one_collection(@req.subcollection?, target, @req.subject.to_sym, nil, r)
+      end
+      created = {"results" => results}
+
       render_resource(@req.collection.to_sym, created)
     end
 
