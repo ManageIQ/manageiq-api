@@ -301,10 +301,6 @@
         :identifier: miq_request_approval
       - :name: edit
         :identifier: miq_request_edit
-    :request_tasks_subcollection_actions:
-      :post:
-      - :name: edit
-        :identifier: miq_request_edit
   :availability_zones:
     :description: Availability Zones
     :identifier: availability_zone
@@ -1771,10 +1767,6 @@
         :identifier: miq_request_approval
       - :name: edit
         :identifier: miq_request_edit
-    :request_tasks_subcollection_actions:
-      :post:
-      - :name: edit
-        :identifier: miq_request_edit
   :quotas:
     :description: TenantQuotas
     :options:
@@ -1901,6 +1893,9 @@
       :get:
       - :name: read
         :identifier: miq_request_show
+      :post:
+      - :name: edit
+        :identifier: miq_request_edit
     :subresource_actions:
       :post:
       - :name: edit
@@ -2297,10 +2292,6 @@
       :post:
       - :name: remove
         :identifier: svc_catalog_provision
-    :request_tasks_subcollection_actions:
-      :post:
-      - :name: edit
-        :identifier: miq_request_edit
   :service_templates:
     :description: Service Templates
     :identifier: catalog_items_accord
