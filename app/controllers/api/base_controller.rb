@@ -60,7 +60,11 @@ module Api
     end
 
     def create
-      render_resource(@req.collection.to_sym, update_collection(@req.subject.to_sym, @req.subject_id))
+      target = target_resource_method(@req.subject.to_sym, @req.action)
+      render_resource(
+        @req.collection.to_sym,
+        get_and_update_multiple_collections(@req.subcollection?, target, @req.subject.to_sym)
+      )
     end
 
     def show
