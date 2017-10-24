@@ -89,6 +89,18 @@ module Api
           @href ||= Href.new(url)
         end
 
+        def resources
+          if json_body.key?("resources")
+            json_body["resources"]
+          else
+            [resource]
+          end
+        end
+
+        def resource
+          json_body["resource"] || json_body.except("action")
+        end
+
         private
 
         def expand_requested

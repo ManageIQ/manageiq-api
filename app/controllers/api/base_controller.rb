@@ -60,18 +60,11 @@ module Api
     end
 
     def create
-      resources = []
-      if @req.json_body.key?("resources")
-        resources += @req.json_body["resources"]
-      else
-        resources << json_body_resource
-      end
-
-      if resources.all?(&:blank?)
+      if @req.resources.all?(&:blank?)
         raise BadRequestError, "No #{@req.subject} resources were specified for the create action"
       end
 
-      results = resources.collect do |r|
+      results = @req.resources.collect do |r|
         next if r.blank?
         if parse_id(r, @req.subject.to_sym)
           raise BadRequestError, "Resource id or href should not be specified for creating a new #{@req.subject}"

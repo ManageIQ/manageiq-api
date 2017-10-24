@@ -11,7 +11,7 @@ module Api
     def update
       aname = @req.action
       if aname == "edit" && !api_user_role_allows?(aname) && update_target_is_api_user?
-        if (Array(json_body_resource.try(:keys)) - EDITABLE_ATTRS).present?
+        if (Array(@req.resource.try(:keys)) - EDITABLE_ATTRS).present?
           raise BadRequestError,
                 "Cannot update attributes other than #{EDITABLE_ATTRS.join(', ')} for the authenticated user"
         end

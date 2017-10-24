@@ -88,22 +88,11 @@ module Api
       end
 
       def get_and_update_one_collection(is_subcollection, target, type, id)
-        resource = json_body_resource
-        update_one_collection(is_subcollection, target, type, id, resource)
+        update_one_collection(is_subcollection, target, type, id, @req.resource)
       end
 
       def get_and_update_multiple_collections(is_subcollection, target, type)
-        resources = []
-        if @req.json_body.key?("resources")
-          resources += @req.json_body["resources"]
-        else
-          resources << json_body_resource
-        end
-        update_multiple_collections(is_subcollection, target, type, resources)
-      end
-
-      def json_body_resource
-        @req.json_body["resource"] || @req.json_body.except("action")
+        update_multiple_collections(is_subcollection, target, type, @req.resources)
       end
 
       def update_one_collection(is_subcollection, target, type, id, resource)
