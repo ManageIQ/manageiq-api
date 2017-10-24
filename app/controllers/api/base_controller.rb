@@ -60,7 +60,6 @@ module Api
     end
 
     def create
-      target = target_resource_method(@req.subject.to_sym, @req.action)
       resources = []
       if @req.json_body.key?("resources")
         resources += @req.json_body["resources"]
@@ -79,6 +78,7 @@ module Api
         end
 
         if @req.subcollection?
+          target = target_resource_method(@req.subject.to_sym, @req.action)
           send(target, parent_resource_obj, @req.subject.to_sym, nil, r)
         else
           create_resource(@req.subject.to_sym, nil, r)
