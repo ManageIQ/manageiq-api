@@ -752,13 +752,12 @@ RSpec.describe "Instances API" do
 
       post(api_instance_security_groups_url(nil, instance),
         :params => {
-        :action      => :add,
+          :action    => :add,
           :resources => [
             { "security_group" => "security_group_name1" },
             { "security_group" => "security_group_name2" },
           ]
-        }
-      )
+        })
 
       expect(response).to have_http_status(:ok)
       expected = {
@@ -785,13 +784,12 @@ RSpec.describe "Instances API" do
 
       post(api_instance_security_groups_url(nil, instance),
         :params => {
-        :action      => :remove,
+          :action    => :remove,
           :resources => [
             { "security_group" => "security_group_name1" },
             { "security_group" => "security_group_name2" },
           ]
-        }
-      )
+        })
 
       expect(response).to have_http_status(:ok)
       expected = {
