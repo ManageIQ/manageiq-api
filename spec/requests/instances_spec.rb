@@ -746,5 +746,71 @@ RSpec.describe "Instances API" do
       }
       expect(response.parsed_body).to include(expected)
     end
+
+    it "will add security groups to an instance in bulk" do
+      api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :add)
+
+      post(api_instance_security_groups_url(nil, instance),
+        :params => {
+        :action      => :add,
+          :resources => [
+            { "security_group" => "security_group_name1" },
+            { "security_group" => "security_group_name2" },
+          ]
+        }
+      )
+
+      expect(response).to have_http_status(:ok)
+      expected = {
+        "results" => [
+          a_hash_including(
+            "success"   => true,
+            "message"   => a_string_matching('Adding security group'),
+            "task_id"   => anything,
+            "task_href" => a_string_matching(api_tasks_url)
+          ),
+          a_hash_including(
+            "success"   => true,
+            "message"   => a_string_matching('Adding security group'),
+            "task_id"   => anything,
+            "task_href" => a_string_matching(api_tasks_url)
+          ),
+        ]
+      }
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "will remove security groups from an instance in bulk" do
+      api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :remove)
+
+      post(api_instance_security_groups_url(nil, instance),
+        :params => {
+        :action      => :remove,
+          :resources => [
+            { "security_group" => "security_group_name1" },
+            { "security_group" => "security_group_name2" },
+          ]
+        }
+      )
+
+      expect(response).to have_http_status(:ok)
+      expected = {
+        "results" => [
+          a_hash_including(
+            "success"   => true,
+            "message"   => a_string_matching('Removing security group'),
+            "task_id"   => anything,
+            "task_href" => a_string_matching(api_tasks_url)
+          ),
+          a_hash_including(
+            "success"   => true,
+            "message"   => a_string_matching('Removing security group'),
+            "task_id"   => anything,
+            "task_href" => a_string_matching(api_tasks_url)
+          ),
+        ]
+      }
+      expect(response.parsed_body).to include(expected)
+    end
   end
 end
