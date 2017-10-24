@@ -77,7 +77,12 @@ module Api
         if parse_id(r, @req.subject.to_sym)
           raise BadRequestError, "Resource id or href should not be specified for creating a new #{@req.subject}"
         end
-        update_one_collection(@req.subcollection?, target, @req.subject.to_sym, nil, r)
+
+        if @req.subcollection?
+          send(target, parent_resource_obj, @req.subject.to_sym, nil, r)
+        else
+          send(target, @req.subject.to_sym, nil, r)
+        end
       end
       created = {"results" => results}
 
