@@ -751,13 +751,13 @@ RSpec.describe "Instances API" do
       api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :add)
 
       post(api_instance_security_groups_url(nil, instance),
-        :params => {
-          :action    => :add,
-          :resources => [
-            { "name" => "security_group_name1" },
-            { "name" => "security_group_name2" },
-          ]
-        })
+           :params => {
+             :action    => :add,
+             :resources => [
+               { "name" => "security_group_name1" },
+               { "name" => "security_group_name2" },
+             ]
+           })
 
       expect(response).to have_http_status(:ok)
       expected = {
@@ -783,13 +783,13 @@ RSpec.describe "Instances API" do
       api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :remove)
 
       post(api_instance_security_groups_url(nil, instance),
-        :params => {
-          :action    => :remove,
-          :resources => [
-            { "name" => "security_group_name1" },
-            { "name" => "security_group_name2" },
-          ]
-        })
+           :params => {
+             :action    => :remove,
+             :resources => [
+               { "name" => "security_group_name1" },
+               { "name" => "security_group_name2" },
+             ]
+           })
 
       expect(response).to have_http_status(:ok)
       expected = {
