@@ -85,6 +85,25 @@ describe "Querying" do
       expect(response).to have_http_status(:bad_request)
     end
 
+    it 'returns only id attributes if specified on a collection' do
+      vm = FactoryGirl.create(:vm)
+
+      get(api_vms_url, :params => { :expand => :resources, :attributes => 'id' })
+
+      expected = {
+        'resources' => [{'href' => api_vm_url(nil, vm), 'id' => vm.id.to_s}]
+      }
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'returns only id attributes if specified on a resource' do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+
+      get(api_vm_url(nil, vm1), :params => { :attributes => 'id' })
+
+      expect(response.parsed_body).to eq("href" => api_vm_url(nil, vm1), "id" => vm1.id.to_s)
+    end
+
     it "returns correct paging links" do
       create_vms_by_name %w(bb ff aa cc ee gg dd)
 
