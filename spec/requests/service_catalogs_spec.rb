@@ -375,35 +375,6 @@ describe "Service Catalogs API" do
       group1.dialog_fields << text1
     end
 
-    it "does not return order action for non-orderable service templates" do
-      api_basic_authorize(subcollection_action_identifier(:service_catalogs, :service_templates, :edit),
-                          subcollection_action_identifier(:service_catalogs, :service_templates, :order))
-
-      init_st(st1, ra1)
-      sc.service_templates = [st1]
-
-      st1.display = false
-      st1.save
-
-      get sc_template_url(sc.id, st1.id)
-
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to_not include_actions("order")
-    end
-
-    it "returns order action for orderable service templates" do
-      api_basic_authorize(subcollection_action_identifier(:service_catalogs, :service_templates, :edit),
-                          subcollection_action_identifier(:service_catalogs, :service_templates, :order))
-
-      init_st(st1, ra1)
-      sc.service_templates = [st1]
-
-      get sc_template_url(sc.id, st1.id)
-
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include_actions("order")
-    end
-
     it "rejects order requests without appropriate role" do
       api_basic_authorize
 
