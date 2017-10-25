@@ -66,6 +66,10 @@ module Api
       {:requester => User.current_user}
     end
 
+    def fetch_requests_href_slug(resource)
+      "requests/#{resource.id}"
+    end
+
     private
 
     def authorize_request(typed_request_klass)
