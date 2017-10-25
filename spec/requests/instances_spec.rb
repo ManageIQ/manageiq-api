@@ -675,7 +675,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :add)
 
       post(api_instance_security_groups_url(nil, instance),
-           :params => gen_request(:add, "security_group" => "security_group_name"))
+           :params => gen_request(:add, "name" => "security_group_name"))
 
       expect(response).to have_http_status(:ok)
       expected = {
@@ -695,7 +695,7 @@ RSpec.describe "Instances API" do
       api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :remove)
 
       post(api_instance_security_groups_url(nil, instance),
-           :params => gen_request(:remove, "security_group" => "security_group_name"))
+           :params => gen_request(:remove, "name" => "security_group_name"))
 
       expect(response).to have_http_status(:ok)
       expected = {
@@ -715,14 +715,14 @@ RSpec.describe "Instances API" do
       api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :add)
 
       post(api_instance_security_groups_url(nil, instance_vmware),
-           :params => gen_request(:add, "security_group" => "security_group_name"))
+           :params => gen_request(:add, "name" => "security_group_name"))
 
       expect(response).to have_http_status(:ok)
       expected = {
         "results" => [
           a_hash_including(
-            "success"   => false,
-            "message"   => a_string_matching('Cannot add'),
+            "success" => false,
+            "message" => a_string_matching('Cannot add'),
           )
         ]
       }
@@ -733,14 +733,14 @@ RSpec.describe "Instances API" do
       api_basic_authorize subcollection_action_identifier(:instances, :security_groups, :remove)
 
       post(api_instance_security_groups_url(nil, instance_vmware),
-           :params => gen_request(:remove, "security_group" => "security_group_name"))
+           :params => gen_request(:remove, "name" => "security_group_name"))
 
       expect(response).to have_http_status(:ok)
       expected = {
         "results" => [
           a_hash_including(
-            "success"   => false,
-            "message"   => a_string_matching('Cannot remove'),
+            "success" => false,
+            "message" => a_string_matching('Cannot remove'),
           )
         ]
       }
@@ -754,8 +754,8 @@ RSpec.describe "Instances API" do
         :params => {
           :action    => :add,
           :resources => [
-            { "security_group" => "security_group_name1" },
-            { "security_group" => "security_group_name2" },
+            { "name" => "security_group_name1" },
+            { "name" => "security_group_name2" },
           ]
         })
 
@@ -786,8 +786,8 @@ RSpec.describe "Instances API" do
         :params => {
           :action    => :remove,
           :resources => [
-            { "security_group" => "security_group_name1" },
-            { "security_group" => "security_group_name2" },
+            { "name" => "security_group_name1" },
+            { "name" => "security_group_name2" },
           ]
         })
 

@@ -6,7 +6,7 @@ module Api
       end
 
       def security_groups_add_resource(parent, _type, _id, data)
-        security_group = data["security_group"]
+        security_group = data["name"]
 
         begin
           raise "Cannot add #{security_group} to #{parent.name}" unless parent.supports_add_security_group?
@@ -19,7 +19,7 @@ module Api
       end
 
       def security_groups_remove_resource(parent, _type, _id, data)
-        security_group = data["security_group"]
+        security_group = data["name"]
 
         begin
           raise "Cannot remove #{security_group} from #{parent.name}" unless parent.supports_remove_security_group?
