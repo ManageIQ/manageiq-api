@@ -1237,6 +1237,7 @@
     :subcollections:
     - :custom_attributes
     - :load_balancers
+    - :security_groups
     - :snapshots
     :collection_actions:
       :get:
@@ -2169,6 +2170,11 @@
       :get:
       - :name: read
         :identifier: security_group_show_list
+      :post:
+      - :name: add
+        :identifier: instance_add_security_group
+      - :name: remove
+        :identifier: instance_remove_security_group
     :subresource_actions:
       :get:
       - :name: read
