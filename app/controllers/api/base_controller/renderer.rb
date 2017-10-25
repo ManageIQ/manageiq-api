@@ -367,6 +367,7 @@ module Api
         physical_attrs, virtual_attrs = [], []
         attrs = attribute_selection
         return [physical_attrs, virtual_attrs] if resource.kind_of?(Hash) || attrs == 'all'
+        return [attrs, virtual_attrs] if (attrs - ID_ATTRS).empty?
 
         attrs.each do |attr|
           if attr_physical?(resource, attr) || attr == 'actions'
