@@ -20,6 +20,7 @@ module Api
     include Subcollections::SecurityGroups
     include Subcollections::Vms
     include Subcollections::Flavors
+    include Subcollections::CloudTemplates
 
     def create_resource(type, _id, data = {})
       assert_id_not_specified(data, type)
