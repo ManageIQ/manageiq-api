@@ -72,6 +72,8 @@ RSpec.describe 'CustomButtonSets API' do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['results'].first).to include(cb_set_rec)
+      custom_button_set = CustomButtonSet.find(response.parsed_body['results'].first["id"])
+      expect(custom_button_set.set_data[:button_icon]).to eq("ff ff-view-expanded")
     end
 
     it 'can edit custom button sets by id' do
@@ -80,7 +82,7 @@ RSpec.describe 'CustomButtonSets API' do
       request = {
         'action'    => 'edit',
         'resources' => [
-          { 'id' => cb_set.id.to_s, 'name' => 'updated 1' },
+          { 'id' => cb_set.id.to_s, 'name' => 'updated 1', 'set_data' => {'button_icon' => 'ff ff-closed'} },
         ]
       }
       post(api_custom_button_sets_url, :params => request)
@@ -92,6 +94,7 @@ RSpec.describe 'CustomButtonSets API' do
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
+      expect(cb_set.reload.set_data[:button_icon]).to eq("ff ff-closed")
     end
   end
 
