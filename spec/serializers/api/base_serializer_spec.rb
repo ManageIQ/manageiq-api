@@ -4,7 +4,7 @@ RSpec.describe Api::BaseSerializer do
       Timecop.freeze("2017-01-01 00:00:00 UTC") do
         user = FactoryGirl.create(:user, :name => "Alice")
 
-        actual = Api::UserSerializer.serialize(user)
+        actual = Api.serialize(user)
 
         expected = {
           "id"         => user.id.to_s,
@@ -20,7 +20,7 @@ RSpec.describe Api::BaseSerializer do
     specify "additional attributes can be requested" do
       vm = FactoryGirl.create(:vm, :vendor => "vmware")
 
-      actual = Api::VmSerializer.serialize(vm, :extra => ["vendor_display"])
+      actual = Api.serialize(vm, :extra => ["vendor_display"])
 
       expect(actual).to include("vendor_display" => "VMware")
     end
@@ -28,7 +28,7 @@ RSpec.describe Api::BaseSerializer do
     specify "only whitelisted attributes can be requested" do
       vm = FactoryGirl.create(:vm)
 
-      actual = Api::VmSerializer.serialize(vm, :extra => ["destroy"])
+      actual = Api.serialize(vm, :extra => ["destroy"])
 
       expect(actual).not_to include("destroy")
       expect { vm.reload }.not_to raise_error
@@ -37,7 +37,7 @@ RSpec.describe Api::BaseSerializer do
     it "can serialize only the requested attributes" do
       user = FactoryGirl.create(:user, :name => "Alice")
 
-      actual = Api::UserSerializer.serialize(user, :only => ["name"])
+      actual = Api.serialize(user, :only => ["name"])
 
       expect(actual).to eq("name" => "Alice")
     end
@@ -45,7 +45,7 @@ RSpec.describe Api::BaseSerializer do
     specify "only whitelisted attributes can be used with :only" do
       user = FactoryGirl.create(:user)
 
-      actual = Api::UserSerializer.serialize(user, :only => ["destroy"])
+      actual = Api.serialize(user, :only => ["destroy"])
 
       expect(actual).not_to include("destroy")
       expect { user.reload }.not_to raise_error

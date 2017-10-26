@@ -27,7 +27,7 @@ module Api
                    model.class.name.demodulize
                  end
     serializer_name = "#{model_name}Serializer"
-    serializer = "Api::#{serializer_name}".safe_constantize
+    serializer = "Api::#{serializer_name}".safe_constantize || Api.const_set(serializer_name, Class.new(BaseSerializer))
     serializer.serialize(model, options)
   end
 
