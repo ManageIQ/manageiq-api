@@ -106,18 +106,23 @@ describe "Automate Workspaces API" do
       post(api_automate_workspace_url(nil, aw.guid), :params => decrypt_params)
 
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)['value']).to eq(password)
+      expect(response.parsed_body['value']).to eq(password)
     end
 
     it 'decrypt collection of passwords' do
+      expected = {
+        "results" => a_collection_containing_exactly(
+          a_hash_including("value" => password),
+          a_hash_including("value" => p45),
+          a_hash_including("value" => "")
+        )
+      }
       api_basic_authorize action_identifier(:automate_workspaces, :decrypt)
 
       post(api_automate_workspace_url(nil, aw.guid), :params => decrypt_params_a)
 
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)['results'][0]['value']).to eq(password)
-      expect(JSON.parse(response.body)['results'][1]['value']).to eq(p45)
-      expect(JSON.parse(response.body)['results'][2]['value']).to eq("")
+      expect(response.parsed_body).to include(expected)
     end
 
     it 'encrypt' do
