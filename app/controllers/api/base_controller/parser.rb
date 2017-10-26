@@ -30,7 +30,6 @@ module Api
 
       def validate_optional_collection_classes
         @collection_klasses = {} # Default all to config classes
-        validate_provider_class
         validate_collection_class
       end
 
@@ -278,19 +277,6 @@ module Api
         unless missing_fields.empty?
           raise BadRequestError, "Resource #{missing_fields.join(", ")} needs be specified for creating a new #{type}"
         end
-      end
-
-      def validate_provider_class
-        param = params['provider_class']
-        return unless param.present?
-
-        raise BadRequestError, "Unsupported provider_class #{param} specified" if param != "provider"
-        %w(tags policies policy_profiles).each do |cname|
-          if @req.subcollection == cname || @req.expand?(cname)
-            raise BadRequestError, "Management of #{cname} is unsupported for the Provider class"
-          end
-        end
-        @collection_klasses[:providers] = Provider
       end
 
       def validate_collection_class

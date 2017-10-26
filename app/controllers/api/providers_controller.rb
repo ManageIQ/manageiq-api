@@ -21,6 +21,8 @@ module Api
     include Subcollections::Vms
     include Subcollections::Flavors
 
+    before_action :validate_provider_class
+
     def create_resource(type, _id, data = {})
       assert_id_not_specified(data, type)
       raise BadRequestError, "Must specify credentials" if data[CREDENTIALS_ATTR].nil? && !data.keys.include?(*CONNECTION_ATTRS)
@@ -226,6 +228,19 @@ module Api
       zone_id = parse_id(data[ZONE_ATTR], :zone)
       raise BadRequestError, "Missing zone href or id" if zone_id.nil?
       resource_search(zone_id, :zone, Zone) # Only support Rbac allowed zone
+    end
+
+    def validate_provider_class
+      param = params['provider_class']
+      return unless param.present?
+
+      raise BadRequestError, "Unsupported provider_class #{param} specified" if param != "provider"
+      %w(tags policies policy_profiles).each do |cname|
+        if @req.subcollection == cname || @req.expand?(cname)
+          raise BadRequestError, "Management of #{cname} is unsupported for the Provider class"
+        end
+      end
+      @collection_klasses[:providers] = Provider
     end
   end
 end
