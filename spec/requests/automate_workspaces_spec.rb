@@ -9,11 +9,11 @@ describe "Automate Workspaces API" do
                                             :input  => input)
   end
   let(:password) { "secret" }
-  let(:lpassword) { "Pneumonoultramicroscopicsilicovolcanoconiosis" }
+  let(:p45) { "Pneumonoultramicroscopicsilicovolcanoconiosis" }
   let(:encrypted) { MiqAePassword.encrypt(password) }
-  let(:lencrypted) { MiqAePassword.encrypt(lpassword) }
+  let(:p45_encrypted) { MiqAePassword.encrypt(p45) }
   let(:var2v) { "password::#{encrypted}" }
-  let(:var3v) { "password::#{lencrypted}" }
+  let(:var3v) { "password::#{p45_encrypted}" }
   let(:input) do
     { 'objects'           => {'root' => { 'var1' => '1', 'var2' => var2v, 'var3' => var3v}},
       'method_parameters' => {'arg1' => "password::#{encrypted}"} }
@@ -116,7 +116,7 @@ describe "Automate Workspaces API" do
 
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)['results'][0]['value']).to eq(password)
-      expect(JSON.parse(response.body)['results'][1]['value']).to eq(lpassword)
+      expect(JSON.parse(response.body)['results'][1]['value']).to eq(p45)
       expect(JSON.parse(response.body)['results'][2]['value']).to eq("")
     end
 
