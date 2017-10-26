@@ -319,49 +319,6 @@
       :get:
       - :name: read
         :identifier: availability_zone_show
-  :blueprints:
-    :description: Blueprints
-    :verbs: *gpd
-    :options:
-    - :collection
-    :klass: Blueprint
-    :subcollections:
-    - :tags
-    :collection_actions:
-      :get:
-      - :name: read
-        :identifier: blueprint_show_list
-      :post:
-      - :name: query
-        :identifier: blueprint_show_list
-      - :name: create
-        :identifier: blueprint_new
-      - :name: edit
-        :identifier: blueprint_edit
-      - :name: delete
-        :identifier: blueprint_delete
-      - :name: publish
-        :identifier: blueprint_publish
-    :resource_actions:
-      :get:
-      - :name: read
-        :identifier: blueprint_show
-      :post:
-      - :name: edit
-        :identifier: blueprint_edit
-      - :name: delete
-        :identifier: blueprint_delete
-      - :name: publish
-        :identifier: blueprint_publish
-      :delete:
-      - :name: delete
-        :identifier: blueprint_delete
-    :tags_subcollection_actions:
-      :post:
-      - :name: assign
-        :identifier: blueprint_tag
-      - :name: unassign
-        :identifier: blueprint_tag
   :categories:
     :description: Categories
     :identifier: ops_settings

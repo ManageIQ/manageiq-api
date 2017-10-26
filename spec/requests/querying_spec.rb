@@ -924,22 +924,6 @@ describe "Querying" do
       expect_result_to_have_keys(%w(href id actions))
     end
 
-    it 'returns the correct actions on a resource' do
-      api_basic_authorize(action_identifier(:blueprints, :read, :resource_actions, :get),
-                          action_identifier(:blueprints, :delete),
-                          action_identifier(:blueprints, :publish),
-                          action_identifier(:blueprints, :edit))
-
-      blueprint = FactoryGirl.create(:blueprint)
-
-      get(api_blueprint_url(nil, blueprint))
-
-      actions = response.parsed_body['actions']
-      expect(actions.size).to eq(4)
-      expect(actions.collect { |a| a['name'] }).to match_array(%w(delete delete publish edit))
-      expect_result_to_have_keys(%w(href id actions))
-    end
-
     it "returns multiple actions if authorized as such" do
       api_basic_authorize(action_identifier(:vms, :start),
                           action_identifier(:vms, :stop),
