@@ -9,9 +9,13 @@ describe "Automate Workspaces API" do
                                             :input  => input)
   end
   let(:password) { "secret" }
+  let(:lpassword) { "Pneumonoultramicroscopicsilicovolcanoconiosis" }
   let(:encrypted) { MiqAePassword.encrypt(password) }
+  let(:lencrypted) { MiqAePassword.encrypt(lpassword) }
+  let(:var2v) { "password::#{encrypted}" }
+  let(:var3v) { "password::#{lencrypted}" }
   let(:input) do
-    { 'objects'           => {'root' => { 'var1' => '1', 'var2' => "password::#{encrypted}"}},
+    { 'objects'           => {'root' => { 'var1' => '1', 'var2' => var2v, 'var3' => var3v}},
       'method_parameters' => {'arg1' => "password::#{encrypted}"} }
   end
 
@@ -65,6 +69,17 @@ describe "Automate Workspaces API" do
        :resource => {'object' => 'root', 'attribute' => 'var2'}}
     end
 
+    let(:decrypt_params_a) do
+      {
+        :action    => 'decrypt',
+        :resources => [
+          {'object' => 'root', 'attribute' => 'var2'},
+          {'object' => 'root', 'attribute' => 'var3'},
+          {'object' => 'root', 'attribute' => 'nada'}
+        ]
+      }
+    end
+
     let(:encrypt_params) do
       {:action   => 'encrypt',
        :resource => {'object' => 'root', 'attribute' => 'var3', 'value' => password }}
@@ -91,7 +106,18 @@ describe "Automate Workspaces API" do
       post(api_automate_workspace_url(nil, aw.guid), :params => decrypt_params)
 
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)['result']).to eq(password)
+      expect(JSON.parse(response.body)['value']).to eq(password)
+    end
+
+    it 'decrypt collection of passwords' do
+      api_basic_authorize action_identifier(:automate_workspaces, :decrypt)
+
+      post(api_automate_workspace_url(nil, aw.guid), :params => decrypt_params_a)
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)['results'][0]['value']).to eq(password)
+      expect(JSON.parse(response.body)['results'][1]['value']).to eq(lpassword)
+      expect(JSON.parse(response.body)['results'][2]['value']).to eq("")
     end
 
     it 'encrypt' do
