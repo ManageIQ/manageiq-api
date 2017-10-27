@@ -9,13 +9,10 @@ describe "Automate Workspaces API" do
                                             :input  => input)
   end
   let(:password) { "secret" }
-  let(:p45) { "Pneumonoultramicroscopicsilicovolcanoconiosis" }
   let(:encrypted) { MiqAePassword.encrypt(password) }
-  let(:p45_encrypted) { MiqAePassword.encrypt(p45) }
   let(:var2v) { "password::#{encrypted}" }
-  let(:var3v) { "password::#{p45_encrypted}" }
   let(:input) do
-    { 'objects'           => {'root' => { 'var1' => '1', 'var2' => var2v, 'var3' => var3v}},
+    { 'objects'           => {'root' => { 'var1' => '1', 'var2' => var2v }},
       'method_parameters' => {'arg1' => "password::#{encrypted}"} }
   end
 
@@ -69,17 +66,6 @@ describe "Automate Workspaces API" do
        :resource => {'object' => 'root', 'attribute' => 'var2'}}
     end
 
-    let(:decrypt_params_a) do
-      {
-        :action    => 'decrypt',
-        :resources => [
-          {'object' => 'root', 'attribute' => 'var2'},
-          {'object' => 'root', 'attribute' => 'var3'},
-          {'object' => 'root', 'attribute' => 'nada'}
-        ]
-      }
-    end
-
     let(:encrypt_params) do
       {:action   => 'encrypt',
        :resource => {'object' => 'root', 'attribute' => 'var3', 'value' => password }}
@@ -107,22 +93,6 @@ describe "Automate Workspaces API" do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['value']).to eq(password)
-    end
-
-    it 'decrypt collection of passwords' do
-      expected = {
-        "results" => a_collection_containing_exactly(
-          a_hash_including("value" => password),
-          a_hash_including("value" => p45),
-          a_hash_including("value" => "")
-        )
-      }
-      api_basic_authorize action_identifier(:automate_workspaces, :decrypt)
-
-      post(api_automate_workspace_url(nil, aw.guid), :params => decrypt_params_a)
-
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
     end
 
     it 'encrypt' do

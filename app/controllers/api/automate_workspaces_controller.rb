@@ -9,7 +9,7 @@ module Api
       raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
 
       obj = resource_search(id, type, collection_class(type))
-      data['resources'] ? decrypt_all(obj, data) : decrypt_one(obj, data)
+      decrypt(obj, data)
     end
 
     def encrypt_resource(type, id = nil, data = nil)
@@ -23,11 +23,7 @@ module Api
 
     private
 
-    def decrypt_all(obj, data)
-      { "results" => data["resources"].collect { |res| decrypt_one(obj, res) } }
-    end
-
-    def decrypt_one(obj, data)
+    def decrypt(obj, data)
       begin
         value = obj.decrypt(data['object'], data['attribute'])
       rescue
