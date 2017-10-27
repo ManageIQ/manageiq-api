@@ -17,19 +17,14 @@ module Api
 
       obj = resource_search(id, type, collection_class(type))
       obj.encrypt(data['object'], data['attribute'], data['value'])
-      obj.reload
-      obj
     end
 
     private
 
     def decrypt(obj, data)
-      begin
-        value = obj.decrypt(data['object'], data['attribute'])
-      rescue
-        value = ""
-      end
-      {'object' => data['object'], 'attribute' => data['attribute'], 'value' => value}
+      {'object'    => data['object'],
+       'attribute' => data['attribute'],
+       'value'     => obj.decrypt(data['object'], data['attribute'])}
     end
   end
 end
