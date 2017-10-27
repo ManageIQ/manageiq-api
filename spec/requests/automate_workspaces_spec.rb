@@ -66,6 +66,11 @@ describe "Automate Workspaces API" do
        :resource => {'object' => 'root', 'attribute' => 'var2'}}
     end
 
+    let(:bogus_decrypt_params) do
+      {:action   => 'decrypt',
+       :resource => {'object' => 'nada', 'attribute' => 'nada'}}
+    end
+
     let(:encrypt_params) do
       {:action   => 'encrypt',
        :resource => {'object' => 'root', 'attribute' => 'var3', 'value' => password }}
@@ -93,6 +98,15 @@ describe "Automate Workspaces API" do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['value']).to eq(password)
+    end
+
+    it 'decrypt a bogus password' do
+      api_basic_authorize action_identifier(:automate_workspaces, :decrypt)
+
+      post(api_automate_workspace_url(nil, aw.guid), :params => bogus_decrypt_params)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['value']).to eq("")
     end
 
     it 'encrypt' do
