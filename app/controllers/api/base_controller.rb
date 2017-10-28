@@ -59,6 +59,28 @@ module Api
       render_collection(@req.subject, res, opts)
     end
 
+    def create
+      if @req.resources.all?(&:blank?)
+        raise BadRequestError, "No #{@req.subject} resources were specified for the create action"
+      end
+
+      results = @req.resources.collect do |r|
+        next if r.blank?
+        if parse_id(r, @req.subject.to_sym)
+          raise BadRequestError, "Resource id or href should not be specified for creating a new #{@req.subject}"
+        end
+
+        if @req.subcollection?
+          target = target_resource_method(@req.subject.to_sym, @req.action)
+          send(target, parent_resource_obj, @req.subject.to_sym, nil, r)
+        else
+          create_resource(@req.subject.to_sym, nil, r)
+        end
+      end
+
+      render_resource(@req.collection.to_sym, "results" => results)
+    end
+
     def show
       klass = collection_class(@req.subject)
       opts  = {:name => @req.subject, :is_subcollection => @req.subcollection?, :expand_actions => true}

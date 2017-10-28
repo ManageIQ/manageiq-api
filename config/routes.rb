@@ -50,6 +50,7 @@ Rails.application.routes.draw do
             when :delete
               delete "/:c_id", :action => :destroy
             when :post
+              post "/", :action => :create, :constraints => Api::CreateConstraint.new
               post "(/:c_id)", :action => :update
             end
           end
@@ -68,6 +69,7 @@ Rails.application.routes.draw do
             when :delete
               delete "/:c_id/#{subcollection_name}/:s_id", :action => :destroy
             when :post
+              post "/:c_id/#{subcollection_name}", :action => :create, :constraints => Api::CreateConstraint.new
               post "/:c_id/#{subcollection_name}(/:s_id)", :action => :update
             end
           end

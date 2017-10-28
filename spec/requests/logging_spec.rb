@@ -40,7 +40,7 @@ describe "Logging" do
       post(api_services_url, :params => gen_request(:create, "name" => "new_service_1", "options" => { "password" => "SECRET" }))
 
       expect(@log.string).to include(
-        'Parameters:     {"action"=>"update", "controller"=>"api/services", "format"=>"json", ' \
+        'Parameters:     {"action"=>"create", "controller"=>"api/services", "format"=>"json", ' \
         '"body"=>{"action"=>"create", "resource"=>{"name"=>"new_service_1", ' \
         '"options"=>{"password"=>"[FILTERED]"}}}}'
       )
