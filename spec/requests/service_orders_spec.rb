@@ -643,7 +643,7 @@ RSpec.describe "service orders API" do
             :action    => 'copy',
             :resources => [
               { :id => @service_order.id, :name => 'foo'},
-              { :id => @service_order2.id, :name => 'bar' }
+              { :id => @service_order2.id, :name => 'bar', :state => ServiceOrder::STATE_WISH }
             ]
           }
         )
