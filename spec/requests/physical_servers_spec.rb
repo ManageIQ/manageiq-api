@@ -10,6 +10,87 @@ RSpec.describe "physical_servers API" do
         expect_single_resource_query("ems_ref" => "A59D5B36821111E1A9F5E41F13ED4F6A")
       end
     end
+
+    context "without an appropriate role" do
+      it "forbids access to read physical server" do
+        ps = FactoryGirl.create(:physical_server)
+
+        api_basic_authorize
+        get api_physical_server_url(nil, ps)
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body["error"]).to include("kind" => "forbidden")
+      end
+    end
+
+    context "with valid id" do
+      it "returns both id and href" do
+        api_basic_authorize(action_identifier(:physical_servers, :read, :resource_actions, :get))
+        ps = FactoryGirl.create(:physical_server)
+
+        get api_physical_server_url(nil, ps)
+
+        expect_single_resource_query("id" => ps.id.to_s, "href" => api_physical_server_url(nil, ps))
+      end
+    end
+
+    context "with an invalid id" do
+      it "fails to retrieve physical server" do
+        api_basic_authorize(action_identifier(:physical_servers, :read, :resource_actions, :get))
+
+        get api_physical_server_url(nil, 999_999)
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "with attribute" do
+      it "retrieve details" do
+        api_basic_authorize(action_identifier(:physical_servers, :read, :resource_actions, :get))
+
+        vm = FactoryGirl.create(:vm)
+        host = FactoryGirl.create(:host, :vms => [vm])
+
+        asset_details = FactoryGirl.create(:asset_details)
+
+        network = FactoryGirl.create(:network)
+        gd1 = FactoryGirl.create(:guest_device, :network => network, :device_type => "ethernet")
+        gd2 = FactoryGirl.create(:guest_device, :network => network, :device_type => 'storage')
+
+        firmware = FactoryGirl.create(:firmware)
+        hardware = FactoryGirl.create(:hardware, :firmwares => [firmware], :guest_devices => [gd1, gd2])
+        network.update_attributes!(:hardware_id => hardware.id.to_s)
+
+        comp_system = FactoryGirl.create(:computer_system, :hardware => hardware)
+        ps = FactoryGirl.create(:physical_server, :computer_system => comp_system, :asset_details => asset_details, :host => host)
+
+        get api_physical_server_url(nil, ps), :params => {:attributes => "host,host.vms,asset_details,hardware,hardware.firmwares,hardware.nics,hardware.ports"}
+
+        expected = {
+          "host"          => a_hash_including(
+            "physical_server_id" => ps.id.to_s,
+            "vms"                => [
+              a_hash_including("host_id" => host.id.to_s)
+            ]
+          ),
+          "asset_details" => a_hash_including("id" => asset_details.id.to_s),
+          "hardware"      => a_hash_including(
+            "id"        => hardware.id.to_s,
+            "firmwares" => a_collection_including(
+              a_hash_including("resource_id" => hardware.id.to_s)
+            ),
+            "nics"      => a_collection_including(
+              a_hash_including("hardware_id" => hardware.id.to_s)
+            ),
+            "ports"     => [
+              a_hash_including("device_type" => "ethernet")
+            ]
+          )
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 
   describe "power on/off a physical server" do
