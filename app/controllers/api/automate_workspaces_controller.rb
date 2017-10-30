@@ -6,15 +6,11 @@ module Api
     end
 
     def decrypt_resource(type, id = nil, data = nil)
-      raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
-
       obj = resource_search(id, type, collection_class(type))
       decrypt(obj, data)
     end
 
     def encrypt_resource(type, id = nil, data = nil)
-      raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
-
       obj = resource_search(id, type, collection_class(type))
       obj.encrypt(data['object'], data['attribute'], data['value'])
     end
