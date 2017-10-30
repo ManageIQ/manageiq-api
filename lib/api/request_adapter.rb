@@ -96,7 +96,7 @@ module Api
     end
 
     def resource
-      json_body["resource"] || json_body.except("action")
+      json_body.fetch("resource", json_body.except("action"))
     end
 
     private
