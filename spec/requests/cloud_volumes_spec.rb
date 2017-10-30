@@ -92,6 +92,14 @@ describe "Cloud Volumes API" do
     expect(response).to have_http_status(:forbidden)
   end
 
+  it 'DELETE will raise an error if the cloud volume does not exist' do
+    api_basic_authorize action_identifier(:cloud_volumes, :delete, :resource_actions, :delete)
+
+    delete(api_cloud_volume_url(nil, 999_999))
+
+    expect(response).to have_http_status(:not_found)
+  end
+
   it 'can delete cloud volumes through POST' do
     zone = FactoryGirl.create(:zone, :name => "api_zone")
     aws = FactoryGirl.create(:ems_amazon, :zone => zone)
