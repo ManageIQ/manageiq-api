@@ -55,6 +55,21 @@ describe "Authentication API" do
       }
       expect(response.parsed_body).to include(expected)
     end
+
+    it "returns a correctly formatted collection hrefs" do
+      api_basic_authorize
+
+      get api_entrypoint_url
+
+      collection_names = Api::ApiConfig.collections.to_h.select { |_, v| v.options.include?(:collection) }.keys
+      hrefs = collection_names.collect { |name| url_for(:controller => name, :action => "index") }
+      expected = {
+        "collections" => a_collection_containing_exactly(
+          *hrefs.collect { |href| a_hash_including("href" => href) }
+        )
+      }
+      expect(response.parsed_body).to include(expected)
+    end
   end
 
   context "Basic Authentication with Group Authorization" do
