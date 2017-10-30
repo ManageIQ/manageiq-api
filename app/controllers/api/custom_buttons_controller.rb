@@ -1,12 +1,15 @@
 module Api
   class CustomButtonsController < BaseController
     def create_resource(_type, _id, data)
-      custom_button = CustomButton.new(data.except("resource_action"))
+      custom_button = CustomButton.new(data.except("resource_action", "options"))
       custom_button.userid = User.current_user.userid
+      custom_button.options = data["options"].deep_symbolize_keys if data["options"]
       custom_button.resource_action = find_or_create_resource_action(data["resource_action"]) if data.key?("resource_action")
-      custom_button.save!
-    rescue => err
-      raise BadRequestError, "Failed to create new custom button - #{err}"
+      if custom_button.save
+        custom_button
+      else
+        raise BadRequestError, "Failed to create new custom button - #{custom_button.errors.full_messages.join(", ")}"
+      end
     end
 
     def edit_resource(type, id, data)

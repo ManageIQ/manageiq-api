@@ -74,7 +74,9 @@ RSpec.describe 'CustomButtons API' do
       post(api_custom_buttons_url, :params => cb_rec)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['results'].first).to eq(true)
+      custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
+      expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
+      expect(response.parsed_body['results'].first).to include(cb_rec.except('resource_action'))
     end
 
     it 'can edit custom buttons by id' do
