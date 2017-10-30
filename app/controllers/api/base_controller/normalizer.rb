@@ -10,11 +10,13 @@ module Api
         attrs = normalize_select_attributes(obj, opts)
         result = {}
 
-        key_id = collection_config.resource_identifier(type)
-        href = new_href(type, obj[key_id], obj["href"])
-        if href.present?
-          result["href"] = href
-          attrs -= ["href"]
+        if type
+          key_id = collection_config.resource_identifier(type)
+          href = new_href(type, obj[key_id], obj["href"])
+          if href.present?
+            result["href"] = href
+            attrs -= ["href"]
+          end
         end
 
         attrs.each do |k|
@@ -30,7 +32,7 @@ module Api
         return if value.nil?
         if value.kind_of?(Array) || value.kind_of?(ActiveRecord::Relation)
           normalize_array(value)
-        elsif !attr.nil? && (value.respond_to?(:attributes) || value.respond_to?(:keys))
+        elsif value.respond_to?(:attributes) || value.respond_to?(:keys)
           normalize_hash(attr, value)
         elsif attr == "id" || attr.to_s.ends_with?("_id")
           value.to_s
