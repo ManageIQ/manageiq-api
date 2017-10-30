@@ -57,7 +57,7 @@ module Api
     def json_body
       @json_body ||= begin
                        body = @request.body.read if @request.body
-                       body.blank? ? {} : JSON.parse(body)
+                       body.blank? || body == "null" ? {} : JSON.parse(body)
                      end
     end
 
