@@ -20,12 +20,7 @@ module Api
   UnsupportedMediaTypeError = Class.new(ApiError)
 
   def self.serialize(model, options = {})
-    model_name = case model
-                 when ExtManagementSystem then "ExtManagementSystem"
-                 when Authentication then "Authentication"
-                 else
-                   model.class.name.demodulize
-                 end
+    model_name = model.class.base_model.name.demodulize
     serializer_name = "#{model_name}Serializer"
     serializer = "Api::#{serializer_name}".safe_constantize || Api.const_set(serializer_name, Class.new(BaseSerializer))
     serializer.serialize(model, options)
