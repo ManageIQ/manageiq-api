@@ -11,7 +11,7 @@ module Api
         # API Version Validation
         if @req.version
           vname = @req.version
-          unless ApiConfig.version.definitions.collect { |vent| vent[:name] }.include?(vname)
+          unless Api::SUPPORTED_VERSIONS.include?(vname)
             raise BadRequestError, "Unsupported API Version #{vname} specified"
           end
         end
