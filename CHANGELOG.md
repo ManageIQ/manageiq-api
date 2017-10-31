@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 72 ending 2017-10-30
+
+### Added
+- Custom Button CRUD API [(#140)](https://github.com/ManageIQ/manageiq-api/pull/140)
+- Add security group subcollection actions [(#137)](https://github.com/ManageIQ/manageiq-api/pull/137)
+- Container Nodes Collection [(#129)](https://github.com/ManageIQ/manageiq-api/pull/129)
+- encrypt/decrypt for Automate Workspace objects [(#124)](https://github.com/ManageIQ/manageiq-api/pull/124)
+- Allow update to request task as a subcollection of request [(#117)](https://github.com/ManageIQ/manageiq-api/pull/117)
+- Paginate all the things [(#113)](https://github.com/ManageIQ/manageiq-api/pull/113)
+- Add flavors create delete to api [(#14)](https://github.com/ManageIQ/manageiq-api/pull/14)
+
+### Fixed
+- Add symbolization to data for Custom Buttons to fix a UI icon issue [(#151)](https://github.com/ManageIQ/manageiq-api/pull/151)
+- Return correct href for collections on Index [(#150)](https://github.com/ManageIQ/manageiq-api/pull/150)
+- Add `deep_symbolize_keys` to `custom_button_sets` data [(#148)](https://github.com/ManageIQ/manageiq-api/pull/148)
+- Return only id attributes if specified [(#144)](https://github.com/ManageIQ/manageiq-api/pull/144)
+- Blacklist Config Values [(#135)](https://github.com/ManageIQ/manageiq-api/pull/135)
+- Symbolize parameters before sending to backend [(#133)](https://github.com/ManageIQ/manageiq-api/pull/133)
+- Raise not found on DELETE  [(#20)](https://github.com/ManageIQ/manageiq-api/pull/20)
+
 ## Unreleased as of Sprint 71 ending 2017-10-16
 
 ### Added
