@@ -7,12 +7,6 @@ Rails.application.routes.draw do
 
     get "/ping" => "ping#index"
 
-    # Redirect of /tasks subcollections to /request_tasks
-    [:automation_requests, :provision_requests, :requests, :service_requests].each do |collection_name|
-      get "/#{collection_name}/:c_id/tasks", :to => redirect { |path_params, _req| "/api/#{collection_name}/#{path_params[:c_id]}/request_tasks" }
-      get "/#{collection_name}/:c_id/tasks/:s_id", :to => redirect { |path_params, _req| "/api/#{collection_name}/#{path_params[:c_id]}/request_tasks/#{path_params[:s_id]}" }
-    end
-
     Api::ApiConfig.collections.each do |collection_name, collection|
       # OPTIONS action for each collection
       match collection_name.to_s, :controller => collection_name, :action => :options, :via => :options, :as => nil
