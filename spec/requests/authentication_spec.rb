@@ -45,7 +45,7 @@ describe "Authentication API" do
     end
 
     it "returns a correctly formatted versions href" do
-      version_ident = "v#{Api::ApiConfig.base.version}"
+      version_ident = "v#{ManageIQ::Api::VERSION}"
       api_basic_authorize
 
       get api_entrypoint_url(version_ident)

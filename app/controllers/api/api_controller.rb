@@ -8,7 +8,7 @@ module Api
       res = {
         :name         => ApiConfig.base.name,
         :description  => ApiConfig.base.description,
-        :version      => ApiConfig.base.version,
+        :version      => ManageIQ::Api::VERSION,
         :versions     => entrypoint_versions,
         :settings     => user_settings,
         :identity     => auth_identity,
