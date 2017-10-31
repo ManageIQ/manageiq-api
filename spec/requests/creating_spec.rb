@@ -24,7 +24,6 @@ RSpec.describe "Creating" do
   end
 
   it "responds with Bad Request if there are no resources at the top level" do
-    skip("Currently results in an internal server error")
     api_basic_authorize(action_identifier(:roles, :create, :collection_actions))
 
     post(api_roles_url)
@@ -34,7 +33,6 @@ RSpec.describe "Creating" do
   end
 
   it "responds with Bad Request if there is a null resource in the \"resource\" node" do
-    skip("Currently results in an internal server error")
     api_basic_authorize(action_identifier(:roles, :create, :collection_actions))
 
     post(api_roles_url, :params => {:resource => nil})
