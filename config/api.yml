@@ -3,11 +3,11 @@
   :module: api
   :name: API
   :description: REST API
-  :version: '3.0.0'
+  :version: '3.1.0-pre'
 :version:
   :definitions:
-  - :name: '3.0.0'
-    :ident: 'v3.0.0'
+  - :name: '3.1.0-pre'
+    :ident: 'v3.1.0-pre'
 :verb:
   :names:
   - :get
