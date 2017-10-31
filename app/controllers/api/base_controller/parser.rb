@@ -48,21 +48,13 @@ module Api
         when resource["id"].kind_of?(Integer)
           resource["id"]
         when resource["id"].kind_of?(String)
-          if Api.compressed_id?(resource["id"])
-            Api.uncompress_id(resource["id"])
-          else
-            resource["id"].to_i
-          end
+          resource["id"].to_i
         end
       end
 
       def href_id(href, collection)
-        if href.present? && href.match(%r{^.*/#{collection}/(#{ApplicationRecord::CID_OR_ID_MATCHER})$})
-          if Api.compressed_id?(Regexp.last_match(1))
-            Api.uncompress_id(Regexp.last_match(1))
-          else
-            Regexp.last_match(1).to_i
-          end
+        if href.present? && href.match(%r{^.*/#{collection}/(\d+)$})
+          Regexp.last_match(1).to_i
         end
       end
 

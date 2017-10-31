@@ -43,8 +43,8 @@ module Api
         return klass.find_by(:guid => guid) if guid.present?
 
         href = data["href"]
-        if href =~ %r{^.*/#{collection}/#{ApplicationRecord::CID_OR_ID_MATCHER}$}
-          klass.find(ApplicationRecord.uncompress_id(href.split('/').last))
+        if href =~ %r{^.*/#{collection}/\d+$}
+          klass.find(href.split('/').last)
         else
           {}
         end
