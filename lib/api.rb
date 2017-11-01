@@ -1,4 +1,5 @@
 module Api
+  SUPPORTED_VERSIONS = [ManageIQ::Api::VERSION].freeze
   VERSION_CONSTRAINT = /v\d+(\.[\da-zA-Z]+)*(\-[\da-zA-Z\-\.]+)?/
   VERSION_REGEX = /\A#{VERSION_CONSTRAINT}\z/
 

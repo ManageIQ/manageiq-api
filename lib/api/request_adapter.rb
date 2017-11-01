@@ -69,7 +69,7 @@ module Api
       @version ||= if version?
                      href.version[1..-1] # Switching API Version
                    else
-                     ApiConfig.base[:version] # Default API Version
+                     ManageIQ::Api::VERSION # Default API Version
                    end
     end
 

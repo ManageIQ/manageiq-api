@@ -8,7 +8,7 @@ module Api
       res = {
         :name         => ApiConfig.base.name,
         :description  => ApiConfig.base.description,
-        :version      => ApiConfig.base.version,
+        :version      => ManageIQ::Api::VERSION,
         :versions     => entrypoint_versions,
         :settings     => user_settings,
         :identity     => auth_identity,
@@ -23,10 +23,10 @@ module Api
     private
 
     def entrypoint_versions
-      ApiConfig.version.definitions.select(&:ident).collect do |version_specification|
+      Api::SUPPORTED_VERSIONS.collect do |version|
         {
-          :name => version_specification[:name],
-          :href => "#{@req.base}#{@req.prefix(false)}/#{version_specification[:ident]}"
+          :name => version,
+          :href => "#{@req.base}#{@req.prefix(false)}/v#{version}"
         }
       end
     end
