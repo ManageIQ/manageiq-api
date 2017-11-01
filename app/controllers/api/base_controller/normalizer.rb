@@ -34,6 +34,8 @@ module Api
           normalize_array(value)
         elsif value.respond_to?(:attributes) || value.respond_to?(:keys)
           normalize_hash(attr, value)
+        elsif @req.subject == "automate_workspaces" && value =~ /^password::/
+          "password::********"
         elsif attr == "id" || attr.to_s.ends_with?("_id")
           value.to_s
         elsif Api.time_attribute?(attr)
