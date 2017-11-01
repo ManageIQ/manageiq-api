@@ -45,9 +45,21 @@ describe "Automate Workspaces API" do
       api_basic_authorize action_identifier(:automate_workspaces, :read, :resource_actions, :get)
       get(api_automate_workspace_url(nil, aw.guid))
 
+      expected = {
+        'input' => a_hash_including(
+          'objects'           => a_hash_including(
+            'root' => a_hash_including(
+              'var2' => masked_password
+            )
+          ),
+          'method_parameters' => a_hash_including(
+            'arg1' => masked_password
+          )
+        )
+      }
+
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['input']['objects']['root']['var2']).to eq(masked_password)
-      expect(response.parsed_body['input']['method_parameters']['arg1']).to eq(masked_password)
+      expect(response.parsed_body).to include(expected)
     end
 
     it 'fetching by guid should return resources with guid based references' do
