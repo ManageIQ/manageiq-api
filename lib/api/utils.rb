@@ -17,7 +17,7 @@ module Api
 
       klass = collection_config.klass(collection)
       key_id = collection_config.resource_identifier(collection)
-      target = key_id == "id" ? klass.find(ApplicationRecord.uncompress_id(id)) : klass.find_by!(key_id => id)
+      target = key_id == "id" ? klass.find(id) : klass.find_by!(key_id => id)
       Rbac.filtered_object(target, :user => user, :class => klass)
     end
   end
