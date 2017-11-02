@@ -972,6 +972,15 @@
       :get:
       - :name: read
         :identifier: event_streams_show
+  :enterprises:
+    :description: Enterprise
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: MiqEnterprise
+    :collection_actions:
+      :get:
+      - :name: read
   :events:
     :description: Events
     :identifier: event
