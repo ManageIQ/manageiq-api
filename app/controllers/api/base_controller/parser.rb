@@ -39,7 +39,7 @@ module Api
       end
 
       def parse_id(resource, collection)
-        return nil if resource.blank?
+        return nil if !resource.kind_of?(Hash) || resource.blank?
 
         href_id = href_id(resource["href"], collection)
         case
