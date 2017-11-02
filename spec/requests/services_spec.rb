@@ -1079,6 +1079,21 @@ describe "Services API" do
       expect(response.parsed_body).to include(expected)
     end
 
+    it 'requires provider hash to be passed with id or href' do
+      api_basic_authorize action_identifier(:services, :add_provider_vms)
+
+      post(api_service_url(nil, svc), :params => { :action  => 'add_provider_vms',
+                                                   :uid_ems => ['uids'] ,
+                                                   :provider => 'api/providers/:id'})
+
+      expected = {
+        'success' => false,
+        'message' => a_string_including('Must specify a valid provider href or id')
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
     it 'can bulk add_provider_vms' do
       api_basic_authorize action_identifier(:services, :add_provider_vms)
       svc.update_attributes!(:evm_owner => @user)
