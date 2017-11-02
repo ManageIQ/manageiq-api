@@ -113,6 +113,10 @@
         :identifier: alert_definition_profile_edit
       - :name: delete
         :identifier: alert_definition_profile_delete
+      - :name: assign
+        :identifier: alert_profile_assign
+      - :name: unassign
+        :identifier: alert_profile_assign
       :delete:
       - :name: delete
         :identifier: alert_definition_profile_delete
@@ -955,6 +959,15 @@
         :identifier: storage_tag
       - :name: unassign
         :identifier: storage_tag
+  :enterprises:
+    :description: Enterprise
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: MiqEnterprise
+    :collection_actions:
+      :get:
+      - :name: read
   :event_streams:
     :description: Event Streams
     :options:
@@ -972,15 +985,6 @@
       :get:
       - :name: read
         :identifier: event_streams_show
-  :enterprises:
-    :description: Enterprise
-    :options:
-    - :collection
-    :verbs: *g
-    :klass: MiqEnterprise
-    :collection_actions:
-      :get:
-      - :name: read
   :events:
     :description: Events
     :identifier: event
