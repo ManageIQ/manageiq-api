@@ -19,16 +19,14 @@ module Spec
         end
 
         def api_basic_authorize(*identifiers, user: @user.userid, password: @user.password)
-          update_user_role(@role, *identifiers)
-          request_headers["HTTP_AUTHORIZATION"] = ActionController::HttpAuthentication::Basic.encode_credentials(user, password)
-        end
-
-        def update_user_role(role, *identifiers)
-          return if identifiers.blank?
-          product_features = identifiers.flatten.collect do |identifier|
-            MiqProductFeature.find_or_create_by(:identifier => identifier)
+          if identifiers.present?
+            product_features = identifiers.flatten.collect do |identifier|
+              MiqProductFeature.find_or_create_by(:identifier => identifier)
+            end
+            @role.update_attributes!(:miq_product_features => product_features)
           end
-          role.update_attributes!(:miq_product_features => product_features)
+
+          request_headers["HTTP_AUTHORIZATION"] = ActionController::HttpAuthentication::Basic.encode_credentials(user, password)
         end
 
         def stub_api_action_role(collection, action_type, method, action, identifier)
