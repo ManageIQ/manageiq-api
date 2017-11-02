@@ -457,25 +457,6 @@ describe "Provision Requests API" do
     let(:options) { { 'a' => '1' } }
     let(:params) { gen_request(:edit, :options => options) }
 
-    it 'redirects to request_tasks subcollection' do
-      FactoryGirl.create(:miq_request_task, :miq_request_id => provision_request.id)
-      api_basic_authorize collection_action_identifier(:service_requests, :read, :get)
-
-      get("#{api_provision_request_url(nil, provision_request)}/tasks")
-
-      expect(response).to have_http_status(:moved_permanently)
-      expect(response.redirect_url).to include("#{api_provision_request_url(nil, provision_request)}/request_tasks")
-    end
-
-    it 'redirects to request_tasks subresources' do
-      api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
-
-      get("#{api_provision_request_url(nil, provision_request)}/tasks/#{task.id}")
-
-      expect(response).to have_http_status(:moved_permanently)
-      expect(response.redirect_url).to include("#{api_provision_request_url(nil, provision_request)}/request_tasks/#{task.id}")
-    end
-
     it 'does not allow direct edit of provision task' do
       api_basic_authorize
 

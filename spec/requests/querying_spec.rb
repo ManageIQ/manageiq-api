@@ -657,63 +657,6 @@ describe "Querying" do
       expect(response).to have_http_status(:ok)
     end
 
-    it "supports filtering by compressed id" do
-      vm1, _vm2 = create_vms_by_name(%w(aa bb))
-
-      get(
-        api_vms_url,
-        :params => {
-          :expand => "resources",
-          :filter => ["id = #{ApplicationRecord.compress_id(vm1.id)}"]
-        }
-      )
-
-      expect_query_result(:vms, 1, 2)
-      expect_result_resources_to_match_hash([{"name" => vm1.name, "guid" => vm1.guid}])
-    end
-
-    it "supports filtering by compressed id as string" do
-      _vm1, vm2 = create_vms_by_name(%w(aa bb))
-
-      get(
-        api_vms_url,
-        :params => {
-          :expand => "resources",
-          :filter => ["id = '#{ApplicationRecord.compress_id(vm2.id)}'"]
-        }
-      )
-
-      expect_query_result(:vms, 1, 2)
-      expect_result_resources_to_match_hash([{"name" => vm2.name, "guid" => vm2.guid}])
-    end
-
-    it "supports filtering by compressed id on *_id named attributes" do
-      zone = FactoryGirl.create(:zone, :name => "api_zone")
-      ems1 = FactoryGirl.create(:ems_vmware, :zone => zone)
-      ems2 = FactoryGirl.create(:ems_vmware, :zone => zone)
-      host = FactoryGirl.create(:host)
-
-      _vm = FactoryGirl.create(:vm_vmware,
-                               :host                  => host,
-                               :ext_management_system => ems1,
-                               :raw_power_state       => "poweredOn")
-      vm2 = FactoryGirl.create(:vm_vmware,
-                               :host                  => host,
-                               :ext_management_system => ems2,
-                               :raw_power_state       => "poweredOff")
-
-      get(
-        api_vms_url,
-        :params => {
-          :expand => "resources",
-          :filter => ["ems_id = #{ApplicationRecord.compress_id(ems2.id)}"]
-        }
-      )
-
-      expect_query_result(:vms, 1, 2)
-      expect_result_resources_to_match_hash([{"name" => vm2.name, "guid" => vm2.guid}])
-    end
-
     it "returns a bad request if trying to filter on invalid attributes" do
       get(api_vms_url, :params => { :filter => ["destroy=true"] })
 

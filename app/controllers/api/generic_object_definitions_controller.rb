@@ -139,7 +139,7 @@ module Api
     end
 
     def resource_search(id, type, klass)
-      if ApplicationRecord.compressed_id?(id)
+      if id.to_s =~ /\A\d+\z/
         super
       else
         go_def = klass.find_by!(:name => id)

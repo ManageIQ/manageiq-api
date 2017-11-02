@@ -45,7 +45,7 @@ module Api
     # @return [String, nil] the collection id if there is one,
     #   otherwise nil
     def collection_id
-      ensure_uncompressed(path_segments[version? ? 4 : 3])
+      path_segments[version? ? 4 : 3]
     end
 
     # @return [String, nil] the name of the subcollection if there is
@@ -57,7 +57,7 @@ module Api
     # @return [String, nil] the subcollection id if there is one,
     #   otherwise nil
     def subcollection_id
-      ensure_uncompressed(path_segments[version? ? 6 : 5])
+      path_segments[version? ? 6 : 5]
     end
 
     # @return true if there is a subcollection path segment,
@@ -95,10 +95,6 @@ module Api
       result.prepend("/")     unless result.start_with?("/")
       result.prepend("/api")  unless result.start_with?("/api")
       result
-    end
-
-    def ensure_uncompressed(id)
-      Api.compressed_id?(id) ? Api.uncompress_id(id).to_s : id
     end
 
     def path_segments

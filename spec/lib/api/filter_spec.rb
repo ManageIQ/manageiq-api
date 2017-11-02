@@ -320,33 +320,6 @@ RSpec.describe Api::Filter do
       expect(actual.exp).to eq(expected)
     end
 
-    it "supports filtering by compressed id" do
-      filters = ["id = 1r123"]
-
-      actual = described_class.parse(filters, Vm)
-
-      expected = {"=" => {"field" => "Vm-id", "value" => 1_000_000_000_123}}
-      expect(actual.exp).to eq(expected)
-    end
-
-    it "supports filtering by compressed id as string" do
-      filters = ["id = '1r123'"]
-
-      actual = described_class.parse(filters, Vm)
-
-      expected = {"=" => {"field" => "Vm-id", "value" => 1_000_000_000_123}}
-      expect(actual.exp).to eq(expected)
-    end
-
-    it "supports filtering by compressed id on *_id named attributes" do
-      filters = ["ems_id = 1r123"]
-
-      actual = described_class.parse(filters, Vm)
-
-      expected = {"=" => {"field" => "Vm-ems_id", "value" => 1_000_000_000_123}}
-      expect(actual.exp).to eq(expected)
-    end
-
     it "can handle operator characters on the right hand side" do
       filters = ["name=Vms with free space > 50 percent"]
 

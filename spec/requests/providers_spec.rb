@@ -588,7 +588,7 @@ describe "Providers API" do
           results = response.parsed_body["results"]
           expect(results.first).to include(expected)
 
-          provider_id = ApplicationRecord.uncompress_id(results.first["id"])
+          provider_id = results.first["id"]
           provider = ExtManagementSystem.find(provider_id)
           expect(provider).to have_endpoint_attributes(default_connection["endpoint"])
           expect(provider.authentication_token).to eq(token(default_connection))
