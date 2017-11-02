@@ -18,12 +18,8 @@ module Spec
                                       :miq_groups => [@group])
         end
 
-        def api_basic_authorize(*identifiers)
+        def api_basic_authorize(*identifiers, user: @user.userid, password: @user.password)
           update_user_role(@role, *identifiers)
-          basic_authorize @user.userid, @user.password
-        end
-
-        def basic_authorize(user, password)
           request_headers["HTTP_AUTHORIZATION"] = ActionController::HttpAuthentication::Basic.encode_credentials(user, password)
         end
 
