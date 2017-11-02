@@ -44,7 +44,6 @@ module Api
     rescue_from(BadRequestError)                { |e| api_error(:bad_request, e) }
     rescue_from(NotFoundError)                  { |e| api_error(:not_found, e) }
     rescue_from(UnsupportedMediaTypeError)      { |e| api_error(:unsupported_media_type, e) }
-    rescue_from(ArgumentError)                  { |e| api_error(:bad_request, e) }
 
     def index
       klass = collection_class(@req.subject)
