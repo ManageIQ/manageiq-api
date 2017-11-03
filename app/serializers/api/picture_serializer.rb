@@ -1,5 +1,7 @@
 module Api
   class PictureSerializer < BaseSerializer
-    ADDITIONAL_ATTRIBUTES = %w[extension image_href].freeze
+    def self.additional_attributes
+      @additional_attributes ||= %w(extension image_href).freeze
+    end
   end
 end

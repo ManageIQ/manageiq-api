@@ -1,7 +1,5 @@
 module Api
   class BaseSerializer
-    ADDITIONAL_ATTRIBUTES = [].freeze
-
     def self.serialize(model, options = {})
       new(model, options).serialize
     end
@@ -27,7 +25,7 @@ module Api
     end
 
     def self.additional_attributes
-      ADDITIONAL_ATTRIBUTES
+      @additional_attributes ||= []
     end
 
     def self.date_or_time_attributes
