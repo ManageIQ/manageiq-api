@@ -47,7 +47,6 @@ RSpec.describe Api do
           "updated_on" => "2017-01-01T00:00:00Z"
         }
         expect(actual).to include(expected)
-        expect(actual).not_to include("password_digest")
       end
     end
 
