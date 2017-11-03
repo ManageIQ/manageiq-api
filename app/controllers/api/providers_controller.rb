@@ -20,6 +20,7 @@ module Api
     include Subcollections::SecurityGroups
     include Subcollections::Vms
     include Subcollections::Flavors
+    include Subcollections::CloudTemplates
 
     before_action :validate_provider_class
 

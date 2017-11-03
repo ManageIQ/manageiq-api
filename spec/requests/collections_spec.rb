@@ -659,5 +659,10 @@ describe "Rest API Collections" do
       FactoryGirl.create(:container_node)
       test_collection_bulk_query(:container_nodes, api_container_nodes_url, ContainerNode)
     end
+
+    it 'bulk query cloud templates' do
+      FactoryGirl.create(:template_cloud)
+      test_collection_bulk_query(:cloud_templates, api_cloud_templates_url, ManageIQ::Providers::CloudManager::Template)
+    end
   end
 end
