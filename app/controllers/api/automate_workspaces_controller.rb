@@ -22,5 +22,10 @@ module Api
        'attribute' => data['attribute'],
        'value'     => obj.decrypt(data['object'], data['attribute'])}
     end
+
+    def normalize_attr(attr, value)
+      return "password::********" if value.kind_of?(String) && value.start_with?("password::")
+      super
+    end
   end
 end
