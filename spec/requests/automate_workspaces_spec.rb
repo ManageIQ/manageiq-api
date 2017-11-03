@@ -12,7 +12,7 @@ describe "Automate Workspaces API" do
   let(:encrypted) { MiqAePassword.encrypt(password) }
   let(:var2v) { "password::#{encrypted}" }
   let(:input) do
-    { 'objects'           => {'root' => { 'var1' => '1', 'var2' => var2v }},
+    { 'objects'           => {'root' => { 'var1' => 1, 'var2' => var2v }},
       'method_parameters' => {'arg1' => "password::#{encrypted}"} }
   end
   let(:masked_password) { "password::********" }
@@ -49,7 +49,8 @@ describe "Automate Workspaces API" do
         'input' => a_hash_including(
           'objects'           => a_hash_including(
             'root' => a_hash_including(
-              'var2' => masked_password
+              'var2' => masked_password,
+              'var1' => 1
             )
           ),
           'method_parameters' => a_hash_including(
