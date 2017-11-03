@@ -13,7 +13,7 @@ module Api
     end
 
     def self.foreign_keys
-      @foreign_keys ||= %i[belongs_to has_one].flat_map { |type| model.reflect_on_all_associations(type).collect(&:foreign_key) }
+      @foreign_keys ||= %i(belongs_to has_one).flat_map { |type| model.reflect_on_all_associations(type).collect(&:foreign_key) }
     end
 
     def self.attributes
@@ -29,7 +29,7 @@ module Api
     end
 
     def self.date_or_time_attributes
-      @date_or_time_attributes ||= Set.new(model.columns_hash.select { |_k, v| v.type.in?(%i[date datetime]) }.collect(&:first))
+      @date_or_time_attributes ||= Set.new(model.columns_hash.select { |_k, v| v.type.in?(%i(date datetime)) }.collect(&:first))
     end
 
     def self.encrypted_attributes
