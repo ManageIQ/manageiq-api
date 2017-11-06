@@ -441,11 +441,19 @@ module Api
           next unless render_actions_for_method(cspec[:verbs], method)
           typed_action_definitions = action_definitions || fetch_typed_subcollection_actions(method, is_subcollection)
           typed_action_definitions.each.collect do |action|
-            if !action[:disabled] && api_user_role_allows?(action[:identifier]) && action_validated?(resource, action)
-              {"name" => action[:name], "method" => method, "href" => href}
-            end
+            next unless !action[:disabled] && api_user_role_allows?(action[:identifier]) && action_validated?(resource, action)
+            build_resource_actions(action, method, href, cspec[:verbs])
           end
         end.flatten.compact
+      end
+
+      def build_resource_actions(action, method, href, verbs)
+        actions = [{"name" => action[:name], "method" => method, "href" => href}]
+        if action[:name] == "edit"
+          actions << { 'name' => 'edit', 'method' => :patch, 'href' => href } if verbs.include?(:patch)
+          actions << { 'name' => 'edit', 'method' => :put, 'href' => href } if verbs.include?(:put)
+        end
+        actions
       end
 
       def render_actions_for_method(methods, method)
