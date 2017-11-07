@@ -79,6 +79,14 @@ RSpec.describe 'Authentications API' do
       expect(response).to have_http_status(:ok)
     end
 
+    it 'raises a not found for nonexistent authentication' do
+      api_basic_authorize collection_action_identifier(:authentications, :delete, :post)
+
+      post(api_authentication_url(nil, 0), :params => { :action => 'delete' })
+
+      expect(response).to have_http_status(:not_found)
+    end
+
     it 'verifies that the type is supported' do
       api_basic_authorize collection_action_identifier(:authentications, :delete, :post)
       auth = FactoryGirl.create(:authentication)
