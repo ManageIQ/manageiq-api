@@ -69,6 +69,11 @@ describe "Rest API Collections" do
       test_collection_query(:chargebacks, api_chargebacks_url, ChargebackRate)
     end
 
+    it "query ContainerGroups" do
+      FactoryGirl.create(:container_group)
+      test_collection_query(:container_groups, api_container_groups_url, ContainerGroup)
+    end
+
     it "query Currencies" do
       FactoryGirl.create(:chargeback_rate_detail_currency)
       test_collection_query(:currencies, "/api/currencies", ChargebackRateDetailCurrency)
@@ -399,6 +404,11 @@ describe "Rest API Collections" do
     it "bulk query ContainerDeployments" do
       FactoryGirl.create(:container_deployment)
       test_collection_bulk_query(:container_deployments, api_container_deployments_url, ContainerDeployment)
+    end
+
+    it "bulk query ContainerGroups" do
+      FactoryGirl.create(:container_group)
+      test_collection_bulk_query(:container_groups, api_container_groups_url, ContainerGroup)
     end
 
     it "bulk query Data Stores" do
