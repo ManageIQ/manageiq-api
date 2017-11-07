@@ -284,6 +284,22 @@ describe "Services API" do
       expect { svc1.reload }.to raise_error(ActiveRecord::RecordNotFound)
       expect { svc2.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
+
+    it "returns correct action response messages" do
+      api_basic_authorize collection_action_identifier(:services, :delete)
+
+      post(api_services_url, :params => gen_request(:delete,
+                                                    [{"href" => api_service_url(nil, 0)},
+                                                     {"href" => api_service_url(nil, svc)}]))
+      expected = {
+        "results" => [
+          a_hash_including("success" => false, "message" => "Couldn't find Service with 'id'=0"),
+          a_hash_including("success" => true, "message" => "services id: #{svc.id} deleting")
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
   end
 
   describe "Services retirement" do

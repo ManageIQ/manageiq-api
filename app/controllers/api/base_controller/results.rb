@@ -6,7 +6,7 @@ module Api
       def delete_action_handler
         yield
       rescue ActiveRecord::RecordNotFound => err
-        @req.method == :delete ? raise(err) : action_result(false, err.to_s)
+        @req.method == :delete || @req.json_body.key?('resource') ? raise(err) : action_result(false, err.to_s)
       rescue => err
         action_result(false, err.to_s)
       end
