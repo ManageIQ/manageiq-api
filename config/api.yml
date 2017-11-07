@@ -666,6 +666,24 @@
       :delete:
       - :name: delete
         :identifier: embedded_configuration_script_source_delete
+  :configuration_templates:
+    :description: Configuration Templates
+    :identifier: configuration_template
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: ConfigurationTemplate
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: configuration_template_show_list
+      :post:
+      - :name: query
+        :identifier: configuration_template_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: configuration_template_show
   :container_deployments:
     :description: Container Provider Deployment
     :identifier: container_deployment

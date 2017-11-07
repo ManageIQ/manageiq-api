@@ -348,6 +348,11 @@ describe "Rest API Collections" do
       FactoryGirl.create(:guest_device)
       test_collection_query(:guest_devices, api_guest_devices_url, GuestDevice)
     end
+
+    it 'query ConfigurationTemplates' do
+      FactoryGirl.create(:configuration_template)
+      test_collection_query(:configuration_templates, configuration_templates_url, ConfigurationTemplate)
+    end
   end
 
   context "Collections Bulk Queries" do
@@ -663,6 +668,11 @@ describe "Rest API Collections" do
     it 'bulk query cloud templates' do
       FactoryGirl.create(:template_cloud)
       test_collection_bulk_query(:cloud_templates, api_cloud_templates_url, ManageIQ::Providers::CloudManager::Template)
+    end
+
+    it 'bulk query ConfigurationTemplates' do
+      FactoryGirl.create(:configuration_template)
+      test_collection_bulk_query(:configuration_templates, configuration_templates_url, ConfigurationTemplate)
     end
   end
 end
