@@ -139,17 +139,15 @@ module Api
       end
 
       def delete_resource_action(klass, type, id)
-        api_log_info("Deleting #{type} id #{id}")
-        resource = resource_search(id, type, klass)
-        result = begin
-                   resource.destroy!
-                   action_result(true, "#{type} id: #{id} deleting")
-                 rescue => err
-                   action_result(false, "#{err} - #{resource.errors.full_messages.join(', ')}")
-                 end
-        add_href_to_result(result, type, id)
-        log_result(result)
-        result
+        delete_action_handler do
+          api_log_info("Deleting #{type} id #{id}")
+          resource = resource_search(id, type, klass)
+          resource.destroy!
+          result = action_result(true, "#{type} id: #{id} deleting")
+          add_href_to_result(result, type, id)
+          log_result(result)
+          result
+        end
       end
 
       def invoke_custom_action(type, resource, action, data)
