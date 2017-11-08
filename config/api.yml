@@ -686,6 +686,25 @@
       :get:
       - :name: read
         :identifier: container_deployment_show
+  :container_groups:
+    :description: Container Group
+    :identifier: container_group
+    :klass: ContainerGroup
+    :verbs: *gp
+    :options:
+    - :collection
+    - :custom_actions
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: container_group_show_list
+      :post:
+      - :name: query
+        :identifier: container_group_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: container_group_show
   :container_nodes:
     :description: Container Nodes
     :identifier: container_node
