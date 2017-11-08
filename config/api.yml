@@ -2661,6 +2661,25 @@
     - :subcollection
     :verbs: *g
     :klass: GuestApplication
+  :switches:
+    :description: Switches
+    :identifier: infra_networking
+    :klass: Switch
+    :verbs: *gp
+    :options:
+    - :collection
+    - :custom_actions
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: infra_networking_show_list
+      :post:
+      - :name: query
+        :identifier: infra_networking_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: infra_networking_show
   :tags:
     :description: Tags
     :identifier: ops_settings
