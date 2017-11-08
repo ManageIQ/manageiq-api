@@ -2435,7 +2435,6 @@
     :identifier: service
     :options:
     - :collection
-    - :custom_actions
     :verbs: *gpppd
     :klass: Service
     :subcollections:
