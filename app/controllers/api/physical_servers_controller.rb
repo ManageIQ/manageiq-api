@@ -40,6 +40,16 @@ module Api
       change_resource_state(:restart_mgmt_controller, type, id)
     end
 
+    def refresh_resource(type, id, _data = nil)
+      raise BadRequestError, "Must specify an id for refreshing a #{type} resource" unless id
+
+      api_action(type, id) do |klass|
+        physical_server = resource_search(id, type, klass)
+        api_log_info("Refreshing #{physical_server_ident(physical_server)}")
+        refresh_physical_server(physical_server)
+      end
+    end
+
     private
 
     def change_resource_state(state, type, id)
@@ -60,6 +70,18 @@ module Api
 
     def server_ident(server)
       "Server instance: #{server.id} name:'#{server.name}'"
+    end
+
+    def refresh_physical_server(physical_server)
+      desc = "#{physical_server_ident(physical_server)} refreshing"
+      task_id = queue_object_action(physical_server, desc, :method_name => "refresh_ems", :role => "ems_operations")
+      action_result(true, desc, :task_id => task_id)
+    rescue => err
+      action_result(false, err.to_s)
+    end
+
+    def physical_server_ident(physical_server)
+      "Physical Server id:#{physical_server.id} name:'#{physical_server.name}'"
     end
   end
 end
