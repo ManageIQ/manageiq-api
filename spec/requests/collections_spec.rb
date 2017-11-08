@@ -363,6 +363,11 @@ describe "Rest API Collections" do
       FactoryGirl.create(:container_template)
       test_collection_query(:container_templates, api_container_templates_url, ContainerTemplate)
     end
+
+    it 'query ContainerVolumes' do
+      FactoryGirl.create(:container_volume)
+      test_collection_query(:container_volumes, api_container_volumes_url, ContainerVolume)
+    end
   end
 
   context "Collections Bulk Queries" do
@@ -693,6 +698,11 @@ describe "Rest API Collections" do
     it 'bulk query container templates' do
       FactoryGirl.create(:container_template)
       test_collection_bulk_query(:container_templates, api_container_templates_url, ContainerTemplate)
+    end
+
+    it 'bulk query container volumes' do
+      FactoryGirl.create(:container_volume)
+      test_collection_bulk_query(:container_volumes, api_container_volumes_url, ContainerVolume)
     end
   end
 end
