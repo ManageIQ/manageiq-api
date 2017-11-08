@@ -66,6 +66,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Adds Metric Rollups as a subcollection to services and vms [(#33)](https://github.com/ManageIQ/manageiq-api/pull/33)
 - Generic Object Definition CRUD [(#15)](https://github.com/ManageIQ/manageiq-api/pull/15)
 - Metric rollups api [(#4)](https://github.com/ManageIQ/manageiq-api/pull/4)
+- Mask password attributes from AutomateWorkspace [(#168)](https://github.com/ManageIQ/manageiq-api/pull/168)
+- API Enhancement making the system token a one-time token. [(#178)](https://github.com/ManageIQ/manageiq-api/pull/178)
 
 ### Fixed
 - Fix Generic Object Creation [(#122)](https://github.com/ManageIQ/manageiq-api/pull/122)
@@ -80,4 +82,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Require credentials when creating a provider [(#16)](https://github.com/ManageIQ/manageiq-api/pull/16)
 - Check if the User.current_user is set before calling userid [(#13)](https://github.com/ManageIQ/manageiq-api/pull/13)
 - Don't require authorization for OPTIONS [(#8)](https://github.com/ManageIQ/manageiq-api/pull/8)
-
+- Add decorator for VNC Console [(#167)](https://github.com/ManageIQ/manageiq-api/pull/167)
+- Fix coercing of string to 0 in parse_id [(#173)](https://github.com/ManageIQ/manageiq-api/pull/173)
+- Don't respond with 400 on ArgumentError [(#174)](https://github.com/ManageIQ/manageiq-api/pull/174)
