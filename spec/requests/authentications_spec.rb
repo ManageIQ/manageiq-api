@@ -31,12 +31,19 @@ RSpec.describe 'Authentications API' do
 
   describe 'GET /api/authentications/:id' do
     it 'will show an authentication configuration script base' do
-      api_basic_authorize action_identifier(:authentications, :read, :resource_actions, :get)
+      api_basic_authorize action_identifier(:authentications, :read, :resource_actions, :get),
+                          action_identifier(:authentications, :edit)
+      href = api_authentication_url(nil, auth)
 
-      get(api_authentication_url(nil, auth))
+      get(href)
 
       expected = {
-        'href' => api_authentication_url(nil, auth)
+        'href'    => href,
+        'actions' => [
+          { 'name' => 'edit', 'method' => 'post', 'href' => href },
+          { 'name' => 'edit', 'method' => 'patch', 'href' => href },
+          { 'name' => 'edit', 'method' => 'put', 'href' => href }
+        ]
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
