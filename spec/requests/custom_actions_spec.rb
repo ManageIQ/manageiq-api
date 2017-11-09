@@ -737,6 +737,33 @@ describe "Custom Actions API" do
     end
   end
 
+  describe "Orchestration Stacks" do
+    before(:each) do
+      @resource = FactoryGirl.create(:orchestration_stack)
+      define_custom_button1(@resource)
+    end
+
+    it "queries return custom actions defined" do
+      api_basic_authorize(action_identifier(:orchestration_stacks, :read, :resource_actions, :get))
+
+      get api_orchestration_stack_url(nil, @resource)
+
+      expect(response.parsed_body).to include(
+                                        "id"      => @resource.id.to_s,
+                                        "href"    => api_orchestration_stack_url(nil, @resource),
+                                        "actions" => a_collection_including(a_hash_including("name" => "button1"))
+                                      )
+    end
+
+    it "accept custom actions" do
+      api_basic_authorize
+
+      post api_orchestration_stack_url(nil, @resource), :params => gen_request(:button1, "key1" => "value1")
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_orchestration_stack_url(nil, @resource))
+    end
+  end
+
   describe "Storage" do
     before do
       @resource = FactoryGirl.create(:storage)

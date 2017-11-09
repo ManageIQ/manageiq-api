@@ -1590,10 +1590,24 @@
       - :name: delete
   :orchestration_stacks:
     :description: Orchestration Stacks
-    :options:
-    - :subcollection
-    :verbs: *g
+    :identifier: orchestration_stack
+    :verbs: *gp
     :klass: OrchestrationStack
+    :options:
+      - :collection
+      - :subcollection
+      - :custom_actions
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: orchestration_stack_show_list
+      :post:
+      - :name: query
+        :identifier: orchestration_stack_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: orchestration_stack_show
     :subcollection_actions:
       :get:
       - :name: read

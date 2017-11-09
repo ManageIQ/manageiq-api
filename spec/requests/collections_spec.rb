@@ -383,6 +383,11 @@ describe "Rest API Collections" do
       FactoryGirl.create(:switch)
       test_collection_query(:switches, api_switches_url, Switch)
     end
+
+    it 'query OrchestrationStacks' do
+      FactoryGirl.create(:orchestration_stack)
+      test_collection_query(:orchestration_stacks, api_orchestration_stacks_url, OrchestrationStack)
+    end
   end
 
   context "Collections Bulk Queries" do
@@ -728,6 +733,11 @@ describe "Rest API Collections" do
     it 'bulk query switches' do
       FactoryGirl.create(:switch)
       test_collection_bulk_query(:switches, api_switches_url, Switch)
+    end
+
+    it 'bulk query orchestration stacks' do
+      FactoryGirl.create(:orchestration_stack)
+      test_collection_bulk_query(:orchestration_stacks, api_orchestration_stacks_url, OrchestrationStack)
     end
   end
 end
