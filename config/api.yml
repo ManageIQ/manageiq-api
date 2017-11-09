@@ -1594,9 +1594,9 @@
     :verbs: *gp
     :klass: OrchestrationStack
     :options:
-      - :collection
-      - :subcollection
-      - :custom_actions
+    - :collection
+    - :subcollection
+    - :custom_actions
     :collection_actions:
       :get:
       - :name: read
@@ -1611,11 +1611,11 @@
     :subcollection_actions:
       :get:
       - :name: read
-        :identifier: orchestration_stack_view
+        :identifier: orchestration_stack_show
     :subresource_actions:
       :get:
       - :name: read
-        :identifier: orchestration_stack_view
+        :identifier: orchestration_stack_show
   :orchestration_templates:
     :description: Orchestration Template
     :identifier: orchestration_templates_accord
