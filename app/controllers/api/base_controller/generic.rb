@@ -19,6 +19,7 @@ module Api
             data.delete(sc.to_s)
           end
         end
+        validate_type(klass, data['type']) if data['type']
         resource = klass.new(data)
         if resource.save
           add_subcollection_data_to_resource(resource, type, subcollection_data)
@@ -121,6 +122,12 @@ module Api
       end
 
       private
+
+      def validate_type(klass, type)
+        klass.descendant_get(type)
+      rescue ArgumentError => err
+        raise BadRequestError, "Invalid type #{type} specified - #{err}"
+      end
 
       def add_subcollection_data_to_resource(resource, type, subcollection_data)
         subcollection_data.each do |sc, sc_data|
