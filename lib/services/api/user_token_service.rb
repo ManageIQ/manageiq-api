@@ -1,8 +1,6 @@
 module Api
   class UserTokenService
     TYPES = %w(api ui ws).freeze
-    # Additional Requester type token ttl's for authentication
-    TYPE_TO_TTL_OVERRIDE = {'ui' => ::Settings.session.timeout}.freeze
 
     def initialize(config = ApiConfig, args = {})
       @config = config
@@ -31,8 +29,11 @@ module Api
 
       $api_log.info("Generating Authentication Token for userid: #{userid} requester_type: #{requester_type}")
 
+      # Additional Requester type token ttl's for authentication
+      type_to_ttl_override = {'ui' => ::Settings.session.timeout}
+
       token_mgr(requester_type).gen_token(:userid             => userid,
-                                          :token_ttl_override => TYPE_TO_TTL_OVERRIDE[requester_type])
+                                          :token_ttl_override => type_to_ttl_override[requester_type])
     end
 
     def validate_requester_type(requester_type)
