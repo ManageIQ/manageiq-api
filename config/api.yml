@@ -395,27 +395,32 @@
         :identifier: chargeback_rates_delete
   :cloud_networks:
     :description: Cloud Networks
-    :identifier: miq_cloud_networks
+    :identifier: cloud_network
     :options:
     - :collection
     - :subcollection
+    - :custom_actions
     :verbs: *gp
     :klass: CloudNetwork
     :collection_actions:
       :get:
       - :name: read
-        :identifier: miq_cloud_networks_view
+        :identifier: cloud_network_show_list
       :post:
       - :name: query
-        :identifier: miq_cloud_networks_view
+        :identifier: cloud_network_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_network_show
     :subcollection_actions:
       :get:
       - :name: read
-        :identifier: miq_cloud_networks_view
+        :identifier: cloud_network_show_list
     :subresource_actions:
       :get:
       - :name: read
-        :identifier: miq_cloud_networks_view
+        :identifier: cloud_network_show
   :cloud_subnets:
     :description: Cloud Subnets
     :identifier: cloud_subnet
