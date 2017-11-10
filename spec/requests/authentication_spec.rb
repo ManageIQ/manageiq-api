@@ -237,6 +237,17 @@ describe "Authentication API" do
           expect(response.parsed_body["token_ttl"]).to eq(::Settings.session.timeout.to_i_with_method)
         end
 
+        it "gets a token based identifier with an updated UI based token_ttl" do
+          ::Settings.session.timeout = 1234
+          api_basic_authorize
+
+          get api_auth_url, :params => { :requester_type => "ui" }
+
+          expect(response).to have_http_status(:ok)
+          expect_result_to_have_keys(%w(auth_token token_ttl expires_on))
+          expect(response.parsed_body["token_ttl"]).to eq(1234)
+        end
+
         it "forgets the current token when asked to" do
           api_basic_authorize
 
