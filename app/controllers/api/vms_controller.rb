@@ -263,6 +263,10 @@ module Api
       action_result(false, "Failed to set miq_server - #{err}")
     end
 
+    def fetch_vms_href_slug(resource)
+      "vms/#{resource.id}"
+    end
+
     private
 
     def miq_server_message(miq_server)
