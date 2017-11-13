@@ -69,13 +69,15 @@ RSpec.describe 'CustomButtons API' do
         'resource_action'  => {
           'ae_namespace' => 'SYSTEM',
           'ae_class'     => 'PROCESS'
-        }
+        },
+        'visibility'       => {'roles' => ['_ALL_']}
       }
       post(api_custom_buttons_url, :params => cb_rec)
 
       expect(response).to have_http_status(:ok)
       custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
       expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
+      expect(custom_button.visibility[:roles]).to eq(['_ALL_'])
       expect(response.parsed_body['results'].first).to include(cb_rec.except('resource_action'))
     end
 
@@ -85,18 +87,19 @@ RSpec.describe 'CustomButtons API' do
       request = {
         'action'    => 'edit',
         'resources' => [
-          { 'id' => cb.id.to_s, 'resource' => {'name' => 'updated 1', 'resource_action' => {'ae_namespace' => 'SYSTEM2'}}},
+          { 'id' => cb.id.to_s, 'resource' => {'name' => 'updated 1', 'resource_action' => {'ae_namespace' => 'SYSTEM2'}, 'visibility' => {'roles' => ['_ALL_']}}},
         ]
       }
       post(api_custom_buttons_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => cb.id.to_s, 'name' => 'updated 1'),
+          a_hash_including('id' => cb.id.to_s, 'name' => 'updated 1', 'visibility' => {'roles' => ['_ALL_']}),
         )
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
+      expect(cb.reload.visibility[:roles]).to eq(['_ALL_'])
     end
   end
 
