@@ -28,6 +28,17 @@ describe "Vms API" do
     vms.each { |vm| vm.update_attributes!(:raw_power_state => state) }
   end
 
+  context 'Vm href slug' do
+    it 'returns the correct value for cloud instances' do
+      vm_cloud = FactoryGirl.create(:vm_amazon)
+      api_basic_authorize(action_identifier(:vms, :read, :resource_actions, :get))
+
+      get(api_vm_url(nil, vm_cloud), :params => { :attributes => 'href_slug'})
+
+      expect(response.parsed_body['href_slug']).to eq("vms/#{vm_cloud.id}")
+    end
+  end
+
   context 'Vm edit' do
     let(:new_vms) { FactoryGirl.create_list(:vm_openstack, 2) }
 
