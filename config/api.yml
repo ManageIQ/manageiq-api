@@ -2756,6 +2756,7 @@
         :identifier: rbac_user_edit
       - :name: delete
         :identifier: rbac_user_delete
+      - :name: set_current_group
       :delete:
       - :name: delete
         :identifier: rbac_user_delete
