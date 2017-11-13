@@ -70,7 +70,7 @@ RSpec.describe 'CustomButtons API' do
           'ae_namespace' => 'SYSTEM',
           'ae_class'     => 'PROCESS'
         },
-        'visibility'     => {'roles' => ['_ALL_']}
+        'visibility'       => {'roles' => ['_ALL_']}
       }
       post(api_custom_buttons_url, :params => cb_rec)
 
@@ -97,10 +97,9 @@ RSpec.describe 'CustomButtons API' do
           a_hash_including('id' => cb.id.to_s, 'name' => 'updated 1', 'visibility' => {'roles' => ['_ALL_']}),
         )
       }
-      custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
-      expect(custom_button.visibility[:roles]).to eq(['_ALL_'])
+      expect(cb.reload.visibility[:roles]).to eq(['_ALL_'])
     end
   end
 
