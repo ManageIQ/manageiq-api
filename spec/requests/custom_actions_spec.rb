@@ -94,6 +94,28 @@ describe "Custom Actions API" do
       expect(response.parsed_body["actions"].select { |a| a["method"] == "post" }.pluck("name")).to match_array(%w(edit button1 button2 button3 add_resource remove_resource remove_all_resources add_provider_vms))
     end
 
+    it "do not return custom actions when querying the collection" do
+      api_basic_authorize(action_identifier(:services, :edit),
+                          action_identifier(:services, :read, :resource_actions, :get))
+
+      svc1 # create service
+      get api_services_url, :params => { :expand => "resources" }
+
+      expected = {
+        "count"     => 1,
+        "name"      => "services",
+        "subcount"  => 1,
+        "resources" => [
+          a_hash_including("id" => svc1.id.to_s, "href" => api_service_url(nil, svc1), "actions" => a_hash_including(anything))
+        ]
+      }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+      actions = response.parsed_body["resources"].first["actions"]
+      expect(actions.pluck("name") & %w(button1 button2 button3)).to be_empty
+    end
+
     it "supports the custom_actions attribute" do
       api_basic_authorize(action_identifier(:services, :edit),
                           action_identifier(:services, :read, :resource_actions, :get))

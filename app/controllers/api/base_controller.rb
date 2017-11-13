@@ -48,11 +48,12 @@ module Api
       klass = collection_class(@req.subject)
       res, subquery_count = collection_search(@req.subcollection?, @req.subject, klass)
       opts = {
-        :name             => @req.subject,
-        :is_subcollection => @req.subcollection?,
-        :expand_actions   => true,
-        :expand_resources => @req.expand?(:resources),
-        :counts           => Api::QueryCounts.new(klass.count, res.count, subquery_count)
+        :name                  => @req.subject,
+        :is_subcollection      => @req.subcollection?,
+        :expand_actions        => true,
+        :expand_custom_actions => false,
+        :expand_resources      => @req.expand?(:resources),
+        :counts                => Api::QueryCounts.new(klass.count, res.count, subquery_count)
       }
       render_collection(@req.subject, res, opts)
     end
@@ -81,7 +82,12 @@ module Api
 
     def show
       klass = collection_class(@req.subject)
-      opts  = {:name => @req.subject, :is_subcollection => @req.subcollection?, :expand_actions => true}
+      opts  = {
+        :name                  => @req.subject,
+        :is_subcollection      => @req.subcollection?,
+        :expand_actions        => true,
+        :expand_custom_actions => true
+      }
       render_resource(@req.subject, resource_search(@req.subject_id, @req.subject, klass), opts)
     end
 

@@ -45,7 +45,6 @@ module Api
 
           unless @req.hide?("resources") || collection_option?(:hide_resources)
             key_id = collection_config.resource_identifier(type)
-            opts[:collection_search] = true
             json.resources resources.collect do |resource|
               if opts[:expand_resources]
                 add_hash json, resource_to_jbuilder(type, reftype, resource, opts).attributes!
@@ -83,7 +82,7 @@ module Api
         expand_subcollections(json, type, resource) if resource.respond_to?(:attributes)
 
         expand_actions(resource, json, type, opts, physical_attrs) if opts[:expand_actions]
-        expand_resource_custom_actions(resource, json, type, physical_attrs) if opts[:expand_actions] && !opts[:collection_search]
+        expand_resource_custom_actions(resource, json, type, physical_attrs) if opts[:expand_custom_actions]
         json
       end
 
