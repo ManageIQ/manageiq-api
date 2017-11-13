@@ -4,6 +4,7 @@ module Api
       custom_button = CustomButton.new(data.except("resource_action", "options"))
       custom_button.userid = User.current_user.userid
       custom_button.options = data["options"].deep_symbolize_keys if data["options"]
+      custom_button.visibility = data["visibility"].deep_symbolize_keys if data["visibility"]
       custom_button.resource_action = find_or_create_resource_action(data["resource_action"]) if data.key?("resource_action")
       if custom_button.save
         custom_button
