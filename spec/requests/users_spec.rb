@@ -253,16 +253,6 @@ RSpec.describe "users API" do
       expect(user1.reload.name).to eq("updated name")
     end
 
-    it "can set a user's current group" do
-      api_basic_authorize collection_action_identifier(:users, :edit)
-      user1.miq_groups << group2
-
-      post(api_user_url(nil, user1), :params => gen_request(:edit, "current_group" => { "href" => api_group_url(nil, group2) }))
-
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body["current_group_id"]).to eq(group2.id.to_s)
-    end
-
     it "supports single user edit of other attributes including group change" do
       api_basic_authorize collection_action_identifier(:users, :edit)
 
@@ -423,6 +413,72 @@ RSpec.describe "users API" do
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe "set_current_group" do
+    it "can set the current group from the user's miq_groups" do
+      api_basic_authorize
+      @user.miq_groups << group2
+
+      post(api_user_url(nil, @user), :params => {
+             :action        => "set_current_group",
+             :current_group => { :href => api_group_url(nil, group2) }
+           })
+
+      expected = {
+        "current_group_id" => group2.id.to_s
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "requires that the user belong to the current group" do
+      api_basic_authorize
+
+      post(api_user_url(nil, @user), :params => {
+             :action        => "set_current_group",
+             :current_group => { :href => api_group_url(nil, group2) }
+           })
+
+      expected = {
+        "error" => a_hash_including(
+          "kind"    => "bad_request",
+          "message" => "Cannot set current_group - User must belong to group"
+        )
+      }
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "requires the current group to be specified" do
+      api_basic_authorize
+
+      post(api_user_url(nil, @user), :params => {:action => "set_current_group"})
+
+      expected = {
+        "error" => a_hash_including(
+          "kind"    => "bad_request",
+          "message" => "Cannot set current_group - Must specify a current_group"
+        )
+      }
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "only allows editing of the validated user's groups" do
+      api_basic_authorize
+
+      post(api_user_url(nil, user1), :params => {:action => "set_current_group"})
+
+      expected = {
+        "error" => a_hash_including(
+          "kind"    => "bad_request",
+          "message" => "Cannot set current_group - Can only edit authenticated user's current group"
+        )
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:bad_request)
     end
   end
 end

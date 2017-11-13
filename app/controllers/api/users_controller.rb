@@ -2,7 +2,7 @@ module Api
   class UsersController < BaseController
     INVALID_USER_ATTRS = %w(id href current_group_id settings).freeze # Cannot update other people's settings
     INVALID_SELF_USER_ATTRS = %w(id href current_group_id).freeze
-    EDITABLE_ATTRS = %w(password email settings group current_group).freeze
+    EDITABLE_ATTRS = %w(password email settings group).freeze
 
     include Subcollections::Tags
 
@@ -37,7 +37,6 @@ module Api
     def edit_resource(type, id, data)
       id == User.current_user.id ? validate_self_user_data(data) : validate_user_data(data)
       parse_set_group(data)
-      parse_set_current_group(data)
       parse_set_settings(data, resource_search(id, type, collection_class(type)))
       super
     end
@@ -46,6 +45,20 @@ module Api
       raise BadRequestError, "Must specify an id for deleting a user" unless id
       raise BadRequestError, "Cannot delete user of current request" if id.to_i == User.current_user.id
       super
+    end
+
+    def set_current_group_resource(_type, id, data)
+      User.current_user.tap do |user|
+        raise "Can only edit authenticated user's current group" unless user.id == id
+        group_id = parse_group(data["current_group"])
+        raise "Must specify a current_group" unless group_id
+        new_group = user.miq_groups.where(:id => group_id).first
+        raise "User must belong to group" unless new_group
+        # Cannot use update_attributes! due to the allowed ability to switch between groups that may have different RBAC visibility on a user's miq_groups
+        user.update_attribute(:current_group, new_group)
+      end
+    rescue => err
+      raise BadRequestError, "Cannot set current_group - #{err}"
     end
 
     private
@@ -64,11 +77,6 @@ module Api
                  end
                end
       data["miq_groups"] = groups if groups
-    end
-
-    def parse_set_current_group(data)
-      current_group = parse_fetch_group(data.delete("current_group"))
-      data["current_group"] = current_group if current_group
     end
 
     def parse_set_settings(data, user = nil)
