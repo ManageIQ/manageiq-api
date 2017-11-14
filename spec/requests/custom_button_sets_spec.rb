@@ -199,4 +199,19 @@ RSpec.describe 'CustomButtonSets API' do
       expect(response.parsed_body).to include(expected)
     end
   end
+
+  describe 'OPTIONS /api/custom_button_sets' do
+    it 'returns custom_button_sets for Generic Object Definitions and Service Templates' do
+      options(api_custom_button_sets_url)
+
+      expected_data = {
+        'custom_button_sets' => {
+          'generic_object_definitions' => CustomButtonSet.find_all_by_class_name('GenericObjectDefinition'),
+          'service_templates'          => CustomButtonSet.find_all_by_class_name('ServiceTemplate')
+        }
+      }
+
+      expect_options_results(:custom_button_sets, expected_data)
+    end
+  end
 end
