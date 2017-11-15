@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 73 ending 2017-11-13
+
+### Added
+- API Enhancement making the system token a one-time token. [(#178)](https://github.com/ManageIQ/manageiq-api/pull/178)
+- Mask password attributes from AutomateWorkspace [(#168)](https://github.com/ManageIQ/manageiq-api/pull/168)
+
+### Fixed
+- Add deep symbolization to CustomButton `visibility` field [(#206)](https://github.com/ManageIQ/manageiq-api/pull/206)
+- Reflect session timeout settings updates in the UI requester type [(#199)](https://github.com/ManageIQ/manageiq-api/pull/199)
+- Gracefully fail on resource create [(#195)](https://github.com/ManageIQ/manageiq-api/pull/195)
+- Return put and patch edit actions for resources [(#179)](https://github.com/ManageIQ/manageiq-api/pull/179)
+- Add a set_current_group method for users [(#176)](https://github.com/ManageIQ/manageiq-api/pull/176)
+- Don't respond with 400 on ArgumentError [(#174)](https://github.com/ManageIQ/manageiq-api/pull/174)
+- Fix coercing of string to 0 in parse_id [(#173)](https://github.com/ManageIQ/manageiq-api/pull/173)
+- Add decorator for VNC Console [(#167)](https://github.com/ManageIQ/manageiq-api/pull/167)
+
 ## Unreleased as of Sprint 72 ending 2017-10-30
 
 ### Added
