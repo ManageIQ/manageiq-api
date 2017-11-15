@@ -1167,7 +1167,7 @@ describe "Services API" do
     it "allows expansion of generic objects and specification of generic object attributes" do
       api_basic_authorize(action_identifier(:services, :read, :resource_actions, :get))
 
-      get api_services_url, :params => { :expand => 'resources,generic_objects', :attributes => 'generic_objects.generic_object_definition,generic_objects.picture' }
+      get api_services_url, :params => { :expand => 'resources,generic_objects', :attributes => 'generic_objects.generic_object_definition,generic_objects.picture,generic_objects.href_slug' }
 
       expected = {
         'name'      => 'services',
@@ -1180,7 +1180,8 @@ describe "Services API" do
               a_hash_including(
                 'href'                      => api_service_generic_object_url(nil, svc, generic_object),
                 'generic_object_definition' => a_hash_including('id' => generic_object_definition.id.to_s),
-                'picture'                   => a_hash_including('image_href' => a_string_including(picture.image_href), 'extension' => picture.extension)
+                'picture'                   => a_hash_including('image_href' => a_string_including(picture.image_href), 'extension' => picture.extension),
+                'href_slug'                 => "generic_objects/#{generic_object.id}"
               )
             ]
           )
