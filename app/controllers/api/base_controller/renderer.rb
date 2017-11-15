@@ -80,6 +80,7 @@ module Api
 
         expand_virtual_attributes(json, type, resource, virtual_attrs) unless virtual_attrs.empty?
         expand_subcollections(json, type, resource) if resource.respond_to?(:attributes)
+        json.set!('href_slug', "#{type}/#{resource.id}") if virtual_attrs.include?('href_slug')
 
         expand_actions(resource, json, type, opts, physical_attrs) if opts[:expand_actions]
         expand_resource_custom_actions(resource, json, type, physical_attrs)
@@ -249,6 +250,7 @@ module Api
         result = {}
         object_hash = {}
         virtual_attrs.each do |vattr|
+          next if vattr == 'href_slug'
           attr_name, attr_base = split_virtual_attribute(vattr)
           value, value_result = if attr_base.blank?
                                   fetch_direct_virtual_attribute(type, resource, attr_name)
