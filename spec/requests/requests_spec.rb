@@ -474,6 +474,17 @@ RSpec.describe "Requests API" do
     end
   end
 
+  context 'href_slug' do
+    it 'returns the correct slug for a request' do
+      api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
+      request = FactoryGirl.create(:automation_request, :requester => @user)
+
+      get(api_request_url(nil, request), :params => { :attributes => 'href_slug' })
+
+      expect(response.parsed_body['href_slug']).to eq("requests/#{request.id}")
+    end
+  end
+
   context 'Tasks subcollection' do
     let(:request) do
       FactoryGirl.create(:service_template_provision_request,
