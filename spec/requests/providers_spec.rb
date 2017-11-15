@@ -638,6 +638,19 @@ describe "Providers API" do
       expect(provider.port).to eq(8080)
     end
 
+    it "supports editing per provider options" do
+      api_basic_authorize collection_action_identifier(:providers, :edit)
+
+      provider = FactoryGirl.create(:ext_management_system, sample_rhevm.except("credentials"))
+
+      options = {"hello" => "world"}
+      options_symbolized = options.deep_symbolize_keys
+      post(api_provider_url(nil, provider), :params => gen_request(:edit,
+                                                                   "options" => options))
+
+      expect(provider.reload.options).to eq(options_symbolized)
+    end
+
     it "only returns real attributes" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
