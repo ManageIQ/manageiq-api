@@ -23,17 +23,19 @@ module Api
       @api_config ||= ::Settings[base_config[:module]].to_hash
     end
 
-    def generate_token(userid, requester_type)
+    def generate_token(userid, requester_type, token_ttl = nil)
       validate_userid(userid)
       validate_requester_type(requester_type)
-
-      $api_log.info("Generating Authentication Token for userid: #{userid} requester_type: #{requester_type}")
 
       # Additional Requester type token ttl's for authentication
       type_to_ttl_override = {'ui' => ::Settings.session.timeout}
 
-      token_mgr(requester_type).gen_token(:userid             => userid,
-                                          :token_ttl_override => type_to_ttl_override[requester_type])
+      # Let's honor the optional token_ttl
+      token_ttl ||= type_to_ttl_override[requester_type]
+
+      $api_log.info("Generating Authentication Token for userid: #{userid} requester_type: #{requester_type} token_ttl: #{token_ttl}")
+
+      token_mgr(requester_type).gen_token(:userid => userid, :token_ttl_override => token_ttl)
     end
 
     def validate_requester_type(requester_type)
