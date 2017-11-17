@@ -83,7 +83,7 @@ module Api
         json.set!('href_slug', "#{type}/#{resource.id}") if virtual_attrs.include?('href_slug')
 
         expand_actions(resource, json, type, opts, physical_attrs) if opts[:expand_actions]
-        expand_resource_custom_actions(resource, json, type, physical_attrs)
+        expand_resource_custom_actions(resource, json, type, physical_attrs) if opts[:expand_custom_actions]
         json
       end
 

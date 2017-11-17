@@ -38,10 +38,11 @@ module Api
         end
         resource = resource_search(id, type, collection_class(type))
         opts = {
-          :name             => type.to_s,
-          :is_subcollection => false,
-          :expand_resources => true,
-          :expand_actions   => true
+          :name                  => type.to_s,
+          :is_subcollection      => false,
+          :expand_resources      => true,
+          :expand_actions        => true,
+          :expand_custom_actions => true
         }
         resource_to_jbuilder(type, type, resource, opts).attributes!
       end
