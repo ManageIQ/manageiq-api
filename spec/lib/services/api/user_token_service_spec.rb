@@ -4,24 +4,24 @@ RSpec.describe Api::UserTokenService do
       @user = FactoryGirl.create(:user_with_group)
     end
 
-    it "uses default token_ttl" do
-      user_token_service = described_class.new
-      token = user_token_service.generate_token(@user.userid, 'api')
+    let(:user_token_service) { described_class.new }
+    let(:token) { user_token_service.generate_token(@user.userid, 'api', token_ttl: token_ttl) }
+    let(:token_info) { user_token_service.token_mgr('api').token_get_info(token) }
 
-      expect(user_token_service.token_mgr('api').token_get_info(token)).to include(
-        :userid    => @user.userid,
-        :token_ttl => Settings.api.token_ttl.to_i_with_method
-      )
+    context "without token_ttl set" do
+      let(:token_ttl) { nil }
+
+      it "uses the default from settings" do
+        expect(token_info).to include(:userid => @user.userid, :token_ttl => Settings.api.token_ttl.to_i_with_method)
+      end
     end
 
-    it "supports optional token_ttl" do
-      user_token_service = described_class.new
-      token = user_token_service.generate_token(@user.userid, 'api', 5559)
+    context "with token_ttl set" do
+      let(:token_ttl) { 5599 }
 
-      expect(user_token_service.token_mgr('api').token_get_info(token)).to include(
-        :userid    => @user.userid,
-        :token_ttl => 5559
-      )
+      it "uses the optional token_ttl specified" do
+        expect(token_info).to include(:userid => @user.userid, :token_ttl => 5599)
+      end
     end
   end
 end
