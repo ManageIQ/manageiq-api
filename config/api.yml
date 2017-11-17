@@ -453,6 +453,7 @@
     :options:
     - :collection
     - :subcollection
+    - :custom_actions
     :verbs: *gp
     :klass: CloudTenant
     :subcollections:
@@ -481,6 +482,7 @@
     :identifier: cloud_volume
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gpd
     :klass: CloudVolume
     :collection_actions:
@@ -507,6 +509,7 @@
     :identifier: ems_cluster
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gp
     :klass: EmsCluster
     :subcollections:
@@ -671,6 +674,7 @@
     :verbs: *gp
     :options:
     - :collection
+    - :custom_actions
     :collection_actions:
       :get:
       - :name: read
@@ -777,6 +781,7 @@
     :identifier: storage
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gp
     :klass: Storage
     :subcollections:
@@ -1097,6 +1102,7 @@
     :identifier: host
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gp
     :klass: Host
     :subcollections:
@@ -1677,6 +1683,7 @@
     :identifier: ems_infra
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gpd
     :klass: ExtManagementSystem
     :subcollections:
@@ -2609,6 +2616,7 @@
     :identifier: miq_template
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gpd
     :klass: MiqTemplate
     :subcollections:
