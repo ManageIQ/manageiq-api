@@ -250,7 +250,7 @@ describe "Custom Actions API" do
   describe "CloudTenant" do
     before do
       @resource = FactoryGirl.create(:cloud_tenant)
-      define_custom_button1(@resource)
+      @button1 = define_custom_button1(@resource)
     end
 
     it "queries return custom actions defined" do
@@ -268,7 +268,7 @@ describe "Custom Actions API" do
     it "accepts custom actions" do
       api_basic_authorize
 
-      post api_cloud_tenant_url(nil, @resource), :params => gen_request(CustomButton.first.name.to_sym, "key1" => "value1")
+      post api_cloud_tenant_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_cloud_tenant_url(nil, @resource))
     end
@@ -279,7 +279,7 @@ describe "Custom Actions API" do
       @zone = FactoryGirl.create(:zone, :name => "api_zone")
       @provider = FactoryGirl.create(:ems_vmware, :zone => @zone)
       @resource = FactoryGirl.create(:ems_cluster, :ext_management_system => @provider)
-      define_custom_button1(@resource)
+      @button1 = define_custom_button1(@resource)
     end
 
     it "queries return custom actions defined" do
@@ -290,14 +290,14 @@ describe "Custom Actions API" do
       expect(response.parsed_body).to include(
         "id"      => @resource.id.to_s,
         "href"    => api_cluster_url(nil, @resource),
-        "actions" => a_collection_including(a_hash_including("name" => CustomButton.first.name))
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
       )
     end
 
     it "accepts custom actions" do
       api_basic_authorize
 
-      post api_cluster_url(nil, @resource), :params => gen_request(CustomButton.first.name.to_sym, "key1" => "value1")
+      post api_cluster_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_cluster_url(nil, @resource))
     end
@@ -306,7 +306,7 @@ describe "Custom Actions API" do
   describe "ContainerNode" do
     before do
       @resource = FactoryGirl.create(:container_node)
-      define_custom_button1(@resource)
+      @button1 = define_custom_button1(@resource)
     end
 
     it "queries return custom actions defined" do
@@ -317,14 +317,14 @@ describe "Custom Actions API" do
       expect(response.parsed_body).to include(
         "id"      => @resource.id.to_s,
         "href"    => api_container_node_url(nil, @resource),
-        "actions" => a_collection_including(a_hash_including("name" => CustomButton.first.name))
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
       )
     end
 
     it "accepts custom actions" do
       api_basic_authorize
 
-      post api_container_node_url(nil, @resource), :params => gen_request(CustomButton.first.name.to_sym, "key1" => "value1")
+      post api_container_node_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_container_node_url(nil, @resource))
     end
@@ -333,7 +333,7 @@ describe "Custom Actions API" do
   describe "Host" do
     before do
       @resource = FactoryGirl.create(:host)
-      define_custom_button1(@resource)
+      @button1 = define_custom_button1(@resource)
     end
 
     it "queries return custom actions defined" do
@@ -344,14 +344,14 @@ describe "Custom Actions API" do
       expect(response.parsed_body).to include(
         "id"      => @resource.id.to_s,
         "href"    => api_host_url(nil, @resource),
-        "actions" => a_collection_including(a_hash_including("name" => CustomButton.first.name))
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
       )
     end
 
     it "accepts custom actions" do
       api_basic_authorize
 
-      post api_host_url(nil, @resource), :params => gen_request(CustomButton.first.name.to_sym, "key1" => "value1")
+      post api_host_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_host_url(nil, @resource))
     end
@@ -360,7 +360,7 @@ describe "Custom Actions API" do
   describe "Providers" do
     before do
       @resource = FactoryGirl.create(:ext_management_system)
-      define_custom_button1(@resource)
+      @button1 = define_custom_button1(@resource)
     end
 
     it "queries return custom actions defined" do
@@ -371,14 +371,14 @@ describe "Custom Actions API" do
       expect(response.parsed_body).to include(
         "id"      => @resource.id.to_s,
         "href"    => api_provider_url(nil, @resource),
-        "actions" => a_collection_including(a_hash_including("name" => CustomButton.first.name))
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
       )
     end
 
     it "accepts custom actions" do
       api_basic_authorize
 
-      post api_provider_url(nil, @resource), :params => gen_request(CustomButton.first.name.to_sym, "key1" => "value1")
+      post api_provider_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_provider_url(nil, @resource))
     end
@@ -387,7 +387,7 @@ describe "Custom Actions API" do
   describe "Storage" do
     before do
       @resource = FactoryGirl.create(:storage)
-      define_custom_button1(@resource)
+      @button1 = define_custom_button1(@resource)
     end
 
     it "queries return custom actions defined" do
@@ -398,14 +398,14 @@ describe "Custom Actions API" do
       expect(response.parsed_body).to include(
         "id"      => @resource.id.to_s,
         "href"    => api_data_store_url(nil, @resource),
-        "actions" => a_collection_including(a_hash_including("name" => CustomButton.first.name))
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
       )
     end
 
     it "accepts custom actions" do
       api_basic_authorize
 
-      post api_data_store_url(nil, @resource), :params => gen_request(CustomButton.first.name.to_sym, "key1" => "value1")
+      post api_data_store_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_data_store_url(nil, @resource))
     end
@@ -414,7 +414,7 @@ describe "Custom Actions API" do
   describe "Template" do
     before do
       @resource = FactoryGirl.create(:miq_template)
-      define_custom_button1(@resource)
+      @button1 = define_custom_button1(@resource)
     end
 
     it "queries return custom actions defined" do
@@ -425,14 +425,14 @@ describe "Custom Actions API" do
       expect(response.parsed_body).to include(
         "id"      => @resource.id.to_s,
         "href"    => api_template_url(nil, @resource),
-        "actions" => a_collection_including(a_hash_including("name" => CustomButton.first.name))
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
       )
     end
 
     it "accepts custom actions" do
       api_basic_authorize
 
-      post api_template_url(nil, @resource), :params => gen_request(CustomButton.first.name.to_sym, "key1" => "value1")
+      post api_template_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_template_url(nil, @resource))
     end
@@ -441,7 +441,7 @@ describe "Custom Actions API" do
   describe "Vms" do
     before do
       @resource = FactoryGirl.create(:vm)
-      define_custom_button1(@resource)
+      @button1 = define_custom_button1(@resource)
     end
 
     it "queries return custom actions defined" do
@@ -452,14 +452,14 @@ describe "Custom Actions API" do
       expect(response.parsed_body).to include(
         "id"      => @resource.id.to_s,
         "href"    => api_vm_url(nil, @resource),
-        "actions" => a_collection_including(a_hash_including("name" => CustomButton.first.name))
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
       )
     end
 
     it "accepts custom actions" do
       api_basic_authorize
 
-      post api_vm_url(nil, @resource), :params => gen_request(CustomButton.first.name.to_sym, "key1" => "value1")
+      post api_vm_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_vm_url(nil, @resource))
     end
