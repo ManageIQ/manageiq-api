@@ -261,7 +261,7 @@ describe "Custom Actions API" do
       expect(response.parsed_body).to include(
         "id"      => @resource.id.to_s,
         "href"    => api_cloud_tenant_url(nil, @resource),
-        "actions" => a_collection_including(a_hash_including("name" => CustomButton.first.name))
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
       )
     end
 
