@@ -1,6 +1,8 @@
 module Api
   class BaseController
     module Authentication
+      SYSTEM_TOKEN_TTL = 30.seconds
+
       #
       # REST APIs Authenticator and Redirector
       #
@@ -102,7 +104,7 @@ module Api
 
       def validate_system_token_timestamp(timestamp)
         raise "Missing timestamp" if timestamp.blank?
-        raise "Invalid timestamp #{timestamp} specified" if 5.minutes.ago.utc > timestamp
+        raise "Invalid timestamp #{timestamp} specified" if SYSTEM_TOKEN_TTL.ago.utc > timestamp
       end
     end
   end
