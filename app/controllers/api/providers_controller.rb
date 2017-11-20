@@ -51,13 +51,11 @@ module Api
     end
 
     def delete_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for deleting a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        provider = resource_search(id, type, klass)
-        api_log_info("Deleting #{provider_ident(provider)}")
-
-        destroy_provider(provider)
+      delete_action_handler do
+        raise BadRequestError, "Must specify an id for deleting a #{type} resource" unless id
+        provider = resource_search(id, type, collection_class(type))
+        task = provider.destroy_queue
+        action_result(true, "#{provider_ident(provider)} deleting", :task_id => task.id, :parent_id => id)
       end
     end
 
@@ -156,14 +154,6 @@ module Api
       desc = "#{provider_ident(provider)} refreshing"
       task_ids = provider.refresh_ems(:create_task => true)
       action_result(true, desc, :task_ids => task_ids)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def destroy_provider(provider)
-      desc = "#{provider_ident(provider)} deleting"
-      task_id = queue_object_action(provider, desc, :method_name => "destroy")
-      action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
     end
