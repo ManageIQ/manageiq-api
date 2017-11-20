@@ -686,6 +686,25 @@
       :get:
       - :name: read
         :identifier: container_node_show
+  :container_projects:
+    :description: Container Projects
+    :identifier: container_project
+    :klass: ContainerProject
+    :verbs: *gp
+    :options:
+    - :collection
+    - :custom_actions
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: container_project_show_list
+      :post:
+      - :name: query
+        :identifier: container_project_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: container_project_show
   :currencies:
     :description: Currencies
     :identifier: currency
