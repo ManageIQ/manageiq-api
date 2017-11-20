@@ -446,8 +446,8 @@
     :description: Cloud Templates
     :identifier: image
     :options:
-      - :collection
-      - :subcollection
+    - :collection
+    - :subcollection
     :verbs: *gp
     :klass: ManageIQ::Providers::CloudManager::Template
     :collection_actions:
