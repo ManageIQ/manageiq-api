@@ -305,6 +305,7 @@
     :identifier: availability_zone
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gp
     :klass: AvailabilityZone
     :collection_actions:
@@ -421,6 +422,7 @@
     :options:
     - :collection
     - :subcollection
+    - :custom_actions
     :verbs: *gp
     :klass: CloudSubnet
     :collection_actions:
@@ -1065,6 +1067,7 @@
     :identifier: rbac_group
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gpppd
     :klass: MiqGroup
     :identifying_attrs: description
@@ -1304,6 +1307,7 @@
     :options:
     - :collection
     - :subcollection
+    - :custom_actions
     :verbs: *gp
     :klass: LoadBalancer
     :collection_actions:
@@ -1438,6 +1442,7 @@
     :identifier: network_router
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gp
     :klass: NetworkRouter
     :collection_actions:
@@ -2144,6 +2149,7 @@
     :identifier: security_group
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gp
     :klass: SecurityGroup
     :collection_actions:
@@ -2708,6 +2714,7 @@
     :identifier: rbac_tenant
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gpppd
     :klass: Tenant
     :subcollections:
@@ -2760,6 +2767,7 @@
     :identifier: rbac_user
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gpppd
     :klass: User
     :identifying_attrs: name,userid
