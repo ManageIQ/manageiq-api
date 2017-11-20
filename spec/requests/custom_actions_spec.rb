@@ -80,7 +80,7 @@ describe "Custom Actions API" do
   end
 
   describe "Querying services with custom actions" do
-    before(:each) do
+    before do
       create_custom_buttons
     end
 
@@ -138,7 +138,7 @@ describe "Custom Actions API" do
   end
 
   describe "Querying service_templates with custom actions" do
-    before(:each) do
+    before do
       create_custom_buttons
     end
 
@@ -174,7 +174,7 @@ describe "Custom Actions API" do
   end
 
   describe "Services with custom actions" do
-    before(:each) do
+    before do
       create_custom_buttons
       button1.resource_action = FactoryGirl.create(:resource_action)
     end
@@ -244,7 +244,36 @@ describe "Custom Actions API" do
   end
 
   def define_custom_button1(resource)
+    dialog1 = FactoryGirl.create(:dialog, :label => "dialog1")
+    FactoryGirl.create(:resource_action, :dialog_id => dialog1.id)
     FactoryGirl.create(:custom_button, :with_resource_action_dialog, :applies_to => resource)
+  end
+
+  describe "Availability Zones" do
+    before do
+      @resource = FactoryGirl.create(:availability_zone)
+      @button1 = define_custom_button1(@resource)
+    end
+
+    it "queries return custom actions defined" do
+      api_basic_authorize(action_identifier(:availability_zones, :read, :resource_actions, :get))
+
+      get api_availability_zone_url(nil, @resource)
+
+      expect(response.parsed_body).to include(
+        "id"      => @resource.id.to_s,
+        "href"    => api_availability_zone_url(nil, @resource),
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
+      )
+    end
+
+    it "accepts custom actions" do
+      api_basic_authorize
+
+      post api_availability_zone_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_availability_zone_url(nil, @resource))
+    end
   end
 
   describe "CloudTenant" do
@@ -303,6 +332,33 @@ describe "Custom Actions API" do
     end
   end
 
+  describe "CloudSubnet" do
+    before do
+      @resource = FactoryGirl.create(:cloud_subnet)
+      @button1 = define_custom_button1(@resource)
+    end
+
+    it "queries return custom actions defined" do
+      api_basic_authorize(action_identifier(:cloud_subnets, :read, :resource_actions, :get))
+
+      get api_cloud_subnet_url(nil, @resource)
+
+      expect(response.parsed_body).to include(
+        "id"      => @resource.id.to_s,
+        "href"    => api_cloud_subnet_url(nil, @resource),
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
+      )
+    end
+
+    it "accepts custom actions" do
+      api_basic_authorize
+
+      post api_cloud_subnet_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_cloud_subnet_url(nil, @resource))
+    end
+  end
+
   describe "ContainerNode" do
     before do
       @resource = FactoryGirl.create(:container_node)
@@ -327,6 +383,33 @@ describe "Custom Actions API" do
       post api_container_node_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_container_node_url(nil, @resource))
+    end
+  end
+
+  describe "Group" do
+    before do
+      @resource = FactoryGirl.create(:miq_group)
+      @button1 = define_custom_button1(@resource)
+    end
+
+    it "queries return custom actions defined" do
+      api_basic_authorize(action_identifier(:groups, :read, :resource_actions, :get))
+
+      get api_group_url(nil, @resource)
+
+      expect(response.parsed_body).to include(
+        "id"      => @resource.id.to_s,
+        "href"    => api_group_url(nil, @resource),
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
+      )
+    end
+
+    it "accepts custom actions" do
+      api_basic_authorize
+
+      post api_group_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_group_url(nil, @resource))
     end
   end
 
@@ -357,6 +440,33 @@ describe "Custom Actions API" do
     end
   end
 
+  describe "LoadBalancer" do
+    before do
+      @resource = FactoryGirl.create(:load_balancer)
+      @button1 = define_custom_button1(@resource)
+    end
+
+    it "queries return custom actions defined" do
+      api_basic_authorize(action_identifier(:load_balancers, :read, :resource_actions, :get))
+
+      get api_load_balancer_url(nil, @resource)
+
+      expect(response.parsed_body).to include(
+        "id"      => @resource.id.to_s,
+        "href"    => api_load_balancer_url(nil, @resource),
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
+      )
+    end
+
+    it "accepts custom actions" do
+      api_basic_authorize
+
+      post api_load_balancer_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_load_balancer_url(nil, @resource))
+    end
+  end
+
   describe "Providers" do
     before do
       @resource = FactoryGirl.create(:ext_management_system)
@@ -381,6 +491,33 @@ describe "Custom Actions API" do
       post api_provider_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_provider_url(nil, @resource))
+    end
+  end
+
+  describe "NetworkRouter" do
+    before do
+      @resource = FactoryGirl.create(:network_router)
+      @button1 = define_custom_button1(@resource)
+    end
+
+    it "queries return custom actions defined" do
+      api_basic_authorize(action_identifier(:network_routers, :read, :resource_actions, :get))
+
+      get api_network_router_url(nil, @resource)
+
+      expect(response.parsed_body).to include(
+        "id"      => @resource.id.to_s,
+        "href"    => api_network_router_url(nil, @resource),
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
+      )
+    end
+
+    it "accepts custom actions" do
+      api_basic_authorize
+
+      post api_network_router_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_network_router_url(nil, @resource))
     end
   end
 
@@ -411,6 +548,33 @@ describe "Custom Actions API" do
     end
   end
 
+  describe "Security Group" do
+    before do
+      @resource = FactoryGirl.create(:security_group)
+      @button1 = define_custom_button1(@resource)
+    end
+
+    it "queries return custom actions defined" do
+      api_basic_authorize(action_identifier(:security_groups, :read, :resource_actions, :get))
+
+      get api_security_group_url(nil, @resource)
+
+      expect(response.parsed_body).to include(
+        "id"      => @resource.id.to_s,
+        "href"    => api_security_group_url(nil, @resource),
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
+      )
+    end
+
+    it "accepts custom actions" do
+      api_basic_authorize
+
+      post api_security_group_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_security_group_url(nil, @resource))
+    end
+  end
+
   describe "Template" do
     before do
       @resource = FactoryGirl.create(:miq_template)
@@ -438,6 +602,33 @@ describe "Custom Actions API" do
     end
   end
 
+  describe "Tenant" do
+    before do
+      @resource = FactoryGirl.create(:tenant)
+      @button1 = define_custom_button1(@resource)
+    end
+
+    it "queries return custom actions defined" do
+      api_basic_authorize(action_identifier(:tenants, :read, :resource_actions, :get))
+
+      get api_tenant_url(nil, @resource)
+
+      expect(response.parsed_body).to include(
+        "id"      => @resource.id.to_s,
+        "href"    => api_tenant_url(nil, @resource),
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
+      )
+    end
+
+    it "accepts custom actions" do
+      api_basic_authorize
+
+      post api_tenant_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_tenant_url(nil, @resource))
+    end
+  end
+
   describe "Vms" do
     before do
       @resource = FactoryGirl.create(:vm)
@@ -462,6 +653,33 @@ describe "Custom Actions API" do
       post api_vm_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_vm_url(nil, @resource))
+    end
+  end
+
+  describe "User" do
+    before do
+      @resource = FactoryGirl.create(:user)
+      @button1 = define_custom_button1(@resource)
+    end
+
+    it "queries return custom actions defined" do
+      api_basic_authorize(action_identifier(:users, :read, :resource_actions, :get))
+
+      get api_user_url(nil, @resource)
+
+      expect(response.parsed_body).to include(
+        "id"      => @resource.id.to_s,
+        "href"    => api_user_url(nil, @resource),
+        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
+      )
+    end
+
+    it "accepts custom actions" do
+      api_basic_authorize
+
+      post api_user_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_user_url(nil, @resource))
     end
   end
 end

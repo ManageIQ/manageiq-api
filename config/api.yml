@@ -399,7 +399,6 @@
     :options:
     - :collection
     - :subcollection
-    - :custom_actions
     :verbs: *gp
     :klass: CloudNetwork
     :collection_actions:
@@ -1477,7 +1476,6 @@
     :description: Orchestration Stacks
     :options:
     - :subcollection
-    - :custom_actions
     :verbs: *g
     :klass: OrchestrationStack
     :subcollection_actions:
