@@ -357,6 +357,35 @@ describe "Custom Actions API" do
     end
   end
 
+  describe "Generic Objects" do
+    before do
+      @object_definition = FactoryGirl.create(:generic_object_definition, :name => 'object def')
+      @resource = FactoryGirl.create(:generic_object, :generic_object_definition => @object_definition)
+      @button = define_custom_button1(@object_definition)
+    end
+
+    it "queries return custom actions and property methods defined" do
+      @object_definition.add_property_method("a_property_method")
+      api_basic_authorize(action_identifier(:generic_objects, :read, :resource_actions, :get))
+
+      get api_generic_object_url(nil, @resource)
+
+      expect(response.parsed_body).to include(
+        "id"      => @resource.id.to_s,
+        "href"    => api_generic_object_url(nil, @resource),
+        "actions" => a_collection_including(a_hash_including("name" => @button.name), a_hash_including("name" => "a_property_method"))
+      )
+    end
+
+    it "accept custom actions" do
+      api_basic_authorize
+
+      post api_generic_object_url(nil, @resource), :params => gen_request(@button.name, "key1" => "value1")
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_generic_object_url(nil, @resource))
+    end
+  end
+
   describe "Host" do
     before do
       @resource = FactoryGirl.create(:host)

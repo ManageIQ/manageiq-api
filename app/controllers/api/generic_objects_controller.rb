@@ -28,11 +28,11 @@ module Api
     private
 
     def resource_custom_action_names(resource)
-      return [] unless resource.respond_to?(:property_methods)
-      resource.property_methods
+      (property_method_names(resource) << super).flatten
     end
 
     def invoke_custom_action(type, resource, action, data)
+      return super(type, resource.reload, action, data) if resource_custom_action_button(resource, action)
       result = begin
                  description = method_description(resource, action)
                  task_id = queue_object_action(resource, description, queue_args(action, data))
@@ -43,6 +43,10 @@ module Api
       add_href_to_result(result, type, resource.id)
       log_result(result)
       result
+    end
+
+    def property_method_names(resource)
+      resource.respond_to?(:property_methods) ? Array(resource.property_methods) : []
     end
 
     def method_description(resource, action)
