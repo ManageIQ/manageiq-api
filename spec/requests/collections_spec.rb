@@ -309,6 +309,11 @@ describe "Rest API Collections" do
       test_collection_query(:container_deployments, api_container_deployments_url, ContainerDeployment)
     end
 
+    it "query ContainerProjects" do
+      FactoryGirl.create(:container_project)
+      test_collection_query(:container_projects, api_container_projects_url, ContainerProject)
+    end
+
     it 'queries CloudNetworks' do
       FactoryGirl.create(:cloud_network)
       test_collection_query(:cloud_networks, api_cloud_networks_url, CloudNetwork)
@@ -663,6 +668,11 @@ describe "Rest API Collections" do
     it 'bulk query cloud templates' do
       FactoryGirl.create(:template_cloud)
       test_collection_bulk_query(:cloud_templates, api_cloud_templates_url, ManageIQ::Providers::CloudManager::Template)
+    end
+
+    it 'bulk query container_projects' do
+      FactoryGirl.create(:container_project)
+      test_collection_bulk_query(:container_projects, api_container_projects_url, ContainerProject)
     end
   end
 end

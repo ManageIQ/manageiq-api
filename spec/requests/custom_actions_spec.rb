@@ -244,8 +244,6 @@ describe "Custom Actions API" do
   end
 
   def define_custom_button1(resource)
-    dialog1 = FactoryGirl.create(:dialog, :label => "dialog1")
-    FactoryGirl.create(:resource_action, :dialog_id => dialog1.id)
     FactoryGirl.create(:custom_button, :with_resource_action_dialog, :applies_to => resource)
   end
 
@@ -383,6 +381,33 @@ describe "Custom Actions API" do
       post api_container_node_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_container_node_url(nil, @resource))
+    end
+  end
+
+  describe "ContainerProjects" do
+    before do
+      @resource = FactoryGirl.create(:container_project)
+      @button = define_custom_button1(@resource)
+    end
+
+    it "queries return custom actions defined" do
+      api_basic_authorize(action_identifier(:container_projects, :read, :resource_actions, :get))
+
+      get(api_container_project_url(nil, @resource))
+
+      expect(response.parsed_body).to include(
+        "id"      => @resource.id.to_s,
+        "href"    => api_container_project_url(nil, @resource),
+        "actions" => a_collection_including(a_hash_including("name" => @button.name))
+      )
+    end
+
+    it "accept custom actions" do
+      api_basic_authorize
+
+      post(api_container_project_url(nil, @resource), :params => gen_request(@button.name, "key1" => "value1"))
+
+      expect_single_action_result(:success => true, :message => /.*/, :href => api_container_project_url(nil, @resource))
     end
   end
 
