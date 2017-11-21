@@ -421,6 +421,25 @@
       :get:
       - :name: read
         :identifier: cloud_network_show
+  :cloud_object_store_containers:
+    :description: Cloud Object Store Containers
+    :identifier: cloud_object_store_container
+    :options:
+    - :collection
+    - :custom_actions
+    :verbs: *gp
+    :klass: CloudObjectStoreContainer
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_object_store_container_show_list
+      :post:
+      - :name: query
+        :identifier: cloud_object_store_container_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_object_store_container_show
   :cloud_subnets:
     :description: Cloud Subnets
     :identifier: cloud_subnet
