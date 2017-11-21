@@ -1,24 +1,23 @@
-# French translations for ManageIQ_Api package.
-# Copyright (C) 2017 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the ManageIQ_Api package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
-#
+# Laurence Ganseman <laurence.ganseman@stoquart.com>, 2017. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: ManageIQ_Api 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2017-10-31 17:23+0100\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2017-10-31 17:23+0100\n"
+"PO-Revision-Date: 2017-11-09 03:18-0500\n"
+"Last-Translator: Laurence Ganseman <laurence.ganseman@stoquart.com>\n"
 "Language-Team: French\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n>1;\n"
-"\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"X-Generator: Zanata 3.9.6\n"
 
+#: ../lib/api/utils.rb:15
 msgid "Invalid href_slug %{href_slug} specified"
-msgstr ""
+msgstr "href_slug %{href_slug} spécifié non valide"
 
+#: ../lib/api/utils.rb:16
 msgid "User must be defined"
-msgstr ""
+msgstr "L'utilisateur doit être défini"
