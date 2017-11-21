@@ -715,6 +715,22 @@
       :get:
       - :name: read
         :identifier: container_group_show
+  :container_images:
+    :description: Container Images
+    :identifier: container_image
+    :options:
+    - :collection
+    - :custom_actions
+    :verbs: *gp
+    :klass: ContainerImage
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: container_image_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: container_image_show
   :container_nodes:
     :description: Container Nodes
     :identifier: container_node
