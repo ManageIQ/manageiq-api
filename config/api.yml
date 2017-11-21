@@ -2789,6 +2789,8 @@
       :post:
       - :name: query
         :identifier: tasks_view
+      - :name: delete
+        :identifier: miq_task_delete
     :resource_actions:
       :get:
       - :name: read
