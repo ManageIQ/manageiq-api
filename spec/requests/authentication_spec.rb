@@ -188,6 +188,16 @@ describe "Authentication API" do
           expect_result_to_have_keys(ENTRYPOINT_KEYS)
         end
 
+        it "authentication with an initial valid token that expired midstream" do
+          expired_token = "bogus_expired_token"
+
+          allow_any_instance_of(TokenManager).to receive(:token_valid?).with(expired_token).and_return(true)
+
+          get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => expired_token}
+
+          expect(response).to have_http_status(:unauthorized)
+        end
+
         it "authentication using a valid token updates the token's expiration time" do
           api_basic_authorize
 
