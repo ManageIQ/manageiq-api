@@ -2780,7 +2780,7 @@
     :identifier: tasks
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpd
     :klass: MiqTask
     :collection_actions:
       :get:
@@ -2793,6 +2793,12 @@
       :get:
       - :name: read
         :identifier: tasks_view
+      :post:
+      - :name: delete
+        :identifier: miq_task_delete
+      :delete:
+      - :name: delete
+        :identifier: miq_task_delete
   :templates:
     :description: Templates
     :identifier: miq_template
