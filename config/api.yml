@@ -753,6 +753,25 @@
       :get:
       - :name: read
         :identifier: container_project_show
+  :container_templates:
+    :description: Container Templates
+    :identifier: container_template
+    :klass: ContainerTemplate
+    :verbs: *gp
+    :options:
+    - :collection
+    - :custom_actions
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: container_template_show_list
+      :post:
+      - :name: query
+        :identifier: container_template_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: container_template_show
   :currencies:
     :description: Currencies
     :identifier: currency
