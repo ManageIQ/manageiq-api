@@ -416,11 +416,6 @@ describe "Rest API Collections" do
       test_collection_bulk_query(:container_groups, api_container_groups_url, ContainerGroup)
     end
 
-    it "bulk query ContainerImages" do
-      FactoryGirl.create(:container_image)
-      test_collection_bulk_query(:container_images, api_container_images_url, ContainerImage)
-    end
-
     it "bulk query Data Stores" do
       FactoryGirl.create(:storage)
       test_collection_bulk_query(:data_stores, api_data_stores_url, Storage)
