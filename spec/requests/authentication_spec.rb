@@ -342,22 +342,6 @@ describe "Authentication API" do
       expect(response).to have_http_status(:ok)
       expect_result_to_have_keys(ENTRYPOINT_KEYS)
     end
-
-    it "authentication using a valid token succeeds only once" do
-      miq_token = systoken(MiqServer.first.guid, @user.userid, Time.now.utc)
-
-      get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
-
-      expect(response).to have_http_status(:ok)
-      expect_result_to_have_keys(ENTRYPOINT_KEYS)
-
-      get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
-
-      expect(response).to have_http_status(:unauthorized)
-      expect(response.parsed_body).to include(
-        "error" => a_hash_including("kind" => "unauthorized", "message" => AUTHENTICATION_ERROR)
-      )
-    end
   end
 
   context "Role Based Authorization" do
