@@ -63,6 +63,21 @@ RSpec.describe Api::LinksBuilder do
 
       expect(links[:previous]).to eq(links[:first])
     end
+
+    it "will construct a valid URI when there are no incoming query params" do
+      builder = Api::LinksBuilder.new(
+        {"offset" => 0, "limit" => 1000},
+        "http://example.com/api/features",
+        double(Api::QueryCounts, :subquery_count => 1)
+      )
+
+      expected = {
+        :first => "http://example.com/api/features?offset=0",
+        :last  => "http://example.com/api/features?offset=0",
+        :self  => "http://example.com/api/features?offset=0"
+      }
+      expect(builder.links).to match(expected)
+    end
   end
 
   describe "#pages" do
