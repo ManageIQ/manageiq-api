@@ -42,7 +42,9 @@ module Api
       if href.include?("offset")
         href.sub("offset=#{offset}", "offset=#{new_offset}")
       else
-        href + "&offset=#{new_offset}"
+        result = URI.parse(href)
+        result.query = [result.query, "offset=#{new_offset}"].compact.join("&")
+        result.to_s
       end
     end
 
