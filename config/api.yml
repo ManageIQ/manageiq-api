@@ -1557,6 +1557,8 @@
         :identifier: physical_server_power_off
       - :name: power_off_now
         :identifier: physical_server_power_off_now
+      - :name: refresh
+        :identifier: physical_server_refresh
       - :name: restart
         :identifier: physical_server_restart
       - :name: restart_now
@@ -1582,6 +1584,8 @@
         :identifier: physical_server_power_off
       - :name: power_off_now
         :identifier: physical_server_power_off_now
+      - :name: refresh
+        :identifier: physical_server_refresh
       - :name: restart
         :identifier: physical_server_restart
       - :name: restart_now

@@ -304,4 +304,71 @@ RSpec.describe "physical_servers API" do
       end
     end
   end
+
+  describe "Physical Server refresh action" do
+    context "with an invalid id" do
+      it "it responds with 404 Not Found" do
+        api_basic_authorize(action_identifier(:physical_servers, :refresh, :resource_actions, :post))
+
+        post(api_physical_server_url(nil, 999_999), :params => gen_request(:refresh))
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "without an appropriate role" do
+      it "it responds with 403 Forbidden" do
+        ps = FactoryGirl.create(:physical_server)
+        api_basic_authorize
+
+        post(api_physical_server_url(nil, ps), :params => gen_request(:refresh))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context "with an appropriate role" do
+      it "rejects refresh for unspecified physical servers" do
+        api_basic_authorize(action_identifier(:physical_servers, :refresh, :resource_actions, :post))
+
+        post(api_physical_servers_url, :params => gen_request(:refresh, [{"href" => "/api/physical_servers/"}, {"href" => "/api/physical_servers/"}]))
+
+        expect_bad_request(/Must specify an id/i)
+      end
+
+      it "refresh of a single Physical Server" do
+        ps = FactoryGirl.create(:physical_server)
+        api_basic_authorize(action_identifier(:physical_servers, :refresh, :resource_actions, :post))
+
+        post(api_physical_server_url(nil, ps), :params => gen_request(:refresh))
+
+        expect_single_action_result(:success => true, :message => /#{ps.id}.* refreshing/i, :href => api_physical_server_url(nil, ps))
+      end
+
+      it "refresh of multiple Physical Servers" do
+        ps = FactoryGirl.create(:physical_server)
+        ps2 = FactoryGirl.create(:physical_server)
+        api_basic_authorize(action_identifier(:physical_servers, :refresh, :resource_actions, :post))
+
+        post(api_physical_servers_url, :params => gen_request(:refresh, [{"href" => api_physical_server_url(nil, ps)}, {"href" => api_physical_server_url(nil, ps2)}]))
+
+        expected = {
+          "results" => a_collection_containing_exactly(
+            a_hash_including(
+              "message" => a_string_matching(/#{ps.id}.* refreshing/i),
+              "success" => true,
+              "href"    => api_physical_server_url(nil, ps)
+            ),
+            a_hash_including(
+              "message" => a_string_matching(/#{ps2.id}.* refreshing/i),
+              "success" => true,
+              "href"    => api_physical_server_url(nil, ps2)
+            )
+          )
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+  end
 end
