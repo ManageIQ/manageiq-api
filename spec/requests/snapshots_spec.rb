@@ -381,7 +381,7 @@ RSpec.describe "Snapshots API" do
 
     describe "GET /api/instances/:c_id/snapshots/:s_id" do
       it "can show an Instance's snapshot" do
-        api_basic_authorize(subcollection_action_identifier(:instances, :snapshots, :read, :get))
+        api_basic_authorize(subresource_action_identifier(:instances, :snapshots, :read, :get))
         instance = FactoryGirl.create(:vm_openstack)
         create_time = Time.zone.parse("2017-01-11T00:00:00Z")
         snapshot = FactoryGirl.create(:snapshot, :vm_or_template => instance, :create_time => create_time)

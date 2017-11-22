@@ -676,7 +676,7 @@ describe "Services API" do
     end
 
     it 'can query a specific orchestration stack' do
-      api_basic_authorize subcollection_action_identifier(:services, :orchestration_stacks, :read, :get)
+      api_basic_authorize(subresource_action_identifier(:services, :orchestration_stacks, :read, :get))
 
       get(api_service_orchestration_stack_url(nil, svc, os))
 
@@ -686,7 +686,7 @@ describe "Services API" do
     end
 
     it 'can query a specific orchestration stack asking for stdout' do
-      api_basic_authorize subcollection_action_identifier(:services, :orchestration_stacks, :read, :get)
+      api_basic_authorize(subresource_action_identifier(:services, :orchestration_stacks, :read, :get))
 
       allow_any_instance_of(OrchestrationStack).to receive(:stdout).with(nil).and_return("default text stdout")
       get(api_service_orchestration_stack_url(nil, svc, os), :params => { :attributes => "stdout" })
@@ -700,7 +700,7 @@ describe "Services API" do
     end
 
     it 'can query a specific orchestration stack asking for stdout in alternate format' do
-      api_basic_authorize subcollection_action_identifier(:services, :orchestration_stacks, :read, :get)
+      api_basic_authorize(subresource_action_identifier(:services, :orchestration_stacks, :read, :get))
 
       allow_any_instance_of(OrchestrationStack).to receive(:stdout).with("json").and_return("json stdout")
       get(api_service_orchestration_stack_url(nil, svc, os), :params => { :attributes => "stdout", :format_attributes => "stdout=json" })
