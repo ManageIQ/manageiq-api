@@ -1559,7 +1559,7 @@
     :options:
     - :collection
     - :custom_actions
-    :verbs: *gp
+    :verbs: *gpd
     :klass: NetworkRouter
     :collection_actions:
       :get:
@@ -1568,10 +1568,18 @@
       :post:
       - :name: query
         :identifier: network_router_show_list
+      - :name: delete
+        :identifier: network_router_delete
     :resource_actions:
       :get:
       - :name: read
         :identifier: network_router_show
+      :post:
+      - :name: delete
+        :identifier: network_router_delete
+      :delete:
+      - :name: delete
+        :identifier: network_router_delete
   :notifications:
     :description: "User's past notifications"
     :options:
