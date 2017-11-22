@@ -1611,7 +1611,7 @@
     :subcollection_actions:
       :get:
       - :name: read
-        :identifier: orchestration_stack_show
+        :identifier: orchestration_stack_show_list
     :subresource_actions:
       :get:
       - :name: read
