@@ -152,6 +152,26 @@ describe "Authentication API" do
     end
   end
 
+  context "Token Based Authentication with expired tokens" do
+    before do
+      RSpec::Mocks.with_temporary_scope do
+        @token_manager = instance_double(TokenManager)
+        allow(TokenManager).to receive(:new).and_return(@token_manager)
+      end
+    end
+
+    it "fails authentication even with an initially valid token" do
+      token = "expired_token"
+
+      allow(@token_manager).to receive(:token_valid?).with(token).and_return(true)
+      allow(@token_manager).to receive(:token_get_info).with(token, :userid).and_return(nil)
+
+      get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => token}
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
+
   context "Token Based Authentication" do
     %w(sql memory).each do |session_store|
       context "when using a #{session_store} session store" do
@@ -186,16 +206,6 @@ describe "Authentication API" do
 
           expect(response).to have_http_status(:ok)
           expect_result_to_have_keys(ENTRYPOINT_KEYS)
-        end
-
-        it "authentication with an initial valid token that expired midstream" do
-          expired_token = "bogus_expired_token"
-
-          allow_any_instance_of(TokenManager).to receive(:token_valid?).with(expired_token).and_return(true)
-
-          get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => expired_token}
-
-          expect(response).to have_http_status(:unauthorized)
         end
 
         it "authentication using a valid token updates the token's expiration time" do
