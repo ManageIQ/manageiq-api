@@ -60,6 +60,15 @@ module Spec
           end
         end
 
+        def subresource_action_identifier(type, subtype, action, method = :post)
+          subresource_actions = "#{subtype}_subresource_actions".to_sym
+          if ::Api::ApiConfig.collections[type][subresource_actions]
+            action_identifier(type, action, subresource_actions, method)
+          else
+            action_identifier(subtype, action, :subresource_actions, method)
+          end
+        end
+
         def gen_request(action, data = nil, *hrefs)
           request = {"action" => action.to_s}
           if hrefs.present?
