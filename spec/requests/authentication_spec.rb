@@ -152,6 +152,26 @@ describe "Authentication API" do
     end
   end
 
+  context "Token Based Authentication with expired tokens" do
+    before do
+      RSpec::Mocks.with_temporary_scope do
+        @token_manager = instance_double(TokenManager)
+        allow(TokenManager).to receive(:new).and_return(@token_manager)
+      end
+    end
+
+    it "fails authentication even with an initially valid token" do
+      token = "expired_token"
+
+      allow(@token_manager).to receive(:token_valid?).with(token).and_return(true)
+      allow(@token_manager).to receive(:token_get_info).with(token, :userid).and_return(nil)
+
+      get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => token}
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
+
   context "Token Based Authentication" do
     %w(sql memory).each do |session_store|
       context "when using a #{session_store} session store" do
