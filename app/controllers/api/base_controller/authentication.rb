@@ -67,7 +67,10 @@ module Api
         if !api_token_mgr.token_valid?(auth_token)
           raise AuthenticationError, "Invalid Authentication Token #{auth_token} specified"
         else
-          auth_user_obj = userid_to_userobj(api_token_mgr.token_get_info(auth_token, :userid))
+          userid = api_token_mgr.token_get_info(auth_token, :userid)
+          raise AuthenticationError, "Invalid Authentication Token #{auth_token} specified" unless userid
+
+          auth_user_obj = userid_to_userobj(userid)
 
           unless request.headers['X-Auth-Skip-Token-Renewal'] == 'true'
             api_token_mgr.reset_token(auth_token)
