@@ -1,8 +1,6 @@
 # rubocop:disable Style/WordArray
 RSpec.describe 'GenericObjectDefinitions API' do
-  let(:object_def) { FactoryGirl.create(:generic_object_definition, :name => 'foo') }
-  let(:object_def2) { FactoryGirl.create(:generic_object_definition, :name => 'foo 2') }
-  let(:object_def3) { FactoryGirl.create(:generic_object_definition, :name => 'foo 3') }
+  let(:object_def) { FactoryGirl.create(:generic_object_definition, :with_methods_attributes_associations, :name => 'foo') }
   let(:picture) { FactoryGirl.create(:picture, :extension => 'png') }
   let(:content) do
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGP"\
@@ -29,8 +27,8 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'lists all generic object definitions with an appropriate role' do
+      definition = FactoryGirl.create(:generic_object_definition)
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :read, :get)
-      object_def_href = api_generic_object_definition_url(nil, object_def)
 
       get(api_generic_object_definitions_url)
 
@@ -39,7 +37,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'subcount'  => 1,
         'name'      => 'generic_object_definitions',
         'resources' => [
-          hash_including('href' => a_string_matching(object_def_href))
+          hash_including('href' => a_string_matching(api_generic_object_definition_url(nil, definition)))
         ]
       }
       expect(response).to have_http_status(:ok)
@@ -124,11 +122,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     let(:vm) { FactoryGirl.create(:vm_amazon) }
 
     before do
-      object_def.add_property_attribute('is_something', 'boolean')
-      object_def.add_property_association('services', 'Service')
-      object_def.add_property_association('vms', 'Vm')
-
-      object.is_something = true
+      object.powered_on = true
       object.save!
 
       object.add_to_property_association('vms', [vm])
@@ -143,7 +137,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'href'                => api_generic_object_definition_generic_object_url(nil, object_def, object),
         'id'                  => object.id.to_s,
         'name'                => 'bar',
-        'property_attributes' => { 'is_something' => true }
+        'property_attributes' => { 'powered_on' => true }
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
@@ -158,7 +152,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'href'                => api_generic_object_definition_generic_object_url(nil, object_def, object),
         'id'                  => object.id.to_s,
         'name'                => 'bar',
-        'property_attributes' => { 'is_something' => true },
+        'property_attributes' => { 'powered_on' => true },
         'vms'                 => [a_hash_including('id' => vm.id.to_s, 'href' => api_instance_url(nil, vm.id))]
       }
       expect(response.parsed_body).to include(expected)
@@ -252,23 +246,24 @@ RSpec.describe 'GenericObjectDefinitions API' do
 
     it 'can edit generic_object_definitions by id, name, or href and with picture resources specified' do
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :edit)
+      definition, definition1, definition2 = FactoryGirl.create_list(:generic_object_definition, 3)
       picture2 = FactoryGirl.create(:picture, :extension => 'jpg')
 
       request = {
         'action'    => 'edit',
         'resources' => [
-          { 'name' => object_def.name, 'resource' => { 'name' => 'updated 1', 'picture' => { 'href' => api_picture_url(nil, picture) } } },
-          { 'id' => object_def2.id.to_s, 'resource' => { 'name' => 'updated 2', 'picture' => { 'id' => picture2.id } }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'name' => 'updated 3', 'picture' => { 'content' => content, 'extension' => 'jpg' } }}
+          { 'name' => definition.name, 'resource' => { 'name' => 'updated 1', 'picture' => { 'href' => api_picture_url(nil, picture) } } },
+          { 'id' => definition1.id.to_s, 'resource' => { 'name' => 'updated 2', 'picture' => { 'id' => picture2.id } }},
+          { 'href' => api_generic_object_definition_url(nil, definition2), 'resource' => { 'name' => 'updated 3', 'picture' => { 'content' => content, 'extension' => 'jpg' } }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.id.to_s, 'name' => 'updated 1'),
-          a_hash_including('id' => object_def2.id.to_s, 'name' => 'updated 2'),
-          a_hash_including('id' => object_def3.id.to_s, 'name' => 'updated 3')
+          a_hash_including('id' => definition.id.to_s, 'name' => 'updated 1'),
+          a_hash_including('id' => definition1.id.to_s, 'name' => 'updated 2'),
+          a_hash_including('id' => definition2.id.to_s, 'name' => 'updated 3')
         )
       }
       expect(response).to have_http_status(:ok)
@@ -298,23 +293,24 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can add associations by id, name, or href' do
+      definition, definition1, definition2 = FactoryGirl.create_list(:generic_object_definition, 3)
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :add_associations)
 
       request = {
         'action'    => 'add_associations',
         'resources' => [
-          { 'name' => object_def.name, 'resource' => { 'associations' => { 'association1' => 'AvailabilityZone' } } },
-          { 'id' => object_def2.id.to_s, 'resource' => { 'associations' => { 'association2' => 'AvailabilityZone' } }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'associations' => { 'association3' => 'AvailabilityZone' } }}
+          { 'name' => definition.name, 'resource' => { 'associations' => { 'association1' => 'AvailabilityZone' } } },
+          { 'id' => definition1.id.to_s, 'resource' => { 'associations' => { 'association2' => 'AvailabilityZone' } }},
+          { 'href' => api_generic_object_definition_url(nil, definition2), 'resource' => { 'associations' => { 'association3' => 'AvailabilityZone' } }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.id.to_s, 'properties' => a_hash_including('associations' => {'association1' => 'AvailabilityZone'})),
-          a_hash_including('id' => object_def2.id.to_s, 'properties' => a_hash_including('associations' => {'association2' => 'AvailabilityZone'})),
-          a_hash_including('id' => object_def3.id.to_s, 'properties' => a_hash_including('associations' => {'association3' => 'AvailabilityZone'}))
+          a_hash_including('id' => definition.id.to_s, 'properties' => a_hash_including('associations' => {'association1' => 'AvailabilityZone'})),
+          a_hash_including('id' => definition1.id.to_s, 'properties' => a_hash_including('associations' => {'association2' => 'AvailabilityZone'})),
+          a_hash_including('id' => definition2.id.to_s, 'properties' => a_hash_including('associations' => {'association3' => 'AvailabilityZone'}))
         )
       }
       expect(response).to have_http_status(:ok)
@@ -330,26 +326,24 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can remove associations by id, name, or href' do
-      object_def.add_property_association('association1', 'AvailabilityZone')
-      object_def2.add_property_association('association2', 'AvailabilityZone')
-      object_def3.add_property_association('association3', 'AvailabilityZone')
+      definition, definition1, definition2 = Array.new(3) { |n| FactoryGirl.create(:generic_object_definition, :properties => {:associations => {"association#{n}" => 'AvailabilityZone'}}) }
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :add_associations)
 
       request = {
         'action'    => 'remove_associations',
         'resources' => [
-          { 'name' => object_def.name, 'resource' => { 'associations' => { 'association1' => 'AvailabilityZone' } } },
-          { 'id' => object_def2.id.to_s, 'resource' => { 'associations' => { 'association2' => 'AvailabilityZone' } }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'associations' => { 'association3' => 'AvailabilityZone' } }}
+          { 'name' => definition.name, 'resource' => { 'associations' => { 'association0' => 'AvailabilityZone' } } },
+          { 'id' => definition1.id.to_s, 'resource' => { 'associations' => { 'association1' => 'AvailabilityZone' } }},
+          { 'href' => api_generic_object_definition_url(nil, definition2), 'resource' => { 'associations' => { 'association2' => 'AvailabilityZone' } }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.id.to_s, 'properties' => a_hash_including('associations' => {})),
-          a_hash_including('id' => object_def2.id.to_s, 'properties' => a_hash_including('associations' => {})),
-          a_hash_including('id' => object_def3.id.to_s, 'properties' => a_hash_including('associations' => {}))
+          a_hash_including('id' => definition.id.to_s, 'properties' => a_hash_including('associations' => {})),
+          a_hash_including('id' => definition1.id.to_s, 'properties' => a_hash_including('associations' => {})),
+          a_hash_including('id' => definition2.id.to_s, 'properties' => a_hash_including('associations' => {}))
         )
       }
       expect(response).to have_http_status(:ok)
@@ -365,23 +359,24 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can add attributes by id, name, or href' do
+      definition, definition1, definition2 = FactoryGirl.create_list(:generic_object_definition, 3)
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :add_associations)
 
       request = {
         'action'    => 'add_attributes',
         'resources' => [
-          { 'name' => object_def.name, 'resource' => { 'attributes' => { 'attr1' => 'string' } } },
-          { 'id' => object_def2.id.to_s, 'resource' => { 'attributes' => { 'attr2' => 'string' } }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'attributes' => { 'attr3' => 'string' } }}
+          { 'name' => definition.name, 'resource' => { 'attributes' => { 'attr1' => 'string' } } },
+          { 'id' => definition1.id.to_s, 'resource' => { 'attributes' => { 'attr2' => 'string' } }},
+          { 'href' => api_generic_object_definition_url(nil, definition2), 'resource' => { 'attributes' => { 'attr3' => 'string' } }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.id.to_s, 'properties' => a_hash_including('attributes' => {'attr1' => 'string'})),
-          a_hash_including('id' => object_def2.id.to_s, 'properties' => a_hash_including('attributes' => {'attr2' => 'string'})),
-          a_hash_including('id' => object_def3.id.to_s, 'properties' => a_hash_including('attributes' => {'attr3' => 'string'}))
+          a_hash_including('id' => definition.id.to_s, 'properties' => a_hash_including('attributes' => {'attr1' => 'string'})),
+          a_hash_including('id' => definition1.id.to_s, 'properties' => a_hash_including('attributes' => {'attr2' => 'string'})),
+          a_hash_including('id' => definition2.id.to_s, 'properties' => a_hash_including('attributes' => {'attr3' => 'string'}))
         )
       }
       expect(response).to have_http_status(:ok)
@@ -397,26 +392,24 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can remove attributes by id, name, or href' do
-      object_def.add_property_attribute('attr1', 'string')
-      object_def2.add_property_attribute('attr2', 'string')
-      object_def3.add_property_attribute('attr3', 'string')
+      definition, definition1, definition2 = Array.new(3) { |n| FactoryGirl.create(:generic_object_definition, :properties => { :attributes => {"attr#{n}" => 'string'} }) }
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :add_associations)
 
       request = {
         'action'    => 'remove_attributes',
         'resources' => [
-          { 'name' => object_def.name, 'resource' => { 'attributes' => { 'attr1' => 'string' } } },
-          { 'id' => object_def2.id.to_s, 'resource' => { 'attributes' => { 'attr2' => 'string' } }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'attributes' => { 'attr3' => 'string' } }}
+          { 'name' => definition.name, 'resource' => { 'attributes' => { 'attr0' => 'string' } } },
+          { 'id' => definition1.id.to_s, 'resource' => { 'attributes' => { 'attr1' => 'string' } }},
+          { 'href' => api_generic_object_definition_url(nil, definition2), 'resource' => { 'attributes' => { 'attr2' => 'string' } }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.id.to_s, 'properties' => a_hash_including('attributes' => {})),
-          a_hash_including('id' => object_def2.id.to_s, 'properties' => a_hash_including('attributes' => {})),
-          a_hash_including('id' => object_def3.id.to_s, 'properties' => a_hash_including('attributes' => {}))
+          a_hash_including('id' => definition.id.to_s, 'properties' => a_hash_including('attributes' => {})),
+          a_hash_including('id' => definition1.id.to_s, 'properties' => a_hash_including('attributes' => {})),
+          a_hash_including('id' => definition2.id.to_s, 'properties' => a_hash_including('attributes' => {}))
         )
       }
       expect(response).to have_http_status(:ok)
@@ -432,23 +425,24 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can add methods by id, name, or href' do
+      definition, definition1, definition2 = FactoryGirl.create_list(:generic_object_definition, 3)
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :add_associations)
 
       request = {
         'action'    => 'add_methods',
         'resources' => [
-          { 'name' => object_def.name, 'resource' => { 'methods' => ['method1'] } },
-          { 'id' => object_def2.id.to_s, 'resource' => { 'methods' => ['method2'] }},
-          { 'href' => api_generic_object_definition_url(nil, object_def3), 'resource' => { 'methods' => ['method3'] }}
+          { 'name' => definition.name, 'resource' => { 'methods' => ['method1'] } },
+          { 'id' => definition1.id.to_s, 'resource' => { 'methods' => ['method2'] }},
+          { 'href' => api_generic_object_definition_url(nil, definition2), 'resource' => { 'methods' => ['method3'] }}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.id.to_s, 'properties' => a_hash_including('methods' => ['method1'])),
-          a_hash_including('id' => object_def2.id.to_s, 'properties' => a_hash_including('methods' => ['method2'])),
-          a_hash_including('id' => object_def3.id.to_s, 'properties' => a_hash_including('methods' => ['method3']))
+          a_hash_including('id' => definition.id.to_s, 'properties' => a_hash_including('methods' => ['method1'])),
+          a_hash_including('id' => definition1.id.to_s, 'properties' => a_hash_including('methods' => ['method2'])),
+          a_hash_including('id' => definition2.id.to_s, 'properties' => a_hash_including('methods' => ['method3']))
         )
       }
       expect(response).to have_http_status(:ok)
@@ -577,23 +571,24 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can delete generic_object_definition in bulk by name, id, or href' do
+      definition, definition1, definition2 = FactoryGirl.create_list(:generic_object_definition, 3)
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :delete)
 
       request = {
         'action'    => 'delete',
         'resources' => [
-          { 'name' => object_def.name },
-          { 'id' => object_def2.id.to_s},
-          { 'href' => api_generic_object_definition_url(nil, object_def3)}
+          { 'name' => definition.name },
+          { 'id' => definition1.id.to_s},
+          { 'href' => api_generic_object_definition_url(nil, definition2)}
         ]
       }
       post(api_generic_object_definitions_url, :params => request)
 
       expected = {
         'results' => a_collection_including(
-          a_hash_including('id' => object_def.id.to_s),
-          a_hash_including('id' => object_def2.id.to_s),
-          a_hash_including('id' => object_def3.id.to_s)
+          a_hash_including('id' => definition.id.to_s),
+          a_hash_including('id' => definition1.id.to_s),
+          a_hash_including('id' => definition2.id.to_s)
         )
       }
       expect(response).to have_http_status(:ok)
@@ -601,6 +596,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can add new attributes to the resource' do
+      definition = FactoryGirl.create(:generic_object_definition)
       api_basic_authorize action_identifier(:generic_object_definitions, :add_attributes)
 
       request = {
@@ -612,7 +608,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      post(api_generic_object_definition_url(nil, object_def), :params => request)
+      post(api_generic_object_definition_url(nil, definition), :params => request)
 
       expected = {
         'attributes' => {
@@ -648,15 +644,13 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can remove property attributes' do
-      object_def.add_property_attribute('foo', 'string')
-      object_def.add_property_attribute('bar', 'boolean')
       api_basic_authorize action_identifier(:generic_object_definitions, :remove_attributes)
 
       request = {
         'action'   => 'remove_attributes',
         'resource' => {
           'attributes' => {
-            'foo' => 'string'
+            'widget' => 'string'
           }
         }
       }
@@ -664,7 +658,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
 
       expected = {
         'attributes' => {
-          'bar' => 'boolean'
+          'powered_on' => 'boolean'
         }
       }
       expect(response).to have_http_status(:ok)
@@ -672,6 +666,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can add new methods' do
+      definition = FactoryGirl.create(:generic_object_definition)
       api_basic_authorize action_identifier(:generic_object_definitions, :add_methods)
 
       request = {
@@ -680,7 +675,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           'methods' => ['foo', 'bar']
         }
       }
-      post(api_generic_object_definition_url(nil, object_def), :params => request)
+      post(api_generic_object_definition_url(nil, definition), :params => request)
 
       expected = {
         'methods' => ['foo', 'bar']
@@ -690,20 +685,18 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can remove methods' do
-      object_def.add_property_method('foo')
-      object_def.add_property_method('bar')
       api_basic_authorize action_identifier(:generic_object_definitions, :remove_methods)
 
       request = {
         'action'   => 'remove_methods',
         'resource' => {
-          'methods' => ['foo']
+          'methods' => ['add_vms']
         }
       }
       post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
-        'methods' => ['bar']
+        'methods' => ['remove_vms']
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['properties']).to include(expected)
@@ -718,6 +711,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can add associations' do
+      definition = FactoryGirl.create(:generic_object_definition)
       api_basic_authorize action_identifier(:generic_object_definitions, :add_associations)
 
       request = {
@@ -729,7 +723,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
           }
         }
       }
-      post(api_generic_object_definition_url(nil, object_def), :params => request)
+      post(api_generic_object_definition_url(nil, definition), :params => request)
 
       expected = {
         'associations' => {
@@ -766,20 +760,18 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can remove associations' do
-      object_def.add_property_association('az', 'AvailabilityZone')
-      object_def.add_property_association('chargeback', 'ChargebackVm')
       api_basic_authorize action_identifier(:generic_object_definitions, :remove_associations)
 
       request = {
         'action'   => 'remove_associations',
         'resource' => {
-          'associations' => { 'az' => 'AvailabilityZone' }
+          'associations' => { 'vms' => 'Vm' }
         }
       }
       post(api_generic_object_definition_url(nil, object_def), :params => request)
 
       expected = {
-        'associations' => { 'chargeback' => 'ChargebackVm' }
+        'associations' => { 'services' => 'Service' }
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['properties']).to include(expected)
@@ -835,12 +827,6 @@ RSpec.describe 'GenericObjectDefinitions API' do
   end
 
   describe 'POST /api/generic_object_definitions/:id/generic_objects' do
-    before do
-      object_def.add_property_attribute('widget', 'string')
-      object_def.add_property_association('vms', 'Vm')
-      object_def.add_property_method('method_a')
-    end
-
     it 'can create a generic object with an appropriate role' do
       vm = FactoryGirl.create(:vm_amazon)
       api_basic_authorize subcollection_action_identifier(:generic_object_definitions, :generic_objects, :create, :post)
