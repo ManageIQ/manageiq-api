@@ -74,7 +74,7 @@ module Api
     end
 
     def url
-      @request.original_url # http://target/api/...
+      @request.url # http://target/api/...
     end
 
     def prefix(version = true)
@@ -106,7 +106,7 @@ module Api
     end
 
     def fullpath
-      @request.original_fullpath # /api/...&param=value...
+      @request.fullpath # /api/...&param=value...
     end
   end
 end

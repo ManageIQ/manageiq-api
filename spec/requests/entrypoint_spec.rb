@@ -69,4 +69,12 @@ RSpec.describe "API entrypoint" do
       )
     )
   end
+
+  it "will squeeze consecutive slashes in the path portion of the URI" do
+    api_basic_authorize
+
+    get("http://www.example.com//api")
+
+    expect(response).to have_http_status(:ok)
+  end
 end
