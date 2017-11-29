@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Gaprindashvili Beta2
+
+### Added
+- Do not expand custom actions on collection searches [(#204)](https://github.com/ManageIQ/manageiq-api/pull/204)
+- Adds custom action support for models that are g/yes [(#213)](https://github.com/ManageIQ/manageiq-api/pull/213)
+- Removes final .first from custom action specs [(#216)](https://github.com/ManageIQ/manageiq-api/pull/216)
+- Fixes custom actions spec tests to not use anything.first [(#215)](https://github.com/ManageIQ/manageiq-api/pull/215)
+- Add support for /api/container_projects [(#182)](https://github.com/ManageIQ/manageiq-api/pull/182)
+- Custom actions on generic objects [(#194)](https://github.com/ManageIQ/manageiq-api/pull/194)
+- Add support for Physical Servers refresh [(#189)](https://github.com/ManageIQ/manageiq-api/pull/189)
+
+### Fixed
+- Return correct action responses for bulk delete [(#180)](https://github.com/ManageIQ/manageiq-api/pull/180)
+- Return put and patch edit actions for resources [(#179)](https://github.com/ManageIQ/manageiq-api/pull/179)
+- Gracefully fail on resource create [(#195)](https://github.com/ManageIQ/manageiq-api/pull/195)
+- Add deep symbolization to CustomButton `visibility` field [(#206)](https://github.com/ManageIQ/manageiq-api/pull/206)
+- Add a set_current_group method for users [(#176)](https://github.com/ManageIQ/manageiq-api/pull/176)
+- Reflect session timeout settings updates in the UI requester type [(#199)](https://github.com/ManageIQ/manageiq-api/pull/199)
+- Build href_slug from type [(#212)](https://github.com/ManageIQ/manageiq-api/pull/212)
+- deep symbolize the options field [(#211)](https://github.com/ManageIQ/manageiq-api/pull/211)
+- Use destroy_queue for provider delete [(#217)](https://github.com/ManageIQ/manageiq-api/pull/217)
+- Rolling back system token OTP logic [(#219)](https://github.com/ManageIQ/manageiq-api/pull/219)
+- Fix links in the case when there are no incoming query params [(#221)](https://github.com/ManageIQ/manageiq-api/pull/221)
+- Fixes an issue where no userid gets retrieved for the token [(#223)](https://github.com/ManageIQ/manageiq-api/pull/223)
+
 ## Gaprindashvili Beta1
 
 ### Added
