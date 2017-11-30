@@ -50,6 +50,31 @@ describe "Service Dialogs API" do
       expect_result_to_have_keys(%w(content))
     end
 
+    it "query single dialog to include content with target and resource action specified" do
+      api_basic_authorize action_identifier(:service_dialogs, :read, :resource_actions, :get)
+      service_template = FactoryGirl.create(:service_template)
+      get(api_service_dialog_url(nil, dialog1), :params => { :resource_action_id => ra1.id, :target_id => service_template.id, :target_type => 'service_template' })
+
+      expect_single_resource_query(
+        "id"    => dialog1.id.to_s,
+        "href"  => api_service_dialog_url(nil, dialog1),
+        "label" => dialog1.label
+      )
+      expect_result_to_have_keys(%w(content))
+    end
+
+    it "requires both target_id, target_type, and resource_action" do
+      api_basic_authorize action_identifier(:service_dialogs, :read, :resource_actions, :get)
+
+      get(api_service_dialog_url(nil, dialog1), :params => { :target_id => 'id' })
+
+      expected = {
+        'error' => a_hash_including('message' => a_string_including('Must specify all of'))
+      }
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include(expected)
+    end
+
     it "query single dialog to exclude content when attributes are asked for" do
       api_basic_authorize action_identifier(:service_dialogs, :read, :resource_actions, :get)
 

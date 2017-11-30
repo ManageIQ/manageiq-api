@@ -2,6 +2,8 @@ module Api
   class ServiceDialogsController < BaseController
     before_action :set_additional_attributes, :only => [:index, :show]
 
+    CONTENT_PARAMS = %w[target_type target_id resource_action_id].freeze
+
     def refresh_dialog_fields_resource(type, id = nil, data = nil)
       raise BadRequestError, "Must specify an id for Reconfiguring a #{type} resource" unless id
 
@@ -14,7 +16,8 @@ module Api
     end
 
     def fetch_service_dialogs_content(resource)
-      resource.content(nil, nil, true)
+      target, resource_action = validate_dialog_content_params
+      resource.content(target, resource_action, true)
     end
 
     def create_resource(_type, _id, data)
@@ -45,6 +48,15 @@ module Api
     end
 
     private
+
+    def validate_dialog_content_params
+      return unless CONTENT_PARAMS.detect { |param| params.include?(param) }
+      raise BadRequestError, "Must specify all of #{CONTENT_PARAMS.join(',')}" unless (CONTENT_PARAMS - params.keys).count.zero?
+      target_type = params['target_type'].pluralize.to_sym
+      target = resource_search(params['target_id'], target_type, collection_class(target_type))
+      resource_action = resource_search(params['resource_action_id'], :resource_actions, ResourceAction)
+      [target, resource_action]
+    end
 
     def set_additional_attributes
       @additional_attributes = %w(content) if attribute_selection == "all"
