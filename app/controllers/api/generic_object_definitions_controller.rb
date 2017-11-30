@@ -104,9 +104,7 @@ module Api
     end
 
     def self.allowed_types
-      GenericObjectDefinition::TYPE_MAP.keys.collect do |type|
-        [Dictionary.gettext(type.to_s, :type => :data_type, :notfound => :titleize, :plural => false), type.to_s]
-      end.sort
+      GenericObjectDefinition::TYPE_NAMES.stringify_keys.invert.to_a.sort
     end
 
     def options
