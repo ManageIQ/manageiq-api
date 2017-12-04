@@ -16,7 +16,7 @@ module Api
     end
 
     def fetch_service_dialogs_content(resource)
-      target, resource_action = validate_dialog_content_params
+      target, resource_action = validate_dialog_content_params(params)
       resource.content(target, resource_action, true)
     end
 
@@ -49,8 +49,9 @@ module Api
 
     private
 
-    def validate_dialog_content_params
-      return unless CONTENT_PARAMS.detect { |param| params.include?(param) }
+    def validate_dialog_content_params(params, required = false)
+      return unless CONTENT_PARAMS.detect { |param| params.include?(param) } || required
+
       raise BadRequestError, "Must specify all of #{CONTENT_PARAMS.join(',')}" unless (CONTENT_PARAMS - params.keys).count.zero?
       target_type = params['target_type'].pluralize.to_sym
       target = resource_search(params['target_id'], target_type, collection_class(target_type))
@@ -62,26 +63,33 @@ module Api
       @additional_attributes = %w(content) if attribute_selection == "all"
     end
 
-    def refresh_dialog_fields_service_dialog(service_dialog, data)
+    def refresh_dialog_fields_service_dialog(dialog, data)
       data ||= {}
       dialog_fields = Hash(data["dialog_fields"])
       refresh_fields = data["fields"]
       return action_result(false, "Must specify fields to refresh") if refresh_fields.blank?
 
-      define_service_dialog_fields(service_dialog, dialog_fields)
+      service_dialog = define_service_dialog(dialog_fields, data)
+
+      if service_dialog.id != dialog.id
+        return action_result(
+          false,
+          "Dialog from resource action and requested refresh dialog must be the same dialog"
+        )
+      end
 
       refresh_dialog_fields_action(service_dialog, refresh_fields, service_dialog_ident(service_dialog))
     rescue => err
       action_result(false, err.to_s)
     end
 
-    def define_service_dialog_fields(service_dialog, dialog_fields)
-      ident = service_dialog_ident(service_dialog)
-      dialog_fields.each do |key, value|
-        dialog_field = service_dialog.field(key)
-        raise BadRequestError, "Dialog field #{key} specified does not exist in #{ident}" if dialog_field.nil?
-        dialog_field.value = value
-      end
+    def define_service_dialog(dialog_fields, data)
+      target, resource_action = validate_dialog_content_params(data, true)
+
+      workflow = ResourceActionWorkflow.new({}, User.current_user, resource_action, :target => target)
+
+      dialog_fields.each { |key, value| workflow.set_value(key, value) }
+      workflow.dialog
     end
 
     def service_dialog_ident(service_dialog)

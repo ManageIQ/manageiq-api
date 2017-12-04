@@ -63,7 +63,7 @@ describe "Service Dialogs API" do
       expect_result_to_have_keys(%w(content))
     end
 
-    it "requires both target_id, target_type, and resource_action" do
+    it "requires all of target_id, target_type, and resource_action" do
       api_basic_authorize action_identifier(:service_dialogs, :read, :resource_actions, :get)
 
       get(api_service_dialog_url(nil, dialog1), :params => { :target_id => 'id' })
@@ -360,16 +360,74 @@ describe "Service Dialogs API" do
       api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
       init_dialog
 
-      post(api_service_dialog_url(nil, dialog1), :params => gen_request(:refresh_dialog_fields, "fields" => %w(bad_field)))
-
+      post(api_service_dialog_url(nil, dialog1), :params => gen_request(
+        :refresh_dialog_fields,
+        "fields"             => %w(bad_field),
+        "resource_action_id" => ra1.id,
+        "target_id"          => template.id,
+        "target_type"        => "service_template"
+      ))
       expect_single_action_result(:success => false, :message => /unknown dialog field bad_field/i)
+    end
+
+    it "requires all of resource_action_id, target_id, and target_type" do
+      api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
+      init_dialog
+
+      post(api_service_dialog_url(nil, dialog1), :params => gen_request(
+        :refresh_dialog_fields,
+        "fields" => %w(text1)
+      ))
+
+      expect_single_action_result(:success => false, :message => a_string_including('Must specify all of'))
+    end
+
+    it "requires that the resource action returns the same dialog as the dialog that we are requesting refresh of" do
+      api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
+      init_dialog
+
+      post(api_service_dialog_url(nil, dialog1), :params => gen_request(
+        :refresh_dialog_fields,
+        "fields"             => %w(text1),
+        "resource_action_id" => ra2.id,
+        "target_id"          => template.id,
+        "target_type"        => "service_template"
+      ))
+
+      expect_single_action_result(:success => false, :message => a_string_including('must be the same dialog'))
+    end
+
+    it "supports refresh when passing in resource_action_id, target_id, and target_type" do
+      api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
+      init_dialog
+
+      post(api_service_dialog_url(nil, dialog1), :params => gen_request(
+        :refresh_dialog_fields,
+        "fields"             => %w(text1),
+        "resource_action_id" => ra1.id,
+        "target_id"          => template.id,
+        "target_type"        => "service_template"
+      ))
+
+      expect(response.parsed_body).to include(
+        "success" => true,
+        "message" => a_string_matching(/refreshing dialog fields/i),
+        "href"    => api_service_dialog_url(nil, dialog1),
+        "result"  => hash_including("text1")
+      )
     end
 
     it "supports refresh dialog fields of valid fields" do
       api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
       init_dialog
 
-      post(api_service_dialog_url(nil, dialog1), :params => gen_request(:refresh_dialog_fields, "fields" => %w(text1)))
+      post(api_service_dialog_url(nil, dialog1), :params => gen_request(
+        :refresh_dialog_fields,
+        "fields"             => %w(text1),
+        "resource_action_id" => ra1.id,
+        "target_id"          => template.id,
+        "target_type"        => "service_template"
+      ))
 
       expect(response.parsed_body).to include(
         "success" => true,
