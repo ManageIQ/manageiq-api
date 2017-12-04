@@ -11,7 +11,7 @@ module Api
         service_dialog = resource_search(id, type, klass)
         api_log_info("Refreshing Dialog Fields for #{service_dialog_ident(service_dialog)}")
 
-        refresh_dialog_fields_service_dialog(data)
+        refresh_dialog_fields_service_dialog(service_dialog, data)
       end
     end
 
@@ -63,13 +63,20 @@ module Api
       @additional_attributes = %w(content) if attribute_selection == "all"
     end
 
-    def refresh_dialog_fields_service_dialog(data)
+    def refresh_dialog_fields_service_dialog(dialog, data)
       data ||= {}
       dialog_fields = Hash(data["dialog_fields"])
       refresh_fields = data["fields"]
       return action_result(false, "Must specify fields to refresh") if refresh_fields.blank?
 
       service_dialog = define_service_dialog(dialog_fields, data)
+
+      if service_dialog.id != dialog.id
+        return action_result(
+          false,
+          "Dialog from resource action and requested refresh dialog must be the same dialog"
+        )
+      end
 
       refresh_dialog_fields_action(service_dialog, refresh_fields, service_dialog_ident(service_dialog))
     rescue => err
