@@ -3,53 +3,63 @@ RSpec.describe 'CustomButtons API' do
   let(:cb) { FactoryGirl.create(:custom_button, :name => 'custom_button', :applies_to_class => 'GenericObjectDefinition', :applies_to_id => object_def.id) }
 
   describe 'GET /api/custom_buttons' do
-    it 'does not list custom buttons without an appropriate role' do
-      api_basic_authorize
+    before { cb }
 
-      get(api_custom_buttons_url)
+    context 'without an appropriate role' do
+      it 'does not list custom buttons' do
+        api_basic_authorize
 
-      expect(response).to have_http_status(:forbidden)
+        get(api_custom_buttons_url)
+
+        expect(response).to have_http_status(:forbidden)
+      end
     end
 
-    it 'lists all custom buttons with an appropriate role' do
-      api_basic_authorize collection_action_identifier(:custom_buttons, :read, :get)
-      cb_href = api_custom_button_url(nil, cb)
+    context 'with an appropriate role' do
+      before { api_basic_authorize collection_action_identifier(:custom_buttons, :read, :get) }
 
-      get(api_custom_buttons_url)
+      it 'lists all custom buttons' do
 
-      expected = {
-        'count'     => 1,
-        'subcount'  => 1,
-        'name'      => 'custom_buttons',
-        'resources' => [
-          hash_including('href' => cb_href)
-        ]
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+        get(api_custom_buttons_url)
+
+        expected = {
+          'count'     => 1,
+          'subcount'  => 1,
+          'name'      => 'custom_buttons',
+          'resources' => [
+            hash_including('href' => api_custom_button_url(nil, cb))
+          ]
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
     end
   end
 
   describe 'GET /api/custom_buttons/:id' do
-    it 'does not let you query custom buttons without an appropriate role' do
-      api_basic_authorize
+    context 'without an appropriate role' do
+      it 'does not let you query a custom button' do
+        api_basic_authorize
 
-      get(api_custom_button_url(nil, cb))
+        get(api_custom_button_url(nil, cb))
 
-      expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(:forbidden)
+      end
     end
 
-    it 'can query a custom button by its id' do
-      api_basic_authorize action_identifier(:custom_buttons, :read, :resource_actions, :get)
+    context 'with an appropriate role' do
+      before { api_basic_authorize action_identifier(:custom_buttons, :read, :resource_actions, :get) }
 
-      get(api_custom_button_url(nil, cb))
+      it 'can query a custom button by its id' do
+        get(api_custom_button_url(nil, cb))
 
-      expected = {
-        'id'   => cb.id.to_s,
-        'name' => "custom_button"
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+        expected = {
+          'id'   => cb.id.to_s,
+          'name' => "custom_button"
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
     end
   end
 
