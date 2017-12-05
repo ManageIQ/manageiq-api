@@ -11,7 +11,7 @@ describe 'TasksController' do
   it 'deletes on DELETE' do
     api_basic_authorize resource_action_identifier(:tasks, :delete, :delete)
 
-    delete(api_task_url(nil, task.id))
+    delete(api_task_url(nil, task))
 
     expect(response).to have_http_status(:no_content) # 204
     expect_deleted(task)
@@ -23,7 +23,7 @@ describe 'TasksController' do
     data = {
       :action => 'delete'
     }
-    post(api_task_url(nil, task.id), :params => data)
+    post(api_task_url(nil, task), :params => data)
 
     expect(response).to have_http_status(:ok) # 200
     expect_deleted(task)
@@ -41,8 +41,8 @@ describe 'TasksController' do
     data = {
       :action    => 'delete',
       :resources => [
-        {:href => api_task_url(nil, task.id)},
-        {:href => api_task_url(nil, task2.id)}
+        {:href => api_task_url(nil, task)},
+        {:href => api_task_url(nil, task2)}
       ]
     }
     post(api_tasks_url, :params => data)
