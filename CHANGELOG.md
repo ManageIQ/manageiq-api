@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 74 ending 2017-11-27
+
+### Added
+- Add subresource_action_identifier spec helper [(#225)](https://github.com/ManageIQ/manageiq-api/pull/225)
+- Removes final .first from custom action specs [(#216)](https://github.com/ManageIQ/manageiq-api/pull/216)
+- Fixes custom actions spec tests to not use anything.first [(#215)](https://github.com/ManageIQ/manageiq-api/pull/215)
+- Adding support for optional token_ttl in the UserTokenService. [(#214)](https://github.com/ManageIQ/manageiq-api/pull/214)
+- Adds custom action support for models that are g/yes [(#213)](https://github.com/ManageIQ/manageiq-api/pull/213)
+- Do not expand custom actions on collection searches [(#204)](https://github.com/ManageIQ/manageiq-api/pull/204)
+- Adding custom_actions support for /api/cloud_networks [(#200)](https://github.com/ManageIQ/manageiq-api/pull/200)
+- Add support for /api/orchestration_stacks [(#196)](https://github.com/ManageIQ/manageiq-api/pull/196)
+- Custom actions on generic objects [(#194)](https://github.com/ManageIQ/manageiq-api/pull/194)
+- Add support for /api/switches [(#191)](https://github.com/ManageIQ/manageiq-api/pull/191)
+- Add support for /api/container_volumes [(#190)](https://github.com/ManageIQ/manageiq-api/pull/190)
+- Add support for Physical Servers refresh [(#189)](https://github.com/ManageIQ/manageiq-api/pull/189)
+- Add support for /api/container_templates [(#188)](https://github.com/ManageIQ/manageiq-api/pull/188)
+- Adding support for /api/container_images [(#185)](https://github.com/ManageIQ/manageiq-api/pull/185)
+- Adding support for /api/container_groups [(#184)](https://github.com/ManageIQ/manageiq-api/pull/184)
+- Adding support for /api/cloud_object_store_containers [(#183)](https://github.com/ManageIQ/manageiq-api/pull/183)
+- Add support for /api/container_projects [(#182)](https://github.com/ManageIQ/manageiq-api/pull/182)
+- Add custom action support for models already exposed in api that need it [(#163)](https://github.com/ManageIQ/manageiq-api/pull/163)
+
+### Fixed
+- Fixes an issue where no userid gets retrieved for the token [(#223)](https://github.com/ManageIQ/manageiq-api/pull/223)
+- Fix links in the case when there are no incoming query params [(#221)](https://github.com/ManageIQ/manageiq-api/pull/221)
+- Use destroy_queue for provider delete [(#217)](https://github.com/ManageIQ/manageiq-api/pull/217)
+- Build href_slug from type  [(#212)](https://github.com/ManageIQ/manageiq-api/pull/212)
+- deep symbolize the options field [(#211)](https://github.com/ManageIQ/manageiq-api/pull/211)
+
 ## Unreleased as of Sprint 73 ending 2017-11-13
 
 ### Added
