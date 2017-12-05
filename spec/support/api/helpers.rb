@@ -47,6 +47,10 @@ module Spec
           action_identifier(type, action, :collection_actions, method)
         end
 
+        def resource_action_identifier(type, action, method = :post)
+          action_identifier(type, action, :resource_actions, method)
+        end
+
         def subcollection_action_identifier(type, subtype, action, method = :post)
           subtype_actions = "#{subtype}_subcollection_actions".to_sym
           if ::Api::ApiConfig.collections[type][subtype_actions]
