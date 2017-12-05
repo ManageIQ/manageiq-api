@@ -487,14 +487,6 @@ describe "Services API" do
                                            {"id" => vm2.id.to_s, "cpu_total_cores" => 4}])
     end
 
-    it "can query vms as subcollection via decorators with additional decorators" do
-      get api_service_url(nil, svc1), :params => { :expand => "vms", :attributes => "", :decorators => "vms.supports_console?,vms.supports_cockpit?,vms.supports_vnc_console?" }
-
-      expect_svc_with_vms
-      expect_results_to_match_hash("vms", [{"id" => vm1.id.to_s, "supports_console?" => true, "supports_cockpit?" => anything, "supports_vnc_console?" => anything},
-                                           {"id" => vm2.id.to_s, "supports_console?" => true, "supports_cockpit?" => anything, "supports_vnc_console?" => anything}])
-    end
-
     it "cannot query vms via both virtual attribute and subcollection" do
       get api_service_url(nil, svc1), :params => { :expand => "vms", :attributes => "vms" }
 
