@@ -98,13 +98,13 @@ module Api
     end
 
     def self.allowed_association_types
-      GenericObjectDefinition::ALLOWED_ASSOCIATION_TYPES.collect do |association_type|
-        [Dictionary.gettext(association_type, :type => :model, :notfound => :titleize, :plural => false, :translate => false), association_type]
-      end.sort
+      GenericObjectDefinition::ALLOWED_ASSOCIATION_TYPES.sort.each_with_object({}) do |association_type, result|
+        result[association_type] = Dictionary.gettext(association_type, :type => :model, :notfound => :titleize, :translate => false)
+      end
     end
 
     def self.allowed_types
-      GenericObjectDefinition::TYPE_NAMES.stringify_keys.invert.to_a.sort
+      GenericObjectDefinition::TYPE_NAMES
     end
 
     def options
