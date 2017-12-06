@@ -99,7 +99,7 @@ module Api
 
     def self.allowed_association_types
       GenericObjectDefinition::ALLOWED_ASSOCIATION_TYPES.collect do |association_type|
-        [Dictionary.gettext(association_type, :type => :model, :notfound => :titleize, :plural => false), association_type]
+        [Dictionary.gettext(association_type, :type => :model, :notfound => :titleize, :plural => false, :translate => false), association_type]
       end.sort
     end
 
