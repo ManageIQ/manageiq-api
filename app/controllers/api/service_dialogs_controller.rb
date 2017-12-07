@@ -30,8 +30,8 @@ module Api
     def edit_resource(type, id, data)
       service_dialog = resource_search(id, type, Dialog)
       begin
-        service_dialog.update!(data.except('content'))
         service_dialog.update_tabs(data['content']['dialog_tabs']) if data['content']
+        service_dialog.update!(data.except('content'))
       rescue => err
         raise BadRequestError, "Failed to update service dialog - #{err}"
       end

@@ -183,6 +183,45 @@ describe "Service Dialogs API" do
         expect(response.parsed_body).to include(expected)
       end
 
+      it 'POST /api/service_dialogs/:id can remove tabs or fields' do
+        api_basic_authorize collection_action_identifier(:service_dialogs, :edit)
+        dialog_tab = dialog.dialog_tabs.first
+        dialog_group = dialog_tab.dialog_groups.first
+        new_field = FactoryGirl.create(:dialog_field)
+        dialog_group.dialog_fields << new_field
+
+        updated_dialog = {
+          'content' => {
+            'dialog_tabs' => [
+              'id'            => dialog_tab.id.to_s,
+              'dialog_groups' => [
+                {
+                  'id'            => dialog_group.id.to_s,
+                  'dialog_fields' => [
+                    { 'id' => new_field.id.to_s }
+                  ]
+                }
+              ]
+            ]
+          }
+        }
+        post(api_service_dialog_url(nil, dialog), :params => gen_request(:edit, updated_dialog))
+
+        expected = {
+          'href'        => a_string_including(api_service_dialog_url(nil, dialog)),
+          'id'          => dialog.id.to_s,
+          'dialog_tabs' => a_collection_including(
+            a_hash_including(
+              'dialog_groups' => [
+                a_hash_including('dialog_fields' => [a_hash_including('id' => new_field.id.to_s)])
+              ]
+            )
+          )
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
       it 'POST /api/service_dialogs updates multiple service dialog' do
         dialog2 = FactoryGirl.create(:dialog_with_tab_and_group_and_field)
 
