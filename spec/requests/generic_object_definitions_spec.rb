@@ -828,7 +828,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
       options(api_generic_object_definitions_url)
 
       expected_data = {'allowed_association_types' => Api::GenericObjectDefinitionsController.allowed_association_types,
-                       'allowed_types'             => Api::GenericObjectDefinitionsController.allowed_types}
+                       'allowed_types'             => Api::GenericObjectDefinitionsController.allowed_types.stringify_keys}
 
       expect_options_results(:generic_object_definitions, expected_data)
     end
