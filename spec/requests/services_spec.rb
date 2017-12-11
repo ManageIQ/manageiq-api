@@ -1191,6 +1191,15 @@ describe "Services API" do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
     end
+
+    it "does not return invalid actions" do
+      api_basic_authorize(subcollection_action_identifier(:services, :generic_objects, :read, :get),
+                          collection_action_identifier(:generic_objects, :create))
+
+      get(api_service_generic_objects_url(nil, svc))
+
+      expect(response.parsed_body.key?('actions')).to be_falsey
+    end
   end
 
   context "service custom_attributes" do
