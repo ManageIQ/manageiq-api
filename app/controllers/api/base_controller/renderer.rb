@@ -413,7 +413,7 @@ module Api
       def gen_action_spec_for_collections(collection, cspec, is_subcollection, href)
         if is_subcollection
           target = :subcollection_actions
-          cspec_target = cspec[target] || collection_config.typed_subcollection_actions(@req.collection, collection)
+          cspec_target = collection_config.typed_subcollection_actions(@req.collection, collection) || cspec[target]
         else
           target = :collection_actions
           cspec_target = cspec[target]
