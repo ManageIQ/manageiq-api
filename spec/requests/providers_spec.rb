@@ -276,8 +276,7 @@ describe "Providers API" do
       post(provider_ca_url, :params => gen_request(:add, [{"name" => "name3", "value" => "value3",
                                                     "section" => "bad_section"}]))
 
-      expect_bad_request("Invalid provider custom attributes specified - " \
-                         "Invalid attribute section specified: bad_section")
+      expect_bad_request("Could not add custom attributes - Invalid attribute section specified: bad_section")
     end
 
     it "add custom attributes to a provider" do

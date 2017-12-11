@@ -58,16 +58,6 @@ module Api
       end
     end
 
-    def custom_attributes_edit_resource(object, type, id, data = nil)
-      formatted_data = format_provider_custom_attributes(data)
-      super(object, type, id, formatted_data)
-    end
-
-    def custom_attributes_add_resource(object, type, id, data = nil)
-      formatted_data = format_provider_custom_attributes(data)
-      super(object, type, id, formatted_data)
-    end
-
     def import_vm_resource(type, id = nil, data = {})
       raise BadRequestError, "Must specify an id for import of VM to a #{type} resource" unless id
 
@@ -97,19 +87,6 @@ module Api
     end
 
     private
-
-    def format_provider_custom_attributes(attribute)
-      if CustomAttribute::ALLOWED_API_VALUE_TYPES.include? attribute["field_type"]
-        attribute["value"] = attribute.delete("field_type").safe_constantize.parse(attribute["value"])
-      end
-      attribute["section"] ||= "metadata" unless @req.action == "edit"
-      if attribute["section"].present? && !CustomAttribute::ALLOWED_API_SECTIONS.include?(attribute["section"])
-        raise "Invalid attribute section specified: #{attribute["section"]}"
-      end
-      attribute
-    rescue => err
-      raise BadRequestError, "Invalid provider custom attributes specified - #{err}"
-    end
 
     def provider_ident(provider)
       "Provider id:#{provider.id} name:'#{provider.name}'"
