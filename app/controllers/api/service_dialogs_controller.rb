@@ -53,8 +53,10 @@ module Api
       return unless CONTENT_PARAMS.detect { |param| params.include?(param) } || required
 
       raise BadRequestError, "Must specify all of #{CONTENT_PARAMS.join(',')}" unless (CONTENT_PARAMS - params.keys).count.zero?
-      target_type = params['target_type'].pluralize.to_sym
-      target = resource_search(params['target_id'], target_type, collection_class(target_type))
+      type = collection_config.name_for_subclass(params['target_type'].camelize)
+      raise BadRequestError, "Invalid target_type #{params['target_type']}" unless type
+
+      target = resource_search(params['target_id'], type, collection_class(type))
       resource_action = resource_search(params['resource_action_id'], :resource_actions, ResourceAction)
       [target, resource_action]
     end

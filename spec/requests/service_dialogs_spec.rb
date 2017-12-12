@@ -417,6 +417,40 @@ describe "Service Dialogs API" do
       )
     end
 
+    it "supports refresh when passing in a target_type that is not the name of an api collection type" do
+      api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
+      init_dialog
+
+      post(api_service_dialog_url(nil, dialog1), :params => gen_request(
+        :refresh_dialog_fields,
+        "fields"             => %w(text1),
+        "resource_action_id" => ra1.id,
+        "target_id"          => template.id,
+        "target_type"        => "service_template_ansible_tower"
+      ))
+
+      expect(response.parsed_body).to include(
+        "success" => true,
+        "message" => a_string_matching(/refreshing dialog fields/i),
+        "href"    => api_service_dialog_url(nil, dialog1),
+        "result"  => hash_including("text1")
+      )
+    end
+
+    it "raises a bad request for invalid target_types" do
+      api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
+
+      post(api_service_dialog_url(nil, dialog1), :params => gen_request(
+        :refresh_dialog_fields,
+        "fields"             => %w(text1),
+        "resource_action_id" => ra1.id,
+        "target_id"          => template.id,
+        "target_type"        => "bad_type"
+      ))
+
+      expect(response.parsed_body).to include("success" => false, "message" => "Invalid target_type bad_type")
+    end
+
     it "supports refresh dialog fields of valid fields" do
       api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
       init_dialog
