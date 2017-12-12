@@ -145,7 +145,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'id'                  => object.id.to_s,
         'name'                => 'bar',
         'property_attributes' => { 'is_something' => true },
-        'actions'             => [{'name' => 'foo', 'method' => 'post', 'href' => api_generic_object_definition_generic_object_url(nil, object_def.id, object.id)}]
+        'actions'             => [{'name' => 'foo', 'method' => 'post', 'href' => api_generic_object_url(nil, object.id)}]
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)

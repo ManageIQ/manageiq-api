@@ -376,7 +376,7 @@ module Api
       def expand_resource_custom_actions(resource, json, type, physical_attrs)
         return unless render_actions(physical_attrs) && collection_config.custom_actions?(type)
 
-        href = json.attributes!["href"]
+        href = @req.subcollection.present? ? collection_href(@req.subcollection, resource.id) : json.attributes!["href"]
         json.actions do |js|
           resource_custom_action_names(resource).each do |action|
             add_child js, "name" => action, "method" => :post, "href" => href
