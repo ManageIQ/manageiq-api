@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## Gaprindashvili RC
+
+### Added
+- Tasks: delete support [(#220)](https://github.com/ManageIQ/manageiq-api/pull/220)
+
+### Fixed
+- Specify a target and resource action when retrieving a service dialog [(#231)](https://github.com/ManageIQ/manageiq-api/pull/231)
+- Specify a target and resource when refreshing a dialog field [(#233)](https://github.com/ManageIQ/manageiq-api/pull/233)
+- Return correct subcollection actions [(#243)](https://github.com/ManageIQ/manageiq-api/pull/243)
+- Validate section values for adding new custom attributes via the API [(#240)](https://github.com/ManageIQ/manageiq-api/pull/240)
+- Dialog field/tab deletion [(#239)](https://github.com/ManageIQ/manageiq-api/pull/239)
+- Don't translate model names sent over API [(#237)](https://github.com/ManageIQ/manageiq-api/pull/237)
 
 ## Gaprindashvili Beta2
 
