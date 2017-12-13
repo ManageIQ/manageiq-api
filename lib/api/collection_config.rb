@@ -75,9 +75,10 @@ module Api
     end
 
     def name_for_subclass(resource_class)
+      resource_class = resource_class.to_s
       @cfg.detect do |collection, _|
         collection_class = klass(collection)
-        collection_class && (collection_class == resource_class || collection_class.descendants.include?(resource_class))
+        collection_class && (collection_class.to_s == resource_class || collection_class.descendants.collect(&:to_s).include?(resource_class))
       end.try(:first)
     end
 
