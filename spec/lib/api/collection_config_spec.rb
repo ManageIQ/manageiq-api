@@ -21,6 +21,10 @@ RSpec.describe Api::CollectionConfig do
     it "returns nil for classes unknown to the API" do
       expect(subject.name_for_subclass(String)).to be_nil
     end
+
+    it "returns the collection name for a class from a string" do
+      expect(subject.name_for_subclass("ServiceTemplateAnsibleTower")).to eq(:service_templates)
+    end
   end
 
   describe "[]" do
