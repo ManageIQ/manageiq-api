@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 75 ending 2017-12-11
+
+### Added
+- Generic Object Definition OPTIONS: send hashes rather than arrays [(#238)](https://github.com/ManageIQ/manageiq-api/pull/238)
+- Use type names directly from GenericObjectDefinition object [(#232)](https://github.com/ManageIQ/manageiq-api/pull/232)
+- Tasks: delete support [(#220)](https://github.com/ManageIQ/manageiq-api/pull/220)
+- Add delete for router [(#193)](https://github.com/ManageIQ/manageiq-api/pull/193)
+
+### Fixed
+- Return correct subcollection actions [(#243)](https://github.com/ManageIQ/manageiq-api/pull/243)
+- Validate section values for adding new custom attributes via the API [(#240)](https://github.com/ManageIQ/manageiq-api/pull/240)
+- Dialog field/tab deletion [(#239)](https://github.com/ManageIQ/manageiq-api/pull/239)
+- Don't translate model names sent over API [(#237)](https://github.com/ManageIQ/manageiq-api/pull/237)
+- Specify a target and resource when refreshing a dialog field [(#233)](https://github.com/ManageIQ/manageiq-api/pull/233)
+- Specify a target and resource action when retrieving a service dialog [(#231)](https://github.com/ManageIQ/manageiq-api/pull/231)
+
 ## Unreleased as of Sprint 74 ending 2017-11-27
 
 ### Added
