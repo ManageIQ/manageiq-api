@@ -12,10 +12,12 @@ module Api
 
         if type
           key_id = collection_config.resource_identifier(type)
-          href = new_href(type, obj[key_id], obj["href"])
-          if href.present?
-            result["href"] = href
-            attrs -= ["href"]
+          if obj[key_id].present? && obj['href'].blank?
+            href = normalize_href(type, obj[key_id])
+            if href.present?
+              result["href"] = href
+              attrs -= ["href"]
+            end
           end
         end
 
@@ -117,10 +119,6 @@ module Api
       def normalize_array(obj, type = nil)
         type ||= @req.subject
         obj.collect { |item| normalize_attr(get_reftype(type, type, item), item) }
-      end
-
-      def new_href(type, current_id, current_href)
-        normalize_href(type, current_id) if current_id.present? && current_href.blank?
       end
 
       def create_resource_attributes_hash(attributes, resource)
