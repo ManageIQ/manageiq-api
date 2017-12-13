@@ -803,9 +803,7 @@ describe "Providers API" do
       post(api_provider_url(nil, provider), :params => gen_request(:delete))
 
       expect_single_action_result(:success   => true,
-                                  :message   => "deleting",
-                                  :task_href => api_tasks_url,
-                                  :task      => true,
+                                  :message   => "queued for deletion",
                                   :href      => api_provider_url(nil, provider))
     end
 
@@ -820,11 +818,11 @@ describe "Providers API" do
                                                       {"href" => api_provider_url(nil, p2)}]))
       expected = {
         "results" => [
-          a_hash_including('task_href' => a_string_including(api_tasks_url)),
-          a_hash_including('task_href' => a_string_including(api_tasks_url))
+          a_hash_including('message' => a_string_including("queued for deletion")),
+          a_hash_including('message' => a_string_including("queued for deletion"))
         ]
       }
-      expect_multiple_action_result(2, :task => true)
+      expect_multiple_action_result(2)
       expect(response.parsed_body).to include(expected)
     end
   end
