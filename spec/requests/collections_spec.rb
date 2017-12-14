@@ -17,9 +17,20 @@ describe "Rest API Collections" do
 
     get collection_url, :params => { :expand => "resources" }
 
-    expect_query_result(collection, klass.count, klass.count)
-    expected = attr == :id ? klass.pluck(:id).collect(&:to_s) : klass.pluck(attr)
-    expect_result_resources_to_include_data("resources", attr.to_s => expected)
+    expected_resources = klass.pluck(attr).map do |id|
+      a_hash_including(
+        attr.to_s => id.to_s
+      )
+    end
+
+    expected = {
+      "name"      => collection.to_s,
+      "count"     => klass.count,
+      "subcount"  => klass.count,
+      "resources" => match_array(expected_resources)
+    }
+
+    expect(response.parsed_body).to include(expected)
   end
 
   def test_collection_bulk_query(collection, collection_url, klass, id = nil)
