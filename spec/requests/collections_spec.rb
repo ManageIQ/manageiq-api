@@ -17,9 +17,11 @@ describe "Rest API Collections" do
 
     get collection_url, :params => { :expand => "resources" }
 
-    expected_resources = klass.pluck(attr).map do |id|
+    resource_identifier = Api::CollectionConfig.new.resource_identifier(collection)
+    expected_resources = klass.all.map do |record|
       a_hash_including(
-        attr.to_s => id.to_s
+        attr.to_s => record.send(attr).to_s,
+        "href"    => "#{collection_url}/#{record.send(resource_identifier)}"
       )
     end
 
@@ -92,12 +94,12 @@ describe "Rest API Collections" do
 
     it "query Currencies" do
       FactoryGirl.create(:chargeback_rate_detail_currency)
-      test_collection_query(:currencies, "/api/currencies", ChargebackRateDetailCurrency)
+      test_collection_query(:currencies, api_currencies_url, ChargebackRateDetailCurrency)
     end
 
     it "query Measures" do
       FactoryGirl.create(:chargeback_rate_detail_measure)
-      test_collection_query(:measures, "/api/measures", ChargebackRateDetailMeasure)
+      test_collection_query(:measures, api_measures_url, ChargebackRateDetailMeasure)
     end
 
     it "query Clusters" do
