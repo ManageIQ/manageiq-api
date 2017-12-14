@@ -17,9 +17,22 @@ describe "Rest API Collections" do
 
     get collection_url, :params => { :expand => "resources" }
 
-    expect_query_result(collection, klass.count, klass.count)
-    expected = attr == :id ? klass.pluck(:id).collect(&:to_s) : klass.pluck(attr)
-    expect_result_resources_to_include_data("resources", attr.to_s => expected)
+    resource_identifier = Api::CollectionConfig.new.resource_identifier(collection)
+    expected_resources = klass.all.map do |record|
+      a_hash_including(
+        attr.to_s => record.send(attr).to_s,
+        "href"    => "#{collection_url}/#{record.send(resource_identifier)}"
+      )
+    end
+
+    expected = {
+      "name"      => collection.to_s,
+      "count"     => klass.count,
+      "subcount"  => klass.count,
+      "resources" => match_array(expected_resources)
+    }
+
+    expect(response.parsed_body).to include(expected)
   end
 
   def test_collection_bulk_query(collection, collection_url, klass, id = nil)
@@ -81,12 +94,12 @@ describe "Rest API Collections" do
 
     it "query Currencies" do
       FactoryGirl.create(:chargeback_rate_detail_currency)
-      test_collection_query(:currencies, "/api/currencies", ChargebackRateDetailCurrency)
+      test_collection_query(:currencies, api_currencies_url, ChargebackRateDetailCurrency)
     end
 
     it "query Measures" do
       FactoryGirl.create(:chargeback_rate_detail_measure)
-      test_collection_query(:measures, "/api/measures", ChargebackRateDetailMeasure)
+      test_collection_query(:measures, api_measures_url, ChargebackRateDetailMeasure)
     end
 
     it "query Clusters" do
