@@ -73,11 +73,14 @@ module Api
         svalue.match(pref) ? svalue : "#{pref}/#{svalue}#{suffix}"
       end
 
-      #
-      # Let's normalize an href based on type and id value
-      #
       def normalize_href(type, value)
-        type.to_s == @req.subcollection ? subcollection_href(type, value) : collection_href(type, value)
+        type = type.to_s
+
+        if type == @req.subcollection
+          subcollection_href(type, value)
+        elsif type == @req.collection
+          collection_href(type, value)
+        end
       end
 
       def subcollection_href(type, value)
