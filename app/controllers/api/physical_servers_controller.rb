@@ -43,6 +43,8 @@ module Api
     def refresh_resource(type, id, _data = nil)
       raise BadRequestError, "Must specify an id for refreshing a #{type} resource" unless id
 
+      ensure_resource_exists(type, id) if single_resource?
+
       api_action(type, id) do |klass|
         physical_server = resource_search(id, type, klass)
         api_log_info("Refreshing #{physical_server_ident(physical_server)}")
@@ -55,6 +57,8 @@ module Api
     def change_resource_state(state, type, id)
       raise BadRequestError, "Must specify an id for changing a #{type} resource" unless id
 
+      ensure_resource_exists(type, id) if single_resource?
+
       api_action(type, id) do |klass|
         begin
           server = resource_search(id, type, klass)
@@ -66,6 +70,10 @@ module Api
           action_result(false, err.to_s)
         end
       end
+    end
+
+    def ensure_resource_exists(type, id)
+      raise NotFoundError unless collection_class(type).exists?(id)
     end
 
     def server_ident(server)
