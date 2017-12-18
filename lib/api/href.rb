@@ -48,6 +48,12 @@ module Api
       path_segments[version? ? 4 : 3]
     end
 
+    # @return true if there is a collection path segment,
+    #   otherwise false
+    def collection?
+      !!collection
+    end
+
     # @return [String, nil] the name of the subcollection if there is
     #   one, otherwise nil
     def subcollection

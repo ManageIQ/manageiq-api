@@ -12,10 +12,12 @@ module Api
 
         if type
           key_id = collection_config.resource_identifier(type)
-          href = new_href(type, obj[key_id], obj["href"])
-          if href.present?
-            result["href"] = href
-            attrs -= ["href"]
+          if obj[key_id].present? && obj['href'].blank?
+            href = normalize_href(type, obj[key_id])
+            if href.present?
+              result["href"] = href
+              attrs -= ["href"]
+            end
           end
         end
 
@@ -77,15 +79,23 @@ module Api
       # Let's normalize an href based on type and id value
       #
       def normalize_href(type, value)
-        type.to_s == @req.subcollection ? subcollection_href(type, value) : collection_href(type, value)
-      end
+        href = Api::Href.new(type.to_s)
 
-      def subcollection_href(type, value)
-        normalize_url("#{@req.collection}/#{@req.collection_id}/#{type}/#{value}")
-      end
-
-      def collection_href(type, value)
-        normalize_url("#{type}/#{value}")
+        if href.collection? && href.subcollection?
+          # type is a 'reftype' (/:collection/:id/:subcollection)
+          normalize_url("#{href.collection}/#{href.collection_id}/#{href.subcollection}/#{value}")
+        elsif href.collection == @req.subcollection
+          # type is a subcollection name
+          # Use the request to assume the proper collection to nest this under
+          if collection_config.subcollection?(@req.collection, href.collection.to_sym)
+            normalize_url("#{@req.collection}/#{@req.collection_id}/#{href.collection}/#{value}")
+          end
+        else
+          # type is a collection name
+          if collection_config.collection?(href.collection)
+            normalize_url("#{href.collection}/#{value}")
+          end
+        end
       end
 
       #
@@ -117,10 +127,6 @@ module Api
       def normalize_array(obj, type = nil)
         type ||= @req.subject
         obj.collect { |item| normalize_attr(get_reftype(type, type, item), item) }
-      end
-
-      def new_href(type, current_id, current_href)
-        normalize_href(type, current_id) if current_id.present? && current_href.blank?
       end
 
       def create_resource_attributes_hash(attributes, resource)
