@@ -104,6 +104,56 @@ RSpec.describe 'GenericObjects API' do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
     end
+
+    it "includes the hrefs for custom buttons and button groups" do
+      generic_no_group = FactoryGirl.create(:custom_button, :name => "generic_no_group", :applies_to_class => "GenericObject")
+      generic_group = FactoryGirl.create(:custom_button, :name => "generic_group", :applies_to_class => "GenericObject")
+      generic_group_set = FactoryGirl.create(:custom_button_set, :name => "generic_group_set")
+      generic_group_set.add_member(generic_group)
+      assigned_no_group = FactoryGirl.create(
+        :custom_button,
+        :name             => "assigned_no_group",
+        :applies_to_class => "GenericObjectDefinition",
+        :applies_to_id    => object_definition.id
+      )
+      assigned_group = FactoryGirl.create(
+        :custom_button,
+        :name             => "assigned_group",
+        :applies_to_class => "GenericObjectDefinition",
+        :applies_to_id    => object_definition.id
+      )
+      assigned_group_set = FactoryGirl.create(:custom_button_set, :name => "assigned_group_set")
+      assigned_group_set.add_member(assigned_group)
+      object_definition.update(:custom_button_sets => [assigned_group_set])
+      api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get)
+
+      get(api_generic_object_url(nil, object), :params => {:attributes => "custom_actions"})
+
+      expected = {
+        "custom_actions" => a_hash_including(
+          "buttons"       => a_collection_containing_exactly(
+            a_hash_including("href" => api_custom_button_url(nil, assigned_no_group)),
+            a_hash_including("href" => api_custom_button_url(nil, generic_no_group))
+          ),
+          "button_groups" => a_collection_containing_exactly(
+            a_hash_including(
+              "href"    => api_custom_button_set_url(nil, generic_group_set),
+              "buttons" => a_collection_containing_exactly(
+                a_hash_including("href" => api_custom_button_url(nil, generic_group))
+              )
+            ),
+            a_hash_including(
+              "href"    => api_custom_button_set_url(nil, assigned_group_set),
+              "buttons" => a_collection_containing_exactly(
+                a_hash_including("href" => api_custom_button_url(nil, assigned_group))
+              )
+            )
+          )
+        )
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
   end
 
   describe 'POST /api/generic_objects' do
