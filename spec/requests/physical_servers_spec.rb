@@ -237,6 +237,66 @@ RSpec.describe "physical_servers API" do
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
       end
     end
+
+    context "with a non existent physical server" do
+      actions = [
+        :power_on,
+        :power_off,
+        :power_off_now,
+        :restart,
+        :restart_now,
+        :restart_to_sys_setup,
+        :restart_mgmt_controller
+      ]
+
+      actions.each do |action|
+        it "fails to #{action} a server" do
+          api_basic_authorize(action_identifier(:physical_servers, action, :resource_actions, :post))
+
+          post(api_physical_server_url(nil, 999_999), :params => gen_request(action))
+
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context "with an existent and a non existent physical server" do
+      actions = [
+        :power_on,
+        :power_off,
+        :power_off_now,
+        :restart,
+        :restart_now,
+        :restart_to_sys_setup,
+        :restart_mgmt_controller
+      ]
+
+      actions.each do |action|
+        it "returns status 200 and a failure message for the non existent physical server" do
+          ps = FactoryGirl.create(:physical_server)
+          api_basic_authorize(action_identifier(:physical_servers, action, :resource_actions, :post))
+
+          post(api_physical_servers_url, :params => gen_request(action, [{"href" => api_physical_server_url(nil, ps)}, {"href" => api_physical_server_url(nil, 999_999)}]))
+
+          expected = {
+            "results" => a_collection_containing_exactly(
+              a_hash_including(
+                "message" => a_string_matching(/#{ps.id}/),
+                "success" => true,
+                "href"    => api_physical_server_url(nil, ps)
+              ),
+              a_hash_including(
+                "message" => a_string_matching(/#{999_999}/),
+                "success" => false,
+                "href"    => api_physical_server_url(nil, 999_999)
+              )
+            )
+          }
+          expect(response.parsed_body).to include(expected)
+          expect(response).to have_http_status(:ok)
+        end
+      end
+    end
   end
 
   describe "turn on/off a physical server's location LED" do
@@ -301,6 +361,58 @@ RSpec.describe "physical_servers API" do
 
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
+      end
+    end
+
+    context "with a non existent physical server" do
+      actions = [
+        :blink_loc_led,
+        :turn_on_loc_led,
+        :turn_off_loc_led
+      ]
+
+      actions.each do |action|
+        it "fails to #{action} a server" do
+          api_basic_authorize(action_identifier(:physical_servers, action, :resource_actions, :post))
+
+          post(api_physical_server_url(nil, 999_999), :params => gen_request(action))
+
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context "with an existent and a non existent physical server" do
+      actions = [
+        :blink_loc_led,
+        :turn_on_loc_led,
+        :turn_off_loc_led
+      ]
+
+      actions.each do |action|
+        it "for the action #{action} returns status 200 and a failure message for the non existent physical server" do
+          ps = FactoryGirl.create(:physical_server)
+          api_basic_authorize(action_identifier(:physical_servers, action, :resource_actions, :post))
+
+          post(api_physical_servers_url, :params => gen_request(action, [{"href" => api_physical_server_url(nil, ps)}, {"href" => api_physical_server_url(nil, 999_999)}]))
+
+          expected = {
+            "results" => a_collection_containing_exactly(
+              a_hash_including(
+                "message" => a_string_matching(/#{ps.id}/),
+                "success" => true,
+                "href"    => api_physical_server_url(nil, ps)
+              ),
+              a_hash_including(
+                "message" => a_string_matching(/#{999_999}/),
+                "success" => false,
+                "href"    => api_physical_server_url(nil, 999_999)
+              )
+            )
+          }
+          expect(response.parsed_body).to include(expected)
+          expect(response).to have_http_status(:ok)
+        end
       end
     end
   end
