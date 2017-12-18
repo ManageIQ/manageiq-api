@@ -266,9 +266,33 @@ module Api
         return unless attr_accessible?(resource, attr)
         virtattr_accessor = virtual_attribute_accessor(type, attr)
         value = virtattr_accessor ? send(virtattr_accessor, resource) : virtual_attribute_search(resource, attr)
+        value = add_custom_action_hrefs(value) if attr == "custom_actions"
         result = {attr => normalize_attr(attr, value)}
         # set nil vtype above to "#{type}/#{resource.id}/#{attr}" to support id normalization
         [value, result]
+      end
+
+      #
+      # HACK: Because custom actions are represented as a plain hash
+      # in the model, we lose all context about the type of object we
+      # must add an href to in the normalization process. Refactoring
+      # all of normalization to get the proper context will be
+      # necessary in order to fix this correctly. Instead, we
+      # intercept the result here, adding the correct hrefs, which
+      # will not be overwritten later.
+      #
+      def add_custom_action_hrefs(value)
+        result = value.dup
+        result[:buttons].each do |button|
+          button["href"] = normalize_href(:custom_buttons, button["id"])
+        end
+        result[:button_groups].each do |group|
+          group["href"] = normalize_href(:custom_button_sets, group["id"])
+          group[:buttons].each do |button|
+            button["href"] = normalize_href(:custom_buttons, button["id"])
+          end
+        end
+        result
       end
 
       def fetch_indirect_virtual_attribute(_type, resource, base, attr, object_hash)
