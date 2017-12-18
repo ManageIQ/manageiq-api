@@ -79,15 +79,23 @@ module Api
       # Let's normalize an href based on type and id value
       #
       def normalize_href(type, value)
-        type.to_s == @req.subcollection ? subcollection_href(type, value) : collection_href(type, value)
-      end
+        href = Api::Href.new(type.to_s)
 
-      def subcollection_href(type, value)
-        normalize_url("#{@req.collection}/#{@req.collection_id}/#{type}/#{value}")
-      end
-
-      def collection_href(type, value)
-        normalize_url("#{type}/#{value}")
+        if href.collection? && href.subcollection?
+          # type is a 'reftype' (/:collection/:id/:subcollection)
+          normalize_url("#{href.collection}/#{href.collection_id}/#{href.subcollection}/#{value}")
+        elsif href.collection == @req.subcollection
+          # type is a subcollection name
+          # Use the request to assume the proper collection to nest this under
+          if collection_config.subcollection?(@req.collection, href.collection.to_sym)
+            normalize_url("#{@req.collection}/#{@req.collection_id}/#{href.collection}/#{value}")
+          end
+        else
+          # type is a collection name
+          if collection_config.collection?(href.collection)
+            normalize_url("#{href.collection}/#{value}")
+          end
+        end
       end
 
       #
