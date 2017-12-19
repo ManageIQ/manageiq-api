@@ -306,4 +306,101 @@ describe "Alerts Definition Profiles API" do
     expect(alert_definition_profiles.first.reload.description).to eq("Updated Test Alert Profile 1")
     expect(alert_definition_profiles.second.reload.description).to eq("Updated Test Alert Profile 2")
   end
+
+  it "assigns alert definitions to a profile" do
+    api_basic_authorize collection_action_identifier(:alert_definition_profiles, :edit)
+    alert_definition_profile = FactoryGirl.create(:miq_alert_set)
+    alert_definitions = FactoryGirl.create_list(:miq_alert, 2)
+
+    post(
+      api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile),
+      :params => {
+        :action    => "assign",
+        :resources => [
+          {:id => alert_definitions[0].id},
+          {:href => api_alert_definition_url(nil, alert_definitions[1])}
+        ]
+      }
+    )
+
+    expect_multiple_action_result(2)
+    expected = {
+      'results' => [
+        a_hash_including("success"               => true,
+                         "message"               => "Assigning alert_definition #{alert_definitions[0].id} to profile #{alert_definition_profile.id}",
+                         "href"                  => api_alert_definition_profile_url(nil, alert_definition_profile),
+                         "alert_definition_href" => api_alert_definition_url(nil, alert_definitions[0])),
+        a_hash_including("success"               => true,
+                         "message"               => "Assigning alert_definition #{alert_definitions[1].id} to profile #{alert_definition_profile.id}",
+                         "href"                  => api_alert_definition_profile_url(nil, alert_definition_profile),
+                         "alert_definition_href" => api_alert_definition_url(nil, alert_definitions[1]))
+      ]
+    }
+    expect(response.parsed_body).to include(expected)
+  end
+
+  it "unassigns alert definitions from a profile" do
+    api_basic_authorize collection_action_identifier(:alert_definition_profiles, :edit)
+    alert_definition_profile = FactoryGirl.create(:miq_alert_set)
+    alert_definitions = FactoryGirl.create_list(:miq_alert, 2)
+    alert_definition_profile.add_member(alert_definitions[0])
+    alert_definition_profile.add_member(alert_definitions[1])
+
+    post(
+      api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile),
+      :params => {
+        :action    => "unassign",
+        :resources => [
+          {:id => alert_definitions[0].id},
+          {:href => api_alert_definition_url(nil, alert_definitions[1])}
+        ]
+      }
+    )
+
+    expect_multiple_action_result(2)
+    expected = {
+      'results' => [
+        a_hash_including("success"               => true,
+                         "message"               => "Unassigning alert_definition #{alert_definitions[0].id} from profile #{alert_definition_profile.id}",
+                         "href"                  => api_alert_definition_profile_url(nil, alert_definition_profile),
+                         "alert_definition_href" => api_alert_definition_url(nil, alert_definitions[0])),
+        a_hash_including("success"               => true,
+                         "message"               => "Unassigning alert_definition #{alert_definitions[1].id} from profile #{alert_definition_profile.id}",
+                         "href"                  => api_alert_definition_profile_url(nil, alert_definition_profile),
+                         "alert_definition_href" => api_alert_definition_url(nil, alert_definitions[1]))
+      ]
+    }
+    expect(response.parsed_body).to include(expected)
+  end
+
+  it "unassigns an alert definition from a profile to which it wasn't assigned" do
+    api_basic_authorize collection_action_identifier(:alert_definition_profiles, :edit)
+    alert_definition_profile = FactoryGirl.create(:miq_alert_set)
+    alert_definition = FactoryGirl.create(:miq_alert)
+
+    post(api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile), :params => gen_request(:unassign, alert_definition))
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body["results"].count).to eq(1)
+    expect(response.parsed_body["results"]).to include(a_hash_including("success" => false,
+                                                                        "message" => "Unassigning alert_definition #{alert_definition.id} from profile #{alert_definition_profile.id}"))
+  end
+
+  it "forbids assignments of an alert definition without an appropriate role" do
+    api_basic_authorize
+    alert_definition_profile = FactoryGirl.create(:miq_alert_set)
+    alert_definition = FactoryGirl.create(:miq_alert)
+    post(api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile), :params => gen_request(:assign, alert_definition))
+
+    expect(response).to have_http_status(:forbidden)
+  end
+
+  it "forbids unassignments of an alert definition without an appropriate role" do
+    api_basic_authorize
+    alert_definition_profile = FactoryGirl.create(:miq_alert_set)
+    alert_definition = FactoryGirl.create(:miq_alert)
+    post(api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile), :params => gen_request(:unassign, alert_definition))
+
+    expect(response).to have_http_status(:forbidden)
+  end
 end

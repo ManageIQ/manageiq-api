@@ -116,6 +116,12 @@
       :delete:
       - :name: delete
         :identifier: alert_definition_profile_delete
+    :alert_definitions_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: alert_definition_profile_edit
+      - :name: unassign
+        :identifier: alert_definition_profile_edit
   :alert_definitions:
     :description: Alert Definitions
     :identifier: alert_definition
