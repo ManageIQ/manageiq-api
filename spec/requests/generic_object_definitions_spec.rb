@@ -134,7 +134,8 @@ RSpec.describe 'GenericObjectDefinitions API' do
       object.add_to_property_association('vms', [vm])
     end
 
-    it 'returns the generic object with property attributes by default' do
+    it 'returns the generic object with property attributes and custom method actions by default' do
+      object_def.add_property_method('foo')
       api_basic_authorize subcollection_action_identifier(:generic_object_definitions, :generic_objects, :read, :get)
 
       get(api_generic_object_definition_generic_object_url(nil, object_def.id, object.id))
@@ -143,7 +144,8 @@ RSpec.describe 'GenericObjectDefinitions API' do
         'href'                => api_generic_object_definition_generic_object_url(nil, object_def, object),
         'id'                  => object.id.to_s,
         'name'                => 'bar',
-        'property_attributes' => { 'is_something' => true }
+        'property_attributes' => { 'is_something' => true },
+        'actions'             => [{'name' => 'foo', 'method' => 'post', 'href' => api_generic_object_url(nil, object.id)}]
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)

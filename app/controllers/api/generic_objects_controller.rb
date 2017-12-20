@@ -27,10 +27,6 @@ module Api
 
     private
 
-    def resource_custom_action_names(resource)
-      (property_method_names(resource) << super).flatten
-    end
-
     def invoke_custom_action(type, resource, action, data)
       return super(type, resource.reload, action, data) if resource_custom_action_button(resource, action)
       result = begin
@@ -44,11 +40,6 @@ module Api
       log_result(result)
       result
     end
-
-    def property_method_names(resource)
-      resource.respond_to?(:property_methods) ? Array(resource.property_methods) : []
-    end
-
     def method_description(resource, action)
       "Invoked method #{resource.generic_object_definition.name}##{action} for Generic Object id: #{resource.id} name: #{resource.name}"
     end

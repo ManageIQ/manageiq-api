@@ -5,6 +5,14 @@ module Api
 
       private
 
+      def resource_custom_action_names(resource)
+        (property_method_names(resource) << super).flatten
+      end
+
+      def property_method_names(resource)
+        resource.respond_to?(:property_methods) ? Array(resource.property_methods) : []
+      end
+
       def create_generic_object(object_definition, data)
         data['generic_object_definition'] = object_definition
         GenericObject.new(data.except(*ADDITIONAL_ATTRS)).tap do |generic_object|
