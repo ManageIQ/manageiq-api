@@ -146,31 +146,6 @@ describe "Rest API Collections" do
       test_collection_query(:hosts, api_hosts_url, Host, :guid)
     end
 
-    it "query Middleware Datasources" do
-      FactoryGirl.create(:middleware_datasource)
-      test_collection_query(:middleware_datasources, api_middleware_datasources_url, MiddlewareDatasource)
-    end
-
-    it "query Middleware Deployments" do
-      FactoryGirl.create(:middleware_deployment)
-      test_collection_query(:middleware_deployments, api_middleware_deployments_url, MiddlewareDeployment)
-    end
-
-    it "query Middleware Domains" do
-      FactoryGirl.create(:middleware_domain)
-      test_collection_query(:middleware_domains, api_middleware_domains_url, MiddlewareDomain)
-    end
-
-    it "query Middleware Messagings" do
-      FactoryGirl.create(:middleware_messaging)
-      test_collection_query(:middleware_messagings, api_middleware_messagings_url, MiddlewareMessaging)
-    end
-
-    it "query Middleware Servers" do
-      FactoryGirl.create(:middleware_server)
-      test_collection_query(:middleware_servers, api_middleware_servers_url, MiddlewareServer)
-    end
-
     it "query Pictures" do
       FactoryGirl.create(:picture)
       test_collection_query(:pictures, api_pictures_url, Picture)
@@ -442,31 +417,6 @@ describe "Rest API Collections" do
     it "bulk query Hosts" do
       FactoryGirl.create(:host)
       test_collection_bulk_query(:hosts, api_hosts_url, Host)
-    end
-
-    it "bulk query MiddlewareDatasources" do
-      FactoryGirl.create(:middleware_datasource)
-      test_collection_bulk_query(:middleware_datasources, api_middleware_datasources_url, MiddlewareDatasource)
-    end
-
-    it "bulk query MiddlewareDeployments" do
-      FactoryGirl.create(:middleware_deployment)
-      test_collection_bulk_query(:middleware_deployments, api_middleware_deployments_url, MiddlewareDeployment)
-    end
-
-    it "bulk query MiddlewareDomains" do
-      FactoryGirl.create(:middleware_domain)
-      test_collection_bulk_query(:middleware_domains, api_middleware_domains_url, MiddlewareDomain)
-    end
-
-    it "bulk query MiddlewareMessaging" do
-      FactoryGirl.create(:middleware_messaging)
-      test_collection_bulk_query(:middleware_messagings, api_middleware_messagings_url, MiddlewareMessaging)
-    end
-
-    it "bulk query MiddlewareServer" do
-      FactoryGirl.create(:middleware_server)
-      test_collection_bulk_query(:middleware_servers, api_middleware_servers_url, MiddlewareServer)
     end
 
     it 'bulk query NetworkRouters' do
