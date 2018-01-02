@@ -53,8 +53,8 @@ module Api
       delete_action_handler do
         raise BadRequestError, "Must specify an id for deleting a #{type} resource" unless id
         provider = resource_search(id, type, collection_class(type))
-        task = provider.destroy_queue
-        action_result(true, "#{provider_ident(provider)} deleting", :task_id => task.id, :parent_id => id)
+        task_id = provider.destroy_queue
+        action_result(true, "#{provider_ident(provider)} deleting", :task_id => task_id, :parent_id => id)
       end
     end
 
