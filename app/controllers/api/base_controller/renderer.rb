@@ -53,8 +53,8 @@ module Api
               end
             end
           end
-          cspec = collection_config[type]
-          aspecs = gen_action_spec_for_collections(type, cspec, opts[:is_subcollection], reftype) if cspec
+
+          aspecs = Api::ActionsBuilder.new(@req, reftype, type, collection_config, User.current_user).actions
           add_actions(json, aspecs, reftype)
 
           if link_builder.links?
@@ -82,7 +82,7 @@ module Api
         expand_subcollections(json, type, resource) if resource.respond_to?(:attributes)
         json.set!('href_slug', "#{type}/#{resource.id}") if virtual_attrs.include?('href_slug')
 
-        expand_actions(resource, json, type, opts, physical_attrs) if opts[:expand_actions]
+        expand_actions(resource, json, type, physical_attrs) if opts[:expand_actions]
         expand_resource_custom_actions(resource, json, type, physical_attrs) if opts[:expand_custom_actions]
         json
       end
@@ -356,12 +356,11 @@ module Api
       #
       # Let's expand actions
       #
-      def expand_actions(resource, json, type, opts, physical_attrs)
+      def expand_actions(resource, json, type, physical_attrs)
         return unless render_actions(physical_attrs)
 
         href = json.attributes!["href"]
-        cspec = collection_config[type]
-        aspecs = gen_action_spec_for_resources(cspec, opts[:is_subcollection], href, resource) if cspec
+        aspecs = Api::ActionsBuilder.new(@req, href, type, collection_config, User.current_user, resource).actions
         add_actions(json, aspecs, type)
       end
 
@@ -434,45 +433,6 @@ module Api
         end
       end
 
-      def gen_action_spec_for_collections(collection, cspec, is_subcollection, href)
-        if is_subcollection
-          target = :subcollection_actions
-          cspec_target = collection_config.typed_subcollection_actions(@req.collection, collection) || cspec[target]
-        else
-          target = :collection_actions
-          cspec_target = cspec[target]
-        end
-        return [] unless cspec_target
-        cspec_target.each.collect do |method, action_definitions|
-          next unless render_actions_for_method(cspec[:verbs], method)
-          typed_action_definitions = fetch_typed_subcollection_actions(method, is_subcollection) || action_definitions
-          typed_action_definitions.each.collect do |action|
-            if !action[:disabled] && api_user_role_allows?(action[:identifier])
-              {"name" => action[:name], "method" => method, "href" => (href ? href : collection)}
-            end
-          end
-        end.flatten.compact
-      end
-
-      def gen_action_spec_for_resources(cspec, is_subcollection, href, resource)
-        if is_subcollection
-          target = :subresource_actions
-          cspec_target = cspec[target] || collection_config.typed_subcollection_actions(@req.collection, @req.subcollection, :subresource)
-        else
-          target = :resource_actions
-          cspec_target = cspec[target]
-        end
-        return [] unless cspec_target
-        cspec_target.each.collect do |method, action_definitions|
-          next unless render_actions_for_method(cspec[:verbs], method)
-          typed_action_definitions = action_definitions || fetch_typed_subcollection_actions(method, is_subcollection)
-          typed_action_definitions.each.collect do |action|
-            next unless !action[:disabled] && api_user_role_allows?(action[:identifier]) && action_validated?(resource, action)
-            build_resource_actions(action, method, href, cspec[:verbs])
-          end
-        end.flatten.compact
-      end
-
       def build_resource_actions(action, method, href, verbs)
         actions = [{"name" => action[:name], "method" => method, "href" => href}]
         if action[:name] == "edit"
@@ -482,15 +442,6 @@ module Api
         actions
       end
 
-      def render_actions_for_method(methods, method)
-        method != :get && methods.include?(method)
-      end
-
-      def fetch_typed_subcollection_actions(method, is_subcollection)
-        return unless is_subcollection
-        collection_config.typed_subcollection_action(@req.collection, @req.subcollection, method)
-      end
-
       def api_user_role_allows?(action_identifier)
         return true unless action_identifier
         Array(action_identifier).any? { |identifier| User.current_user.role_allows?(:identifier => identifier) }
@@ -498,14 +449,6 @@ module Api
 
       def render_actions(physical_attrs)
         render_attr("actions") || physical_attrs.blank?
-      end
-
-      def action_validated?(resource, action_spec)
-        if action_spec[:options] && action_spec[:options].include?(:validate_action)
-          validate_method = "validate_#{action_spec[:name]}"
-          return resource.respond_to?(validate_method) && resource.send(validate_method)
-        end
-        true
       end
 
       def render_options(resource, data = {})
