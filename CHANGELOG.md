@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 76 ending 2018-01-01
+
+### Added
+- Allow assigning/un-assigning of alert definitions to alert profiles [(#149)](https://github.com/ManageIQ/manageiq-api/pull/149)
+- Alert Definitions: add hash_expression [(#76)](https://github.com/ManageIQ/manageiq-api/pull/76)
+
+### Fixed
+- Only require read priviliges to show cloud volumes [(#254)](https://github.com/ManageIQ/manageiq-api/pull/254)
+- Fix custom actions hrefs [(#252)](https://github.com/ManageIQ/manageiq-api/pull/252)
+- Don't return non-existent hrefs [(#251)](https://github.com/ManageIQ/manageiq-api/pull/251)
+- Return property method actions on Generic Object subresources [(#247)](https://github.com/ManageIQ/manageiq-api/pull/247)
+- Ensure that correct target is passed to resource_search on dialog refresh [(#246)](https://github.com/ManageIQ/manageiq-api/pull/246)
+
 ## Unreleased as of Sprint 75 ending 2017-12-11
 
 ### Added
