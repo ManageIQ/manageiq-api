@@ -2151,7 +2151,7 @@
       - :name: edit
         :identifier: dialog_edit
       - :name: copy
-        :identifier: dialog_copy
+        :identifier: dialog_copy_editor
     :resource_actions:
       :get:
       - :name: read
@@ -2164,7 +2164,7 @@
       - :name: edit
         :identifier: dialog_edit
       - :name: copy
-        :identifier: dialog_copy
+        :identifier: dialog_copy_editor
       :delete:
       - :name: delete
         :identifier: dialog_delete
