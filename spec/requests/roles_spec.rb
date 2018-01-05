@@ -74,10 +74,9 @@ describe "Roles API" do
   end
 
   describe "Features" do
+    let(:role) { FactoryGirl.create(:miq_user_role, :name => "Test Role", :miq_product_features => @product_features) }
+
     it "query available features" do
-      role = FactoryGirl.create(:miq_user_role,
-                                :name                 => "Test Role",
-                                :miq_product_features => @product_features)
       test_features_query(role, api_role_url(nil, role), MiqProductFeature, :identifier)
     end
 
@@ -88,6 +87,27 @@ describe "Roles API" do
 
       expect(response).to have_http_status(:ok)
       response.parsed_body['resources'].each { |res| expect_hash_to_have_only_keys(res, %w(href id name)) }
+    end
+
+    it 'returns features by default when expanding the collection resources' do
+      api_basic_authorize action_identifier(:roles, :read, :collection_actions, :get)
+
+      get(api_roles_url, :params => { :expand => 'resources' })
+
+      expect(response).to have_http_status(:ok)
+      expect_result_resources_to_include_keys('resources', %w(features))
+    end
+
+    it 'returns features by default for a role resource' do
+      api_basic_authorize action_identifier(:roles, :read, :resource_actions, :get)
+
+      get(api_role_url(nil, role))
+
+      expected = {
+        'features' => a_collection_including('href' => a_string_including(api_role_features_url(nil, role, nil)))
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
     end
   end
 

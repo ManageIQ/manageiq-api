@@ -228,7 +228,7 @@ module Api
 
       # Expand if: expand='resources' && no attributes specified && subcollection is configured
       def expand_resources?(sc)
-        @req.expand?('resources') && @req.attributes.empty? && collection_config.show?(sc)
+        collection_config.show?(sc) && (@req.collection_id || @req.expand?('resources')) && @req.attributes.empty?
       end
 
       # Expand if: resource is being returned and subcollection is configured
