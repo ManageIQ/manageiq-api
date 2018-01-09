@@ -47,12 +47,6 @@ Rails.application.routes.draw do
               post "/", :action => :create, :constraints => Api::CreateConstraint.new
               post "(/:c_id)", :action => :update
             end
-
-            if collection.options.include?(:settings)
-              %w(get patch delete).each do |verb|
-                send(verb, "/:c_id/settings", :to => "#{collection_name}#settings")
-              end
-            end
           end
         end
 
@@ -73,6 +67,15 @@ Rails.application.routes.draw do
               post "/:c_id/#{subcollection_name}(/:s_id)", :action => :update
             end
           end
+        end
+
+        if collection.options.include?(:settings)
+          match(
+            "/:c_id/settings",
+            :to  => "#{collection_name}#settings",
+            :via => %w[get patch delete],
+            :as  => "#{collection_name.to_s.singularize}_settings",
+          )
         end
       end
     end
