@@ -123,10 +123,21 @@ module Api
         resource.remove_settings_path_for_resource(*@req.json_body)
       end
 
-      render :json => resource.settings_for_resource
+      render :json => whitelist_settings(resource.settings_for_resource.to_hash)
     end
 
     private
+
+    def super_admin?
+      User.current_user.super_admin_user?
+    end
+
+    def whitelist_settings(settings)
+      return settings if super_admin?
+
+      whitelisted_categories = ApiConfig.collections[:settings][:categories]
+      settings.with_indifferent_access.slice(*whitelisted_categories)
+    end
 
     def set_gettext_locale
       FastGettext.set_locale(LocaleResolver.resolve(User.current_user, headers))
