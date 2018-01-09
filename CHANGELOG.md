@@ -4,22 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## Gaprindashvili RC
+
+## Gaprindashvili-1
 
 ### Added
 - Tasks: delete support [(#220)](https://github.com/ManageIQ/manageiq-api/pull/220)
-
-### Fixed
-- Specify a target and resource action when retrieving a service dialog [(#231)](https://github.com/ManageIQ/manageiq-api/pull/231)
-- Specify a target and resource when refreshing a dialog field [(#233)](https://github.com/ManageIQ/manageiq-api/pull/233)
-- Return correct subcollection actions [(#243)](https://github.com/ManageIQ/manageiq-api/pull/243)
-- Validate section values for adding new custom attributes via the API [(#240)](https://github.com/ManageIQ/manageiq-api/pull/240)
-- Dialog field/tab deletion [(#239)](https://github.com/ManageIQ/manageiq-api/pull/239)
-- Don't translate model names sent over API [(#237)](https://github.com/ManageIQ/manageiq-api/pull/237)
-
-## Gaprindashvili Beta2
-
-### Added
 - Do not expand custom actions on collection searches [(#204)](https://github.com/ManageIQ/manageiq-api/pull/204)
 - Adds custom action support for models that are g/yes [(#213)](https://github.com/ManageIQ/manageiq-api/pull/213)
 - Removes final .first from custom action specs [(#216)](https://github.com/ManageIQ/manageiq-api/pull/216)
@@ -27,24 +16,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Add support for /api/container_projects [(#182)](https://github.com/ManageIQ/manageiq-api/pull/182)
 - Custom actions on generic objects [(#194)](https://github.com/ManageIQ/manageiq-api/pull/194)
 - Add support for Physical Servers refresh [(#189)](https://github.com/ManageIQ/manageiq-api/pull/189)
-
-### Fixed
-- Return correct action responses for bulk delete [(#180)](https://github.com/ManageIQ/manageiq-api/pull/180)
-- Return put and patch edit actions for resources [(#179)](https://github.com/ManageIQ/manageiq-api/pull/179)
-- Gracefully fail on resource create [(#195)](https://github.com/ManageIQ/manageiq-api/pull/195)
-- Add deep symbolization to CustomButton `visibility` field [(#206)](https://github.com/ManageIQ/manageiq-api/pull/206)
-- Add a set_current_group method for users [(#176)](https://github.com/ManageIQ/manageiq-api/pull/176)
-- Reflect session timeout settings updates in the UI requester type [(#199)](https://github.com/ManageIQ/manageiq-api/pull/199)
-- Build href_slug from type [(#212)](https://github.com/ManageIQ/manageiq-api/pull/212)
-- deep symbolize the options field [(#211)](https://github.com/ManageIQ/manageiq-api/pull/211)
-- Use destroy_queue for provider delete [(#217)](https://github.com/ManageIQ/manageiq-api/pull/217)
-- Rolling back system token OTP logic [(#219)](https://github.com/ManageIQ/manageiq-api/pull/219)
-- Fix links in the case when there are no incoming query params [(#221)](https://github.com/ManageIQ/manageiq-api/pull/221)
-- Fixes an issue where no userid gets retrieved for the token [(#223)](https://github.com/ManageIQ/manageiq-api/pull/223)
-
-## Gaprindashvili Beta1
-
-### Added
 - Return image_href and extension for Pictures [(#127)](https://github.com/ManageIQ/manageiq-api/pull/127)
 - Return picture href for generic objects subcollections [(#126)](https://github.com/ManageIQ/manageiq-api/pull/126)
 - Update task description for Generic Object methods [(#118)](https://github.com/ManageIQ/manageiq-api/pull/118)
@@ -87,6 +58,31 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - API Enhancement making the system token a one-time token. [(#178)](https://github.com/ManageIQ/manageiq-api/pull/178)
 
 ### Fixed
+- Ensure that correct target is passed to resource_search on dialog refresh [(#246)](https://github.com/ManageIQ/manageiq-api/pull/246)
+- Return 404 error if perform an action against a non existent Physical Server [(#202)](https://github.com/ManageIQ/manageiq-api/pull/202)
+- Don't return non-existent hrefs [(#251)](https://github.com/ManageIQ/manageiq-api/pull/251)
+- Fix custom actions hrefs [(#252)](https://github.com/ManageIQ/manageiq-api/pull/252)
+- Return property method actions on Generic Object subresources [(#247)](https://github.com/ManageIQ/manageiq-api/pull/247)
+- Only require read priviliges to show cloud volumes [(#254)](https://github.com/ManageIQ/manageiq-api/pull/254)
+- ExtManagementSystem#destroy_queue returns a task id [(#257)](https://github.com/ManageIQ/manageiq-api/pull/257)
+- Specify a target and resource action when retrieving a service dialog [(#231)](https://github.com/ManageIQ/manageiq-api/pull/231)
+- Specify a target and resource when refreshing a dialog field [(#233)](https://github.com/ManageIQ/manageiq-api/pull/233)
+- Return correct subcollection actions [(#243)](https://github.com/ManageIQ/manageiq-api/pull/243)
+- Validate section values for adding new custom attributes via the API [(#240)](https://github.com/ManageIQ/manageiq-api/pull/240)
+- Dialog field/tab deletion [(#239)](https://github.com/ManageIQ/manageiq-api/pull/239)
+- Don't translate model names sent over API [(#237)](https://github.com/ManageIQ/manageiq-api/pull/237)
+- Return correct action responses for bulk delete [(#180)](https://github.com/ManageIQ/manageiq-api/pull/180)
+- Return put and patch edit actions for resources [(#179)](https://github.com/ManageIQ/manageiq-api/pull/179)
+- Gracefully fail on resource create [(#195)](https://github.com/ManageIQ/manageiq-api/pull/195)
+- Add deep symbolization to CustomButton `visibility` field [(#206)](https://github.com/ManageIQ/manageiq-api/pull/206)
+- Add a set_current_group method for users [(#176)](https://github.com/ManageIQ/manageiq-api/pull/176)
+- Reflect session timeout settings updates in the UI requester type [(#199)](https://github.com/ManageIQ/manageiq-api/pull/199)
+- Build href_slug from type [(#212)](https://github.com/ManageIQ/manageiq-api/pull/212)
+- deep symbolize the options field [(#211)](https://github.com/ManageIQ/manageiq-api/pull/211)
+- Use destroy_queue for provider delete [(#217)](https://github.com/ManageIQ/manageiq-api/pull/217)
+- Rolling back system token OTP logic [(#219)](https://github.com/ManageIQ/manageiq-api/pull/219)
+- Fix links in the case when there are no incoming query params [(#221)](https://github.com/ManageIQ/manageiq-api/pull/221)
+- Fixes an issue where no userid gets retrieved for the token [(#223)](https://github.com/ManageIQ/manageiq-api/pull/223)
 - Fix Generic Object Creation [(#122)](https://github.com/ManageIQ/manageiq-api/pull/122)
 - Allow service templates to be specified for service orders [(#115)](https://github.com/ManageIQ/manageiq-api/pull/115)
 - Fix return of orchestration stacks for a service [(#110)](https://github.com/ManageIQ/manageiq-api/pull/110)
@@ -102,3 +98,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Add decorator for VNC Console [(#167)](https://github.com/ManageIQ/manageiq-api/pull/167)
 - Fix coercing of string to 0 in parse_id [(#173)](https://github.com/ManageIQ/manageiq-api/pull/173)
 - Don't respond with 400 on ArgumentError [(#174)](https://github.com/ManageIQ/manageiq-api/pull/174)
+- Update dialog copy product feature [(#262)](https://github.com/ManageIQ/manageiq-api/pull/262)
+- Fix regression for expansion of subcollection on a resource [(#261)](https://github.com/ManageIQ/manageiq-api/pull/261)
+
+### Removed
+-  [(#255)](https://github.com/ManageIQ/manageiq-api/pull/255)
