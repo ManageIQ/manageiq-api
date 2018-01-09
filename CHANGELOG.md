@@ -102,4 +102,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Fix regression for expansion of subcollection on a resource [(#261)](https://github.com/ManageIQ/manageiq-api/pull/261)
 
 ### Removed
--  [(#255)](https://github.com/ManageIQ/manageiq-api/pull/255)
+- Remove Middleware API [(#255)](https://github.com/ManageIQ/manageiq-api/pull/255)
