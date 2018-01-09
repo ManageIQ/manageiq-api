@@ -121,6 +121,8 @@ module Api
       when :delete
         raise ForbiddenError, "You are not authorized to remove settings." unless super_admin?
         resource.remove_settings_path_for_resource(*@req.json_body)
+        head :no_content
+        return
       end
 
       render :json => whitelist_settings(resource.settings_for_resource.to_hash)
