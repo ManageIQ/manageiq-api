@@ -75,11 +75,6 @@ describe "Settings API" do
       }')
     end
 
-    # TODO: as the api.yml settings/categories expand in the future to include
-    # different types of categories, full, partial and single entries, we would no
-    # longer need this stubbing logic or the above sample_settings as we can
-    # test the different cases with the default api.yml categories provided.
-    #
     def stub_api_settings_categories(value)
       settings_config = Api::ApiConfig.collections["settings"].dup
       settings_config["categories"] = value

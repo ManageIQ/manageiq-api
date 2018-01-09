@@ -367,7 +367,6 @@ describe "Providers API" do
     it 'creates valid foreman provider' do
       api_basic_authorize collection_action_identifier(:providers, :create)
 
-      # TODO: provider_class in params, when supported (https://github.com/brynary/rack-test/issues/150)
       post(api_providers_url + '?provider_class=provider', :params => gen_request(:create, sample_foreman))
 
       expect(response).to have_http_status(:ok)
@@ -1206,7 +1205,6 @@ describe "Providers API" do
       let(:generic_provider) { FactoryGirl.create(:provider) }
       let(:attr) { FactoryGirl.create(:custom_attribute) }
       let(:url) do
-        # TODO: provider_class in params, when supported (https://github.com/brynary/rack-test/issues/150)
         api_provider_custom_attributes_url(nil, generic_provider) + '?provider_class=provider'
       end
 
