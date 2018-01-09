@@ -108,6 +108,22 @@ module Api
       render_options(@req.collection)
     end
 
+    def settings
+      id       = @req.collection_id
+      type     = @req.collection
+      klass    = collection_class(@req.collection)
+      resource = resource_search(id, type, klass)
+
+      case @req.method
+      when :patch
+        resource.add_settings_for_resource(@req.json_body)
+      when :delete
+        resource.remove_settings_path_for_resource(*@req.json_body)
+      end
+
+      render :json => resource.settings_for_resource
+    end
+
     private
 
     def set_gettext_locale
