@@ -48,7 +48,7 @@ describe "Providers API" do
     {
       "type"        => "ManageIQ::Providers::Vmware::InfraManager",
       "name"        => "sample vmware",
-      "hostname"    => "sample_vmware.provider.com",
+      "hostname"    => "sample-vmware.provider.com",
       "ipaddress"   => "100.200.300.1",
       "credentials" => {
         "userid"   => "uname",
@@ -61,7 +61,7 @@ describe "Providers API" do
       "type"                  => "ManageIQ::Providers::Redhat::InfraManager",
       "name"                  => "sample rhevm",
       "port"                  => 5000,
-      "hostname"              => "sample_rhevm.provider.com",
+      "hostname"              => "sample-rhevm.provider.com",
       "ipaddress"             => "100.200.300.2",
       "security_protocol"     => "kerberos",
       "certificate_authority" => certificate_authority,
@@ -81,7 +81,7 @@ describe "Providers API" do
       "type"                  => containers_class,
       "name"                  => "sample openshift",
       "port"                  => 18_443,
-      "hostname"              => "sample_openshift.provider.com",
+      "hostname"              => "sample-openshift.provider.com",
       "ipaddress"             => "100.200.300.3",
       "security_protocol"     => "something",
       "certificate_authority" => certificate_authority,
@@ -91,7 +91,7 @@ describe "Providers API" do
     {
       "endpoint"       => {
         "role"                  => "default",
-        "hostname"              => "sample_openshift_multi_end_point.provider.com",
+        "hostname"              => "sample-openshift-multi-end-point.provider.com",
         "port"                  => 18_443,
         "security_protocol"     => "something",
         "certificate_authority" => certificate_authority,
@@ -106,7 +106,7 @@ describe "Providers API" do
     {
       "endpoint"       => {
         "role"                  => "default",
-        "hostname"              => "sample_openshift_multi_end_point.provider.com",
+        "hostname"              => "sample-openshift-multi-end-point.provider.com",
         "port"                  => "28443",
         "security_protocol"     => "something else",
         "certificate_authority" => certificate_authority,
@@ -121,7 +121,7 @@ describe "Providers API" do
     {
       "endpoint"       => {
         "role"                  => "hawkular",
-        "hostname"              => "sample_openshift_multi_end_point.provider.com",
+        "hostname"              => "sample-openshift-multi-end-point.provider.com",
         "port"                  => 1_443,
         "security_protocol"     => "something",
         "certificate_authority" => certificate_authority,
