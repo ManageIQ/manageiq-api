@@ -1635,6 +1635,8 @@
         :identifier: physical_server_turn_on_loc_led
       - :name: turn_off_loc_led
         :identifier: physical_server_turn_off_loc_led
+      - :name: apply_config_pattern
+        :identifier: physical_server_apply_config_pattern
     :resource_actions:
       :get:
       - :name: read
@@ -1662,6 +1664,8 @@
         :identifier: physical_server_turn_on_loc_led
       - :name: turn_off_loc_led
         :identifier: physical_server_turn_off_loc_led
+      - :name: apply_config_pattern
+        :identifier: physical_server_apply_config_pattern
   :pictures:
     :description: Pictures
     :options:

@@ -52,24 +52,39 @@ module Api
       end
     end
 
+    def apply_config_pattern_resource(type, id, data)
+      change_resource_state(:apply_config_pattern, type, id, data)
+    end
+
     private
 
-    def change_resource_state(state, type, id)
+    def change_resource_state(state, type, id, data = {})
       raise BadRequestError, "Must specify an id for changing a #{type} resource" unless id
+      is_apply_config_action = state == :apply_config_pattern
 
-      ensure_resource_exists(type, id) if single_resource?
+      if single_resource?
+        ensure_resource_exists(type, id)
+        ensure_customization_script_exists(data["pattern_id"]) if is_apply_config_action
+      end
 
       api_action(type, id) do |klass|
         begin
           server = resource_search(id, type, klass)
+          ensure_customization_script_exists(data["pattern_id"]) if is_apply_config_action
           desc = "Requested server state #{state} for #{server_ident(server)}"
           api_log_info(desc)
           task_id = queue_object_action(server, desc, :method_name => state, :role => :ems_operations)
           action_result(true, desc, :task_id => task_id)
-        rescue => err
+        rescue StandardError => err
           action_result(false, err.to_s)
         end
       end
+    end
+
+    def ensure_customization_script_exists(id)
+      ensure_resource_exists(:customization_scripts, id)
+    rescue NotFoundError
+      raise NotFoundError, "Customization script not found"
     end
 
     def ensure_resource_exists(type, id)
