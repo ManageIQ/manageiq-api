@@ -15,7 +15,5 @@ RSpec.configure do |config|
     metadata[:aggregate_failures] = true
   end
 
-  #TODO: Remove the conditional once the repo is split and the test checkout of manageiq
-  # is guaranteed to no longer 'also' call init_api_spec_env.
   config.before(:each, :type => :request) { init_api_spec_env unless User.count > 0 }
 end
