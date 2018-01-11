@@ -6,7 +6,7 @@ module Api
 
     include Subcollections::Tags
 
-    skip_before_action :validate_api_action, :only => :update
+    skip_before_action :validate_api_action, :validate_post_method, :only => :update
 
     def update
       aname = @req.action
