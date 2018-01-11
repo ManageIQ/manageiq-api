@@ -469,11 +469,11 @@
     :subcollection_actions:
       :get:
       - :name: read
-        :identifier: cloud_tenant_show_list
+        :identifier: cloud_subnet_show_list
     :subresource_actions:
       :get:
       - :name: read
-        :identifier: cloud_tenant_show
+        :identifier: cloud_subnet_show
   :cloud_templates:
     :description: Cloud Templates
     :identifier: image
