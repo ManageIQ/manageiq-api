@@ -3,12 +3,20 @@ RSpec.describe "Servers" do
     let(:server) { FactoryGirl.create(:miq_server) }
     let(:original_timeout) { server.settings_for_resource[:api][:authentication_timeout] }
 
-    it "shows the settings to an authenticated user" do
-      api_basic_authorize
+    it "shows the settings to an authenticated user with the proper role" do
+      api_basic_authorize(:ops_settings)
 
       get(api_server_settings_url(nil, server))
 
       expect(response).to have_http_status(:ok)
+    end
+
+    it "does not allow an authenticated user who doesn't have the proper role to view the settings" do
+      api_basic_authorize
+
+      get(api_server_settings_url(nil, server))
+
+      expect(response).to have_http_status(:forbidden)
     end
 
     it "does not allow an unauthenticated user to view the settings" do
