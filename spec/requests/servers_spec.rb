@@ -2,6 +2,8 @@ RSpec.describe "Servers" do
   describe "/api/servers/:id/settings" do
     let(:server) { FactoryGirl.create(:miq_server) }
     let(:original_timeout) { server.settings_for_resource[:api][:authentication_timeout] }
+    let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+
 
     it "shows the settings to an authenticated user with the proper role" do
       api_basic_authorize(:ops_settings)
@@ -26,8 +28,7 @@ RSpec.describe "Servers" do
     end
 
     it "permits updates to settings for an authenticated super-admin user" do
-      user = create_super_admin_user
-      api_basic_authorize(:user => user.userid, :password => user.password)
+      api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
 
       expect {
         patch(api_server_settings_url(nil, server), :params => {:api => {:authentication_timeout => "1337.minutes"}})
@@ -61,8 +62,7 @@ RSpec.describe "Servers" do
       end
 
       it "allows an authenticated super-admin user to delete settings" do
-        user = create_super_admin_user
-        api_basic_authorize(:user => user.userid, :password => user.password)
+        api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
         expect(server.settings_for_resource["api"]["authentication_timeout"]).to eq("7331.minutes")
 
         expect {
@@ -98,12 +98,6 @@ RSpec.describe "Servers" do
 
         expect(response).to have_http_status(:unauthorized)
       end
-    end
-
-    def create_super_admin_user(userid = "alice", password = "alicepassword")
-      super_admin_role  = FactoryGirl.create(:miq_user_role, :name => "EvmRole-super_administrator")
-      super_admin_group = FactoryGirl.create(:miq_group, :miq_user_role => super_admin_role)
-      FactoryGirl.create(:user, :userid => userid, :password => password, :miq_groups => [super_admin_group])
     end
   end
 end
