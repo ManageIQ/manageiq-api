@@ -3,16 +3,15 @@ module Api
     module Validator
       def validate_api_version
         if @req.version
-          vname = @req.version
-          unless Api::SUPPORTED_VERSIONS.include?(vname)
-            raise BadRequestError, "Unsupported API Version #{vname} specified"
+          unless Api::SUPPORTED_VERSIONS.include?(@req.version)
+            raise BadRequestError, "Unsupported API Version #{@req.version} specified"
           end
         end
       end
 
       def validate_request_method
         if collection_name && type
-          unless collection_config.supports_http_method?(collection_name, @req.method) || @req.method == :options
+          unless req_collection_config.verbs&.include?(@req.method) || @req.method == :options
             raise BadRequestError, "Unsupported HTTP Method #{@req.method} for the #{type} #{collection_name} specified"
           end
         end
@@ -49,7 +48,7 @@ module Api
         raise BadRequestError, "No actions are supported for #{collection_name} #{type}" unless aspec
 
         if action_hash.blank?
-          unless type == :resource && req_collection_config&.options&.include?(:custom_actions)
+          unless type == :resource && collection_options.include?(:custom_actions)
             raise BadRequestError, "Unsupported Action #{@req.action} for the #{collection_name} #{type} specified"
           end
         end
@@ -61,15 +60,19 @@ module Api
           end
         end
 
+        if target == :collection && @req.resources.all?(&:empty?)
+          raise BadRequestError, "No #{collection_name} resources were specified for the #{@req.action} action"
+        end
+
         validate_post_api_action_as_subcollection
       end
 
       def validate_api_request_collection
         return unless @req.collection
-        raise BadRequestError, "Unsupported Collection #{@req.collection} specified" unless collection_config[@req.collection]
+        raise BadRequestError, "Unsupported Collection #{@req.collection} specified" unless req_collection_config
         if primary_collection?
           if "#{@req.collection_id}#{@req.subcollection}#{@req.subcollection_id}".present?
-            raise BadRequestError, "Invalid @req for Collection #{@req.collection} specified"
+            raise BadRequestError, "Invalid request for Collection #{@req.collection} specified"
           end
         else
           raise BadRequestError, "Unsupported Collection #{@req.collection} specified" unless collection_config.collection?(@req.collection)
@@ -101,7 +104,7 @@ module Api
       private
 
       def req_collection_config
-        @req_collection_config ||= collection_config[@req.collection]
+        @req_collection_config ||= collection_config[@req.subject] || collection_config[@req.collection]
       end
 
       def collection_name
@@ -112,16 +115,16 @@ module Api
                              end
       end
 
-      def arbitrary_resource_path?
-        @arbitrary ||= req_collection_config&.options&.include?(:arbitrary_resource_path)
+      def collection_options
+        @ocollection_options ||= req_collection_config.options || []
       end
 
       def primary_collection?
         @primary_collection ||= collection_config.primary?(collection_name)
       end
 
-      def subcollection
-        @subcollection ||= @req.subcollection
+      def arbitrary_resource_path?
+        @arbitrary ||= collection_options.include?(:arbitrary_resource_path)
       end
 
       def aspec
@@ -153,7 +156,7 @@ module Api
       end
 
       def target
-        @target ||= if @req.subcollection && !req_collection_config.options&.include?(:arbitrary_resource_path)
+        @target ||= if @req.subcollection && !arbitrary_resource_path?
                       @req.subcollection_id ? :subresource : :subcollection
                     else
                       @req.collection_id ? :resource : :collection

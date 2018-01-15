@@ -108,7 +108,6 @@ module Api
       def update_multiple_collections(is_subcollection, target, type, resources)
         action = @req.action
 
-        processed = 0
         results = resources.each.collect do |r|
           next if r.blank?
 
@@ -120,10 +119,9 @@ module Api
             rid = parse_by_attr(r, type)
           end
           r.except!(*ID_ATTRS) if rid
-          processed += 1
           update_one_collection(is_subcollection, target, type, rid, r)
         end.flatten
-        raise BadRequestError, "No #{type} resources were specified for the #{action} action" if processed == 0
+
         {"results" => results}
       end
     end
