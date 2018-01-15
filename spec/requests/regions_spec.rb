@@ -42,16 +42,13 @@ describe "Regions API" do
   end
 
   describe "/api/regions/:id/settings" do
-    # let(:server) { FactoryGirl.create(:miq_server) }
-    # let(:region) { FactoryGirl.create(:miq_region, :region => FactoryGirl.create(:miq_region, :region => ApplicationRecord.my_region_number)) }
-    let(:region) { @region }
-
+    let(:region_number) { ApplicationRecord.my_region_number + 1 }
+    let(:id) { ApplicationRecord.id_in_region(1, region_number) }
+    let(:region) { FactoryGirl.create(:miq_region, :id => id, :region => region_number) }
+    let(:zone) { FactoryGirl.create(:zone, :id => id) }
+    let!(:server) { EvmSpecHelper.remote_miq_server(:id => id, :zone => zone) }
     let(:original_timeout) { region.settings_for_resource[:api][:authentication_timeout] }
     let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
-
-    # before do
-    #   allow(MiqServer).to receive(:in_region).with(ApplicationRecord.my_region_number).and_return(MiqServer.where(:id => server.id))
-    # end
 
     it "shows the settings to an authenticated user with the proper role" do
       api_basic_authorize(:ops_settings)
