@@ -1820,6 +1820,7 @@
     :identifier: region
     :options:
     - :collection
+    - :settings
     :verbs: *gp
     :klass: MiqRegion
     :collection_actions:
@@ -2089,6 +2090,7 @@
     :description: EVM Servers
     :options:
     - :collection
+    - :settings
     :verbs: *g
     :klass: MiqServer
   :service_catalogs:
@@ -2896,6 +2898,7 @@
     :identifier: zone
     :options:
     - :collection
+    - :settings
     :verbs: *gp
     :klass: Zone
     :collection_actions:
