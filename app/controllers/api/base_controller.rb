@@ -24,7 +24,8 @@ module Api
     before_action :require_api_user_or_token, :except => [:options]
     before_action :set_gettext_locale, :set_access_control_headers, :parse_api_request, :log_api_request,
                   :validate_optional_collection_classes, :validate_api_version, :validate_request_method,
-                  :validate_api_request_collection, :validate_api_request_subcollection, :validate_post_method
+                  :validate_api_request_collection, :validate_api_request_subcollection
+    before_action :validate_post_method, :validate_post_api_action_as_subcollection, :only => [:create, :update]
     before_action :validate_api_action, :except => [:options]
     before_action :validate_response_format, :except => [:destroy]
     before_action :ensure_pagination, :only => :index
