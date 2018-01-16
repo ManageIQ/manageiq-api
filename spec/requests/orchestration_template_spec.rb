@@ -21,6 +21,13 @@ RSpec.describe 'Orchestration Template API' do
        :content   => ""}
     end
 
+    let :request_body_hot_deprecated do
+      {:name      => "OrchestrationTemplateHot1",
+       :type      => "OrchestrationTemplateHot",
+       :orderable => true,
+       :content   => ""}
+    end
+
     let :request_body_cfn do
       {:name      => "OrchestrationTemplateCfn1",
        :type      => "ManageIQ::Providers::Amazon::CloudManager::OrchestrationTemplate",
@@ -49,6 +56,14 @@ RSpec.describe 'Orchestration Template API' do
 
       expect do
         post(api_orchestration_templates_url, :params => request_body_hot)
+      end.to change(ManageIQ::Providers::Openstack::CloudManager::OrchestrationTemplate, :count).by(1)
+    end
+
+    it 'supports orchestration_template creation with a deprecated type' do
+      api_basic_authorize collection_action_identifier(:orchestration_templates, :create)
+
+      expect do
+        post(api_orchestration_templates_url, :params => request_body_hot_deprecated)
       end.to change(ManageIQ::Providers::Openstack::CloudManager::OrchestrationTemplate, :count).by(1)
     end
 
@@ -87,12 +102,12 @@ RSpec.describe 'Orchestration Template API' do
     it 'fails gracefully with invalid type specified' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :create)
 
-      post(api_orchestration_templates_url, :params => { :type => 'OrchestrationTemplateCfn' })
+      post(api_orchestration_templates_url, :params => { :type => 'OrchestrationTemplateUnknown' })
 
       expected = {
         'error' => a_hash_including(
           'kind'    => 'bad_request',
-          'message' => a_string_including('Invalid type OrchestrationTemplateCfn specified')
+          'message' => a_string_including('Invalid type OrchestrationTemplateUnknown specified')
         )
       }
       expect(response).to have_http_status(:bad_request)
