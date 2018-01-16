@@ -89,6 +89,16 @@ RSpec.describe "users API" do
       expect(response).to have_http_status(:bad_request)
     end
 
+    it "will not allow the user to change their own group" do
+      api_basic_authorize
+
+      expect do
+        post api_user_url(nil, @user), :params => gen_request(:edit, :group => "updated_name")
+      end.not_to change { @user.reload.name }
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
     it "cannot change another user's password" do
       api_basic_authorize
       user = FactoryGirl.create(:user)
