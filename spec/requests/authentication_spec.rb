@@ -106,6 +106,19 @@ describe "Authentication API" do
     end
   end
 
+  context "Group Authorization with special characters" do
+    let(:special_char_group) { FactoryGirl.create(:miq_group, :description => "équipe", :miq_user_role => @role) }
+
+    it "permits group headers to be specified with properly escaped descriptions" do
+      @user.miq_groups << special_char_group
+      api_basic_authorize
+
+      get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_GROUP => CGI.escape(special_char_group.description)}
+
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   context "Authentication/Authorization Identity" do
     let(:group1) { FactoryGirl.create(:miq_group, :description => "Group1", :miq_user_role => @role) }
     let(:group2) { FactoryGirl.create(:miq_group, :description => "Group2", :miq_user_role => @role) }
