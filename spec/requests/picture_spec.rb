@@ -118,7 +118,7 @@ describe "Pictures" do
       api_basic_authorize collection_action_identifier(:pictures, :create)
 
       expected = {
-        'results' => [a_hash_including('id')]
+        'results' => [a_hash_including('id', 'image_href')]
       }
 
       expect do
