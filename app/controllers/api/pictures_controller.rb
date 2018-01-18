@@ -12,7 +12,7 @@ module Api
     private
 
     def set_additional_attributes
-      @additional_attributes = %w(image_href)
+      @additional_attributes = %w(image_href extension)
     end
   end
 end
