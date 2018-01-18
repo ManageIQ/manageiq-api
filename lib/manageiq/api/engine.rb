@@ -3,9 +3,18 @@ module ManageIQ
   module Api
     class Engine < ::Rails::Engine
       isolate_namespace ManageIQ::Api
-      config.autoload_paths << root.join('app', 'controllers', 'api')
-      config.autoload_paths << root.join('lib', 'services')
-      config.autoload_paths << root.join('lib')
+
+      # NOTE:  If you are going to make changes to autoload_paths, please make
+      # sure they are all strings.  Rails will push these paths into the
+      # $LOAD_PATH.
+      #
+      # More info can be found in the ruby-lang bug:
+      #
+      #   https://bugs.ruby-lang.org/issues/14372
+      #
+      config.autoload_paths << root.join('app', 'controllers', 'api').to_s
+      config.autoload_paths << root.join('lib', 'services').to_s
+      config.autoload_paths << root.join('lib').to_s
 
       config.after_initialize do
         $api_log.info("Initializing Environment for #{::Api::ApiConfig.base[:name]}")
