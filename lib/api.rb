@@ -19,6 +19,13 @@ module Api
   NotFoundError = Class.new(ApiError)
   UnsupportedMediaTypeError = Class.new(ApiError)
 
+  def self.serialize(model, options = {})
+    model_name = model.class.base_model.name.demodulize
+    serializer_name = "#{model_name}Serializer"
+    serializer = "Api::#{serializer_name}".safe_constantize || Api.const_set(serializer_name, Class.new(BaseSerializer))
+    serializer.serialize(model, options)
+  end
+
   def self.encrypted_attribute?(attr)
     Environment.encrypted_attributes.include?(attr.to_s) || attr.to_s.include?('password')
   end
