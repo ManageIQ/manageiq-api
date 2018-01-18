@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 77 ending 2018-01-15
+
+### Added
+- Add Settings API for servers and regions [(#275)](https://github.com/ManageIQ/manageiq-api/pull/275)
+
+### Fixed
+- Update role identifiers for cloud subnets subcollection [(#280)](https://github.com/ManageIQ/manageiq-api/pull/280)
+- Update dialog copy product feature [(#262)](https://github.com/ManageIQ/manageiq-api/pull/262)
+- Fix regression for expansion of subcollection on a resource [(#261)](https://github.com/ManageIQ/manageiq-api/pull/261)
+- ExtManagementSystem#destroy_queue returns a task id [(#257)](https://github.com/ManageIQ/manageiq-api/pull/257)
+- Squeeze consecutive slashes in the path portion of the URI [(#228)](https://github.com/ManageIQ/manageiq-api/pull/228)
+
+### Removed
+- Remove Middleware API [(#255)](https://github.com/ManageIQ/manageiq-api/pull/255)
+
 ## Unreleased as of Sprint 76 ending 2018-01-01
 
 ### Added
