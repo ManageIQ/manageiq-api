@@ -11,7 +11,12 @@ describe 'API configuration (config/api.yml)' do
     end
 
     describe 'identifiers' do
-      let(:miq_product_features) { MiqProductFeature.seed.values.flatten.to_set }
+      let(:miq_product_features) do
+        identifiers = Set.new
+        each_product_feature { |f| identifiers.add(f[:identifier]) }
+        identifiers
+      end
+
       let(:api_feature_identifiers) do
         collection_settings.each_with_object(Set.new) do |(_, cfg), set|
           set.add(cfg[:identifier]) if cfg[:identifier]
@@ -37,6 +42,13 @@ describe 'API configuration (config/api.yml)' do
       it 'contains only valid miq_feature identifiers' do
         dangling = api_feature_identifiers - miq_product_features
         expect(dangling).to be_empty
+      end
+
+      def each_product_feature(feature = YAML.load_file("#{MiqProductFeature::FIXTURE_PATH}.yml"), &block)
+        block.call(feature)
+        Array(feature[:children]).each do |child|
+          each_product_feature(child, &block)
+        end
       end
     end
   end
