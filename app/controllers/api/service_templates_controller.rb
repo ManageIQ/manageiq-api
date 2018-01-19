@@ -4,8 +4,11 @@ module Api
     include Subcollections::Tags
     include Subcollections::ResourceActions
     include Subcollections::ServiceRequests
+    include Api::Mixins::Pictures
 
     before_action :set_additional_attributes, :only => [:show]
+
+    alias fetch_service_templates_picture fetch_picture
 
     def create_resource(_type, _id, data)
       catalog_item_type = ServiceTemplate.class_from_request_data(data)
