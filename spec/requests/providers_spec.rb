@@ -83,7 +83,7 @@ describe "Providers API" do
       "port"                  => 18_443,
       "hostname"              => "sample-openshift.provider.com",
       "ipaddress"             => "100.200.300.3",
-      "security_protocol"     => "something",
+      "security_protocol"     => "ssl-without-validation",
       "certificate_authority" => certificate_authority,
     }
   end
@@ -93,7 +93,7 @@ describe "Providers API" do
         "role"                  => "default",
         "hostname"              => "sample-openshift-multi-end-point.provider.com",
         "port"                  => 18_443,
-        "security_protocol"     => "something",
+        "security_protocol"     => "ssl-without-validation",
         "certificate_authority" => certificate_authority,
       },
       "authentication" => {
@@ -108,7 +108,7 @@ describe "Providers API" do
         "role"                  => "default",
         "hostname"              => "sample-openshift-multi-end-point.provider.com",
         "port"                  => "28443",
-        "security_protocol"     => "something else",
+        "security_protocol"     => "ssl-without-validation",
         "certificate_authority" => certificate_authority,
       },
       "authentication" => {
@@ -123,7 +123,7 @@ describe "Providers API" do
         "role"                  => "hawkular",
         "hostname"              => "sample-openshift-multi-end-point.provider.com",
         "port"                  => 1_443,
-        "security_protocol"     => "something",
+        "security_protocol"     => "ssl-without-validation",
         "certificate_authority" => certificate_authority,
       },
       "authentication" => {
