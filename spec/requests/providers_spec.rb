@@ -132,11 +132,46 @@ describe "Providers API" do
       }
     }
   end
-  let(:sample_containers_multi_end_point) do
+  let(:prometheus_connection) do
+    {
+      "endpoint"       => {
+        "role"              => "prometheus",
+        "hostname"          => "prometheus.example.com",
+        "port"              => 443,
+        "security_protocol" => "ssl-without-validation"
+      },
+      "authentication" => {
+        "role"     => "prometheus",
+        "auth_key" => SecureRandom.hex
+      }
+    }
+  end
+  let(:prometheus_alerts_connection) do
+    {
+      "endpoint"       => {
+        "role"              => "prometheus_alerts",
+        "hostname"          => "prometheus.example.com",
+        "port"              => 443,
+        "security_protocol" => "ssl-without-validation"
+      },
+      "authentication" => {
+        "role"     => "prometheus_alerts",
+        "auth_key" => SecureRandom.hex
+      }
+    }
+  end
+  let(:sample_containers_multi_end_point_with_hawkular) do
     {
       "type"                      => containers_class,
-      "name"                      => "sample containers provider with multiple endpoints",
+      "name"                      => "sample containers provider with multiple endpoints and hawkular",
       "connection_configurations" => [default_connection, hawkular_connection]
+    }
+  end
+  let(:sample_containers_multi_end_point_with_prometheus) do
+    {
+      "type"                      => containers_class,
+      "name"                      => "sample containers provider with multiple endpoints and prometheus",
+      "connection_configurations" => [prometheus_alerts_connection, default_connection, prometheus_connection]
     }
   end
 
@@ -573,15 +608,15 @@ describe "Providers API" do
           connection["authentication"]["auth_key"]
         end
 
-        it "supports provider with multiple endpoints creation" do
+        it "supports provider with multiple endpoints creation with hawkular" do
           api_basic_authorize collection_action_identifier(:providers, :create)
 
-          post(api_providers_url, :params => gen_request(:create, sample_containers_multi_end_point))
+          post(api_providers_url, :params => gen_request(:create, sample_containers_multi_end_point_with_hawkular))
 
           expect(response).to have_http_status(:ok)
           expected = {"id"   => a_kind_of(String),
                       "type" => containers_class,
-                      "name" => "sample containers provider with multiple endpoints"}
+                      "name" => "sample containers provider with multiple endpoints and hawkular"}
 
           results = response.parsed_body["results"]
           expect(results.first).to include(expected)
@@ -595,6 +630,35 @@ describe "Providers API" do
             hawkular_connection["endpoint"]
           )
           expect(provider.authentication_token(:hawkular)).to eq(token(hawkular_connection))
+        end
+
+        it "supports provider with multiple endpoints creation and prometheus" do
+          api_basic_authorize collection_action_identifier(:providers, :create)
+
+          post(api_providers_url, :params => gen_request(:create, sample_containers_multi_end_point_with_prometheus))
+
+          expect(response).to have_http_status(:ok)
+          expected = {"id"   => a_kind_of(String),
+                      "type" => containers_class,
+                      "name" => "sample containers provider with multiple endpoints and prometheus"}
+
+          results = response.parsed_body["results"]
+          expect(results.first).to include(expected)
+
+          provider_id = results.first["id"]
+          provider = ExtManagementSystem.find(provider_id)
+          expect(provider).to have_endpoint_attributes(default_connection["endpoint"])
+          expect(provider.authentication_token).to eq(token(default_connection))
+
+          expect(provider.connection_configurations.prometheus.endpoint).to have_endpoint_attributes(
+            prometheus_connection["endpoint"]
+          )
+
+          expect(provider.connection_configurations.prometheus_alerts.endpoint).to have_endpoint_attributes(
+            prometheus_alerts_connection["endpoint"]
+          )
+          expect(provider.authentication_token(:prometheus)).to eq(token(prometheus_connection))
+          expect(provider.authentication_token(:prometheus_alerts)).to eq(token(prometheus_alerts_connection))
         end
       end
     end
@@ -683,7 +747,7 @@ describe "Providers API" do
         it "does not schedule a new credentials check if endpoint does not change" do
           api_basic_authorize collection_action_identifier(:providers, :edit)
 
-          provider = FactoryGirl.create(:ext_management_system, sample_containers_multi_end_point)
+          provider = FactoryGirl.create(:ext_management_system, sample_containers_multi_end_point_with_hawkular)
           MiqQueue.where(:method_name => "authentication_check_types",
                          :class_name  => "ExtManagementSystem",
                          :instance_id => provider.id).delete_all
@@ -702,7 +766,7 @@ describe "Providers API" do
         it "schedules a new credentials check if endpoint change" do
           api_basic_authorize collection_action_identifier(:providers, :edit)
 
-          provider = FactoryGirl.create(:ext_management_system, sample_containers_multi_end_point)
+          provider = FactoryGirl.create(:ext_management_system, sample_containers_multi_end_point_with_hawkular)
           MiqQueue.where(:method_name => "authentication_check_types",
                          :class_name  => "ExtManagementSystem",
                          :instance_id => provider.id).delete_all
