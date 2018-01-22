@@ -23,7 +23,8 @@ describe 'API configuration (config/api.yml)' do
             next unless cfg[action_type]
             cfg[action_type].each do |_, method_cfg|
               method_cfg.each do |action_cfg|
-                set.add(action_cfg[:identifier]) if action_cfg[:identifier]
+                next unless action_cfg[:identifier]
+                Array(action_cfg[:identifier]).each { |id| set.add(id) }
               end
             end
           end

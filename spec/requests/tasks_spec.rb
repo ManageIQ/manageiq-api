@@ -58,4 +58,66 @@ describe 'TasksController' do
     }
     expect(response.parsed_body).to include(expected)
   end
+
+  describe 'GET /api/tasks' do
+    it 'returns tasks with miq_tasks_all_ui role' do
+      api_basic_authorize('miq_task_all_ui')
+
+      get(api_tasks_url)
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'returns tasks with miq_task_my_ui role' do
+      api_basic_authorize('miq_task_my_ui')
+
+      get(api_tasks_url)
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'does not return tasks without an appropriate role' do
+      api_basic_authorize
+
+      get(api_tasks_url)
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
+  describe 'GET /api/tasks/:id' do
+    it 'returns a task with miq_tasks_all_ui role' do
+      api_basic_authorize('miq_task_all_ui')
+
+      get(api_task_url(nil, task))
+
+      expected = {
+        'href' => api_task_url(nil, task),
+        'name' => task.name
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'returns a task miq_task_my_ui role' do
+      api_basic_authorize('miq_task_my_ui')
+
+      get(api_task_url(nil, task))
+
+      expected = {
+        'href' => api_task_url(nil, task),
+        'name' => task.name
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'does not return a task without an appropriate role' do
+      api_basic_authorize
+
+      get(api_task_url(nil, task))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
 end
