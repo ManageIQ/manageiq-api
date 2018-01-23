@@ -2547,16 +2547,22 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: tasks_view
+        :identifier:
+        - miq_task_all_ui
+        - miq_task_my_ui
       :post:
       - :name: query
-        :identifier: tasks_view
+        :identifier:
+        - miq_task_all_ui
+        - miq_task_my_ui
       - :name: delete
         :identifier: miq_task_delete
     :resource_actions:
       :get:
       - :name: read
-        :identifier: tasks_view
+        :identifier:
+        - miq_task_all_ui
+        - miq_task_my_ui
       :post:
       - :name: delete
         :identifier: miq_task_delete
