@@ -6,15 +6,34 @@
 # - Query picture and image_href of service_requests   /api/service_requests/:id?attributes=picture,picture.image_href
 #
 describe "Pictures" do
+  # Valid base64 image
+  let(:content) do
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGP"\
+      "C/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3Cc"\
+      "ulE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2Jl"\
+      "LnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIg"\
+      "eDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpy"\
+      "ZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1u"\
+      "cyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAg"\
+      "ICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYv"\
+      "MS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3Jp"\
+      "ZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpS"\
+      "REY+CjwveDp4bXBtZXRhPgpMwidZAAAADUlEQVQIHWNgYGCwBQAAQgA+3N0+"\
+      "xQAAAABJRU5ErkJggg=="
+  end
+
+  before do
+    @picture = Picture.create_from_base64(:extension => "jpg", :content => content)
+  end
+
   context "As an attribute" do
     let(:dialog1)  { FactoryGirl.create(:dialog, :label => "ServiceDialog1") }
     let(:ra1)      { FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog1) }
-    let(:picture) { FactoryGirl.create(:picture, :extension => "jpg") }
     let(:template) do
       FactoryGirl.create(:service_template,
                          :name             => "ServiceTemplate",
                          :resource_actions => [ra1],
-                         :picture          => picture)
+                         :picture          => @picture)
     end
     let(:service) { FactoryGirl.create(:service, :service_template_id => template.id) }
     let(:service_request) do
@@ -28,9 +47,9 @@ describe "Pictures" do
       expect_result_to_match_hash(response.parsed_body, "id" => source_id)
       expect_result_to_have_keys(%w(id href picture))
       expect_result_to_match_hash(response.parsed_body["picture"],
-                                  "id"          => picture.id.to_s,
+                                  "id"          => @picture.id.to_s,
                                   "resource_id" => template.id.to_s,
-                                  "image_href"  => /^http:.*#{picture.image_href}$/)
+                                  "image_href"  => /^http:.*#{@picture.image_href}$/)
     end
 
     describe "Queries of Service Templates" do
@@ -65,26 +84,6 @@ describe "Pictures" do
   end
 
   context 'As a collection' do
-    # Valid base64 image
-    let(:content) do
-      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGP"\
-      "C/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3Cc"\
-      "ulE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2Jl"\
-      "LnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIg"\
-      "eDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpy"\
-      "ZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1u"\
-      "cyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAg"\
-      "ICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYv"\
-      "MS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3Jp"\
-      "ZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpS"\
-      "REY+CjwveDp4bXBtZXRhPgpMwidZAAAADUlEQVQIHWNgYGCwBQAAQgA+3N0+"\
-      "xQAAAABJRU5ErkJggg=="
-    end
-
-    before do
-      @picture = Picture.create_from_base64(:extension => "jpg", :content => content)
-    end
-
     describe 'GET /api/pictures' do
       it 'returns image_href, extension when resources are expanded' do
         api_basic_authorize
