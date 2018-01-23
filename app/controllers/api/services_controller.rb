@@ -7,7 +7,9 @@ module Api
     include Subcollections::MetricRollups
     include Subcollections::GenericObjects
     include Subcollections::CustomAttributes
+    include Api::Mixins::Pictures
 
+    alias fetch_services_picture fetch_picture
 
     def create_resource(_type, _id, data)
       validate_service_data(data)

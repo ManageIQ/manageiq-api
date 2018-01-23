@@ -1,6 +1,9 @@
 module Api
   class ServiceRequestsController < BaseController
     include Subcollections::RequestTasks
+    include Api::Mixins::Pictures
+
+    alias fetch_service_requests_picture fetch_picture
 
     def approve_resource(type, id, data)
       raise "Must specify a reason for approving a service request" unless data["reason"].present?

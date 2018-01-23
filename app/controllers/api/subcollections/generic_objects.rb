@@ -1,6 +1,8 @@
 module Api
   module Subcollections
     module GenericObjects
+      include Api::Mixins::Pictures
+
       def generic_objects_query_resource(object_definition)
         generic_objects = object_definition.generic_objects
         go_attrs = attribute_selection_for('generic_objects')
@@ -12,7 +14,7 @@ module Api
 
           if attributes_hash['picture']
             picture = attributes_hash['picture']
-            attributes_hash['picture'] = picture.attributes.merge('image_href' => picture.image_href, 'extension' => picture.extension)
+            attributes_hash['picture'] = format_picture_response(picture)
           end
 
           go.as_json.merge(attributes_hash)
