@@ -194,6 +194,17 @@ describe "Services API" do
       expect(svc.display).to be_truthy
     end
 
+    it "supports edits of single resource via a standard PATCH" do
+      api_basic_authorize collection_action_identifier(:services, :edit)
+
+      updated_service_attributes = { "name" => "updated svc1", "description" => nil, "display" => true }
+
+      patch(api_service_url(nil, svc), :params => updated_service_attributes)
+
+      expect_single_resource_query("id" => svc.id.to_s)
+      expect(svc.reload.attributes).to include(updated_service_attributes)
+    end
+
     it "supports edits of multiple resources" do
       api_basic_authorize collection_action_identifier(:services, :edit)
 
