@@ -59,18 +59,11 @@ module Api
     private
 
     def change_resource_state(state, type, id, data = {})
-      raise BadRequestError, "Must specify an id for changing a #{type} resource" unless id
-      is_apply_config_action = state == :apply_config_pattern
-
-      if single_resource?
-        ensure_resource_exists(type, id)
-        ensure_customization_script_exists(data["pattern_id"]) if is_apply_config_action
-      end
-
+      validate_resource(state, type, id, data)
       api_action(type, id) do |klass|
         begin
           server = resource_search(id, type, klass)
-          ensure_customization_script_exists(data["pattern_id"]) if is_apply_config_action
+          ensure_customization_script_exists(data["pattern_id"]) if apply_config_action(state)
           desc = "Requested server state #{state} for #{server_ident(server)}"
           api_log_info(desc)
           task_id = queue_object_action(server, desc, :method_name => state, :role => :ems_operations)
@@ -79,6 +72,19 @@ module Api
           action_result(false, err.to_s)
         end
       end
+    end
+
+    def validate_resource(state, type, id, data = {})
+      raise BadRequestError, "Must specify an id for changing a #{type} resource" unless id
+      if single_resource?
+        ensure_resource_exists(type, id)
+        # Verify the configuration pattern resource if the operation is apply_config_pattern
+        ensure_customization_script_exists(data["pattern_id"]) if apply_config_action(state)
+      end
+    end
+
+    def apply_config_action(state)
+      state == :apply_config_pattern
     end
 
     def ensure_customization_script_exists(id)
