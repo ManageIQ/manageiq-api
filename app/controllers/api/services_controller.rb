@@ -135,6 +135,14 @@ module Api
       action_result(false, err.to_s)
     end
 
+    def queue_chargeback_report_resource(_type, id, _data)
+      service = resource_search(id, :services, Service)
+      task = service.queue_chargeback_report_generation(:userid => current_user.id)
+      action_result(true, "Queued chargeback report generation for #{service_ident(service)}", :task_id => task.id)
+    rescue StandardError => err
+      action_result(false, "Could not queue chargeback report generation - #{err}")
+    end
+
     private
 
     def validate_resource(data)
