@@ -49,11 +49,11 @@ describe "Container Images API" do
   context 'POST /api/container_images/scan' do
     let(:provider) { FactoryGirl.create(:ems_kubernetes) }
     let(:container_image) { FactoryGirl.create(:container_image, :ext_management_system => provider) }
-    let(:invalid_image_url) { api_provider_container_image_url(nil, provider, container_image.id + 1) }
-    let(:valid_image_url) { api_provider_container_image_url(nil, provider, container_image) }
+    let(:invalid_image_url) { api_container_image_url(nil, container_image.id + 1) }
+    let(:valid_image_url) { api_container_image_url(nil, container_image) }
 
     it "responds with 404 Not Found for an invalid container image" do
-      api_basic_authorize(action_identifier(:container_images, :scan, :subresource_actions, :post))
+      api_basic_authorize(action_identifier(:container_images, :scan, :resource_actions, :post))
 
       post(invalid_image_url, :params => { :action => "scan" })
 
@@ -69,27 +69,25 @@ describe "Container Images API" do
     end
 
     it "reports failed scanning initiation without MiqEventDefinition" do
-      api_basic_authorize(action_identifier(:container_images, :scan, :subresource_actions, :post))
+      api_basic_authorize(action_identifier(:container_images, :scan, :resource_actions, :post))
       post valid_image_url, :params => { :action => "scan" }
       expected = {
-        "success"   => false,
-        "message"   => "ContainerImage id:#{container_image.id} name:'#{container_image.name}' failed to start scanning",
-        "parent_id" => hash_including("id" => provider.id.to_s)
+        "success" => false,
+        "message" => "ContainerImage id:#{container_image.id} name:'#{container_image.name}' failed to start scanning",
       }
       expect(response.parsed_body).to include(expected)
     end
 
     it "scan a Container Image" do
-      api_basic_authorize(action_identifier(:container_images, :scan, :subresource_actions, :post))
+      api_basic_authorize(action_identifier(:container_images, :scan, :resource_actions, :post))
       # MiqEventDefinition that is called for scanning container images.
       _med = FactoryGirl.create(:miq_event_definition, :name => "request_containerimage_scan")
       post valid_image_url, :params => { :action => "scan" }
 
       expected = {
-        "success"   => true,
-        "message"   => "ContainerImage id:#{container_image.id} name:'#{container_image.name}' scanning",
-        "parent_id" => hash_including("id" => provider.id.to_s),
-        "task_id"   => hash_including("target_id" => container_image.id.to_s)
+        "success" => true,
+        "message" => "ContainerImage id:#{container_image.id} name:'#{container_image.name}' scanning",
+        "task_id" => hash_including("target_id" => container_image.id.to_s)
       }
       expect(response.parsed_body).to include(expected)
     end

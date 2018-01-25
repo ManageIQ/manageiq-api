@@ -746,7 +746,6 @@
     :options:
     - :collection
     - :custom_actions
-    - :subcollection
     :verbs: *gp
     :klass: ContainerImage
     :collection_actions:
@@ -757,7 +756,6 @@
       :get:
       - :name: read
         :identifier: container_image_show
-    :subresource_actions:
       :post:
       - :name: scan
         :identifier: container_image_scan
@@ -1794,7 +1792,6 @@
     - :vms
     - :flavors
     - :cloud_templates
-    - :container_images
     :collection_actions:
       :get:
       - :name: read
