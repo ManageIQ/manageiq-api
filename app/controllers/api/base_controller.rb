@@ -117,7 +117,13 @@ module Api
       case @req.method
       when :patch
         raise ForbiddenError, "You are not authorized to edit settings." unless super_admin?
-        resource.add_settings_for_resource(@req.json_body)
+        if @req.json_body.kind_of?(Array)
+          @req.json_body.each do |setting|
+            resource.add_settings_for_resource(setting)
+          end
+        else
+          resource.add_settings_for_resource(@req.json_body)
+        end
       when :delete
         raise ForbiddenError, "You are not authorized to remove settings." unless super_admin?
         resource.remove_settings_path_for_resource(*@req.json_body)
