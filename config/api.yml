@@ -756,6 +756,9 @@
       :get:
       - :name: read
         :identifier: container_image_show
+      :post:
+      - :name: scan
+        :identifier: container_image_scan
   :container_nodes:
     :description: Container Nodes
     :identifier: container_node
