@@ -1,6 +1,26 @@
 RSpec.describe "Servers" do
+  let(:server) { FactoryGirl.create(:miq_server) }
+
+  describe "/api/servers/:id?expand=settings" do
+    it "expands the settings subcollection" do
+      api_basic_authorize(:ops_settings)
+
+      get(api_server_url(nil, server), :params => {:expand => 'settings'})
+
+      expect(response.parsed_body).to include('settings' => a_kind_of(Hash))
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "does not expand settings without an appropriate role" do
+      api_basic_authorize
+
+      get(api_server_url(nil, server), :params => {:expand => 'settings'})
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   describe "/api/servers/:id/settings" do
-    let(:server) { FactoryGirl.create(:miq_server) }
     let(:original_timeout) { server.settings_for_resource[:api][:authentication_timeout] }
     let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
 

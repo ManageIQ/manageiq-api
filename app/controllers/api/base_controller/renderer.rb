@@ -420,6 +420,8 @@ module Api
             :expand_resources => @req.expand?(sc)
           }
           json.set! sc.to_s, collection_to_jbuilder(sc.to_sym, sctype, subresources, copts)
+        elsif subresources.kind_of?(Hash)
+          json.set!(sc, subresources)
         else
           sc_key_id = collection_config.resource_identifier(sctype)
           json.set! sc.to_s do |js|

@@ -1971,6 +1971,8 @@
   :regions:
     :description: Regions
     :identifier: region
+    :subcollections:
+    - :settings
     :options:
     - :collection
     - :settings
@@ -2242,6 +2244,8 @@
         :identifier: security_group_show
   :servers:
     :description: EVM Servers
+    :subcollections:
+    - :settings
     :options:
     - :collection
     - :settings
@@ -3073,6 +3077,8 @@
     :identifier: zone
     :options:
     - :collection
+    - :settings
+    :subcollections:
     - :settings
     :verbs: *gp
     :klass: Zone

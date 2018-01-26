@@ -51,6 +51,7 @@ Rails.application.routes.draw do
         end
 
         Array(collection.subcollections).each do |subcollection_name|
+          next if subcollection_name == :settings
           Api::ApiConfig.collections[subcollection_name].verbs.each do |verb|
             case verb
             when :get
