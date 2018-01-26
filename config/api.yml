@@ -927,12 +927,15 @@
     :identifier: customization_script
     :options:
     - :collection
-    :verbs: *g
+    :verbs: *gp
     :klass: CustomizationScript
     :subcollections:
     :collection_actions:
       :get:
       - :name: read
+        :identifier: customization_script_show_list
+      :post:
+      - :name: query
         :identifier: customization_script_show_list
     :resource_actions:
       :get:
