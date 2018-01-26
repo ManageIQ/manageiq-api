@@ -32,7 +32,6 @@ module Api
       def collection_to_jbuilder(type, reftype, resources, opts = {})
         link_builder = Api::LinksBuilder.new(params, @req.url, opts[:counts])
         Jbuilder.new do |json|
-          json.ignore_nil!
           json.set! 'name', opts[:name] if opts[:name]
 
           if opts[:counts]
@@ -71,7 +70,6 @@ module Api
         normalize_options = {}
         reftype = get_reftype(type, reftype, resource, opts)
         json    = Jbuilder.new
-        json.ignore_nil!
 
         physical_attrs, virtual_attrs = validate_attr_selection(resource)
         normalize_options[:render_attributes] = physical_attrs if physical_attrs.present?

@@ -21,9 +21,11 @@ module Api
           end
         end
 
+        is_ar = obj.kind_of?(ActiveRecord::Base)
         attrs.each do |k|
-          value = normalize_attr(k, obj.kind_of?(ActiveRecord::Base) ? obj.try(k) : obj[k])
-          result[k] = value unless value.nil?
+          next if Api.encrypted_attribute?(k)
+          next if is_ar ? !obj.respond_to?(k) : !obj.key?(k)
+          result[k] = normalize_attr(k, is_ar ? obj.try(k) : obj[k])
         end
         result
       end

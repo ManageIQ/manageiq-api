@@ -104,6 +104,14 @@ describe "Querying" do
       expect(response.parsed_body).to eq("href" => api_vm_url(nil, vm1), "id" => vm1.id.to_s)
     end
 
+    it 'returns nil attributes when querying a resource' do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+
+      get(api_vm_url(nil, vm1))
+
+      expect(response.parsed_body).to include("id" => vm1.id.to_s, "retired" => nil, "smart" => nil)
+    end
+
     it "returns correct paging links" do
       create_vms_by_name %w(bb ff aa cc ee gg dd)
 
