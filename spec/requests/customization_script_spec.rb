@@ -13,7 +13,7 @@ RSpec.describe "Customization Scripts" do
     end
 
     context "with valid id" do
-      it "returns both id and href" do
+      it "shows all of its properties" do
         config_pattern = FactoryGirl.create(:customization_script)
 
         api_basic_authorize action_identifier(:customization_scripts, :read, :resource_actions, :get)
