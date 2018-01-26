@@ -45,6 +45,7 @@ module Api
       #
       def patch_resource(type, id)
         patched_attrs = {}
+        return edit_resource(type, id, @req.json_body) if @req.json_body.kind_of?(Hash)
         @req.json_body.each do |patch_cmd|
           action = patch_cmd["action"]
           path   = patch_cmd["path"]
