@@ -9,6 +9,7 @@ module Api
 
     include_concern 'Parameters'
     include_concern 'Parser'
+    include_concern 'Validator'
     include_concern 'Manager'
     include_concern 'Action'
     include_concern 'Logger'
@@ -22,8 +23,11 @@ module Api
     before_action :log_request_initiated
     before_action :require_api_user_or_token, :except => [:options]
     before_action :set_gettext_locale, :set_access_control_headers, :parse_api_request, :log_api_request,
-                  :validate_api_request
-    before_action :validate_api_action, :except => [:options]
+                  :validate_optional_collection_classes, :validate_api_version,
+                  :validate_api_request_collection, :validate_api_request_subcollection
+    before_action :validate_post_method, :validate_post_api_action_as_subcollection,
+                  :validate_resources_specified, :only => [:create, :update]
+    before_action :validate_request_method, :validate_api_action, :unless => :ignore_http_method_validation?
     before_action :validate_response_format, :except => [:destroy]
     before_action :ensure_pagination, :only => :index
     after_action :log_api_response
