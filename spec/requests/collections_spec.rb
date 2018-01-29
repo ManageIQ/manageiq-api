@@ -381,6 +381,11 @@ describe "Rest API Collections" do
       FactoryGirl.create(:orchestration_stack)
       test_collection_query(:orchestration_stacks, api_orchestration_stacks_url, OrchestrationStack)
     end
+
+    it 'query search MiqSearch' do
+      FactoryGirl.create(:miq_search)
+      test_collection_query(:search_filters, api_search_filters_url, MiqSearch)
+    end
   end
 
   context "Collections Bulk Queries" do
@@ -711,6 +716,11 @@ describe "Rest API Collections" do
     it 'bulk query orchestration stacks' do
       FactoryGirl.create(:orchestration_stack)
       test_collection_bulk_query(:orchestration_stacks, api_orchestration_stacks_url, OrchestrationStack)
+    end
+
+    it 'bulk query search filters' do
+      FactoryGirl.create(:miq_search)
+      test_collection_bulk_query(:search_filters, api_search_filters_url, MiqSearch)
     end
   end
 end
