@@ -280,6 +280,7 @@ module Api
       # will not be overwritten later.
       #
       def add_custom_action_hrefs(value)
+        return if value.nil?
         result = value.dup
         result[:buttons].each do |button|
           button["href"] = normalize_href(:custom_buttons, button["id"])
