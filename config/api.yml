@@ -1975,7 +1975,6 @@
     - :settings
     :options:
     - :collection
-    - :settings
     :verbs: *gp
     :klass: MiqRegion
     :collection_actions:
@@ -2248,7 +2247,6 @@
     - :settings
     :options:
     - :collection
-    - :settings
     :verbs: *g
     :klass: MiqServer
   :service_catalogs:
@@ -3077,7 +3075,6 @@
     :identifier: zone
     :options:
     - :collection
-    - :settings
     :subcollections:
     - :settings
     :verbs: *gp

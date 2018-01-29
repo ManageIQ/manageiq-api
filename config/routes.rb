@@ -51,32 +51,31 @@ Rails.application.routes.draw do
         end
 
         Array(collection.subcollections).each do |subcollection_name|
-          next if subcollection_name == :settings
-          Api::ApiConfig.collections[subcollection_name].verbs.each do |verb|
-            case verb
-            when :get
-              get "/:c_id/#{subcollection_name}", :action => :index, :as => "#{collection_name.to_s.singularize}_#{subcollection_name.to_s.pluralize}"
-              get "/:c_id/#{subcollection_name}/:s_id", :action => :show, :as => "#{collection_name.to_s.singularize}_#{subcollection_name.to_s.singularize}"
-            when :put
-              put "/:c_id/#{subcollection_name}/:s_id", :action => :update
-            when :patch
-              patch "/:c_id/#{subcollection_name}/:s_id", :action => :update
-            when :delete
-              delete "/:c_id/#{subcollection_name}/:s_id", :action => :destroy
-            when :post
-              post "/:c_id/#{subcollection_name}", :action => :create, :constraints => Api::CreateConstraint.new
-              post "/:c_id/#{subcollection_name}(/:s_id)", :action => :update
+          if subcollection_name == :settings
+            match(
+              "/:c_id/settings",
+              :to  => "#{collection_name}#settings",
+              :via => %w[get patch delete],
+              :as  => "#{collection_name.to_s.singularize}_settings",
+            )
+          else
+            Api::ApiConfig.collections[subcollection_name].verbs.each do |verb|
+              case verb
+              when :get
+                get "/:c_id/#{subcollection_name}", :action => :index, :as => "#{collection_name.to_s.singularize}_#{subcollection_name.to_s.pluralize}"
+                get "/:c_id/#{subcollection_name}/:s_id", :action => :show, :as => "#{collection_name.to_s.singularize}_#{subcollection_name.to_s.singularize}"
+              when :put
+                put "/:c_id/#{subcollection_name}/:s_id", :action => :update
+              when :patch
+                patch "/:c_id/#{subcollection_name}/:s_id", :action => :update
+              when :delete
+                delete "/:c_id/#{subcollection_name}/:s_id", :action => :destroy
+              when :post
+                post "/:c_id/#{subcollection_name}", :action => :create, :constraints => Api::CreateConstraint.new
+                post "/:c_id/#{subcollection_name}(/:s_id)", :action => :update
+              end
             end
           end
-        end
-
-        if collection.options.include?(:settings)
-          match(
-            "/:c_id/settings",
-            :to  => "#{collection_name}#settings",
-            :via => %w[get patch delete],
-            :as  => "#{collection_name.to_s.singularize}_settings",
-          )
         end
       end
     end

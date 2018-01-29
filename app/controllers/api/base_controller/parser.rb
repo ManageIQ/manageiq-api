@@ -121,9 +121,7 @@ module Api
       private
 
       def ignore_http_method_validation?
-        settings_request = @req.subcollection == 'settings' && collection_option?(:settings)
-
-        settings_request || @req.method == :options
+        @req.subcollection == 'settings' || @req.method == :options
       end
 
       #
