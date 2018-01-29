@@ -68,6 +68,8 @@ describe "Custom Actions API" do
   end
 
   describe "Querying services with no custom actions" do
+    let(:service) { FactoryGirl.create(:service) }
+
     it "returns core actions as authorized" do
       api_basic_authorize(action_identifier(:services, :edit),
                           action_identifier(:services, :read, :resource_actions, :get))
@@ -76,6 +78,16 @@ describe "Custom Actions API" do
 
       expect_result_to_have_keys(%w(id href actions))
       expect(response.parsed_body["actions"].select { |a| a["method"] == "post" }.pluck("name")).to match_array(%w(edit add_resource remove_resource remove_all_resources add_provider_vms))
+    end
+
+    it "allows expanding of custom actions" do
+      api_basic_authorize(collection_action_identifier(:services, :read, :get))
+
+      expected = { 'resources' => [a_hash_including('id' => service.id.to_s)] }
+      get(api_services_url, :params => { :expand => "resources", :attributes => "custom_actions" })
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
     end
   end
 
