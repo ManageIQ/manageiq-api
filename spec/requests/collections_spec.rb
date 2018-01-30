@@ -352,6 +352,11 @@ describe "Rest API Collections" do
       test_collection_query(:physical_servers, api_physical_servers_url, PhysicalServer)
     end
 
+    it 'query CustomizationScripts' do
+      FactoryGirl.create(:customization_script)
+      test_collection_query(:customization_scripts, api_customization_scripts_url, CustomizationScript)
+    end
+
     it 'query GuestDevices' do
       FactoryGirl.create(:guest_device)
       test_collection_query(:guest_devices, api_guest_devices_url, GuestDevice)
@@ -661,6 +666,11 @@ describe "Rest API Collections" do
     it 'bulk query PhysicalServers' do
       FactoryGirl.create(:physical_server)
       test_collection_bulk_query(:physical_servers, api_physical_servers_url, PhysicalServer)
+    end
+
+    it 'bulk query CustomizationScripts' do
+      FactoryGirl.create(:customization_script)
+      test_collection_bulk_query(:customization_scripts, api_customization_scripts_url, CustomizationScript)
     end
 
     it 'bulk query GuestDevices' do

@@ -925,6 +925,25 @@
       :delete:
       - :name: delete
         :identifier: ab_group_delete
+  :customization_scripts:
+    :description: Customization Script
+    :identifier: customization_script
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: CustomizationScript
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: customization_script_show_list
+      :post:
+      - :name: query
+        :identifier: customization_script_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: customization_script_show
   :data_stores:
     :description: Datastores
     :identifier: storage
