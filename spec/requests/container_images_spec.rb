@@ -46,7 +46,7 @@ describe "Container Images API" do
     end
   end
 
-  context 'POST /api/container_images/scan' do
+  context 'POST /api/container_images with action scan' do
     let(:provider) { FactoryGirl.create(:ems_kubernetes) }
     let(:container_image) { FactoryGirl.create(:container_image, :ext_management_system => provider) }
     let(:invalid_image_url) { api_container_image_url(nil, container_image.id + 1) }
@@ -85,9 +85,11 @@ describe "Container Images API" do
       post valid_image_url, :params => { :action => "scan" }
 
       expected = {
-        "success" => true,
-        "message" => "ContainerImage id:#{container_image.id} name:'#{container_image.name}' scanning",
-        "task_id" => hash_including("target_id" => container_image.id.to_s)
+        "success"   => true,
+        "message"   => "ContainerImage id:#{container_image.id} name:'#{container_image.name}' scanning",
+        "href"      => api_container_image_url(nil, container_image),
+        "task_id"   => anything,
+        "task_href" => a_string_matching(api_tasks_url)
       }
       expect(response.parsed_body).to include(expected)
     end
