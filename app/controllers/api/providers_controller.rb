@@ -106,7 +106,47 @@ module Api
       action_result(false, "Could not resume Provider - #{err}")
     end
 
+    # Process change_password action for a single resource or a collection of resources
+    def change_password_resource(type, id, data = {})
+      if single_resource?
+        change_password(type, id, data)
+      else
+        change_password_multiple_providers(type, id, data)
+      end
+    end
+
     private
+
+    # Process password change request for a single resource
+    #
+    # @raise [BadRequestError] if no id is passed or some required data is missing
+    #                          or some error occur when try to change password on provider client
+    # @raise [NotFoundError]   if there isn't providers with the id passed
+    def change_password(type, id, data)
+      raise BadRequestError, "Must specify an id for change password of a #{type} resource" unless id
+      api_action(type, id) do |klass|
+        provider = resource_search(id, type, klass)
+        desc = "Change password requested for Physical Provider #{provider.name}"
+        task_id = provider.change_password_queue(User.current_user.userid, data["current_password"], data["new_password"])
+        action_result(true, desc, :task_id => task_id)
+      end
+    end
+
+    # Process password change for a collection of resources
+    #
+    # Even the request isn't completed successfully, return a HTTP Status 200
+    #   with individual response for all resources.
+    #
+    # @see #change_password
+    #
+    # @return [Hash] contains details about the request proccess
+    #   :success [Boolean] indicates if the request was successfully completed
+    #   :message [String]  description of request proccess
+    def change_password_multiple_providers(type, id, data)
+      change_password(type, id, data)
+    rescue BadRequestError, ActiveRecord::RecordNotFound, MiqException::Error => exception
+      action_result(false, _(exception.message))
+    end
 
     def provider_ident(provider)
       "Provider id:#{provider.id} name:'#{provider.name}'"
