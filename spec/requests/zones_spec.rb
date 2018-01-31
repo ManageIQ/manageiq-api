@@ -37,6 +37,21 @@ RSpec.describe "Zones" do
       expect(response).to have_http_status(:ok)
     end
 
+    it "permits updates to settings as an array for an authenticated super-admin user" do
+      window_size = zone.settings_for_resource[:binary_blob][:purge_window_size]
+      api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
+
+      expect {
+        patch(api_zone_settings_url(nil, zone), :params => [{:api => {:authentication_timeout => "1337.minutes"}},
+                                                            {:binary_blob => {:purge_window_size => window_size + 10}}])
+      }.to change { zone.settings_for_resource[:api][:authentication_timeout] }.from(original_timeout).to("1337.minutes").and change {
+        zone.settings_for_resource[:binary_blob][:purge_window_size] }.from(window_size).to(window_size + 10)
+
+      expect(response.parsed_body).to include("api"         => a_hash_including("authentication_timeout" => "1337.minutes"),
+                                              "binary_blob" => a_hash_including("purge_window_size" => window_size + 10))
+      expect(response).to have_http_status(:ok)
+    end
+
     it "does not allow an authenticated non-super-admin user to update settings" do
       api_basic_authorize
 
