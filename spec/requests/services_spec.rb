@@ -1055,6 +1055,20 @@ describe "Services API" do
 
       expect(response).to have_http_status(:forbidden)
     end
+
+    it 'does not require resource_type for a subcollection' do
+      api_basic_authorize(subcollection_action_identifier(:services, :metric_rollups, :read, :get))
+
+      get(url)
+
+      expected = {
+        'error' => a_hash_including(
+          'message' => 'Must specify capture_interval, start_date'
+        )
+      }
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include(expected)
+    end
   end
 
   describe 'add_provider_vms_resource' do
