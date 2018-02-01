@@ -52,49 +52,39 @@ module Api
       end
     end
 
+    # Process apply config pattern operation for single and multi-resources
+    #
+    # Even the request for multi-resources isn't completed successfully, return a HTTP Status 200
     def apply_config_pattern_resource(type, id, data)
-      change_resource_state(:apply_config_pattern, type, id, data)
+      ensure_resource_exists(:customization_scripts, data["pattern_id"])
+      change_resource_state(:apply_config_pattern, type, id, [data["pattern_id"]])
+    rescue => err
+      raise err if single_resource?
+      action_result(false, err.to_s)
     end
 
     private
 
-    def change_resource_state(state, type, id, data = {})
-      validate_resource(state, type, id, data)
+    def change_resource_state(state, type, id, data = [])
+      raise BadRequestError, "Must specify an id for changing a #{type} resource" unless id
+
+      ensure_resource_exists(type, id) if single_resource?
+
       api_action(type, id) do |klass|
         begin
           server = resource_search(id, type, klass)
-          ensure_customization_script_exists(data["pattern_id"]) if apply_config_action(state)
           desc = "Requested server state #{state} for #{server_ident(server)}"
           api_log_info(desc)
-          task_id = queue_object_action(server, desc, :method_name => state, :role => :ems_operations)
+          task_id = queue_object_action(server, desc, :method_name => state, :role => :ems_operations, :args => data)
           action_result(true, desc, :task_id => task_id)
-        rescue StandardError => err
+        rescue => err
           action_result(false, err.to_s)
         end
       end
     end
 
-    def validate_resource(state, type, id, data = {})
-      raise BadRequestError, "Must specify an id for changing a #{type} resource" unless id
-      if single_resource?
-        ensure_resource_exists(type, id)
-        # Verify the configuration pattern resource if the operation is apply_config_pattern
-        ensure_customization_script_exists(data["pattern_id"]) if apply_config_action(state)
-      end
-    end
-
-    def apply_config_action(state)
-      state == :apply_config_pattern
-    end
-
-    def ensure_customization_script_exists(id)
-      ensure_resource_exists(:customization_scripts, id)
-    rescue NotFoundError
-      raise NotFoundError, "Customization script not found"
-    end
-
     def ensure_resource_exists(type, id)
-      raise NotFoundError unless collection_class(type).exists?(id)
+      raise NotFoundError, "#{type} with id:#{id} not found" unless collection_class(type).exists?(id)
     end
 
     def server_ident(server)
