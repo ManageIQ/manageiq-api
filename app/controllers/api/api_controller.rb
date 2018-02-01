@@ -32,19 +32,17 @@ module Api
     end
 
     def auth_identity
-      user  = User.current_user
-      group = user.current_group
       {
-        :userid     => user.userid,
-        :name       => user.name,
-        :user_href  => "#{@req.api_prefix}/users/#{user.id}",
-        :group      => group.description,
-        :group_href => "#{@req.api_prefix}/groups/#{group.id}",
-        :role       => group.miq_user_role_name,
-        :role_href  => "#{@req.api_prefix}/roles/#{group.miq_user_role.id}",
-        :tenant     => group.tenant.name,
-        :groups     => user.miq_groups.pluck(:description),
-        :miq_groups => normalize_array(user.miq_groups, :groups)
+        :userid     => current_user.userid,
+        :name       => current_user.name,
+        :user_href  => "#{@req.api_prefix}/users/#{current_user.id}",
+        :group      => current_group.description,
+        :group_href => "#{@req.api_prefix}/groups/#{current_group.id}",
+        :role       => current_group.miq_user_role_name,
+        :role_href  => "#{@req.api_prefix}/roles/#{current_group.miq_user_role.id}",
+        :tenant     => current_group.tenant.name,
+        :groups     => current_user.miq_groups.pluck(:description),
+        :miq_groups => normalize_array(miq_groups, :groups)
       }
     end
 
@@ -80,11 +78,19 @@ module Api
       }
     end
 
+    def miq_groups
+      current_user.miq_groups.collect do |group|
+        group.attributes.merge(:sui_product_features => group.sui_product_features)
+      end
+    end
+
+    def current_group
+      @group ||= current_user.current_group
+    end
+
     def auth_authorization
-      user  = User.current_user
-      group = user.current_group
       {
-        :product_features => product_features(group.miq_user_role)
+        :product_features => product_features(current_group.miq_user_role)
       }
     end
 

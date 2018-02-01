@@ -135,7 +135,7 @@ module Api
     private
 
     def current_user
-      User.current_user
+      @current_user ||= User.current_user
     end
 
     def super_admin?
