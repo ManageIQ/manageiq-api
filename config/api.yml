@@ -759,6 +759,8 @@
       :post:
       - :name: scan
         :identifier: container_image_scan
+      - :name: openscap_scan_results
+        :identifier: container_image_scan
   :container_nodes:
     :description: Container Nodes
     :identifier: container_node
