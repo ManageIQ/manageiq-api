@@ -2903,6 +2903,24 @@
       :delete:
       - :name: delete
         :identifier: rbac_tenant_manage_quotas
+  :transformation_mappings:
+    :description: Transformation Mappings
+    :identifier: transformation_mapping
+    :verbs: *gp
+    :klass: TransformationMapping
+    :options:
+    - :collection
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: transformation_mapping_show_list
+      :post:
+      - :name: create
+        :identifier: transformation_mapping_new
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: transformation_mapping_show
   :users:
     :description: Users
     :identifier: rbac_user
