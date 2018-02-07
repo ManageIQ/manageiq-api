@@ -831,62 +831,6 @@ describe "Querying" do
       expect(actions.first["name"]).to eq("suspend")
     end
 
-    it 'returns correct actions on a collection' do
-      api_basic_authorize(collection_action_identifier(:vms, :read, :get),
-                          action_identifier(:vms, :start),
-                          action_identifier(:vms, :stop))
-
-      get(api_vms_url)
-
-      actions = response.parsed_body['actions']
-      expect(actions.size).to eq(3)
-      expect(actions.collect { |a| a['name'] }).to match_array(%w(start stop query))
-      expect_result_to_have_keys(%w(name count subcount resources actions))
-    end
-
-    it 'returns correct actions on a subcollection' do
-      api_basic_authorize subcollection_action_identifier(:vms, :snapshots, :read, :get),
-                          subcollection_action_identifier(:vms, :snapshots, :delete, :post),
-                          subcollection_action_identifier(:vms, :snapshots, :create, :post)
-      vm = FactoryGirl.create(:vm)
-      FactoryGirl.create(:snapshot, :vm_or_template => vm)
-
-      get(api_vm_snapshots_url(nil, vm))
-
-      actions = response.parsed_body['actions']
-      expect(actions.size).to eq(2)
-      expect(actions.collect { |a| a['name'] }).to match_array(%w(create delete))
-      expect_result_to_have_keys(%w(name count subcount resources actions))
-    end
-
-    it 'returns the correct actions on a subresource' do
-      api_basic_authorize subcollection_action_identifier(:vms, :snapshots, :delete, :post),
-                          subcollection_action_identifier(:vms, :snapshots, :read, :get),
-                          subcollection_action_identifier(:vms, :snapshots, :create, :post)
-
-      vm = FactoryGirl.create(:vm)
-      snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
-
-      get(api_vm_snapshot_url(nil, vm, snapshot))
-
-      actions = response.parsed_body['actions']
-      expect(actions.size).to eq(2)
-      expect(actions.collect { |a| a['name'] }).to match_array(%w(delete delete))
-      expect_result_to_have_keys(%w(href id actions))
-    end
-
-    it "returns multiple actions if authorized as such" do
-      api_basic_authorize(action_identifier(:vms, :start),
-                          action_identifier(:vms, :stop),
-                          action_identifier(:vms, :read, :resource_actions, :get))
-
-      get api_vm_url(nil, vm1)
-
-      expect(response).to have_http_status(:ok)
-      expect_result_to_have_keys(%w(id href name vendor actions))
-      expect(response.parsed_body["actions"].collect { |a| a["name"] }).to match_array(%w(start stop))
-    end
-
     it "returns actions if asked for with physical attributes" do
       api_basic_authorize action_identifier(:vms, :start), action_identifier(:vms, :read, :resource_actions, :get)
 
