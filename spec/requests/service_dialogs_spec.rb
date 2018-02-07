@@ -142,15 +142,58 @@ describe "Service Dialogs API" do
         expect(response).to have_http_status(:forbidden)
       end
 
-      it 'POST /api/service_dialogs/:id updates a service dialog' do
-        api_basic_authorize collection_action_identifier(:service_dialogs, :edit)
-        dialog_tab = dialog.dialog_tabs.first
-        dialog_group = dialog_tab.dialog_groups.first
-        dialog_field = dialog_group.dialog_fields.first
+      context 'using call with :content key' do
+        it 'POST /api/service_dialogs/:id updates a service dialog' do
+          api_basic_authorize collection_action_identifier(:service_dialogs, :edit)
+          dialog_tab = dialog.dialog_tabs.first
+          dialog_group = dialog_tab.dialog_groups.first
+          dialog_field = dialog_group.dialog_fields.first
 
-        updated_dialog = {
-          'label'   => 'updated label',
-          'content' => {
+          updated_dialog = {
+            'label'   => 'updated label',
+            'content' => {
+              'dialog_tabs' => [
+                'id'            => dialog_tab.id.to_s,
+                'label'         => 'updated tab label',
+                'dialog_groups' => [
+                  {
+                    'id'            => dialog_group.id.to_s,
+                    'dialog_fields' => [
+                      { 'id' => dialog_field.id.to_s }
+                    ]
+                  }
+                ]
+              ]
+            }
+          }
+
+          expected = {
+            'href'        => a_string_including(api_service_dialog_url(nil, dialog)),
+            'id'          => dialog.id.to_s,
+            'label'       => 'updated label',
+            'dialog_tabs' => a_collection_including(
+              a_hash_including('label' => 'updated tab label')
+            )
+          }
+
+          expect do
+            post(api_service_dialog_url(nil, dialog), :params => gen_request(:edit, updated_dialog))
+            dialog.reload
+          end.to change(dialog, :content)
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
+      end
+
+      context 'using call without :content key' do
+        it 'POST /api/service_dialogs/:id updates a service dialog' do
+          api_basic_authorize collection_action_identifier(:service_dialogs, :edit)
+          dialog_tab = dialog.dialog_tabs.first
+          dialog_group = dialog_tab.dialog_groups.first
+          dialog_field = dialog_group.dialog_fields.first
+
+          updated_dialog = {
+            'label'       => 'updated label',
             'dialog_tabs' => [
               'id'            => dialog_tab.id.to_s,
               'label'         => 'updated tab label',
@@ -164,23 +207,23 @@ describe "Service Dialogs API" do
               ]
             ]
           }
-        }
 
-        expected = {
-          'href'        => a_string_including(api_service_dialog_url(nil, dialog)),
-          'id'          => dialog.id.to_s,
-          'label'       => 'updated label',
-          'dialog_tabs' => a_collection_including(
-            a_hash_including('label' => 'updated tab label')
-          )
-        }
+          expected = {
+            'href'        => a_string_including(api_service_dialog_url(nil, dialog)),
+            'id'          => dialog.id.to_s,
+            'label'       => 'updated label',
+            'dialog_tabs' => a_collection_including(
+              a_hash_including('label' => 'updated tab label')
+            )
+          }
 
-        expect do
-          post(api_service_dialog_url(nil, dialog), :params => gen_request(:edit, updated_dialog))
-          dialog.reload
-        end.to change(dialog, :content)
-        expect(response).to have_http_status(:ok)
-        expect(response.parsed_body).to include(expected)
+          expect do
+            post(api_service_dialog_url(nil, dialog), :params => gen_request(:edit, updated_dialog))
+            dialog.reload
+          end.to change(dialog, :content)
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
       end
 
       it 'POST /api/service_dialogs/:id can remove tabs or fields' do
