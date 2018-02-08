@@ -445,4 +445,95 @@ describe "Service Templates API" do
       expect(response.parsed_body).to include(expected)
     end
   end
+
+  describe "Service Templates order" do
+    let(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog, :orderable) }
+
+    it "is forbidden without appropriate role" do
+      api_basic_authorize
+
+      post(api_service_template_url(nil, service_template), :params => { :action => "order" })
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    context "with an orderable template" do
+      it "can be ordered as a resource action" do
+        api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+
+        post(api_service_template_url(nil, service_template), :params => { :action => "order" })
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('href' => a_string_including(api_service_requests_url))
+      end
+
+      it "can be ordered as an action on the collection" do
+        api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+
+        post(api_service_templates_url, :params => { :action => "order", :resources => [{:href => api_service_template_url(nil, service_template)}] })
+
+        expected = {
+          "results" => [a_hash_including("href" => a_string_including(api_service_requests_url))]
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it "shows the action" do
+        api_basic_authorize(action_identifier(:service_templates, :order, :resource_actions, :post),
+                            action_identifier(:service_templates, :read, :resource_actions, :get))
+
+        get(api_service_template_url(nil, service_template))
+
+        actions = response.parsed_body["actions"].collect { |action| action["name"] }
+        expect(actions).to include("order")
+      end
+
+      it "can order multiple service templates" do
+        service_template2 = FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog, :orderable)
+        api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+
+        post(api_service_templates_url, :params => { :action => "order", :resources =>
+          [{:href => api_service_template_url(nil, service_template)},
+           {:href => api_service_template_url(nil, service_template2)}]})
+
+        expected = {
+          "results" => [a_hash_including("href" => a_string_including(api_service_requests_url)),
+                        a_hash_including("href" => a_string_including(api_service_requests_url))]
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+    end
+
+    context "with an unorderable template" do
+      let(:template_no_display) { FactoryGirl.create(:service_template, :display => false) }
+
+      it "cannot be ordered" do
+        api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+
+        post(api_service_template_url(nil, template_no_display), :params => { :action => "order" })
+
+        expected = {
+          "error" => a_hash_including(
+            "kind"    => "bad_request",
+            "message" => /cannot be ordered/
+          )
+        }
+        expect(response).to have_http_status(:bad_request)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it "does not show the order action" do
+        api_basic_authorize(action_identifier(:service_templates, :order, :resource_actions, :post),
+                            action_identifier(:service_templates, :read, :resource_actions, :get),
+                            action_identifier(:service_templates, :edit, :resource_actions, :post))
+
+        get(api_service_template_url(nil, template_no_display))
+
+        actions = response.parsed_body["actions"].collect { |action| action["name"] }
+        expect(actions).to_not include("order")
+      end
+    end
+  end
 end
