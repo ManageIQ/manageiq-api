@@ -536,6 +536,7 @@ RSpec.describe "Requests API" do
       post(tasks_url, :params => params)
 
       expect(response).to have_http_status(:ok)
+      expect(task.reload.options.keys).to all(be_kind_of(Symbol))
     end
   end
 end
