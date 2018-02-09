@@ -480,6 +480,7 @@ describe "Provision Requests API" do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['options']).to match(hash_including(options))
+      expect(task.reload.options.keys).to all(be_kind_of(Symbol))
     end
   end
 end
