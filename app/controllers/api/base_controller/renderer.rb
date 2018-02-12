@@ -469,7 +469,7 @@ module Api
             next unless !action[:disabled] && api_user_role_allows?(action[:identifier]) && action_validated?(resource, action)
             build_resource_actions(action, method, href, cspec[:verbs])
           end
-        end.flatten.compact
+        end.flatten.uniq.compact
       end
 
       def build_resource_actions(action, method, href, verbs)
