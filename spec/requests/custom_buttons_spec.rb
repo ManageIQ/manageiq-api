@@ -45,6 +45,23 @@ RSpec.describe 'CustomButtons API' do
 
         expect(response).to have_http_status(:forbidden)
       end
+
+      it 'returns the correct actions' do
+        api_basic_authorize(collection_action_identifier(:custom_buttons, :edit),
+                            action_identifier(:custom_buttons, :read, :resource_actions, :get))
+
+        get(api_custom_button_url(nil, cb))
+
+        expected = {
+          'actions' => [
+            a_hash_including('name' => 'edit', 'method' => 'post'),
+            a_hash_including('name' => 'edit', 'method' => 'patch'),
+            a_hash_including('name' => 'edit', 'method' => 'put')
+          ]
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
     end
 
     context 'with an appropriate role' do
