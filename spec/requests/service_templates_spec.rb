@@ -87,6 +87,18 @@ describe "Service Templates API" do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
     end
+
+    it 'does not return hrefs on resources that do not have a collection' do
+      api_basic_authorize action_identifier(:service_templates, :read, :resource_actions, :get)
+      vm = FactoryGirl.create(:vm)
+      template.add_resource(vm)
+      template.save
+
+      get(api_service_template_url(nil, template), :params => {:attributes => 'service_resources'})
+
+      expect(response).to have_http_status(:ok)
+      response.parsed_body['service_resources'].each { |resource| expect(resource.keys).to_not include('href') }
+    end
   end
 
   describe "Service Templates edit" do

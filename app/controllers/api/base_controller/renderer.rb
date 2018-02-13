@@ -97,7 +97,7 @@ module Api
         # Ensures hrefs are consistent with those of the collection they were requested from
         return reftype if collection_class == rclass || collection_class.descendants.include?(rclass)
 
-        collection_config.name_for_klass(rclass) || collection_config.name_for_subclass(rclass) || reftype
+        collection_config.name_for_klass(rclass) || collection_config.name_for_subclass(rclass)
       end
 
       #
