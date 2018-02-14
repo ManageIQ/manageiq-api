@@ -2,7 +2,7 @@ module Api
   module Subcollections
     module Flavors
       def flavors_query_resource(object)
-        object.flavors
+        object.respond_to?(:flavors) ? object.flavors : []
       end
 
       def flavors_create_resource(parent, _type, _id, data)

@@ -28,6 +28,16 @@ RSpec.describe "Flavors API" do
 
         expect(response).to have_http_status(:forbidden)
       end
+
+      it 'returns an empty array for collections that do not have flavors' do
+        ems_infra = FactoryGirl.create(:ems_infra)
+        api_basic_authorize(subcollection_action_identifier(:providers, :flavors, :read, :get))
+
+        get(api_provider_flavors_url(nil, ems_infra))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('resources' => [])
+      end
     end
 
     describe "GET /api/providers/:c_id/flavors/:id" do
