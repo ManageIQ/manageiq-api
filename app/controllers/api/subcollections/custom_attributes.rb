@@ -7,6 +7,7 @@ module Api
 
       def custom_attributes_add_resource(object, _type, _id, data = nil)
         raise BadRequestError, "#{object.class.name} does not support management of custom attributes" unless object.respond_to?(:custom_attributes)
+        data["section"] ||= "metadata"
         add_custom_attribute(object, data)
       rescue => err
         raise BadRequestError, "Could not add custom attributes - #{err}"
@@ -82,7 +83,6 @@ module Api
       end
 
       def new_custom_attribute(data)
-        data["section"] ||= "metadata"
         data["source"] ||= "EVM"
         raise "Must specify a name for a custom attribute to be added" if data["name"].blank?
         data = format_custom_attributes(data)
