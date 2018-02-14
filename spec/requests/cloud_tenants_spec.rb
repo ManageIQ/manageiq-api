@@ -93,4 +93,16 @@ RSpec.describe 'CloudTenants API' do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  context 'As a subcollection' do
+    it 'returns an empty array for collections that do not have cloud tenants' do
+      ems_infra = FactoryGirl.create(:ems_infra)
+      api_basic_authorize(subcollection_action_identifier(:providers, :cloud_tenants, :read, :get))
+
+      get(api_provider_cloud_tenants_url(nil, ems_infra))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include('resources' => [])
+    end
+  end
 end
