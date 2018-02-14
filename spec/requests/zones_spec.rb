@@ -1,6 +1,26 @@
 RSpec.describe "Zones" do
+  let(:zone) { FactoryGirl.create(:zone) }
+
+  describe "/api/zones/:id?expand=settings" do
+    it "expands the settings subcollection" do
+      api_basic_authorize(action_identifier(:zones, :read, :resource_actions, :get), :ops_settings)
+
+      get(api_zone_url(nil, zone), :params => {:expand => 'settings'})
+
+      expect(response.parsed_body).to include('settings' => a_kind_of(Hash))
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "does not expand settings without an appropriate role" do
+      api_basic_authorize(action_identifier(:zones, :read, :resource_actions, :get))
+
+      get(api_zone_url(nil, zone), :params => {:expand => 'settings'})
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   describe "/api/zones/:id/settings" do
-    let(:zone) { FactoryGirl.create(:zone) }
     let(:original_timeout) { zone.settings_for_resource[:api][:authentication_timeout] }
     let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
 
@@ -99,5 +119,4 @@ RSpec.describe "Zones" do
       end
     end
   end
-
 end

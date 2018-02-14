@@ -1999,9 +1999,10 @@
   :regions:
     :description: Regions
     :identifier: region
+    :subcollections:
+    - :settings
     :options:
     - :collection
-    - :settings
     :verbs: *gp
     :klass: MiqRegion
     :collection_actions:
@@ -2297,9 +2298,10 @@
         :identifier: security_group_show
   :servers:
     :description: EVM Servers
+    :subcollections:
+    - :settings
     :options:
     - :collection
-    - :settings
     :verbs: *g
     :klass: MiqServer
   :service_catalogs:
@@ -3149,6 +3151,7 @@
     :identifier: zone
     :options:
     - :collection
+    :subcollections:
     - :settings
     :verbs: *gp
     :klass: Zone

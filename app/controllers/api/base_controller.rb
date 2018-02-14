@@ -125,14 +125,22 @@ module Api
         return
       end
 
+      render :json => resource_settings(resource)
+    end
+
+    def settings_query_resource(resource)
+      resource_settings(resource)
+    end
+
+    private
+
+    def resource_settings(resource)
       if super_admin? || current_user.role_allows?(:identifier => 'ops_settings')
-        render :json => whitelist_settings(resource.settings_for_resource.to_hash)
+        whitelist_settings(resource.settings_for_resource.to_hash)
       else
         raise ForbiddenError, "You are not authorized to view settings."
       end
     end
-
-    private
 
     def current_user
       User.current_user
