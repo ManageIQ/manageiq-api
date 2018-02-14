@@ -55,7 +55,7 @@ Rails.application.routes.draw do
             match(
               "/:c_id/settings",
               :to  => "#{collection_name}#settings",
-              :via => %w[get patch delete],
+              :via => %w(get patch delete),
               :as  => "#{collection_name.to_s.singularize}_settings",
             )
           else

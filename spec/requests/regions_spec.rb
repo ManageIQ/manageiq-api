@@ -49,10 +49,13 @@ describe "Regions API" do
     context "/api/regions/:id?expand=settings" do
       it "expands the settings subcollection" do
         api_basic_authorize(action_identifier(:regions, :read, :resource_actions, :get), :ops_settings)
+        allow(Vmdb::Settings).to receive(:for_resource).and_return('authentications' => { 'bind_pwd' => 'bad_val'})
+        allow(User).to receive(:current_user).and_return(@user)
+        allow(@user).to receive(:super_admin_user?).and_return(true)
 
         get(api_region_url(nil, region), :params => {:expand => 'settings'})
 
-        expect(response.parsed_body).to include('settings' => a_kind_of(Hash))
+        expect(response.parsed_body).to include('settings' => {'authentications' => {}})
         expect(response).to have_http_status(:ok)
       end
 
