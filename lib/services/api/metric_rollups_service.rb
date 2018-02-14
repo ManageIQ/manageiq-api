@@ -1,11 +1,12 @@
 module Api
   class MetricRollupsService
     REQUIRED_PARAMS = %w(resource_type capture_interval start_date).freeze
+    QUERY_PARAMS = %w(resource_ids).freeze
 
     attr_reader :params
 
     def initialize(params)
-      @params = params
+      @params = params.slice(*(REQUIRED_PARAMS + QUERY_PARAMS))
       validate_required_params
       validate_capture_interval
     end
@@ -20,9 +21,8 @@ module Api
     private
 
     def validate_required_params
-      REQUIRED_PARAMS.each do |key|
-        raise BadRequestError, "Must specify #{REQUIRED_PARAMS.join(', ')}" unless params[key.to_sym]
-      end
+      not_specified = REQUIRED_PARAMS - params.keys
+      raise BadRequestError, "Must specify #{not_specified.join(', ')}" unless not_specified.empty?
     end
 
     def validate_capture_interval
