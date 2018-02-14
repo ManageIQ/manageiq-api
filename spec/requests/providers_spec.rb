@@ -455,6 +455,25 @@ describe "Providers API" do
         .and_return([OvirtSDK4::ProbeResult.new(:version => '3')])
     end
 
+    it 'allows provider specific attributes to be specified' do
+      allow(ManageIQ::Providers::Azure::CloudManager).to receive(:api_allowed_attributes).and_return(%w(azure_tenant_id))
+      tenant = FactoryGirl.create(:cloud_tenant)
+      api_basic_authorize collection_action_identifier(:providers, :create)
+
+      post(api_providers_url, :params => { "type"            => "ManageIQ::Providers::Azure::CloudManager",
+                                           "name"            => "sample azure provider",
+                                           "hostname"        => "hostname",
+                                           "zone"            => @zone,
+                                           "azure_tenant_id" => tenant.id,
+                                           "credentials"     => {}})
+
+      expected = {
+        "results" => [a_hash_including("uid_ems" => tenant.id.to_s, "name" => "sample azure provider")]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
     it "rejects creation without appropriate role" do
       api_basic_authorize
 

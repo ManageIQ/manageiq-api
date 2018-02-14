@@ -177,7 +177,7 @@ module Api
     def fetch_provider_data(provider_klass, data, options = {})
       data["options"] = data["options"].deep_symbolize_keys if data.key?("options")
       provider_data = data.except(*RESTRICTED_ATTRS)
-      invalid_keys  = provider_data.keys - provider_klass.columns_hash.keys - ENDPOINT_ATTRS - CONNECTION_ATTRS
+      invalid_keys  = provider_data.keys - provider_klass.columns_hash.keys - ENDPOINT_ATTRS - CONNECTION_ATTRS - provider_klass.api_allowed_attributes
       raise BadRequestError, "Invalid Provider attributes #{invalid_keys.join(', ')} specified" if invalid_keys.present?
       specify_zone(provider_data, data, options)
       provider_data
