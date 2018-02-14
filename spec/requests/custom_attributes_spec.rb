@@ -18,6 +18,26 @@ RSpec.describe "Custom Attributes API" do
     end
   end
 
+  describe "POST /api/<collection>/:cid/custom_attributes/:sid" do
+    it "does not duplicate a custom attribute" do
+      ems = FactoryGirl.create(:ext_management_system)
+      custom_attribute = FactoryGirl.create(:custom_attribute, :name => "foo", :value => "bar", :section => "metadata", :resource => ems)
+      api_basic_authorize(subcollection_action_identifier(:providers, :custom_attributes, :add, :post))
+
+      post(api_provider_custom_attributes_url(nil, ems), :params => {
+             :action    => "add",
+             :resources => [
+               { "name" => "foo", "value" => "bar" }
+             ]
+           })
+
+      expected = {
+        "results" => [a_hash_including("id" => custom_attribute.id.to_s, "name" => "foo", "value" => "bar")]
+      }
+      expect(response.parsed_body).to include(expected)
+    end
+  end
+
   it "can delete a custom attribute through its nested URI" do
     vm = FactoryGirl.create(:vm_vmware)
     custom_attribute = FactoryGirl.create(:custom_attribute, :resource => vm)
