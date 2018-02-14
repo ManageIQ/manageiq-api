@@ -2236,6 +2236,33 @@
       :get:
       - :name: read
         :identifier: miq_report_view
+  :search_filters:
+    :description: Filters
+    :verbs: *gpd
+    :klass: MiqSearch
+    :identifying_attrs: description
+    :options:
+    - :collection
+    - :show
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: my_settings_default_filters
+      :post:
+      - :name: query
+        :identifier: my_settings_default_filters
+      - :name: delete
+        :identifier: my_settings_default_filters
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: my_settings_default_filters
+      :post:
+      - :name: delete
+        :identifier: my_settings_default_filters
+      :delete:
+      - :name: delete
+        :identifier: my_settings_default_filters
   :security_groups:
     :description: Security Groups
     :identifier: security_group
