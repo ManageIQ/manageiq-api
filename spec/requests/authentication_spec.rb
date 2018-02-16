@@ -159,7 +159,11 @@ describe "Authentication API" do
       get api_entrypoint_url, :params => { :attributes => "authorization" }
 
       expect(response).to have_http_status(:ok)
-      expected = {"authorization" => hash_including("product_features")}
+
+      expected = {"authorization" => hash_including("product_features"),
+                  "identity"      => a_hash_including("miq_groups" => a_collection_including(
+                    hash_including("sui_product_features" => a_kind_of(Hash))
+                  ))}
       ENTRYPOINT_KEYS.each { |k| expected[k] = anything }
       expect(response.parsed_body).to include(expected)
     end
