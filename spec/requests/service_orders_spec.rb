@@ -35,6 +35,22 @@ RSpec.describe "service orders API" do
     expect(response).to have_http_status(:ok)
   end
 
+  it "cannot create multiple carts" do
+    api_basic_authorize collection_action_identifier(:service_orders, :create)
+    FactoryGirl.create(:shopping_cart, :user => @user)
+
+    post(api_service_orders_url, :params => { :name => "Cart 2" })
+
+    expected = {
+      'error' => a_hash_including(
+        'kind'    => 'bad_request',
+        'message' => /Validation failed: State has already been taken/
+      )
+    }
+    expect(response).to have_http_status(:bad_request)
+    expect(response.parsed_body).to include(expected)
+  end
+
   it "can create multiple service orders" do
     api_basic_authorize collection_action_identifier(:service_orders, :create)
 
