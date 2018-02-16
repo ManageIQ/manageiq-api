@@ -3,12 +3,12 @@ module Api
     include Subcollections::ServiceRequests
     USER_CART_ID = 'cart'.freeze
 
-    def create_resource(type, id, data)
+    def create_resource(_type, _id, data)
       raise BadRequestError, "Can't create an ordered service order" if data["state"] == ServiceOrder::STATE_ORDERED
       service_requests = data.delete("service_requests")
       data["state"] ||= ServiceOrder::STATE_CART
       if service_requests.blank?
-        super
+        create_service_order(data)
       else
         create_service_order_with_service_requests(service_requests)
         ServiceOrder.cart_for(User.current_user)
@@ -58,6 +58,15 @@ module Api
 
     def add_request_to_cart(workflow)
       workflow.add_request_to_cart
+    end
+
+    def create_service_order(data)
+      ServiceOrder.new(data).tap do |service_order|
+        service_order.assign_user
+        service_order.save!
+      end
+    rescue => err
+      raise BadRequestError, "Could not create service order - #{err}"
     end
 
     def create_service_order_with_service_requests(service_requests)
