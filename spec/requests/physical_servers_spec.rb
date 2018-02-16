@@ -51,7 +51,7 @@ RSpec.describe "physical_servers API" do
         vm = FactoryGirl.create(:vm)
         host = FactoryGirl.create(:host, :vms => [vm])
 
-        asset_details = FactoryGirl.create(:asset_details)
+        asset_detail = FactoryGirl.create(:asset_detail)
 
         network = FactoryGirl.create(:network)
         gd1 = FactoryGirl.create(:guest_device, :network => network, :device_type => "ethernet")
@@ -62,9 +62,9 @@ RSpec.describe "physical_servers API" do
         network.update_attributes!(:hardware_id => hardware.id.to_s)
 
         comp_system = FactoryGirl.create(:computer_system, :hardware => hardware)
-        ps = FactoryGirl.create(:physical_server, :computer_system => comp_system, :asset_details => asset_details, :host => host)
+        ps = FactoryGirl.create(:physical_server, :computer_system => comp_system, :asset_detail => asset_detail, :host => host)
 
-        get api_physical_server_url(nil, ps), :params => {:attributes => "host,host.vms,asset_details,hardware,hardware.firmwares,hardware.nics,hardware.ports"}
+        get api_physical_server_url(nil, ps), :params => {:attributes => "host,host.vms,asset_detail,hardware,hardware.firmwares,hardware.nics,hardware.ports"}
 
         expected = {
           "host"          => a_hash_including(
@@ -73,7 +73,7 @@ RSpec.describe "physical_servers API" do
               a_hash_including("host_id" => host.id.to_s)
             ]
           ),
-          "asset_details" => a_hash_including("id" => asset_details.id.to_s),
+          "asset_detail" => a_hash_including("id" => asset_detail.id.to_s),
           "hardware"      => a_hash_including(
             "id"        => hardware.id.to_s,
             "firmwares" => a_collection_including(
