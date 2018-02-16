@@ -1173,6 +1173,16 @@ describe "Providers API" do
 
       expect(response).to have_http_status(:forbidden)
     end
+
+    it "returns an empty array for providers that return nil" do
+      api_basic_authorize subcollection_action_identifier(:providers, :cloud_subnets, :read, :get)
+      provider = FactoryGirl.create(:ems_redhat)
+
+      get(api_provider_cloud_subnets_url(nil, provider))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("resources" => [])
+    end
   end
 
   context 'cloud tenants subcollection' do
@@ -1281,6 +1291,16 @@ describe "Providers API" do
 
       expect(response).to have_http_status(:forbidden)
     end
+
+    it "returns an empty array for providers that return nil" do
+      api_basic_authorize subcollection_action_identifier(:providers, :security_groups, :read, :get)
+      provider = FactoryGirl.create(:ems_redhat)
+
+      get(api_provider_security_groups_url(nil, provider))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("resources" => [])
+    end
   end
 
   describe 'edit custom_attributes on providers' do
@@ -1353,6 +1373,18 @@ describe "Providers API" do
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
+    end
+  end
+
+  context "Cloud networks subcollection" do
+    it "returns an empty array for providers that return nil" do
+      api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
+      provider = FactoryGirl.create(:ems_redhat)
+
+      get(api_provider_cloud_networks_url(nil, provider))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("resources" => [])
     end
   end
 end

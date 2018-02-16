@@ -2,7 +2,7 @@ module Api
   module Subcollections
     module SecurityGroups
       def security_groups_query_resource(object)
-        object.respond_to?(:security_groups) ? object.security_groups : []
+        object.respond_to?(:security_groups) ? Array(object.security_groups) : []
       end
 
       def security_groups_add_resource(parent, _type, _id, data)
