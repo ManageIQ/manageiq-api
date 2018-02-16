@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 79 ending 2018-02-12
+
+### Fixed
+- Do not return duplicate "edit" action entries [(#318)](https://github.com/ManageIQ/manageiq-api/pull/318)
+- Ensure request task options are keyed with symbols [(#317)](https://github.com/ManageIQ/manageiq-api/pull/317)
+- Add condition on log warning for service dialogs [(#314)](https://github.com/ManageIQ/manageiq-api/pull/314)
+- Allow multiple role identifiers for cloud volume [(#299)](https://github.com/ManageIQ/manageiq-api/pull/299)
+
 ## Gaprindashvili-1
 
 ### Added
@@ -109,8 +117,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Added
 - Adding support of basic PATCH signatures for API resources [(#302)](https://github.com/ManageIQ/manageiq-api/pull/302)
 - Return Time in API entrypoint server_info [(#297)](https://github.com/ManageIQ/manageiq-api/pull/297)
-- Updating the API so it now returns nil attributes. [(#253)](https://github.com/ManageIQ/manageiq-api/pull/253)
-- add image scanning endpoint [(#245)](https://github.com/ManageIQ/manageiq-api/pull/245)
 
 ### Fixed
 - Fix expand of custom_actions when they are nil  [(#305)](https://github.com/ManageIQ/manageiq-api/pull/305)
@@ -138,7 +144,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Allow assigning/un-assigning of alert definitions to alert profiles [(#149)](https://github.com/ManageIQ/manageiq-api/pull/149)
-- Alert Definitions: add hash_expression [(#76)](https://github.com/ManageIQ/manageiq-api/pull/76)
 
 ## Unreleased as of Sprint 75 ending 2017-12-11
 
@@ -146,11 +151,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Generic Object Definition OPTIONS: send hashes rather than arrays [(#238)](https://github.com/ManageIQ/manageiq-api/pull/238)
 - Use type names directly from GenericObjectDefinition object [(#232)](https://github.com/ManageIQ/manageiq-api/pull/232)
 - Add delete for router [(#193)](https://github.com/ManageIQ/manageiq-api/pull/193)
-
-### Fixed
-- Return correct subcollection actions [(#243)](https://github.com/ManageIQ/manageiq-api/pull/243)
-- Validate section values for adding new custom attributes via the API [(#240)](https://github.com/ManageIQ/manageiq-api/pull/240)
-- Don't translate model names sent over API [(#237)](https://github.com/ManageIQ/manageiq-api/pull/237)
 
 ## Unreleased as of Sprint 74 ending 2017-11-27
 
@@ -165,9 +165,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Adding support for /api/container_groups [(#184)](https://github.com/ManageIQ/manageiq-api/pull/184)
 - Adding support for /api/cloud_object_store_containers [(#183)](https://github.com/ManageIQ/manageiq-api/pull/183)
 - Add custom action support for models already exposed in api that need it [(#163)](https://github.com/ManageIQ/manageiq-api/pull/163)
-
-### Fixed
-- Build href_slug from type  [(#212)](https://github.com/ManageIQ/manageiq-api/pull/212)
 
 ## Unreleased as of Sprint 72 ending 2017-10-30
 
