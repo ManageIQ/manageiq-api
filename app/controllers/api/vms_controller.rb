@@ -14,81 +14,27 @@ module Api
     RELATIONSHIP_COLLECTIONS = %w(vms templates).freeze
 
     def start_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Starting #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "start")
-        result = start_vm(vm) if result[:success]
-        result
-      end
+      exec_vm_resource_action("starting", "start", :start_vm, type, id)
     end
 
     def stop_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for stopping a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Stopping #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "stop")
-        result = stop_vm(vm) if result[:success]
-        result
-      end
+      exec_vm_resource_action("stopping", "stop", :stop_vm, type, id)
     end
 
     def suspend_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for suspending a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Suspending #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "suspend")
-        result = suspend_vm(vm) if result[:success]
-        result
-      end
+      exec_vm_resource_action("suspending", "suspend", :suspend_vm, type, id)
     end
 
     def pause_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for pausing a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Pausing #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "pause")
-        result = pause_vm(vm) if result[:success]
-        result
-      end
+      exec_vm_resource_action("pausing", "pause", :pause_vm, type, id)
     end
 
     def shelve_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for shelving a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Shelving #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "shelve")
-        result = shelve_vm(vm) if result[:success]
-        result
-      end
+      exec_vm_resource_action("shelving", "shelve", :shelve_vm, type, id)
     end
 
     def shelve_offload_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for shelve-offloading a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Shelve-offloading #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "shelve_offload")
-        result = shelve_offload_vm(vm) if result[:success]
-        result
-      end
+      exec_vm_resource_action("shelve-offloading", "shelve_offload", :shelve_offload_vm, type, id)
     end
 
     def edit_resource(type, id, data)
@@ -140,16 +86,7 @@ module Api
     end
 
     def scan_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for scanning a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Scanning #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "scan")
-        result = scan_vm(vm) if result[:success]
-        result
-      end
+      exec_vm_resource_action("scanning", "scan", :scan_vm, type, id)
     end
 
     def add_event_resource(type, id = nil, data = nil)
@@ -176,42 +113,15 @@ module Api
     end
 
     def reset_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for resetting a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Resetting #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "reset")
-        result = reset_vm(vm) if result[:success]
-        result
-      end
+      exec_vm_resource_action("resetting", "reset", :reset_vm, type, id)
     end
 
     def reboot_guest_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for rebooting a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Rebooting #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "reboot_guest")
-        result = reboot_guest_vm(vm) if result[:success]
-        result
-      end
+      exec_vm_resource_action("rebooting", "reboot_guest", :reboot_guest_vm, type, id)
     end
 
     def shutdown_guest_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for shutting down a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Shutting down #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "shutdown_guest")
-        result = shutdown_guest_vm(vm) if result[:success]
-        result
-      end
+      exec_vm_resource_action("shutting down", "shutdown_guest", :shutdown_guest_vm, type, id)
     end
 
     def refresh_resource(type, id = nil, _data = nil)
@@ -264,6 +174,19 @@ module Api
     end
 
     private
+
+    def exec_vm_resource_action(verb, action, method, type, id = nil)
+      raise BadRequestError, "Must specify an id for #{verb} a #{type} resource" unless id
+
+      api_action(type, id) do |klass|
+        vm = resource_search(id, type, klass)
+        api_log_info("#{verb.capitalize} #{vm_ident(vm)}")
+
+        result = validate_vm_for_action(vm, action)
+        result = send(method, vm) if result[:success]
+        result
+      end
+    end
 
     def miq_server_message(miq_server)
       miq_server ? "Set miq_server id:#{miq_server.id}" : "Removed miq_server"
