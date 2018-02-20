@@ -1446,6 +1446,28 @@
         :identifier: instance_edit
       - :name: delete
         :identifier: instance_edit
+  :lans:
+    :description: Lans
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: Lan
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - ems_cluster_show_list
+        - host_show_list
+        - instance_show_list
+        - vm_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - ems_cluster_show
+        - host_show
+        - instance_show
+        - vm_show
   :load_balancers:
     :description: Load Balancers
     :options:
