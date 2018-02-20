@@ -1,6 +1,8 @@
 module Api
   module Subcollections
     module ServiceTemplates
+      include Api::Mixins::ServiceTemplates
+
       def service_templates_query_resource(object)
         klass = collection_class(:service_templates)
         object ? klass.where(:service_template_catalog_id => object.id) : {}
@@ -26,16 +28,8 @@ module Api
         end
       end
 
-      def service_templates_order_resource(_object, type, id = nil, data = nil)
-        klass = collection_class(:service_templates)
-        service_template = resource_search(id, type, klass)
-        workflow = service_template.provision_workflow(User.current_user, data || {})
-        request_result = workflow.submit_request
-        errors = request_result[:errors]
-        if errors.present?
-          raise BadRequestError, "Failed to order #{service_template_ident(service_template)} - #{errors.join(", ")}"
-        end
-        request_result[:request]
+      def service_templates_order_resource(_object, _type, id = nil, data = nil)
+        order_service_template(id, data)
       end
 
       def service_templates_refresh_dialog_fields_resource(object, type, id = nil, data = nil)
@@ -53,10 +47,6 @@ module Api
       end
 
       private
-
-      def service_template_ident(st)
-        "Service Template id:#{st.id} name:'#{st.name}'"
-      end
 
       def service_template_subcollection_action(type, id)
         klass = collection_class(:service_templates)

@@ -2361,6 +2361,8 @@
         :identifier: catalogitem_delete
       - :name: create
         :identifier: atomic_catalogitem_new
+      - :name: order
+        :identifier: svc_catalog_provision
     :subcollection_actions:
       :post:
       - :name: edit
@@ -2384,6 +2386,10 @@
         :identifier: catalogitem_edit
       - :name: delete
         :identifier: catalogitem_delete
+      - :name: order
+        :identifier: svc_catalog_provision
+        :options:
+        - :validate_action
       :delete:
       - :name: delete
         :identifier: catalogitem_delete
