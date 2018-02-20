@@ -5,6 +5,7 @@ module Api
     include Subcollections::ResourceActions
     include Subcollections::ServiceRequests
     include Api::Mixins::Pictures
+    include Api::Mixins::ServiceTemplates
 
     before_action :set_additional_attributes, :only => [:show]
 
@@ -22,6 +23,10 @@ module Api
       catalog_item.update_catalog_item(data.deep_symbolize_keys, User.current_user.userid)
     rescue => err
       raise BadRequestError, "Could not update Service Template - #{err}"
+    end
+
+    def order_resource(_type, id, data)
+      order_service_template(id, data)
     end
 
     private
