@@ -323,7 +323,7 @@ module Api
 
     def start_vm(vm)
       desc = "#{vm_ident(vm)} starting"
-      task_id = queue_object_action(vm, desc, queue_options("start"))
+      task_id = queue_object_action(vm, desc, queue_options("start", DEFAULT_ROLE))
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
@@ -331,7 +331,7 @@ module Api
 
     def stop_vm(vm)
       desc = "#{vm_ident(vm)} stopping"
-      task_id = queue_object_action(vm, desc, queue_options("stop"))
+      task_id = queue_object_action(vm, desc, queue_options("stop", DEFAULT_ROLE))
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
@@ -339,7 +339,7 @@ module Api
 
     def suspend_vm(vm)
       desc = "#{vm_ident(vm)} suspending"
-      task_id = queue_object_action(vm, desc, queue_options("suspend"))
+      task_id = queue_object_action(vm, desc, queue_options("suspend", DEFAULT_ROLE))
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
@@ -347,7 +347,7 @@ module Api
 
     def pause_vm(vm)
       desc = "#{vm_ident(vm)} pausing"
-      task_id = queue_object_action(vm, desc, queue_options("pause"))
+      task_id = queue_object_action(vm, desc, queue_options("pause", DEFAULT_ROLE))
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
@@ -355,7 +355,7 @@ module Api
 
     def shelve_vm(vm)
       desc = "#{vm_ident(vm)} shelving"
-      task_id = queue_object_action(vm, desc, queue_options("shelve"))
+      task_id = queue_object_action(vm, desc, queue_options("shelve", DEFAULT_ROLE))
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
@@ -363,7 +363,7 @@ module Api
 
     def shelve_offload_vm(vm)
       desc = "#{vm_ident(vm)} shelve-offloading"
-      task_id = queue_object_action(vm, desc, queue_options("shelve_offload"))
+      task_id = queue_object_action(vm, desc, queue_options("shelve_offload", DEFAULT_ROLE))
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
@@ -371,7 +371,7 @@ module Api
 
     def destroy_vm(vm)
       desc = "#{vm_ident(vm)} deleting"
-      task_id = queue_object_action(vm, desc, queue_options("destroy").except(:role))
+      task_id = queue_object_action(vm, desc, queue_options("destroy"))
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
@@ -477,19 +477,6 @@ module Api
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
-    end
-
-    def queue_options(method)
-      current_user = User.current_user
-      {
-        :method_name => method,
-        :role        => DEFAULT_ROLE,
-        :user        => {
-          :user_id   => current_user.id,
-          :group_id  => current_user.current_group.id,
-          :tenant_id => current_user.current_tenant.id
-        }
-      }
     end
   end
 end
