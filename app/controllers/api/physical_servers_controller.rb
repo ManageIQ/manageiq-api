@@ -52,9 +52,20 @@ module Api
       end
     end
 
+    # Process apply config pattern operation for single and multi-resources
+    #
+    # Even the request for multi-resources isn't completed successfully, return a HTTP Status 200
+    def apply_config_pattern_resource(type, id, data)
+      ensure_resource_exists(:customization_scripts, data["pattern_id"])
+      change_resource_state(:apply_config_pattern, type, id, [data["pattern_id"]])
+    rescue => err
+      raise err if single_resource?
+      action_result(false, err.to_s)
+    end
+
     private
 
-    def change_resource_state(state, type, id)
+    def change_resource_state(state, type, id, data = [])
       raise BadRequestError, "Must specify an id for changing a #{type} resource" unless id
 
       ensure_resource_exists(type, id) if single_resource?
@@ -64,7 +75,7 @@ module Api
           server = resource_search(id, type, klass)
           desc = "Requested server state #{state} for #{server_ident(server)}"
           api_log_info(desc)
-          task_id = queue_object_action(server, desc, :method_name => state, :role => :ems_operations)
+          task_id = queue_object_action(server, desc, :method_name => state, :role => :ems_operations, :args => data)
           action_result(true, desc, :task_id => task_id)
         rescue => err
           action_result(false, err.to_s)
@@ -73,7 +84,7 @@ module Api
     end
 
     def ensure_resource_exists(type, id)
-      raise NotFoundError unless collection_class(type).exists?(id)
+      raise NotFoundError, "#{type} with id:#{id} not found" unless collection_class(type).exists?(id)
     end
 
     def server_ident(server)

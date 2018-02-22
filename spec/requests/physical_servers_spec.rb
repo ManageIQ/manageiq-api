@@ -483,4 +483,96 @@ RSpec.describe "physical_servers API" do
       end
     end
   end
+
+  describe "Apply config pattern action" do
+    let(:config_pattern) { FactoryGirl.create(:customization_script) }
+    let(:config_pattern2) { FactoryGirl.create(:customization_script) }
+    let(:ps) { FactoryGirl.create(:physical_server) }
+    let(:href_ps) { api_physical_server_url(nil, ps) }
+    let(:ps2) { FactoryGirl.create(:physical_server) }
+    let(:href_ps2) { api_physical_server_url(nil, ps2) }
+
+    context "with an invalid physical server id and a valid config pattern id" do
+      it "it responds with 404 Not Found" do
+        api_basic_authorize(action_identifier(:physical_servers, :apply_config_pattern, :resource_actions, :post))
+
+        post(api_physical_server_url(nil, 999_999), :params => gen_request(:apply_config_pattern, "pattern_id" => config_pattern.id, "uuid" => 999_999))
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "with a valid physical server id and an invalid config pattern id" do
+      it "it responds with 404 Not Found" do
+        api_basic_authorize(action_identifier(:physical_servers, :apply_config_pattern, :resource_actions, :post))
+
+        post(api_physical_server_url(nil, ps), :params => gen_request(:apply_config_pattern, "pattern_id" => 999_999, "uuid" => ps.ems_ref))
+
+        expect(response).to have_http_status(:not_found)
+        expect(response.parsed_body["error"]).to include("message" => "customization_scripts with id:999999 not found")
+      end
+
+      it "apply config pattern of multiple Physical servers" do
+        api_basic_authorize(action_identifier(:physical_servers, :apply_config_pattern, :resource_actions, :post))
+
+        resources = [
+          {"pattern_id" => config_pattern.id, "uuid" => ps.ems_ref, "href" => href_ps},
+          {"pattern_id" => 999_999, "uuid" => ps2.ems_ref, "href" => href_ps2}
+        ]
+
+        post(api_physical_servers_url, :params => gen_request(:apply_config_pattern, resources))
+
+        expected = {
+          "results" => a_collection_containing_exactly(
+            a_hash_including(
+              "success" => true,
+              "href"    => href_ps
+            ),
+            a_hash_including(
+              "success" => false,
+              "message" => "customization_scripts with id:999999 not found"
+            )
+          )
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "with a valid physical server id and config pattern id" do
+      it "apply config pattern of a single Physical server" do
+        api_basic_authorize(action_identifier(:physical_servers, :apply_config_pattern, :resource_actions, :post))
+
+        post(api_physical_server_url(nil, ps), :params => gen_request(:apply_config_pattern, "pattern_id" => config_pattern.id, "uuid" => ps.ems_ref))
+
+        expect_single_action_result(:success => true, :href => api_physical_server_url(nil, ps))
+      end
+
+      it "apply config pattern of multiple Physical servers" do
+        api_basic_authorize(action_identifier(:physical_servers, :apply_config_pattern, :resource_actions, :post))
+
+        resources = [
+          {"pattern_id" => config_pattern.id, "uuid" => ps.ems_ref, "href" => href_ps},
+          {"pattern_id" => config_pattern2.id, "uuid" => ps2.ems_ref, "href" => href_ps2}
+        ]
+
+        post(api_physical_servers_url, :params => gen_request(:apply_config_pattern, resources))
+
+        expected = {
+          "results" => a_collection_containing_exactly(
+            a_hash_including(
+              "success" => true,
+              "href"    => href_ps
+            ),
+            a_hash_including(
+              "success" => true,
+              "href"    => href_ps2
+            )
+          )
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+  end
 end
