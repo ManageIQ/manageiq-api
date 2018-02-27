@@ -16,5 +16,13 @@ module Api
     def set_additional_attributes
       @additional_attributes = %w(image_href extension)
     end
+
+    def attribute_selection
+      if !@req.attributes.empty? || @additional_attributes
+        @req.attributes | Array(@additional_attributes) | ID_ATTRS
+      else
+        Picture.attribute_names - %w(content)
+      end
+    end
   end
 end

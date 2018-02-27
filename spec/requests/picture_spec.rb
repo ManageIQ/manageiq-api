@@ -98,6 +98,29 @@ describe "Pictures" do
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include(expected)
       end
+
+      it 'allows specifying of additional attributes' do
+        api_basic_authorize
+
+        expected = {
+          'resources' => [
+            a_hash_including('href_slug'     => @picture.href_slug,
+                             'region_number' => @picture.region_number)
+          ]
+        }
+        get(api_pictures_url, :params => { :expand => 'resources', :attributes => 'href_slug,region_number'})
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it 'only allows specifying of valid attributes' do
+        api_basic_authorize
+
+        get(api_pictures_url, :params => { :expand => 'resources', :attributes => 'bad_attr'})
+
+        expect(response).to have_http_status(:bad_request)
+      end
     end
 
     describe 'GET /api/pictures/:id' do
@@ -108,6 +131,25 @@ describe "Pictures" do
 
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include('image_href' => a_string_including(@picture.image_href), 'extension' => @picture.extension)
+      end
+
+      it 'allows specifying of additional attributes' do
+        api_basic_authorize
+
+        get(api_picture_url(nil, @picture), :params => { :attributes => 'href_slug,region_number' })
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('href_slug'     => @picture.href_slug,
+                                                'region_number' => @picture.region_number)
+      end
+
+      it 'will return only the requested physical attribute with the set additional attributes' do
+        api_basic_authorize
+
+        get(api_picture_url(nil, @picture), :params => { :attributes => 'md5' })
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.keys).to match_array(%w(md5 href id extension image_href))
       end
     end
 
