@@ -7,7 +7,9 @@ module Api
 
       def format_picture_response(picture)
         return unless picture
-        picture.attributes.except('content').merge('image_href' => picture.image_href)
+        picture_hash = picture.attributes.except('content').merge('image_href' => picture.image_href,
+                                                                  'href'       => picture.href_slug)
+        normalize_hash(:picture, picture_hash)
       end
     end
   end
