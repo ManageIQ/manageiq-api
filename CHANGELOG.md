@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 80 ending 2018-02-26
+
+### Added
+- Add lans collection with read and show [(#325)](https://github.com/ManageIQ/manageiq-api/pull/325)
+- Allow ordering of service templates resource [(#316)](https://github.com/ManageIQ/manageiq-api/pull/316)
+- Transformation Mappings Read and Create [(#313)](https://github.com/ManageIQ/manageiq-api/pull/313)
+- Return product features for all of a user's groups on the API entrypoint [(#311)](https://github.com/ManageIQ/manageiq-api/pull/311)
+- Delete of search filters [(#306)](https://github.com/ManageIQ/manageiq-api/pull/306)
+- Allow additional provider parameters to be specified on create [(#279)](https://github.com/ManageIQ/manageiq-api/pull/279)
+- Adding support to apply_config_pattern operation via the REST API [(#278)](https://github.com/ManageIQ/manageiq-api/pull/278)
+
+### Fixed
+- Set user when queueing VM actions [(#326)](https://github.com/ManageIQ/manageiq-api/pull/326)
+- Only allow one cart to be created at a time [(#324)](https://github.com/ManageIQ/manageiq-api/pull/324)
+- Ensure array is returned for subcollections [(#322)](https://github.com/ManageIQ/manageiq-api/pull/322)
+- Make cloud_tenants and flavors subcollections consistent with others [(#321)](https://github.com/ManageIQ/manageiq-api/pull/321)
+- Default section to "metadata" across custom attributes add action [(#320)](https://github.com/ManageIQ/manageiq-api/pull/320)
+- Fix error message for required params on metric rollups subcollection [(#308)](https://github.com/ManageIQ/manageiq-api/pull/308)
+- AssetDetails model should be AssetDetail [(#291)](https://github.com/ManageIQ/manageiq-api/pull/291)
+
 ## Unreleased as of Sprint 79 ending 2018-02-12
 
 ### Fixed
