@@ -835,6 +835,24 @@
       :get:
       - :name: read
         :identifier: persistent_volume_show
+  :containers:
+    :description: Containers
+    :identifier: container
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: Container
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: container_show_list
+      :post:
+      - :name: query
+        :identifier: container_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: container_show
   :currencies:
     :description: Currencies
     :identifier: currency

@@ -82,6 +82,11 @@ describe "Rest API Collections" do
       test_collection_query(:chargebacks, api_chargebacks_url, ChargebackRate)
     end
 
+    it "query Containers" do
+      FactoryGirl.create(:container)
+      test_collection_query(:containers, api_containers_url, Container)
+    end
+
     it "query ContainerGroups" do
       FactoryGirl.create(:container_group)
       test_collection_query(:container_groups, api_container_groups_url, ContainerGroup)
@@ -661,6 +666,11 @@ describe "Rest API Collections" do
     it 'bulk query CloudVolumes' do
       FactoryGirl.create(:cloud_volume)
       test_collection_bulk_query(:cloud_volumes, api_cloud_volumes_url, CloudVolume)
+    end
+
+    it 'bulk query Container' do
+      FactoryGirl.create(:container)
+      test_collection_bulk_query(:containers, api_containers_url, Container)
     end
 
     it 'bulk query Firmwares' do
