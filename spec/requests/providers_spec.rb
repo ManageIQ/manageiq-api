@@ -438,9 +438,9 @@ describe "Providers API" do
 
       expected = {
         'href'    => "#{api_provider_url(nil, provider)}?provider_class=provider",
-        'actions' => [
+        'actions' => a_collection_including(
           a_hash_including('href' => "#{api_provider_url(nil, provider)}?provider_class=provider")
-        ]
+        )
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -1046,6 +1046,54 @@ describe "Providers API" do
       api_basic_authorize collection_action_identifier(:providers, :pause)
 
       post(api_provider_url(nil, 999_999), :params => { :action => "pause" })
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("success" => false)
+    end
+  end
+
+  describe "Providers resume" do
+    let(:provider) { FactoryGirl.create(:ext_management_system) }
+
+    it "rejects resume requests without an appropriate role" do
+      api_basic_authorize
+
+      post(api_provider_url(nil, provider), :params => { :action => "resume" })
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "resumes a provider" do
+      api_basic_authorize collection_action_identifier(:providers, :resume)
+
+      post(api_provider_url(nil, provider), :params => { :action => "resume" })
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("success" => true, "message" => /Resumed Provider/)
+    end
+
+    it "can resume multiple providers" do
+      provider2 = FactoryGirl.create(:ext_management_system)
+      api_basic_authorize collection_action_identifier(:providers, :resume)
+
+      post(api_providers_url, :params =>
+                                         { :action    => "resume",
+                                           :resources => [
+                                             { "href" => api_provider_url(nil, provider) },
+                                             { "id" => provider2.id }
+                                           ]})
+
+      expected = {
+        "results" => [a_hash_including("success" => true), a_hash_including("success" => true)]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "returns an action response for errors" do
+      api_basic_authorize collection_action_identifier(:providers, :resume)
+
+      post(api_provider_url(nil, 999_999), :params => { :action => "resume" })
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include("success" => false)

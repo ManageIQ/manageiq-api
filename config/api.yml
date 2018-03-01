@@ -1858,6 +1858,8 @@
         :identifier: ems_infra_delete
       - :name: pause
         :identifier: ems_infra_edit
+      - :name: resume
+        :identifier: ems_infra_edit
     :resource_actions:
       :get:
       - :name: read
@@ -1876,6 +1878,8 @@
         :options:
         - :validate_action
       - :name: pause
+        :identifier: ems_infra_edit
+      - :name: resume
         :identifier: ems_infra_edit
       :delete:
       - :name: delete

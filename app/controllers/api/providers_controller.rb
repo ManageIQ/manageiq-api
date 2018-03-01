@@ -95,6 +95,14 @@ module Api
       action_result(false, "Could not pause Provider - #{err}")
     end
 
+    def resume_resource(type, id, _data)
+      provider = resource_search(id, type, collection_class(type))
+      provider.enable!
+      action_result(true, "Resumed #{provider_ident(provider)}")
+    rescue => err
+      action_result(false, "Could not resume Provider - #{err}")
+    end
+
     private
 
     def provider_ident(provider)
