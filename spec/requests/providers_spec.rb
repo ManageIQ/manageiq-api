@@ -1004,6 +1004,54 @@ describe "Providers API" do
     end
   end
 
+  describe "Providers pause" do
+    let(:provider) { FactoryGirl.create(:ext_management_system) }
+
+    it "rejects pause requests without an appropriate role" do
+      api_basic_authorize
+
+      post(api_provider_url(nil, provider), :params => { :action => "pause" })
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "pauses a provider" do
+      api_basic_authorize collection_action_identifier(:providers, :pause)
+
+      post(api_provider_url(nil, provider), :params => { :action => "pause" })
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("success" => true, "message" => /Paused Provider/)
+    end
+
+    it "can pause multiple providers" do
+      provider2 = FactoryGirl.create(:ext_management_system)
+      api_basic_authorize collection_action_identifier(:providers, :pause)
+
+      post(api_providers_url, :params =>
+                                         { :action    => "pause",
+                                           :resources => [
+                                             { "href" => api_provider_url(nil, provider) },
+                                             { "id" => provider2.id }
+                                           ]})
+
+      expected = {
+        "results" => [a_hash_including("success" => true), a_hash_including("success" => true)]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "returns an action response for errors" do
+      api_basic_authorize collection_action_identifier(:providers, :pause)
+
+      post(api_provider_url(nil, 999_999), :params => { :action => "pause" })
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("success" => false)
+    end
+  end
+
   describe 'Providers import VM' do
     let(:provider)      { FactoryGirl.create(:ems_redhat, sample_rhevm.except("credentials")) }
     let(:provider_url)  { api_provider_url(nil, provider) }

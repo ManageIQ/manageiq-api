@@ -87,6 +87,14 @@ module Api
       render_options(:providers, "provider_settings" => providers_options)
     end
 
+    def pause_resource(type, id, _data)
+      provider = resource_search(id, type, collection_class(type))
+      provider.disable!
+      action_result(true, "Paused #{provider_ident(provider)}")
+    rescue => err
+      action_result(false, "Could not pause Provider - #{err}")
+    end
+
     private
 
     def provider_ident(provider)
