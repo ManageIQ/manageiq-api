@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Gaprindashvili-1
+## Gaprindashvili-2
+
+### Fixed
+- Fixed up role identifiers for cloud_networks [(#298)](https://github.com/ManageIQ/manageiq-api/pull/298)
+- Fix expand of custom_actions when they are nil [(#305)](https://github.com/ManageIQ/manageiq-api/pull/305)
+- Union edit service_dialog API call with other calls [(#285)](https://github.com/ManageIQ/manageiq-api/pull/285)
+- Add condition on log warning for service dialogs [(#314)](https://github.com/ManageIQ/manageiq-api/pull/314)
+- Ensure request task options are keyed with symbols [(#317)](https://github.com/ManageIQ/manageiq-api/pull/317)
+
+## Gaprindashvili-1 - Released 2018-02-01
 
 ### Added
 - Tasks: delete support [(#220)](https://github.com/ManageIQ/manageiq-api/pull/220)
