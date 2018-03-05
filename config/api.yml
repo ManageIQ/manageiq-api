@@ -968,7 +968,7 @@
     :options:
     - :collection
     - :custom_actions
-    :verbs: *gp
+    :verbs: *gpd
     :klass: Storage
     :subcollections:
     - :tags
@@ -981,11 +981,13 @@
         :identifier: storage_show_list
       - :name: delete
         :identifier: storage_delete
-        :disabled: true
     :resource_actions:
       :get:
       - :name: read
         :identifier: storage_show
+      :post:
+      - :name: delete
+        :identifier: storage_delete
       :delete:
       - :name: delete
         :identifier: storage_delete
