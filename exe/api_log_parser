@@ -1,0 +1,138 @@
+#!/usr/bin/env bundle exec ruby
+RAILS_ROOT = File.expand_path(File.join(__dir__, "..", "..", "manageiq"))
+
+require 'manageiq-gems-pending'
+require 'active_support'
+require 'miq_logger_processor'
+require 'trollop'
+require 'json'
+require 'active_support/core_ext'   # deep_symbolize_keys
+require 'more_core_extensions/all'  # fetch_path
+
+# Since eval's are evil
+def hash_from_string(string)
+  JSON.parse(string.gsub(/:([a-z_]+)/, '"\\1"').gsub('=>', ' : ').gsub(': nil', ': null')).deep_symbolize_keys
+end
+
+def param_to_path(param)
+  param.split('.').collect(&:to_sym)
+end
+
+# Parse command line options and return the options and the log_file to parse
+def parse_args(argv)
+  opts = Trollop.options do
+    banner <<-USAGE
+
+  Parse API Requests from the log file specified
+
+  If file is not specified, the default log/api.log is parsed.
+
+  Usage:
+    api_log_parser [options] [file]
+
+  api_log_parser options are:
+USAGE
+    opt :sort_by, "Sort by field",
+        :type => :string, :default => "request.requested_at"
+    opt :reverse, "Sort in descending order",
+        :type => :boolean, :default => false
+    opt :filter,  "Filter requests with specific field values",
+        :type => :strings
+    opt :format,  "How to format output, [json | none]",
+        :type => :string, :default => "json"
+  end
+
+  log_file = argv.first || File.join(RAILS_ROOT, "log", "api.log")
+  [opts, log_file]
+end
+
+# Returns an array of API requests
+def parse_api_requests(log_file)
+  api_requests = []
+  requests = {}
+
+  MiqLoggerProcessor.new(log_file).each do |line|
+    next if line.message =~ /MIQ\(*.*.log_request_initiated\)[\s]*/
+
+    request_id = "#{line.pid}_#{line.tid}"
+    if line.message =~ /.* API Request: [\s]*({.*})/
+      if requests[request_id]     # never completed last request
+        api_requests << requests[request_id]
+        requests[request_id] = nil
+      end
+    end
+
+    requests[request_id] ||= {}
+    request = requests[request_id]
+    request[:info]    ||= ""
+    request[:error]   ||= ""
+    request[:warn]    ||= ""
+    request[:output]  ||= ""
+    request[:time]    ||= line.time
+    request[:pid]     ||= line.pid
+    request[:tid]     ||= line.tid
+
+    if line.message    =~     /.* API Request: [\s]*({.*})/
+      request[:request] =         hash_from_string(Regexp.last_match[1])
+    elsif line.message =~     /.* Authentication: [\s]*({.*})/
+      request[:authentication] =  hash_from_string(Regexp.last_match[1])
+    elsif line.message =~     /.* Authorization: [\s]*({.*})/
+      request[:authorization] =   hash_from_string(Regexp.last_match[1])
+    elsif line.message =~ /.*[\)] Request: [\s]*({.*})/
+      request[:request] =         hash_from_string(Regexp.last_match[1])
+    elsif line.message =~     /.* Parameters: [\s]*({.*})/
+      request[:parameters] =      hash_from_string(Regexp.last_match[1])
+    elsif line.message =~     /.* Response: [\s]*({.*})/
+      request[:response] =        hash_from_string(Regexp.last_match[1])
+      api_requests << request
+      request = nil
+    else
+      level = String(line.level).downcase
+      target = %w[info error warn].include?(level) ? level : "output"
+      request[target.to_sym] << line.message
+    end
+  end
+
+  api_requests
+end
+
+def api_request_filter(results, opts)
+  # Default parameters in case we're not called from the CLI
+  opts[:sort_by] ||= "request.requested_at"
+  opts[:reverse] ||= false
+  filtered_results = results
+  unless opts[:filter].nil?
+    opts[:filter].each do |selection|
+      field, value = selection.split('=')
+      filtered_results = filtered_results.select { |request| request.fetch_path(*param_to_path(field)) == value }
+    end
+  end
+  filtered_results = filtered_results.sort_by { |request| String(request.fetch_path(*param_to_path(opts[:sort_by]))) }
+  filtered_results = filtered_results.reverse! if opts[:reverse] == true
+  filtered_results
+end
+
+def generate_output(results, opts)
+  opts[:format] == "json" ? JSON.pretty_generate(results) : results
+end
+
+def run
+  opts, log_file = parse_args(ARGV)
+  puts "log_file:     #{log_file}"
+
+  api_requests = parse_api_requests(log_file)
+  puts "count:        #{api_requests.count}"
+
+  puts "sort_by:      #{opts[:sort_by]}"
+  puts "reverse:      #{opts[:reverse]}"
+  puts "filter:       #{opts[:filter]}"
+  puts "format:       #{opts[:format]}"
+
+  api_filtered_requests = api_request_filter(api_requests, opts)
+  puts "result count: #{api_filtered_requests.count}"
+
+  puts "result:"
+  puts generate_output(api_filtered_requests, opts)
+end
+
+run if File.basename(__FILE__) == File.basename($PROGRAM_NAME)
