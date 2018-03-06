@@ -1,4 +1,4 @@
-#!/usr/bin/env bundle exec ruby
+#!/usr/bin/env ruby
 RAILS_ROOT = File.expand_path(File.join(__dir__, "..", "..", "manageiq"))
 
 require 'manageiq-gems-pending'
@@ -11,7 +11,10 @@ require 'more_core_extensions/all'  # fetch_path
 
 # Since eval's are evil
 def hash_from_string(string)
-  JSON.parse(string.gsub(/:([a-z_]+)/, '"\\1"').gsub('=>', ' : ').gsub(': nil', ': null')).deep_symbolize_keys
+  JSON.parse(string.gsub(/^{(.*)}$/, "{ \\1 }").gsub('=>', ' : ').gsub(' : nil', ' : null').gsub(/[ ]:([a-z_]+)/, '"\\1"')).deep_symbolize_keys
+rescue => err
+  puts "ERROR: Failed to parse #{string} - #{err}"
+  {}
 end
 
 def param_to_path(param)
@@ -50,6 +53,8 @@ end
 def parse_api_requests(log_file)
   api_requests = []
   requests = {}
+
+  return api_requests if File.size(log_file) == 0
 
   MiqLoggerProcessor.new(log_file).each do |line|
     next if line.message =~ /MIQ\(*.*.log_request_initiated\)[\s]*/
