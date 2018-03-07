@@ -25,6 +25,11 @@ RSpec.describe "users API" do
   let(:user1) { FactoryGirl.create(:user, sample_user1.except(:group).merge(:miq_groups => [group1])) }
   let(:user2) { FactoryGirl.create(:user, sample_user2.except(:group).merge(:miq_groups => [group2])) }
 
+  before do
+    @user.miq_groups << group1
+    @user.miq_groups << group2
+  end
+
   context "with an appropriate role" do
     it "can change the user's password" do
       api_basic_authorize action_identifier(:users, :edit)
@@ -38,7 +43,7 @@ RSpec.describe "users API" do
 
     it "can change another user's password" do
       api_basic_authorize action_identifier(:users, :edit)
-      user = FactoryGirl.create(:user)
+      user = FactoryGirl.create(:user, :miq_groups => [group1], :current_group => group1)
 
       expect do
         post api_user_url(nil, user), :params => gen_request(:edit, :password => "new_password")
@@ -198,7 +203,6 @@ RSpec.describe "users API" do
 
   describe "users edit" do
     it "allows for setting of multiple miq_groups" do
-      group3 = FactoryGirl.create(:miq_group)
       api_basic_authorize collection_action_identifier(:users, :edit)
 
       request = {
@@ -207,14 +211,14 @@ RSpec.describe "users API" do
           "href"       => api_user_url(nil, user1),
           "miq_groups" => [
             { "id" => group2.id.to_s },
-            { "href" => api_group_url(nil, group3) }
+            { "href" => api_group_url(nil, group1) }
           ]
         }]
       }
       post(api_users_url, :params => request)
 
       expect(response).to have_http_status(:ok)
-      expect(user1.reload.miq_groups).to match_array([group2, group3])
+      expect(user1.reload.miq_groups).to match_array([group2, group1])
     end
 
     it "does not allow edits of current_user" do
@@ -391,8 +395,9 @@ RSpec.describe "users API" do
   end
 
   describe "tags subcollection" do
+    let(:user) { FactoryGirl.create(:user, :miq_groups => [group1], :current_group => group1) }
+
     it "can list a user's tags" do
-      user = FactoryGirl.create(:user)
       FactoryGirl.create(:classification_department_with_tags)
       Classification.classify(user, "department", "finance")
       api_basic_authorize
@@ -404,7 +409,6 @@ RSpec.describe "users API" do
     end
 
     it "can assign a tag to a user" do
-      user = FactoryGirl.create(:user)
       FactoryGirl.create(:classification_department_with_tags)
       api_basic_authorize(subcollection_action_identifier(:users, :tags, :assign))
 
@@ -425,7 +429,6 @@ RSpec.describe "users API" do
     end
 
     it "can unassign a tag from a user" do
-      user = FactoryGirl.create(:user)
       FactoryGirl.create(:classification_department_with_tags)
       Classification.classify(user, "department", "finance")
       api_basic_authorize(subcollection_action_identifier(:users, :tags, :unassign))
@@ -450,7 +453,6 @@ RSpec.describe "users API" do
   describe "set_current_group" do
     it "can set the current group from the user's miq_groups" do
       api_basic_authorize
-      @user.miq_groups << group2
 
       post(api_user_url(nil, @user), :params => {
              :action        => "set_current_group",
@@ -465,11 +467,12 @@ RSpec.describe "users API" do
     end
 
     it "requires that the user belong to the current group" do
+      group3 = FactoryGirl.create(:miq_group)
       api_basic_authorize
 
       post(api_user_url(nil, @user), :params => {
              :action        => "set_current_group",
-             :current_group => { :href => api_group_url(nil, group2) }
+             :current_group => { :href => api_group_url(nil, group3) }
            })
 
       expected = {
