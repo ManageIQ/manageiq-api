@@ -618,6 +618,7 @@ describe "Custom Actions API" do
     before do
       @resource = FactoryGirl.create(:miq_group)
       @button1 = define_custom_button1(@resource)
+      @user.miq_groups << @resource
     end
 
     it "queries return custom actions defined" do
@@ -942,6 +943,7 @@ describe "Custom Actions API" do
     before do
       @resource = FactoryGirl.create(:user)
       @button1 = define_custom_button1(@resource)
+      @resource.miq_groups << @user.current_group
     end
 
     it "queries return custom actions defined" do
