@@ -78,6 +78,53 @@ RSpec.describe "hosts API" do
       end
     end
 
+    context 'Lans subcollection' do
+      let(:lan) { FactoryGirl.create(:lan) }
+      let(:switch) { FactoryGirl.create(:switch, :lans => [lan]) }
+      let(:host) { FactoryGirl.create(:host, :switches => [switch]) }
+
+      context 'GET /api/hosts/:id/lans' do
+        it 'returns the lans with an appropriate role' do
+          api_basic_authorize(collection_action_identifier(:hosts, :read, :get))
+
+          expected = {
+            'resources' => [{'href' => api_host_lan_url(nil, host, lan)}]
+          }
+          get(api_host_lans_url(nil, host))
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
+
+        it 'does not return the lans without an appropriate role' do
+          api_basic_authorize
+
+          get(api_host_lans_url(nil, host))
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      context 'GET /api/hosts/:id/lans/:s_id' do
+        it 'returns the lan with an appropriate role' do
+          api_basic_authorize action_identifier(:hosts, :read, :resource_actions, :get)
+
+          get(api_host_lan_url(nil, host, lan))
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include('id' => lan.id.to_s)
+        end
+
+        it 'does not return the lans without an appropriate role' do
+          api_basic_authorize
+
+          get(api_host_lan_url(nil, host, lan))
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+    end
+
     context 'OPTIONS /api/hosts' do
       it 'returns hosts node_types' do
         expected_data = {"node_types" => Host.node_types.to_s}

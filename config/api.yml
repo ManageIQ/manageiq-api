@@ -1304,6 +1304,7 @@
     - :tags
     - :policies
     - :policy_profiles
+    - :lans
     :collection_actions:
       :get:
       - :name: read
@@ -1389,6 +1390,14 @@
         :identifier: host_protect
       - :name: unassign
         :identifier: host_protect
+    :lans_subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: host_show_list
+    :lans_subresource_actions:
+      :get:
+      - :name: read
+        :identifier: host_show
   :instances:
     :description: Instances
     :identifier: instance
@@ -1476,6 +1485,7 @@
     :description: Lans
     :options:
     - :collection
+    - :subcollection
     :verbs: *g
     :klass: Lan
     :collection_actions:
