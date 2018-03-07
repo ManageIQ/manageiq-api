@@ -15,11 +15,16 @@ describe "Groups API" do
 
   let(:sample_group1) { {:description => "sample_group_1"} }
   let(:sample_group2) { {:description => "sample_group_2"} }
+  let(:group) { FactoryGirl.create(:miq_group) }
   let(:group1) { FactoryGirl.create(:miq_group, sample_group1) }
   let(:group2) { FactoryGirl.create(:miq_group, sample_group2) }
 
   let(:role3)    { FactoryGirl.create(:miq_user_role) }
   let(:tenant3)  { FactoryGirl.create(:tenant, :name => "Tenant3") }
+
+  before do
+    @user.miq_groups << group
+  end
 
   describe "groups create" do
     it "rejects creation without appropriate role" do
@@ -165,6 +170,7 @@ describe "Groups API" do
     end
 
     it "supports single group edit" do
+      @user.miq_groups << group1
       api_basic_authorize collection_action_identifier(:groups, :edit)
 
       post(api_group_url(nil, group1), :params => gen_request(:edit, "description" => "updated_group"))
@@ -176,7 +182,8 @@ describe "Groups API" do
 
     it "supports multiple group edits" do
       api_basic_authorize collection_action_identifier(:groups, :edit)
-
+      @user.miq_groups << group1
+      @user.miq_groups << group2
       post(api_groups_url, :params => gen_request(:edit,
                                                   [{"href" => api_group_url(nil, group1), "description" => "updated_group1"},
                                                    {"href" => api_group_url(nil, group2), "description" => "updated_group2"}]))
@@ -225,6 +232,7 @@ describe "Groups API" do
 
     it "supports single group delete" do
       api_basic_authorize collection_action_identifier(:groups, :delete)
+      @user.miq_groups << group1
 
       g1_id = group1.id
       delete(api_group_url(nil, g1_id))
@@ -235,6 +243,7 @@ describe "Groups API" do
 
     it "supports single group delete action" do
       api_basic_authorize collection_action_identifier(:groups, :delete)
+      @user.miq_groups << group1
 
       g1_id = group1.id
       g1_url = api_group_url(nil, g1_id)
@@ -247,6 +256,8 @@ describe "Groups API" do
 
     it "supports multiple group deletes" do
       api_basic_authorize collection_action_identifier(:groups, :delete)
+      @user.miq_groups << group1
+      @user.miq_groups << group2
 
       g1_id, g2_id = group1.id, group2.id
       g1_url, g2_url = api_group_url(nil, g1_id), api_group_url(nil, g2_id)
@@ -262,7 +273,6 @@ describe "Groups API" do
 
   describe "tags subcollection" do
     it "can list a group's tags" do
-      group = FactoryGirl.create(:miq_group)
       FactoryGirl.create(:classification_department_with_tags)
       Classification.classify(group, "department", "finance")
       api_basic_authorize
@@ -274,7 +284,6 @@ describe "Groups API" do
     end
 
     it "can assign a tag to a group" do
-      group = FactoryGirl.create(:miq_group)
       FactoryGirl.create(:classification_department_with_tags)
       api_basic_authorize(subcollection_action_identifier(:groups, :tags, :assign))
 
@@ -295,7 +304,6 @@ describe "Groups API" do
     end
 
     it "can unassign a tag from a group" do
-      group = FactoryGirl.create(:miq_group)
       FactoryGirl.create(:classification_department_with_tags)
       Classification.classify(group, "department", "finance")
       api_basic_authorize(subcollection_action_identifier(:groups, :tags, :unassign))
