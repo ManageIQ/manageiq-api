@@ -1565,6 +1565,12 @@
       :delete:
       - :name: delete
         :identifier: network_router_delete
+  :networks:
+    :description: Networks
+    :options:
+    - :subcollection
+    :verbs: *g
+    :klass: Network
   :notifications:
     :description: "User's past notifications"
     :options:
@@ -1857,6 +1863,7 @@
     - :vms
     - :flavors
     - :cloud_templates
+    - :networks
     :collection_actions:
       :get:
       - :name: read
@@ -1930,6 +1937,18 @@
         :identifier: ems_infra_protect
       - :name: unassign
         :identifier: ems_infra_protect
+    :networks_subcollection_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - ems_infra_show_list
+        - ems_block_storage_show_list
+    :networks_subresource_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - ems_infra_show
+        - ems_block_storage_show
   :provision_dialogs:
     :description: Provisioning Dialogs
     :identifier: miq_ae_customization_explorer

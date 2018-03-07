@@ -1472,6 +1472,55 @@ describe "Providers API" do
     end
   end
 
+  context 'Networks subcollection' do
+    let(:hardware) { FactoryGirl.create(:hardware) }
+    let(:network) { FactoryGirl.create(:network, :hardware => hardware) }
+    let(:ems) { FactoryGirl.create(:ext_management_system) }
+
+    context 'GET /api/providers/:id/networks' do
+      it 'returns the networks with an appropriate role' do
+        FactoryGirl.create(:vm, :ext_management_system => ems, :hardware => hardware)
+        api_basic_authorize(collection_action_identifier(:providers, :read, :get))
+
+        expected = {
+          'resources' => [{'href' => api_provider_network_url(nil, ems, network)}]
+        }
+        get(api_provider_networks_url(nil, ems))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it 'does not return the networks without an appropriate role' do
+        api_basic_authorize
+
+        get(api_provider_networks_url(nil, ems))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'GET /api/providers/:id/networks/:s_id' do
+      it 'returns the network with an appropriate role' do
+        FactoryGirl.create(:vm, :ext_management_system => ems, :hardware => hardware)
+        api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
+
+        get(api_provider_network_url(nil, ems, network))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('id' => network.id.to_s)
+      end
+
+      it 'does not return the networks without an appropriate role' do
+        api_basic_authorize
+
+        get(api_provider_network_url(nil, ems, network))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
   context "Cloud networks subcollection" do
     it "returns an empty array for providers that return nil" do
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
