@@ -1472,6 +1472,56 @@ describe "Providers API" do
     end
   end
 
+  context 'Folders subcollection' do
+    let(:folder) { FactoryGirl.create(:ems_folder) }
+    let(:ems) { FactoryGirl.create(:ext_management_system) }
+
+    before do
+      ems.add_folder(folder)
+    end
+
+    context 'GET /api/providers/:id/folders' do
+      it 'returns the folders with an appropriate role' do
+        api_basic_authorize(collection_action_identifier(:providers, :read, :get))
+
+        get(api_provider_folders_url(nil, ems))
+
+        expected = {
+          'resources' => [{'href' => api_provider_folder_url(nil, ems, folder)}]
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it 'does not return the folders without an appropriate role' do
+        api_basic_authorize
+
+        get(api_provider_folders_url(nil, ems))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'GET /api/providers/:id/folders/:s_id' do
+      it 'returns the folder with an appropriate role' do
+        api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
+
+        get(api_provider_folder_url(nil, ems, folder))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('id' => folder.id.to_s)
+      end
+
+      it 'does not return the folder without an appropriate role' do
+        api_basic_authorize
+
+        get(api_provider_folder_url(nil, ems, folder))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
   context 'Networks subcollection' do
     let(:hardware) { FactoryGirl.create(:hardware) }
     let(:network) { FactoryGirl.create(:network, :hardware => hardware) }
