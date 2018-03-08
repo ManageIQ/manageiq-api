@@ -30,6 +30,22 @@ describe "Service Dialogs API" do
       expect(response).to have_http_status(:ok)
     end
 
+    it "allows read of service dialogs with the service catalog provision role" do
+      api_basic_authorize("svc_catalog_provision")
+
+      get api_service_dialogs_url
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "allows read of a single service dialog with the service catalog provision role" do
+      api_basic_authorize("svc_catalog_provision")
+
+      get api_service_dialog_url(nil, dialog1)
+
+      expect(response).to have_http_status(:ok)
+    end
+
     it "query with expanded resources to include content" do
       api_basic_authorize collection_action_identifier(:service_dialogs, :read, :get)
       get api_service_dialogs_url, :params => { :expand => "resources" }
