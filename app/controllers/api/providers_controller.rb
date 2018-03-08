@@ -23,6 +23,7 @@ module Api
     include Subcollections::CloudTemplates
     include Subcollections::Folders
     include Subcollections::Networks
+    include Subcollections::Lans
 
     before_action :validate_provider_class
 
