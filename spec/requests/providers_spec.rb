@@ -1571,6 +1571,58 @@ describe "Providers API" do
     end
   end
 
+  context 'Lans subcollection' do
+    let(:lan) { FactoryGirl.create(:lan) }
+    let(:switch) { FactoryGirl.create(:switch, :lans => [lan]) }
+    let(:host) { FactoryGirl.create(:host, :switches => [switch]) }
+    let(:ems) { FactoryGirl.create(:ext_management_system) }
+
+    before do
+      ems.hosts << host
+    end
+
+    context 'GET /api/providers/:id/lans' do
+      it 'returns the lans with an appropriate role' do
+        api_basic_authorize(collection_action_identifier(:providers, :read, :get))
+
+        expected = {
+          'resources' => [{'href' => api_provider_lan_url(nil, ems, lan)}]
+        }
+        get(api_provider_lans_url(nil, ems))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it 'does not return the lans without an appropriate role' do
+        api_basic_authorize
+
+        get(api_provider_lans_url(nil, ems))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'GET /api/providers/:id/lans/:s_id' do
+      it 'returns the lan with an appropriate role' do
+        api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
+
+        get(api_provider_lan_url(nil, ems, lan))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('id' => lan.id.to_s)
+      end
+
+      it 'does not return the lans without an appropriate role' do
+        api_basic_authorize
+
+        get(api_provider_lan_url(nil, ems, lan))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
   context "Cloud networks subcollection" do
     it "returns an empty array for providers that return nil" do
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
