@@ -532,35 +532,4 @@ describe "Custom Actions API" do
       expect_single_action_result(:success => true, :message => /.*/, :href => api_vm_url(nil, @resource))
     end
   end
-<<<<<<< HEAD
-=======
-
-  describe "User" do
-    before do
-      @resource = FactoryGirl.create(:user)
-      @button1 = define_custom_button1(@resource)
-      @resource.miq_groups << @user.current_group
-    end
-
-    it "queries return custom actions defined" do
-      api_basic_authorize(action_identifier(:users, :read, :resource_actions, :get))
-
-      get api_user_url(nil, @resource)
-
-      expect(response.parsed_body).to include(
-        "id"      => @resource.id.to_s,
-        "href"    => api_user_url(nil, @resource),
-        "actions" => a_collection_including(a_hash_including("name" => @button1.name))
-      )
-    end
-
-    it "accepts custom actions" do
-      api_basic_authorize
-
-      post api_user_url(nil, @resource), :params => gen_request(@button1.name.to_sym, "key1" => "value1")
-
-      expect_single_action_result(:success => true, :message => /.*/, :href => api_user_url(nil, @resource))
-    end
-  end
->>>>>>> a2895f0... Merge pull request #340 from jntullo/fix_rbac_spec_fixes
 end
