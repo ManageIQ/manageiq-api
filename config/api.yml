@@ -2114,6 +2114,7 @@
   :regions:
     :description: Regions
     :identifier: region
+    :identifying_attrs: region
     :subcollections:
     - :settings
     :options:
