@@ -480,7 +480,7 @@
     :options:
     - :collection
     - :subcollection
-    :verbs: *gp
+    :verbs: *gpppd
     :klass: ManageIQ::Providers::CloudManager::Template
     :collection_actions:
       :get:
@@ -497,10 +497,19 @@
       :get:
       - :name: read
         :identifier: image_show_list
+      :post:
+      - :name: delete
+        :identifier: image_delete
     :subresource_actions:
       :get:
       - :name: read
         :identifier: image_show
+      :post:
+      - :name: delete
+        :identifier: image_delete
+      :delete:
+      - :name: delete
+        :identifier: image_delete
   :cloud_tenants:
     :description: Cloud Tenants
     :identifier: cloud_tenant
