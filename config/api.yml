@@ -2743,6 +2743,8 @@
         :identifier: service_edit
       - :name: add_provider_vms
         :identifier: service_edit
+      - :name: queue_chargeback_report
+        :identifier: service_admin
     :resource_actions:
       :get:
       - :name: read
@@ -2774,6 +2776,8 @@
         :identifier: service_edit
       - :name: add_provider_vms
         :identifier: service_edit
+      - :name: queue_chargeback_report
+        :identifier: service_admin
       :delete:
       - :name: delete
         :identifier: service_delete
