@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 81 ending 2018-03-12
+
+### Added
+- Add Lans subcollection to Hosts / Providers [(#342)](https://github.com/ManageIQ/manageiq-api/pull/342)
+- Add networks subcollection to providers [(#339)](https://github.com/ManageIQ/manageiq-api/pull/339)
+- Folders subcollection on providers [(#338)](https://github.com/ManageIQ/manageiq-api/pull/338)
+- Add pause and resume actions to Providers [(#334)](https://github.com/ManageIQ/manageiq-api/pull/334)
+- Queue chargeback reports of services [(#301)](https://github.com/ManageIQ/manageiq-api/pull/301)
+
+### Fixed
+- Add svc_catalog_provision product feature to service dialog queries [(#343)](https://github.com/ManageIQ/manageiq-api/pull/343)
+
+## Gaprindashvili-2 released 2018-03-06
+
+### Fixed
+- Fixed up role identifiers for cloud_networks [(#298)](https://github.com/ManageIQ/manageiq-api/pull/298)
+- Fix expand of custom_actions when they are nil [(#305)](https://github.com/ManageIQ/manageiq-api/pull/305)
+- Union edit service_dialog API call with other calls [(#285)](https://github.com/ManageIQ/manageiq-api/pull/285)
+- Add condition on log warning for service dialogs [(#314)](https://github.com/ManageIQ/manageiq-api/pull/314)
+- Ensure request task options are keyed with symbols [(#317)](https://github.com/ManageIQ/manageiq-api/pull/317)
+
 ## Unreleased as of Sprint 80 ending 2018-02-26
 
 ### Added
@@ -29,8 +50,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Do not return duplicate "edit" action entries [(#318)](https://github.com/ManageIQ/manageiq-api/pull/318)
-- Ensure request task options are keyed with symbols [(#317)](https://github.com/ManageIQ/manageiq-api/pull/317)
-- Add condition on log warning for service dialogs [(#314)](https://github.com/ManageIQ/manageiq-api/pull/314)
 - Allow multiple role identifiers for cloud volume [(#299)](https://github.com/ManageIQ/manageiq-api/pull/299)
 
 ## Gaprindashvili-1
@@ -139,7 +158,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Return Time in API entrypoint server_info [(#297)](https://github.com/ManageIQ/manageiq-api/pull/297)
 
 ### Fixed
-- Fix expand of custom_actions when they are nil  [(#305)](https://github.com/ManageIQ/manageiq-api/pull/305)
 - Update role identifiers for tasks collection [(#296)](https://github.com/ManageIQ/manageiq-api/pull/296)
 - Fix picture fetching as an attribute [(#294)](https://github.com/ManageIQ/manageiq-api/pull/294)
 - Do not return picture content on create [(#292)](https://github.com/ManageIQ/manageiq-api/pull/292)
