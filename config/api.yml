@@ -106,6 +106,8 @@
         :identifier: alert_definition_profile_delete
       - :name: assign
         :identifier: alert_definition_profile_edit
+      - :name: unassign
+        :identifier: alert_definition_profile_edit
     :resource_actions:
       :get:
       - :name: read
@@ -116,6 +118,8 @@
       - :name: delete
         :identifier: alert_definition_profile_delete
       - :name: assign
+        :identifier: alert_definition_profile_edit
+      - :name: unassign
         :identifier: alert_definition_profile_edit
       :delete:
       - :name: delete
