@@ -527,4 +527,77 @@ describe "Alerts Definition Profiles API" do
 
     expect(response).to have_http_status(:forbidden)
   end
+
+  it "gets assignments for an alert definition profile" do
+    api_basic_authorize action_identifier(:alert_definition_profiles, :read, :resource_actions, :get)
+    alert_definition_profile = FactoryGirl.create(:miq_alert_set)
+    enterprise = FactoryGirl.create(:miq_enterprise)
+    enterprise_href = api_enterprise_url(nil, enterprise)
+    alert_definition_profile.assign_to_objects(enterprise)
+
+    get(api_alert_definition_profile_url(nil, alert_definition_profile))
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body["get_assigned_tos"]["objects"]).to include(a_hash_including("href"=>enterprise_href))
+  end
+
+  it "assigns an alert definition profile to object" do
+    api_basic_authorize :alert_profile_assign
+    alert_definition_profile = FactoryGirl.create(:miq_alert_set)
+    enterprise = FactoryGirl.create(:miq_enterprise)
+    enterprise_href = api_enterprise_url(nil, enterprise)
+
+    post(api_alert_definition_profile_url(nil, alert_definition_profile), :params => gen_request(:assign, "objects" => [enterprise_href]))
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body["objects"]).to include(a_hash_including("href"=>enterprise_href))
+  end
+
+  it "unassigns an alert definition profile from object" do
+    api_basic_authorize :alert_profile_assign
+    alert_definition_profile = FactoryGirl.create(:miq_alert_set)
+    enterprise, enterprise2 = FactoryGirl.create_list(:miq_enterprise, 2)
+
+    enterprise_href = api_enterprise_url(nil, enterprise)
+    enterprise2_href = api_enterprise_url(nil, enterprise2)
+    expect(alert_definition_profile.get_assigned_tos).to eq(:objects => [], :tags => [], :labels => [])
+
+    alert_definition_profile.assign_to_objects([enterprise, enterprise2])
+
+    post(api_alert_definition_profile_url(nil, alert_definition_profile), :params => gen_request(:unassign, "objects" => [enterprise_href]))
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body["objects"]).to include(a_hash_including("href"=>enterprise2_href))
+  end
+
+  it "assigns an alert definition profile to tag" do
+    api_basic_authorize :alert_profile_assign
+    alert_definition_profile = FactoryGirl.create(:miq_alert_set)
+    dept = FactoryGirl.create(:classification_department)
+    tag = FactoryGirl.create(:classification_tag, :name => 'test', :parent => dept).tag
+
+    tag_href = api_tag_url(nil, tag)
+
+    post(api_alert_definition_profile_url(nil, alert_definition_profile), :params => gen_request(:assign, "tags" => ["href" => tag_href, "class" => "vm"]))
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body["tags"][0]).to include(a_hash_including("tag_id"=>String(tag.id)))
+  end
+
+  it "unassigns an alert definition profile from tag" do
+    api_basic_authorize :alert_profile_assign
+    alert_definition_profile = FactoryGirl.create(:miq_alert_set)
+    dept = FactoryGirl.create(:classification_department)
+    tag = FactoryGirl.create(:classification_tag, :name => 'test1', :parent => dept).tag
+    tag2 = FactoryGirl.create(:classification_tag, :name => 'test2', :parent => dept).tag
+
+    alert_definition_profile.assign_to_tags([tag.classification, tag2.classification], "vm")
+
+    tag_href = api_tag_url(nil, tag)
+
+    post(api_alert_definition_profile_url(nil, alert_definition_profile), :params => gen_request(:unassign, "tags" => ["href" => tag_href, "class" => "vm"]))
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body["tags"][0]).to include(a_hash_including("tag_id"=>String(tag2.id)))
+  end
 end
