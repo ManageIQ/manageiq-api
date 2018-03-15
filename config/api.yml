@@ -1762,6 +1762,30 @@
       :post:
       - :name: refresh
         :identifier: physical_chassis_refresh
+  :physical_racks:
+    :description: Physical Racks
+    :identifier: physical_rack
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: PhysicalRack
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: physical_rack_show_list
+      :post:
+      - :name: query
+        :identifier: physical_rack_show_list
+      - :name: refresh
+        :identifier: physical_rack_refresh
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: physical_rack_show
+      :post:
+      - :name: refresh
+        :identifier: physical_rack_refresh
   :physical_servers:
     :description: Physical Servers
     :identifier: physical_server
