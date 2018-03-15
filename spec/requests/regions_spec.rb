@@ -41,6 +41,19 @@ describe "Regions API" do
     )
   end
 
+  it "allows GET of a region by region number" do
+    api_basic_authorize action_identifier(:regions, :read, :resource_actions, :get)
+    region = FactoryGirl.create(:miq_region, :region => "2")
+
+    get(api_region_url(nil, region.region))
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include(
+      "href" => api_region_url(nil, region),
+      "id"   => region.id.to_s
+    )
+  end
+
   describe "Settings" do
     let(:region_number) { ApplicationRecord.my_region_number + 1 }
     let(:id) { ApplicationRecord.id_in_region(1, region_number) }
