@@ -997,6 +997,18 @@
         :identifier: storage_tag
       - :name: unassign
         :identifier: storage_tag
+  :enterprises:
+    :description: Enterprises
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: MiqEnterprise
+    :collection_actions:
+      :get:
+      - :name: read
+    :resource_actions:
+      :get:
+      - :name: read
   :event_streams:
     :description: Event Streams
     :options:
