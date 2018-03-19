@@ -27,9 +27,7 @@ module Api
       data['resources'].each do |resource|
         href = Href.new(resource['href'])
         if resource.key?('tag')
-          tag_id = Href.new(resource['tag']['href']).subject_id
-          tag = resource_search(tag_id, :tags, collection_class(:tags))
-          profile.assign_to_tags([tag.classification], href.subject)
+          profile.assign_to_tags([fetch_tag_classification_resource(resource['tag'])], href.subject)
         else
           assignable_resource = resource_search(href.subject_id, href.subject, collection_class(href.subject))
           profile.assign_to_objects([assignable_resource])
@@ -45,9 +43,7 @@ module Api
       data['resources'].each do |resource|
         href = Href.new(resource['href'])
         if resource.key?('tag')
-          tag_id = Href.new(resource['tag']['href']).subject_id
-          tag = resource_search(tag_id, :tags, collection_class(:tags))
-          profile.unassign_tags([tag.classification], href.subject)
+          profile.unassign_tags([fetch_tag_classification_resource(resource['tag'])], href.subject)
         else
           assignable_resource = resource_search(href.subject_id, href.subject, collection_class(href.subject))
           profile.unassign_objects([assignable_resource])
@@ -62,6 +58,12 @@ module Api
 
     def alert_definition_profile_ident(profile)
       "Alert Definition Profile id:#{profile.id} name:'#{profile.name}'"
+    end
+
+    def fetch_tag_classification_resource(data)
+      tag_id = Href.new(data['href']).subject_id
+      tag = resource_search(tag_id, :tags, collection_class(:tags))
+      tag.classification
     end
   end
 end
