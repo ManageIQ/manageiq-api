@@ -1,7 +1,7 @@
 describe "Enterprises API" do
   context "GET /api/enterprises" do
     it "returns the enterprises" do
-      enterprise = FactoryGirl.create(:miq_enterprise)
+      enterprise = MiqEnterprise.first
       api_basic_authorize
 
       get(api_enterprises_url)

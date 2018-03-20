@@ -45,13 +45,14 @@ RSpec.describe "API entrypoint" do
 
       expect(response.parsed_body).to include(
         "server_info" => a_hash_including(
-          "version"     => Vmdb::Appliance.VERSION,
-          "build"       => Vmdb::Appliance.BUILD,
-          "appliance"   => MiqServer.my_server.name,
-          "time"        => "2018-01-01T00:00:00Z",
-          "server_href" => api_server_url(nil, MiqServer.my_server),
-          "zone_href"   => api_zone_url(nil, MiqServer.my_server.zone),
-          "region_href" => api_region_url(nil, MiqRegion.my_region)
+          "version"         => Vmdb::Appliance.VERSION,
+          "build"           => Vmdb::Appliance.BUILD,
+          "appliance"       => MiqServer.my_server.name,
+          "time"            => "2018-01-01T00:00:00Z",
+          "server_href"     => api_server_url(nil, MiqServer.my_server),
+          "zone_href"       => api_zone_url(nil, MiqServer.my_server.zone),
+          "region_href"     => api_region_url(nil, MiqRegion.my_region),
+          "enterprise_href" => api_enterprise_url(nil, MiqEnterprise.my_enterprise)
         )
       )
     end

@@ -58,13 +58,14 @@ module Api
 
     def server_info
       {
-        :version     => Vmdb::Appliance.VERSION,
-        :build       => Vmdb::Appliance.BUILD,
-        :appliance   => MiqServer.my_server.name,
-        :time        => Time.now.utc.iso8601,
-        :server_href => "#{@req.api_prefix}/servers/#{MiqServer.my_server.id}",
-        :zone_href   => "#{@req.api_prefix}/zones/#{MiqServer.my_server.zone.id}",
-        :region_href => "#{@req.api_prefix}/regions/#{MiqRegion.my_region.id}"
+        :version         => Vmdb::Appliance.VERSION,
+        :build           => Vmdb::Appliance.BUILD,
+        :appliance       => MiqServer.my_server.name,
+        :time            => Time.now.utc.iso8601,
+        :server_href     => "#{@req.api_prefix}/servers/#{MiqServer.my_server.id}",
+        :zone_href       => "#{@req.api_prefix}/zones/#{MiqServer.my_server.zone.id}",
+        :region_href     => "#{@req.api_prefix}/regions/#{MiqRegion.my_region.id}",
+        :enterprise_href => "#{@req.api_prefix}/enterprises/#{MiqEnterprise.my_enterprise.id}"
       }
     end
 
