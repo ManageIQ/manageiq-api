@@ -7,6 +7,7 @@ module Spec
     module Api
       module Helpers
         def init_api_spec_env
+          @enterprise = FactoryGirl.create(:miq_enterprise)
           @guid, @server, @zone = EvmSpecHelper.create_guid_miq_server_zone
           @region = FactoryGirl.create(:miq_region, :region => ApplicationRecord.my_region_number)
           @role  = FactoryGirl.create(:miq_user_role, :name => "Api User Role")
