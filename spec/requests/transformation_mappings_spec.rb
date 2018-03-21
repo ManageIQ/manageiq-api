@@ -142,5 +142,50 @@ describe "Transformation Mappings" do
         expect(response).to have_http_status(:forbidden)
       end
     end
+
+    context "POST /api/transformation_mappings/:id" do
+      context "with an appropriate role" do
+        it "can validate vms with csv data specified" do
+          api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
+          ems_cluster = FactoryGirl.create(:ems_cluster)
+          vm = FactoryGirl.create(:vm_openstack, :name => "foo", :ems_cluster => ems_cluster)
+
+          request = {
+            "action" => "validate_vms",
+            "import" => [
+              {"name" => vm.name, "uid" => vm.uid_ems},
+              {"name" => "bad name", "uid" => "bad uid"}
+            ]
+          }
+          post(api_transformation_mapping_url(nil, transformation_mapping), :params => request)
+
+          expected = {
+            "valid_vms"    => [a_hash_including("name" => "foo")],
+            "invalid_vms"  => [a_hash_including("name" => "bad name")],
+            "conflict_vms" => []
+          }
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
+
+        it "can validate vms without csv data" do
+          api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
+
+          post(api_transformation_mapping_url(nil, transformation_mapping), :params => {"action" => "validate_vms"})
+
+          expect(response).to have_http_status(:ok)
+        end
+      end
+    end
+
+    context "without an appropriate role" do
+      it "cannot validate vms" do
+        api_basic_authorize
+
+        post(api_transformation_mapping_url(nil, transformation_mapping), :params => {"action" => "validate_vms"})
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
   end
 end
