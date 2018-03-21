@@ -10,6 +10,13 @@ module Api
       raise BadRequestError, "Could not create Transformation Mapping - #{err}"
     end
 
+    def validate_vms_resource(type, id, data = {})
+      transformation_mapping = resource_search(id, type, collection_class(type))
+      transformation_mapping.validate_vms(data["import"]) || {}
+    rescue StandardError => err
+      raise BadRequestError, "Could not validate vms - #{err}"
+    end
+
     private
 
     def create_mapping_items(items)
