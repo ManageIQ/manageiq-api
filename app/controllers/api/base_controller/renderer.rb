@@ -494,7 +494,9 @@ module Api
 
       def api_user_role_allows?(action_identifier)
         return true unless action_identifier
-        Array(action_identifier).any? { |identifier| User.current_user.role_allows?(:identifier => identifier) }
+        @cached_allowed_user_roles ||= {}
+        key = Array(action_identifier).sort.join(',')
+        @cached_allowed_user_roles[key] ||= Array(action_identifier).any? { |identifier| User.current_user.role_allows?(:identifier => identifier) }
       end
 
       def render_actions(physical_attrs)
