@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 82 ending 2018-03-26
+
+### Added
+- Added the enterprise_href in the server_info section of the entrypoint [(#351)](https://github.com/ManageIQ/manageiq-api/pull/351)
+- Assign and Unassign alert definition profiles [(#348)](https://github.com/ManageIQ/manageiq-api/pull/348)
+- Add enterprise collection [(#346)](https://github.com/ManageIQ/manageiq-api/pull/346)
+
 ## Unreleased as of Sprint 81 ending 2018-03-12
 
 ### Added
