@@ -117,7 +117,11 @@ module Api
       case @req.method
       when :patch
         raise ForbiddenError, "You are not authorized to edit settings." unless super_admin?
-        resource_update_settings(resource, @req.json_body)
+        begin
+          resource.add_settings_for_resource(@req.json_body)
+        rescue Vmdb::Settings::ConfigurationInvalid => err
+          raise BadRequestError, "Settings validation failed - #{err}"
+        end
       when :delete
         raise ForbiddenError, "You are not authorized to remove settings." unless super_admin?
         resource.remove_settings_path_for_resource(*@req.json_body)
@@ -140,12 +144,6 @@ module Api
       else
         raise ForbiddenError, "You are not authorized to view settings."
       end
-    end
-
-    def resource_update_settings(resource, updated_settings)
-      resource.add_settings_for_resource(updated_settings)
-    rescue VMDB::Config::Validator::Error => err
-      raise BadRequestError, "Settings validation failed - #{err}"
     end
 
     def current_user

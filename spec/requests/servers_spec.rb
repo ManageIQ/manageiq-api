@@ -76,6 +76,22 @@ RSpec.describe "Servers" do
       expect(response).to have_http_status(:unauthorized)
     end
 
+    it "returns a bad_request to an update if the settings validation failed" do
+      api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
+
+      patch(api_server_settings_url(nil, server), :params => {:authentication => {:mode => "bogus_auth_mode"}})
+
+      expected = {
+        'error' => a_hash_including(
+          'kind'    => 'bad_request',
+          'message' => a_string_including('Settings validation failed - ')
+        )
+      }
+
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include(expected)
+    end
+
     context "with an existing settings change" do
       before do
         server.add_settings_for_resource("api" => {"authentication_timeout" => "7331.minutes"})

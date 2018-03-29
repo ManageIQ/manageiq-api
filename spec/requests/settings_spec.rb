@@ -3,25 +3,6 @@
 #
 describe "Settings API" do
   let(:api_settings) { Api::ApiConfig.collections[:settings][:categories] }
-  let(:server) { FactoryGirl.create(:miq_server) }
-  let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
-
-  context "Settings Update" do
-    it "updates to settings return a BadRequestError upon failed validation" do
-      api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
-
-      patch(api_server_settings_url(nil, server), :params => {:authentication => {:mode => "bogus_auth_mode"}})
-
-      expected = {
-        'error' => a_hash_including(
-          'kind'    => 'bad_request',
-          'message' => a_string_including('Settings validation failed - ')
-        )
-      }
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body).to include(expected)
-    end
-  end
 
   context "Settings Queries" do
     it "tests queries of all exposed settings" do
