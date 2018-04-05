@@ -12,7 +12,7 @@ module Api
 
     def validate_vms_resource(type, id, data = {})
       transformation_mapping = resource_search(id, type, collection_class(type))
-      transformation_mapping.validate_vms(data["import"]) || {}
+      normalize_hash(:vms, transformation_mapping.validate_vms(data["import"]) || {})
     rescue StandardError => err
       raise BadRequestError, "Could not validate vms - #{err}"
     end
