@@ -12,22 +12,26 @@ module Api
         elsif request.headers[HttpHeaders::AUTH_TOKEN]
           authenticate_with_user_token(request.headers[HttpHeaders::AUTH_TOKEN])
         else
-          authenticate_options = {
-            :require_user => true,
-            :timeout      => ::Settings.api.authentication_timeout.to_i_with_method
-          }
-
-          if (user = authenticate_with_http_basic { |u, p| User.authenticate(u, p, request, authenticate_options) })
-            auth_user_obj = userid_to_userobj(user.userid)
-            authorize_user_group(auth_user_obj)
-            validate_user_identity(auth_user_obj)
-            User.current_user = auth_user_obj
-          else
-            request_http_basic_authentication
-            return
-          end
+          authenticate_with_http_basic do |u, p|
+            begin
+              user = User.authenticate(
+                u, p, request,
+                :require_user => true,
+                :timeout      => ::Settings.api.authentication_timeout.to_i_with_method
+              )
+              auth_user_obj = userid_to_userobj(user.userid)
+              authorize_user_group(auth_user_obj)
+              validate_user_identity(auth_user_obj)
+              User.current_user = auth_user_obj
+            rescue MiqException::MiqEVMLoginError => e
+              raise AuthenticationError, e.message
+            end
+          end or raise AuthenticationError
         end
         log_api_auth
+      rescue AuthenticationError => e
+        response.headers["Content-Type"] = "application/json"
+        request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize.to_json)
       end
 
       def user_settings
