@@ -5,6 +5,13 @@ module Api
         object.vms_and_templates.where(:template => true)
       end
 
+      def cloud_templates_create_resource(parent, _type, _id, data)
+        task_id = ManageIQ::Providers::CloudManager::Template.create_image_queue(User.current_user.id, parent, data)
+        action_result(true, 'Creating Image', :task_id => task_id)
+      rescue => err
+        action_result(false, err.to_s)
+      end
+
       def cloud_templates_delete_resource(_parent, type, id, _data)
         image = resource_search(id, type, collection_class(type))
         task_id = image.delete_image_queue(User.current_user.id)
