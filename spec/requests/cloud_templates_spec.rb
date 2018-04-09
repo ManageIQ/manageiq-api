@@ -56,6 +56,37 @@ RSpec.describe "Cloud Templates API" do
     end
   end
 
+  describe "POST /api/providers/:c_id/cloud_templates" do
+    it "can queue the creation of an images" do
+      api_basic_authorize(action_identifier(:cloud_templates, :create, :subcollection_actions))
+      ems = FactoryGirl.create(:ems_cloud)
+
+      post(api_provider_cloud_templates_url(nil, ems), :params => { :name => "test-image", :vendor => "test-cloud", :location => "test-location" })
+
+      expected = {
+        "results" => [
+          a_hash_including(
+            "success"   => true,
+            "message"   => "Creating Image",
+            "task_id"   => anything,
+            "task_href" => a_string_matching(api_tasks_url)
+          )
+        ]
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "will not create an image unless authorized" do
+      api_basic_authorize
+      ems = FactoryGirl.create(:ems_cloud)
+
+      post(api_provider_cloud_templates_url(nil, ems), :params => { :name => "test-image" })
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   describe "DELETE /api/providers/:c_id/cloud_templates/:id" do
     it "can delete an image" do
       api_basic_authorize(action_identifier(:cloud_templates, :delete, :subresource_actions, :delete))
