@@ -506,6 +506,8 @@
       - :name: read
         :identifier: image_show_list
       :post:
+      - :name: create
+        :identifier: image_create
       - :name: delete
         :identifier: image_delete
     :subresource_actions:
