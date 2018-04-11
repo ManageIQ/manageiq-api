@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 83 ending 2018-04-09
+
+### Added
+- Add create action for templates [(#337)](https://github.com/ManageIQ/manageiq-api/pull/337)
+- Add delete action for templates [(#328)](https://github.com/ManageIQ/manageiq-api/pull/328)
+
+### Fixed
+- Enhanced API to catch Settings validation errors [(#356)](https://github.com/ManageIQ/manageiq-api/pull/356)
+
 ## Unreleased as of Sprint 82 ending 2018-03-26
 
 ### Added
