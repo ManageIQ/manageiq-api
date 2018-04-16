@@ -31,6 +31,7 @@ module Api
         end
         log_api_auth
       rescue AuthenticationError => e
+        api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
         request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize.to_json)
       end
