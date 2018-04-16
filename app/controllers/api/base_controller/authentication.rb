@@ -12,7 +12,7 @@ module Api
         elsif request.headers[HttpHeaders::AUTH_TOKEN]
           authenticate_with_user_token(request.headers[HttpHeaders::AUTH_TOKEN])
         else
-          authenticate_with_http_basic do |u, p|
+          success = authenticate_with_http_basic do |u, p|
             begin
               user = User.authenticate(
                 u, p, request,
@@ -26,7 +26,8 @@ module Api
             rescue MiqException::MiqEVMLoginError => e
               raise AuthenticationError, e.message
             end
-          end or raise AuthenticationError
+          end
+          raise AuthenticationError unless success
         end
         log_api_auth
       rescue AuthenticationError => e
