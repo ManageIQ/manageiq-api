@@ -14,11 +14,8 @@ module Api
         else
           success = authenticate_with_http_basic do |u, p|
             begin
-              user = User.authenticate(
-                u, p, request,
-                :require_user => true,
-                :timeout      => ::Settings.api.authentication_timeout.to_i_with_method
-              )
+              timeout = ::Settings.api.authentication_timeout.to_i_with_method
+              user = User.authenticate(u, p, request, :require_user => true, :timeout => timeout)
               auth_user_obj = userid_to_userobj(user.userid)
               authorize_user_group(auth_user_obj)
               validate_user_identity(auth_user_obj)
