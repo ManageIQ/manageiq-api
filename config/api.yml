@@ -508,6 +508,8 @@
       :post:
       - :name: create
         :identifier: image_create
+      - :name: edit
+        :identifier: image_edit
       - :name: delete
         :identifier: image_delete
     :subresource_actions:
@@ -515,8 +517,13 @@
       - :name: read
         :identifier: image_show
       :post:
+      - :name: edit
+        :identifier: image_edit
       - :name: delete
         :identifier: image_delete
+      :put:
+      - :name: edit
+        :identifier: image_edit
       :delete:
       - :name: delete
         :identifier: image_delete
