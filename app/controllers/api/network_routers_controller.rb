@@ -1,5 +1,7 @@
 module Api
   class NetworkRoutersController < BaseController
+    include Subcollections::Tags
+
     def delete_resource(type, id, _data = {})
       delete_action_handler do
         network_router = resource_search(id, type, collection_class(:network_routers))

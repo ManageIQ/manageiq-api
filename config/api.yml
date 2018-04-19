@@ -322,6 +322,8 @@
     - :custom_actions
     :verbs: *gp
     :klass: AvailabilityZone
+    :subcollections:
+    - :tags
     :collection_actions:
       :get:
       - :name: read
@@ -333,6 +335,12 @@
       :get:
       - :name: read
         :identifier: availability_zone_show
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: availability_zone_tag
+      - :name: unassign
+        :identifier: availability_zone_tag
   :categories:
     :description: Categories
     :identifier: ops_settings
@@ -416,6 +424,8 @@
     - :custom_actions
     :verbs: *gp
     :klass: CloudNetwork
+    :subcollections:
+    - :tags
     :collection_actions:
       :get:
       - :name: read
@@ -435,6 +445,12 @@
       :get:
       - :name: read
         :identifier: cloud_network_show
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: cloud_network_tag
+      - :name: unassign
+        :identifier: cloud_network_tag
   :cloud_object_store_containers:
     :description: Cloud Object Store Containers
     :identifier: cloud_object_store_container
@@ -463,6 +479,8 @@
     - :custom_actions
     :verbs: *gp
     :klass: CloudSubnet
+    :subcollections:
+    - :tags
     :collection_actions:
       :get:
       - :name: read
@@ -482,6 +500,12 @@
       :get:
       - :name: read
         :identifier: cloud_subnet_show
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: cloud_subnet_tag
+      - :name: unassign
+        :identifier: cloud_subnet_tag
   :cloud_templates:
     :description: Cloud Templates
     :identifier: image
@@ -1103,6 +1127,8 @@
     - :subcollection
     :verbs: *gpd
     :klass: Flavor
+    :subcollections:
+    - :tags
     :collection_actions:
       :get:
       - :name: read
@@ -1135,6 +1161,12 @@
       :delete:
       - :name: delete
         :identifier: flavor_delete
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: flavor_tag
+      - :name: unassign
+        :identifier: flavor_tag
   :floating_ips:
     :description: Floating IPs
     :identifier: floating_ip
@@ -1593,6 +1625,8 @@
     - :custom_actions
     :verbs: *gpd
     :klass: NetworkRouter
+    :subcollections:
+    - :tags
     :collection_actions:
       :get:
       - :name: read
@@ -1612,6 +1646,12 @@
       :delete:
       - :name: delete
         :identifier: network_router_delete
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: network_router_tag
+      - :name: unassign
+        :identifier: network_router_tag
   :networks:
     :description: Networks
     :options:
@@ -2418,6 +2458,8 @@
     - :custom_actions
     :verbs: *gp
     :klass: SecurityGroup
+    :subcollections:
+    - :tags
     :collection_actions:
       :get:
       - :name: read
@@ -2442,6 +2484,12 @@
       :get:
       - :name: read
         :identifier: security_group_show
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: security_group_tag
+      - :name: unassign
+        :identifier: security_group_tag
   :servers:
     :description: EVM Servers
     :subcollections:
