@@ -1808,6 +1808,18 @@
         :identifier: physical_server_turn_off_loc_led
       - :name: apply_config_pattern
         :identifier: physical_server_apply_config_pattern
+  :physical_chassis:
+    :description: Physical Chassis
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: PhysicalChassis
+    :collection_actions:
+      :get:
+      - :name: read
+    :resource_actions:
+      :get:
+      - :name: read
   :pictures:
     :description: Pictures
     :options:
