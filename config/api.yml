@@ -1740,6 +1740,28 @@
       :delete:
       - :name: delete
         :identifier: orchestration_template_remove
+  :physical_chassis:
+    :description: Physical Chassis
+    :identifier: physical_chassis
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: PhysicalChassis
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: physical_chassis_show_list
+      :post:
+      - :name: refresh
+        :identifier: physical_chassis_refresh
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: physical_chassis_show
+      :post:
+      - :name: refresh
+        :identifier: physical_chassis_refresh
   :physical_servers:
     :description: Physical Servers
     :identifier: physical_server
@@ -1808,18 +1830,6 @@
         :identifier: physical_server_turn_off_loc_led
       - :name: apply_config_pattern
         :identifier: physical_server_apply_config_pattern
-  :physical_chassis:
-    :description: Physical Chassis
-    :options:
-    - :collection
-    :verbs: *g
-    :klass: PhysicalChassis
-    :collection_actions:
-      :get:
-      - :name: read
-    :resource_actions:
-      :get:
-      - :name: read
   :pictures:
     :description: Pictures
     :options:
