@@ -12,6 +12,16 @@ module Api
         action_result(false, err.to_s)
       end
 
+      def cloud_templates_edit_resource(_object, type, id = nil, data = {})
+        raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
+        image = resource_search(id, type, collection_class(:cloud_templates))
+
+        task_id = image.update_image_queue(User.current_user.id, data)
+        action_result(true, "Updating #{image_ident(image)}", :task_id => task_id)
+      rescue => err
+        action_result(false, err.to_s)
+      end
+
       def cloud_templates_delete_resource(_parent, type, id, _data)
         image = resource_search(id, type, collection_class(type))
         task_id = image.delete_image_queue(User.current_user.id)
