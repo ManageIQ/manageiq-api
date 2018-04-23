@@ -37,8 +37,6 @@ module Api
     rescue_from(ActiveRecord::StatementInvalid) { |e| api_error(:bad_request, e) }
     rescue_from(JSON::ParserError)              { |e| api_error(:bad_request, e) }
     rescue_from(MultiJson::LoadError)           { |e| api_error(:bad_request, e) }
-    rescue_from(MiqException::MiqEVMLoginError) { |e| api_error(:unauthorized, e) }
-    rescue_from(AuthenticationError)            { |e| api_error(:unauthorized, e) }
     rescue_from(ForbiddenError)                 { |e| api_error(:forbidden, e) }
     rescue_from(BadRequestError)                { |e| api_error(:bad_request, e) }
     rescue_from(NotFoundError)                  { |e| api_error(:not_found, e) }

@@ -5,12 +5,20 @@ describe "Authentication API" do
   ENTRYPOINT_KEYS = %w(name description version versions identity collections)
 
   context "Basic Authentication" do
+    example "the user is challenged to use Basic Authentication when no credentials are provided" do
+      get api_entrypoint_url
+
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.headers["WWW-Authenticate"]).to match("Basic")
+    end
+
     it "test basic authentication with bad credentials" do
       api_basic_authorize :user => 'baduser', :password => 'badpassword'
 
       get api_entrypoint_url
 
       expect(response).to have_http_status(:unauthorized)
+      expect(response.headers["WWW-Authenticate"]).to match("Basic")
     end
 
     it "test basic authentication with correct credentials" do
@@ -30,7 +38,9 @@ describe "Authentication API" do
 
       get api_entrypoint_url
 
+      expect(response.parsed_body).to include_error_with_message("User's Role is missing")
       expect(response).to have_http_status(:unauthorized)
+      expect(response.headers["WWW-Authenticate"]).to match("Basic")
     end
 
     it "test basic authentication with a user without a group" do
@@ -42,6 +52,7 @@ describe "Authentication API" do
       get api_entrypoint_url
 
       expect(response).to have_http_status(:unauthorized)
+      expect(response.headers["WWW-Authenticate"]).to match("Basic")
     end
 
     it "returns a correctly formatted versions href" do
@@ -86,7 +97,9 @@ describe "Authentication API" do
 
       get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_GROUP => "bogus_group"}
 
+      expect(response.parsed_body).to include_error_with_message("Invalid Authorization Group bogus_group specified")
       expect(response).to have_http_status(:unauthorized)
+      expect(response.headers["WWW-Authenticate"]).to match("Basic")
     end
 
     it "test basic authentication with a primary group" do
