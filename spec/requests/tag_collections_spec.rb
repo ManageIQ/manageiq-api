@@ -30,6 +30,246 @@ describe "Tag Collections API" do
     FactoryGirl.create(:classification_cost_center_with_tags)
   end
 
+  context "Availability Zone Tag subcollection" do
+    let(:availability_zone) { FactoryGirl.create(:availability_zone) }
+
+    it "query all tags of an Availability Zone and verify tag category and names" do
+      api_basic_authorize
+      classify_resource(availability_zone)
+
+      get api_availability_zone_tags_url(nil, availability_zone), :params => { :expand => "resources" }
+
+      expect_query_result(:tags, 2, Tag.count)
+      expect_result_resources_to_include_data("resources", "name" => tag_paths)
+    end
+
+    it "does not assign a tag to an Availability Zone without appropriate role" do
+      api_basic_authorize
+
+      post(api_availability_zone_tags_url(nil, availability_zone), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "assigns a tag to an Availability Zone" do
+      api_basic_authorize subcollection_action_identifier(:availability_zones, :tags, :assign)
+
+      post(api_availability_zone_tags_url(nil, availability_zone), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_availability_zone_url(nil, availability_zone)))
+    end
+
+    it "does not unassign a tag from an Availability Zone without appropriate role" do
+      api_basic_authorize
+
+      post(api_availability_zone_tags_url(nil, availability_zone), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "unassigns a tag from an Availability Zone" do
+      api_basic_authorize subcollection_action_identifier(:availability_zones, :tags, :unassign)
+      classify_resource(availability_zone)
+
+      post(api_availability_zone_tags_url(nil, availability_zone), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_availability_zone_url(nil, availability_zone)))
+      expect_resource_has_tags(availability_zone, tag2[:path])
+    end
+  end
+
+  context "Cloud Network Tag subcollection" do
+    let(:cloud_network) { FactoryGirl.create(:cloud_network) }
+
+    it "query all tags of an Cloud Network and verify tag category and names" do
+      api_basic_authorize
+      classify_resource(cloud_network)
+
+      get api_cloud_network_tags_url(nil, cloud_network), :params => { :expand => "resources" }
+
+      expect_query_result(:tags, 2, Tag.count)
+      expect_result_resources_to_include_data("resources", "name" => tag_paths)
+    end
+
+    it "does not assign a tag to an Cloud Network without appropriate role" do
+      api_basic_authorize
+
+      post(api_cloud_network_tags_url(nil, cloud_network), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "assigns a tag to an Cloud Network" do
+      api_basic_authorize subcollection_action_identifier(:cloud_networks, :tags, :assign)
+
+      post(api_cloud_network_tags_url(nil, cloud_network), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_cloud_network_url(nil, cloud_network)))
+    end
+
+    it "does not unassign a tag from an Cloud Network without appropriate role" do
+      api_basic_authorize
+
+      post(api_cloud_network_tags_url(nil, cloud_network), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "unassigns a tag from an Cloud Network" do
+      api_basic_authorize subcollection_action_identifier(:cloud_networks, :tags, :unassign)
+      classify_resource(cloud_network)
+
+      post(api_cloud_network_tags_url(nil, cloud_network), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_cloud_network_url(nil, cloud_network)))
+      expect_resource_has_tags(cloud_network, tag2[:path])
+    end
+  end
+
+  context "Cloud Subnet Tag subcollection" do
+    let(:cloud_subnet) { FactoryGirl.create(:cloud_subnet) }
+
+    it "query all tags of a Cloud Subnet and verify tag category and names" do
+      api_basic_authorize
+      classify_resource(cloud_subnet)
+
+      get api_cloud_subnet_tags_url(nil, cloud_subnet), :params => { :expand => "resources" }
+
+      expect_query_result(:tags, 2, Tag.count)
+      expect_result_resources_to_include_data("resources", "name" => tag_paths)
+    end
+
+    it "does not assign a tag to a Cloud Subnet without appropriate role" do
+      api_basic_authorize
+
+      post(api_cloud_subnet_tags_url(nil, cloud_subnet), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "assigns a tag to a Cloud Subnet" do
+      api_basic_authorize subcollection_action_identifier(:cloud_subnets, :tags, :assign)
+
+      post(api_cloud_subnet_tags_url(nil, cloud_subnet), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_cloud_subnet_url(nil, cloud_subnet)))
+    end
+
+    it "does not unassign a tag from a Cloud Subnet without appropriate role" do
+      api_basic_authorize
+
+      post(api_cloud_subnet_tags_url(nil, cloud_subnet), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "unassigns a tag from a Cloud Subnet" do
+      api_basic_authorize subcollection_action_identifier(:cloud_subnets, :tags, :unassign)
+      classify_resource(cloud_subnet)
+
+      post(api_cloud_subnet_tags_url(nil, cloud_subnet), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_cloud_subnet_url(nil, cloud_subnet)))
+      expect_resource_has_tags(cloud_subnet, tag2[:path])
+    end
+  end
+
+  context "Flavor Tag subcollection" do
+    let(:flavor) { FactoryGirl.create(:flavor) }
+
+    it "query all tags of a Flavor and verify tag category and names" do
+      api_basic_authorize
+      classify_resource(flavor)
+
+      get api_flavor_tags_url(nil, flavor), :params => { :expand => "resources" }
+
+      expect_query_result(:tags, 2, Tag.count)
+      expect_result_resources_to_include_data("resources", "name" => tag_paths)
+    end
+
+    it "does not assign a tag to a Flavor without appropriate role" do
+      api_basic_authorize
+
+      post(api_flavor_tags_url(nil, flavor), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "assigns a tag to a Flavor" do
+      api_basic_authorize subcollection_action_identifier(:flavors, :tags, :assign)
+
+      post(api_flavor_tags_url(nil, flavor), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_flavor_url(nil, flavor)))
+    end
+
+    it "does not unassign a tag from a Flavor without appropriate role" do
+      api_basic_authorize
+
+      post(api_flavor_tags_url(nil, flavor), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "unassigns a tag from a Flavor" do
+      api_basic_authorize subcollection_action_identifier(:flavors, :tags, :unassign)
+      classify_resource(flavor)
+
+      post(api_flavor_tags_url(nil, flavor), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_flavor_url(nil, flavor)))
+      expect_resource_has_tags(flavor, tag2[:path])
+    end
+  end
+
+  context "Network Router Tag subcollection" do
+    let(:network_router) { FactoryGirl.create(:network_router) }
+
+    it "query all tags of a Network Router and verify tag category and names" do
+      api_basic_authorize
+      classify_resource(network_router)
+
+      get api_network_router_tags_url(nil, network_router), :params => { :expand => "resources" }
+
+      expect_query_result(:tags, 2, Tag.count)
+      expect_result_resources_to_include_data("resources", "name" => tag_paths)
+    end
+
+    it "does not assign a tag to a Network Router without appropriate role" do
+      api_basic_authorize
+
+      post(api_network_router_tags_url(nil, network_router), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "assigns a tag to a Network Router" do
+      api_basic_authorize subcollection_action_identifier(:network_routers, :tags, :assign)
+
+      post(api_network_router_tags_url(nil, network_router), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_network_router_url(nil, network_router)))
+    end
+
+    it "does not unassign a tag from a Network Router without appropriate role" do
+      api_basic_authorize
+
+      post(api_network_router_tags_url(nil, network_router), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "unassigns a tag from a Network Router" do
+      api_basic_authorize subcollection_action_identifier(:network_routers, :tags, :unassign)
+      classify_resource(network_router)
+
+      post(api_network_router_tags_url(nil, network_router), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_network_router_url(nil, network_router)))
+      expect_resource_has_tags(network_router, tag2[:path])
+    end
+  end
+
   context "Provider Tag subcollection" do
     let(:provider)          { ems }
 
@@ -271,6 +511,54 @@ describe "Tag Collections API" do
 
       expect_tagging_result(tag1_results(api_cluster_url(nil, cluster)))
       expect_resource_has_tags(cluster, tag2[:path])
+    end
+  end
+
+  context "Security Group Tag subcollection" do
+    let(:security_group) { FactoryGirl.create(:security_group) }
+
+    it "query all tags of a Security Group and verify tag category and names" do
+      api_basic_authorize
+      classify_resource(security_group)
+
+      get api_security_group_tags_url(nil, security_group), :params => { :expand => "resources" }
+
+      expect_query_result(:tags, 2, Tag.count)
+      expect_result_resources_to_include_data("resources", "name" => tag_paths)
+    end
+
+    it "does not assign a tag to a Security Group without appropriate role" do
+      api_basic_authorize
+
+      post(api_security_group_tags_url(nil, security_group), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "assigns a tag to a Security Group" do
+      api_basic_authorize subcollection_action_identifier(:security_groups, :tags, :assign)
+
+      post(api_security_group_tags_url(nil, security_group), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_security_group_url(nil, security_group)))
+    end
+
+    it "does not unassign a tag from a Security Group without appropriate role" do
+      api_basic_authorize
+
+      post(api_security_group_tags_url(nil, security_group), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "unassigns a tag from a Security Group" do
+      api_basic_authorize subcollection_action_identifier(:security_groups, :tags, :unassign)
+      classify_resource(security_group)
+
+      post(api_security_group_tags_url(nil, security_group), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_security_group_url(nil, security_group)))
+      expect_resource_has_tags(security_group, tag2[:path])
     end
   end
 
