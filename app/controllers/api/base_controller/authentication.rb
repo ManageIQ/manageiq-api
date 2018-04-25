@@ -52,6 +52,8 @@ module Api
           group_obj = user_obj.miq_groups.find_by(:description => group_name)
           raise AuthenticationError, "Invalid Authorization Group #{group_name} specified" if group_obj.nil?
           user_obj.current_group_by_description = group_name
+        elsif user_obj.current_group.nil? && user_obj.miq_groups.present?
+          user_obj.change_current_group
         end
       end
 

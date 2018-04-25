@@ -44,6 +44,7 @@ describe "Authentication API" do
     end
 
     it "test basic authentication with a user without a group" do
+      @user.miq_groups = []
       @user.current_group = nil
       @user.save
 
