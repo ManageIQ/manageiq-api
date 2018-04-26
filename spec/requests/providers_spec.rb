@@ -1156,6 +1156,139 @@ describe "Providers API" do
     end
   end
 
+  describe 'change provider password' do
+    let(:ems_physical_infra) { FactoryGirl.create(:ems_physical_infra) }
+    let(:invalid_change_password_payload) do
+      { "action"           => "change_password",
+        "current_password" => "current_password",
+        "new_password"     => "new_password" }
+    end
+
+    let(:valid_change_password_payload) do
+      { "action"           => "change_password",
+        "current_password" => "current_password",
+        "new_password"     => "new_password" }
+    end
+
+    let(:valid_change_password_payload_for_multiple_providers) do
+      {
+        "action"    => "change_password",
+        "resources" => [
+          {
+            "href"             => api_provider_url(nil, ems_physical_infra),
+            "current_password" => "current_password",
+            "new_password"     => "new_password"
+          },
+          {
+            "href"             => api_provider_url(nil, ems_physical_infra),
+            "current_password" => "current_password",
+            "new_password"     => "new_password"
+          }
+        ]
+      }
+    end
+
+    let(:invalid_change_password_payload_for_multiple_providers) do
+      {
+        "action"    => "change_password",
+        "resources" => [
+          {
+            "href"             => api_provider_url(nil, 999_999),
+            "current_password" => "current_password",
+            "new_password"     => "new_password"
+          },
+          {
+            "href"             => api_provider_url(nil, ems_physical_infra),
+            "current_password" => "current_password",
+            "new_password"     => "new_password"
+          }
+        ]
+      }
+    end
+
+    let(:single_resource_success_response) do
+      {
+        "message"   => a_string_matching(/Change password requested for Physical Provider #{ems_physical_infra.name}/i),
+        "href"      => api_provider_url(nil, ems_physical_infra),
+        "success"   => true,
+        "task_id"   => a_kind_of(String),
+        "task_href" => a_string_matching(api_tasks_url)
+      }
+    end
+
+    let(:single_resource_fail_response) do
+      {
+        "success" => false,
+        "message" => a_string_matching(/Couldn't find ExtManagementSystem with 'id'=999999/i)
+      }
+    end
+
+    context 'with a non existent provider' do
+      it 'returns a bad request error if no id is provided' do
+        api_basic_authorize collection_action_identifier(:providers, :change_password)
+
+        payload = {
+          "action" => "change_password",
+          "href"   => ""
+        }
+
+        post(api_providers_url, :params => payload)
+        expect_bad_request("Must specify an id for change password of a providers resource")
+      end
+
+      it 'returns a not found error' do
+        api_basic_authorize collection_action_identifier(:providers, :change_password)
+
+        post(api_provider_url(nil, 999_999), :params => valid_change_password_payload)
+
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it 'returns a 200 code for multiple providers' do
+        api_basic_authorize collection_action_identifier(:providers, :change_password)
+
+        post(api_providers_url, :params => invalid_change_password_payload_for_multiple_providers)
+
+        expected = {
+          "results" => a_collection_containing_exactly(
+            a_hash_including(single_resource_fail_response), a_hash_including(single_resource_success_response)
+          )
+        }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+    end
+
+    context 'with a valid request' do
+      before { allow_any_instance_of(ExtManagementSystem).to receive(:change_password) { true } }
+
+      it 'proccess the request successfully' do
+        api_basic_authorize collection_action_identifier(:providers, :change_password)
+
+        post(api_provider_url(nil, ems_physical_infra), :params => valid_change_password_payload)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(single_resource_success_response)
+      end
+
+      it 'proccess the request successfully for multiple providers' do
+        api_basic_authorize collection_action_identifier(:providers, :change_password)
+
+        post(api_providers_url, :params => valid_change_password_payload_for_multiple_providers)
+
+        expected = {
+          "results" => a_collection_containing_exactly(
+            a_hash_including(single_resource_success_response), a_hash_including(single_resource_success_response)
+          )
+        }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+    end
+  end
+
   describe 'query Providers' do
     describe 'query custom_attributes' do
       let!(:generic_provider) { FactoryGirl.create(:provider) }
