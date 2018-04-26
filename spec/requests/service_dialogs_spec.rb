@@ -568,6 +568,24 @@ describe "Service Dialogs API" do
         "result"  => hash_including("text1")
       )
     end
+
+    it "creates a ResourceActionWorkflow by passing in a true refresh option" do
+      allow(ResourceActionWorkflow).to receive(:new).and_call_original
+      expect(ResourceActionWorkflow).to receive(:new).with(
+        {}, instance_of(User), instance_of(ResourceAction), hash_including(:refresh => true)
+      )
+
+      api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
+      init_dialog
+
+      post(api_service_dialog_url(nil, dialog1), :params => gen_request(
+        :refresh_dialog_fields,
+        "fields"             => %w(text1),
+        "resource_action_id" => ra1.id,
+        "target_id"          => template.id,
+        "target_type"        => "service_template"
+      ))
+    end
   end
 
   context 'Creates service dialogs' do

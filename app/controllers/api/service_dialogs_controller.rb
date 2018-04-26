@@ -72,7 +72,7 @@ module Api
       refresh_fields = data["fields"]
       return action_result(false, "Must specify fields to refresh") if refresh_fields.blank?
 
-      service_dialog = define_service_dialog(dialog_fields, data)
+      service_dialog = define_service_dialog(dialog_fields, data, {:refresh => true})
 
       if service_dialog.id != dialog.id
         return action_result(
@@ -86,10 +86,10 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def define_service_dialog(dialog_fields, data)
+    def define_service_dialog(dialog_fields, data, options = {})
       target, resource_action = validate_dialog_content_params(data, true)
 
-      workflow = ResourceActionWorkflow.new({}, User.current_user, resource_action, :target => target)
+      workflow = ResourceActionWorkflow.new({}, User.current_user, resource_action, {:target => target}.merge(options))
 
       dialog_fields.each { |key, value| workflow.set_value(key, value) }
       workflow.dialog
