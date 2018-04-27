@@ -353,6 +353,11 @@ describe "Rest API Collections" do
       test_collection_query(:firmwares, api_firmwares_url, Firmware)
     end
 
+    it 'query PhysicalSwitches' do
+      FactoryGirl.create(:physical_switch)
+      test_collection_query(:physical_switches, api_physical_switches_url, PhysicalSwitch)
+    end
+
     it 'query PhysicalServers' do
       FactoryGirl.create(:physical_server)
       test_collection_query(:physical_servers, api_physical_servers_url, PhysicalServer)
@@ -678,6 +683,11 @@ describe "Rest API Collections" do
     it 'bulk query Firmwares' do
       FactoryGirl.create(:firmware)
       test_collection_bulk_query(:firmwares, api_firmwares_url, Firmware)
+    end
+
+    it 'bulk query PhysicalSwitches' do
+      FactoryGirl.create(:physical_switch)
+      test_collection_bulk_query(:physical_switches, api_physical_switches_url, PhysicalSwitch)
     end
 
     it 'bulk query PhysicalServers' do

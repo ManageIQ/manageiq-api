@@ -1808,6 +1808,30 @@
         :identifier: physical_server_turn_off_loc_led
       - :name: apply_config_pattern
         :identifier: physical_server_apply_config_pattern
+  :physical_switches:
+    :description: Physical Switches
+    :identifier: physical_switch
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: PhysicalSwitch
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: physical_switch_show_list
+      :post:
+      - :name: query
+        :identifier: physical_switch_show_list
+      - :name: refresh
+        :identifier: physical_switch_refresh
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: physical_switch_show
+      :post:
+      - :name: refresh
+        :identifier: physical_switch_refresh
   :pictures:
     :description: Pictures
     :options:
