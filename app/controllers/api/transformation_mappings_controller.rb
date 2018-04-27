@@ -12,9 +12,14 @@ module Api
 
     def validate_vms_resource(type, id, data = {})
       transformation_mapping = resource_search(id, type, collection_class(type))
-      normalize_hash(:vms, transformation_mapping.validate_vms(data["import"]) || {})
-    rescue StandardError => err
-      raise BadRequestError, "Could not validate vms - #{err}"
+      (transformation_mapping.validate_vms(data["import"]) || {}).tap do |res|
+        %w(valid_vms invalid_vms conflict_vms).each do |key|
+          next unless res.key?(key)
+          res[key].each do |entry|
+            entry["href"] = normalize_href(:vms, entry["id"]) if entry["href"].blank? && entry["id"].present?
+          end
+        end
+      end
     end
 
     private

@@ -25,17 +25,17 @@ module Api
         attrs.each do |k|
           next if Api.encrypted_attribute?(k)
           next if is_ar ? !obj.respond_to?(k) : !obj.key?(k)
-          result[k] = normalize_attr(k, is_ar ? obj.try(k) : obj[k], type)
+          result[k] = normalize_attr(k, is_ar ? obj.try(k) : obj[k])
         end
         result
       end
 
       private
 
-      def normalize_attr(attr, value, type = nil)
+      def normalize_attr(attr, value)
         return if value.nil?
         if value.kind_of?(Array) || value.kind_of?(ActiveRecord::Relation)
-          normalize_array(value, type)
+          normalize_array(value)
         elsif value.respond_to?(:attributes) || value.respond_to?(:keys)
           normalize_hash(attr, value)
         elsif attr == "id" || attr.to_s.ends_with?("_id")
@@ -128,7 +128,7 @@ module Api
 
       def normalize_array(obj, type = nil)
         type ||= @req.subject
-        obj.collect { |item| normalize_attr(get_reftype(type, type, item), item, type) }
+        obj.collect { |item| normalize_attr(get_reftype(type, type, item), item) }
       end
 
       def create_resource_attributes_hash(attributes, resource)
