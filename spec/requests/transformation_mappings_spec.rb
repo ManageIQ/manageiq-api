@@ -147,8 +147,13 @@ describe "Transformation Mappings" do
       context "with an appropriate role" do
         it "can validate vms with csv data specified" do
           api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
-          ems_cluster = FactoryGirl.create(:ems_cluster)
-          vm = FactoryGirl.create(:vm_openstack, :name => "foo", :ems_cluster => ems_cluster)
+          ems = FactoryGirl.create(:ext_management_system)
+          source_ems = FactoryGirl.create(:ems_cluster)
+          destination_ems = FactoryGirl.create(:ems_cluster)
+          transformation_mapping =
+            FactoryGirl.create(:transformation_mapping,
+                               :transformation_mapping_items => [TransformationMappingItem.new(:source => source_ems, :destination => destination_ems)])
+          vm = FactoryGirl.create(:vm_openstack, :name => "foo", :ems_cluster => source_ems, :ext_management_system => ems)
 
           request = {
             "action" => "validate_vms",
