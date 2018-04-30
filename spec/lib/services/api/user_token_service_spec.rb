@@ -5,7 +5,7 @@ RSpec.describe Api::UserTokenService do
     end
 
     let(:user_token_service) { described_class.new }
-    let(:token) { user_token_service.generate_token(@user.userid, 'api', token_ttl: token_ttl) }
+    let(:token) { user_token_service.generate_token(@user.userid.capitalize, 'api', :token_ttl => token_ttl) }
     let(:token_info) { user_token_service.token_mgr('api').token_get_info(token) }
 
     context "without token_ttl set" do
