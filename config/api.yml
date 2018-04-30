@@ -2775,6 +2775,9 @@
       :get:
       - :name: read
         :identifier: transformation_mapping_show
+      :post:
+      - :name: validate_vms
+        :identifier: transformation_mapping_new
   :users:
     :description: Users
     :identifier: rbac_user
