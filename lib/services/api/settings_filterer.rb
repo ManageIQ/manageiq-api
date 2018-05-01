@@ -13,19 +13,11 @@ module Api
     end
 
     def fetch
-      whitelist_settings(settings)
-    end
-
-    private
-
-    def whitelist_settings(settings)
       return settings if user.super_admin_user?
 
-      result_hash = {}
-      whitelist.each do |category_path|
-        result_hash.deep_merge!(SettingsSlicer.slice(settings, *category_path.split("/")))
+      whitelist.each_with_object({}) do |category_path, result|
+        result.deep_merge!(SettingsSlicer.slice(settings, *category_path.split("/")))
       end
-      result_hash
     end
   end
 end
