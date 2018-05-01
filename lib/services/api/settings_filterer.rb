@@ -4,14 +4,16 @@ module Api
       new(user).fetch
     end
 
-    attr_reader :user
+    attr_reader :user, :settings, :whitelist
 
-    def initialize(user)
+    def initialize(user, settings = Settings.to_hash.deep_stringify_keys, whitelist = ApiConfig.collections[:settings][:categories])
       @user = user
+      @settings = settings
+      @whitelist = whitelist
     end
 
     def fetch
-      whitelist_settings(settings_hash)
+      whitelist_settings(settings)
     end
 
     private
@@ -20,14 +22,10 @@ module Api
       return settings if user.super_admin_user?
 
       result_hash = {}
-      ApiConfig.collections[:settings][:categories].each do |category_path|
-        result_hash.deep_merge!(SettingsSlicer.slice(settings_hash, *category_path.split("/")))
+      whitelist.each do |category_path|
+        result_hash.deep_merge!(SettingsSlicer.slice(settings, *category_path.split("/")))
       end
       result_hash
-    end
-
-    def settings_hash
-      @settings_hash ||= Settings.to_hash.deep_stringify_keys
     end
   end
 end
