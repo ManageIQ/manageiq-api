@@ -43,21 +43,13 @@ module Api
 
         result_hash = {}
         ApiConfig.collections[:settings][:categories].each do |category_path|
-          result_hash.deep_merge!(settings_entry_to_hash(category_path, entry_value(settings, category_path)))
+          result_hash.deep_merge!(SettingsSlicer.slice(settings_hash, *category_path.split("/")))
         end
         result_hash
       end
 
       def settings_hash
         @settings_hash ||= Settings.to_hash.deep_stringify_keys
-      end
-
-      def entry_value(settings, path)
-        settings.fetch_path(path.split('/'))
-      end
-
-      def settings_entry_to_hash(path, value)
-        {}.tap { |h| h.store_path(path.split("/"), value) }
       end
     end
   end
