@@ -5,13 +5,21 @@ module Api
     end
 
     def show
-      settings_value = entry_value(SettingsFilterer.filter_for(current_user), @req.c_suffix)
+      whitelist = SettingsFilterer.filter_for(current_user)
+      path = @req.c_suffix.split("/")
+      raise NotFoundError, "Settings entry #{@req.c_suffix} not found" if whitelist.fetch_path(path).nil?
 
-      raise NotFoundError, "Settings entry #{@req.c_suffix} not found" if settings_value.nil?
-      render_resource :settings, settings_entry_to_hash(@req.c_suffix, settings_value)
+      settings = SettingsSlicer.slice(whitelist, *path)
+      render_resource :settings, settings
     end
 
     private
+
+    class SettingsSlicer
+      def self.slice(settings, *path)
+        {}.tap { |h| h.store_path(path, settings.fetch_path(*path)) }
+      end
+    end
 
     class SettingsFilterer
       def self.filter_for(user)
@@ -51,14 +59,6 @@ module Api
       def settings_entry_to_hash(path, value)
         {}.tap { |h| h.store_path(path.split("/"), value) }
       end
-    end
-
-    def entry_value(settings, path)
-      settings.fetch_path(path.split('/'))
-    end
-
-    def settings_entry_to_hash(path, value)
-      {}.tap { |h| h.store_path(path.split("/"), value) }
     end
   end
 end
