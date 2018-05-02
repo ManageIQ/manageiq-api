@@ -23,27 +23,30 @@ module Api
 
       if subtree
         if user.super_admin_user?
-          slice_for(settings, subtree)
+          slice_for(whitelisted_settings, subtree)
         else
-          slice_for(
-            whitelist.each_with_object({}) do |category_path, result|
-              result.deep_merge!(slice_for(settings, category_path))
-            end,
-            subtree
-          )
+          slice_for(whitelisted_settings, subtree)
         end
       else
         if user.super_admin_user?
-          settings
+          whitelisted_settings
         else
-          whitelist.each_with_object({}) do |category_path, result|
-            result.deep_merge!(slice_for(settings, category_path))
-          end
+          whitelisted_settings
         end
       end
     end
 
     private
+
+    def whitelisted_settings
+      if user.super_admin_user?
+        settings
+      else
+        whitelist.each_with_object({}) do |category_path, result|
+          result.deep_merge!(slice_for(settings, category_path))
+        end
+      end
+    end
 
     def slice_for(settings, path)
       path = path.split("/")
