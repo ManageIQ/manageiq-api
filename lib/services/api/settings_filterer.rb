@@ -23,13 +23,13 @@ module Api
 
       if subtree
         if user.super_admin_user?
-          slice_for(subtree)
+          slice_for(settings, subtree)
         else
-          SettingsSlicer.slice(
+          slice_for(
             whitelist.each_with_object({}) do |category_path, result|
-              result.deep_merge!(slice_for(category_path))
+              result.deep_merge!(slice_for(settings, category_path))
             end,
-            *subtree.split("/")
+            subtree
           )
         end
       else
@@ -37,7 +37,7 @@ module Api
           settings
         else
           whitelist.each_with_object({}) do |category_path, result|
-            result.deep_merge!(slice_for(category_path))
+            result.deep_merge!(slice_for(settings, category_path))
           end
         end
       end
@@ -45,8 +45,12 @@ module Api
 
     private
 
-    def slice_for(category_path)
-      SettingsSlicer.slice(settings, *category_path.split("/"))
+    def slice_for(settings, path)
+      path = path.split("/")
+      {}.tap do |h|
+        subtree = settings.fetch_path(*path)
+        h.store_path(path, subtree) if subtree
+      end
     end
   end
 end
