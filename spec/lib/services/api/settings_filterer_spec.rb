@@ -60,8 +60,8 @@ RSpec.describe Api::SettingsFilterer do
 
       it "supports multiple categories" do
         settings = {
-          "product" => {"some" => "product settings"},
-          "server"  => {"some" => "server settings"},
+          "product"        => {"some" => "product settings"},
+          "server"         => {"some" => "server settings"},
           "authentication" => {"some" => "authentication settings"}
         }
         whitelist = %w(product server)
