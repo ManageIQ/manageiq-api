@@ -12,9 +12,29 @@ module Api
       @whitelist = whitelist
     end
 
-    def fetch
-      return settings if user.super_admin_user?
-      whitelist.each_with_object({}) { |category_path, result| result.deep_merge!(slice_for(category_path))}
+    def fetch(opts = {})
+      subtree = opts.fetch(:subtree, nil)
+
+      if subtree
+        if user.super_admin_user?
+          slice_for(subtree)
+        else
+          SettingsSlicer.slice(
+            whitelist.each_with_object({}) do |category_path, result|
+              result.deep_merge!(slice_for(category_path))
+            end,
+            *subtree.split("/")
+          )
+        end
+      else
+        if user.super_admin_user?
+          settings
+        else
+          whitelist.each_with_object({}) do |category_path, result|
+            result.deep_merge!(slice_for(category_path))
+          end
+        end
+      end
     end
 
     private

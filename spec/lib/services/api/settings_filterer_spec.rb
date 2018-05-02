@@ -14,6 +14,32 @@ RSpec.describe Api::SettingsFilterer do
 
         expect(actual).to eq(settings)
       end
+
+      context "and a subtree to filter on" do
+        it "returns the subtree" do
+          settings = {
+            "product" => {"some" => "product settings"},
+            "server"  => {"some" => "server settings"},
+          }
+          whitelist = %w(product)
+
+          actual = described_class.new(user, settings, whitelist).fetch(:subtree => "server")
+
+          expect(actual).to eq("server" => {"some" => "server settings"})
+        end
+
+        it "returns an empty hash" do
+          settings = {
+            "product" => {"some" => "product settings"},
+            "server"  => {"some" => "server settings"},
+          }
+          whitelist = %w(product)
+
+          actual = described_class.new(user, settings, whitelist).fetch(:subtree => "not a category/not a subcategory")
+
+          expect(actual).to eq({})
+        end
+      end
     end
 
     context "given a non-admin user" do
@@ -107,6 +133,32 @@ RSpec.describe Api::SettingsFilterer do
           }
         }
         expect(actual).to eq(expected)
+      end
+
+      context "and a subtree to filter on" do
+        it "returns the subtree" do
+          settings = {
+            "product" => {"some" => "product settings"},
+            "server"  => {"some" => "server settings"},
+          }
+          whitelist = %w(product server)
+
+          actual = described_class.new(user, settings, whitelist).fetch(:subtree => "server")
+
+          expect(actual).to eq("server" => {"some" => "server settings"})
+        end
+
+        it "returns an empty hash" do
+          settings = {
+            "product" => {"some" => "product settings"},
+            "server"  => {"some" => "server settings"},
+          }
+          whitelist = %w(product server)
+
+          actual = described_class.new(user, settings, whitelist).fetch(:subtree => "not a category/not a subcategory")
+
+          expect(actual).to eq({})
+        end
       end
     end
   end

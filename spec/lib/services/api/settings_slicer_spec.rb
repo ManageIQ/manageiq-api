@@ -38,5 +38,16 @@ RSpec.describe Api::SettingsSlicer do
 
       expect(actual).to eq("server" => {"role" => "database_operations"})
     end
+
+    it "returns an empty hash for invalid categories" do
+      settings = {
+        "product" => {"some" => "product settings"},
+        "server"  => {"some" => "server settings"}
+      }
+
+      actual = described_class.slice(settings, "not a category")
+
+      expect(actual).to eq({})
+    end
   end
 end
