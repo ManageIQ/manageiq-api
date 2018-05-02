@@ -22,17 +22,9 @@ module Api
       subtree = opts.fetch(:subtree, nil)
 
       if subtree
-        if user.super_admin_user?
-          slice_for(whitelisted_settings, subtree)
-        else
-          slice_for(whitelisted_settings, subtree)
-        end
+        slice_for(whitelisted_settings, subtree)
       else
-        if user.super_admin_user?
-          whitelisted_settings
-        else
-          whitelisted_settings
-        end
+        whitelisted_settings
       end
     end
 
