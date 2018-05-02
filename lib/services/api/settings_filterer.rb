@@ -1,7 +1,13 @@
 module Api
   class SettingsFilterer
-    def self.filter_for(user)
-      new(user).fetch
+    def self.filter_for(user, opts = {})
+      subtree = opts.fetch(:subtree, nil)
+      filterer = new(user)
+      if subtree
+        filterer.fetch(:subtree => subtree)
+      else
+        filterer.fetch
+      end
     end
 
     attr_reader :user, :settings, :whitelist
