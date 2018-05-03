@@ -67,6 +67,7 @@ module Api
     def log_init(mod, name, options)
       $api_log.info("")
       $api_log.info("Creating new Token Manager for the #{name}")
+      $api_log.info("   Server  session_store: #{::Settings.server.session_store}")
       $api_log.info("   Token Manager  module: #{mod}")
       $api_log.info("   Token Manager options:")
       options.each { |key, val| log_kv(key, val, "    ") }
