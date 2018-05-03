@@ -1,3 +1,4 @@
+
 module Api
   class BaseController
     module Generic
@@ -76,7 +77,7 @@ module Api
           else
             msg << " immediately."
             api_log_info(msg)
-            resource.retire_now
+            klass.make_retire_request(resource.id)
           end
           resource
         else
