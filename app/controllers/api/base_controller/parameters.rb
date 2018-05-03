@@ -13,6 +13,14 @@ module Api
         Filter.parse(params["filter"], klass)
       end
 
+      def filter_search_for
+        params['search_for']
+      end
+
+      def filter_complete_for
+        params['complete_for']
+      end
+
       def by_tag_param
         params['by_tag']
       end

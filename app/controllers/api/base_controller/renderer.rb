@@ -160,6 +160,7 @@ module Api
 
       def collection_filterer(res, type, klass, is_subcollection = false)
         miq_expression = filter_param(klass)
+        search_for_value = filter_search_for
 
         if miq_expression
           if is_subcollection && !res.respond_to?(:where)
@@ -167,6 +168,8 @@ module Api
           end
           sql, _, attrs = miq_expression.to_sql
           res = res.where(sql) if attrs[:supported_by_sql]
+        elsif search_for_value
+          return [res.search_for(search_for_value)]
         end
 
         sort_options = sort_params(klass) if res.respond_to?(:reorder)
@@ -511,6 +514,13 @@ module Api
 
       def render_options(resource, data = {})
         klass = collection_class(resource)
+
+        complete_for_value = filter_complete_for
+        if complete_for_value
+          # Funky, scoped_search is changing the passed param, lets dup it
+          data[:complete_for] = klass.complete_for(complete_for_value.dup)
+        end
+
         render :json => OptionsSerializer.new(klass, data).serialize
       end
     end
