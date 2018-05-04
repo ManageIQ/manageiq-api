@@ -5,7 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Gaprindashvili-2
+## Gaprindashvili-3
+
+### Added
+- Adding support for /api/containers primary collection. [(#332)](https://github.com/ManageIQ/manageiq-api/pull/332)
+- Allow multiple role identifiers for cloud volume [(#299)](https://github.com/ManageIQ/manageiq-api/pull/299)
+
+### Fixed
+- Update role identifiers for tasks collection [(#296)](https://github.com/ManageIQ/manageiq-api/pull/296)
+- Allow read-only access to quotas subcollection [(#283)](https://github.com/ManageIQ/manageiq-api/pull/283)
+- Default section to "metadata" across custom attributes add action [(#320)](https://github.com/ManageIQ/manageiq-api/pull/320)
+- Ensure array is returned for subcollections [(#322)](https://github.com/ManageIQ/manageiq-api/pull/322)
+- Raise bad request when current_group is specified on edit [(#329)](https://github.com/ManageIQ/manageiq-api/pull/329)
+- Fix specifying of additional attributes on pictures [(#327)](https://github.com/ManageIQ/manageiq-api/pull/327)
+- Add svc_catalog_provision product feature to service dialog queries [(#343)](https://github.com/ManageIQ/manageiq-api/pull/343)
+- Add refresh parameter to ResourceActionWorkflow initialization [(#365)](https://github.com/ManageIQ/manageiq-api/pull/365)
+
+## Gaprindashvili-2 - Released 2018-03-07
 
 ### Fixed
 - Fixed up role identifiers for cloud_networks [(#298)](https://github.com/ManageIQ/manageiq-api/pull/298)
