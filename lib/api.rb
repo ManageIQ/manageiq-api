@@ -3,15 +3,6 @@ module Api
   VERSION_CONSTRAINT = /v\d+(\.[\da-zA-Z]+)*(\-[\da-zA-Z\-\.]+)?/
   VERSION_REGEX = /\A#{VERSION_CONSTRAINT}\z/
 
-  VERBS_ACTIONS_MAP = {
-    :get     => "show",
-    :post    => "update",
-    :put     => "update",
-    :patch   => "update",
-    :delete  => "destroy",
-    :options => "options"
-  }.freeze
-
   ApiError = Class.new(StandardError)
   AuthenticationError = Class.new(ApiError)
   ForbiddenError = Class.new(ApiError)
