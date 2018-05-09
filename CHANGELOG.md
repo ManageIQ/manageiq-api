@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 85 ending 2018-05-07
+
+### Added
+- Updated token manager initializer to log the configured server session_store [(#376)](https://github.com/ManageIQ/manageiq-api/pull/376)
+- Adding support for collection_names whose plural and singular are the same [(#364)](https://github.com/ManageIQ/manageiq-api/pull/364)
+- Add support for validate_vms action on transformation_mappings [(#358)](https://github.com/ManageIQ/manageiq-api/pull/358)
+- Implementing change password action for providers endpoint [(#309)](https://github.com/ManageIQ/manageiq-api/pull/309)
+
+### Fixed
+- Downcase userid to match how it is stored in the DB. [(#371)](https://github.com/ManageIQ/manageiq-api/pull/371)
+- Add refresh parameter to ResourceActionWorkflow initialization [(#365)](https://github.com/ManageIQ/manageiq-api/pull/365)
+
 ## Unreleased as of Sprint 84 ending 2018-04-23
 
 ### Added
