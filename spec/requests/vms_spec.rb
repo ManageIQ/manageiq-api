@@ -1037,59 +1037,142 @@ describe "Vms API" do
   end
 
   context "Vm retire action" do
-    it "to an invalid vm" do
-      api_basic_authorize action_identifier(:vms, :retire)
+    context "retire_now" do
+      it "to an invalid vm" do
+        api_basic_authorize action_identifier(:vms, :retire)
 
-      post(invalid_vm_url, :params => gen_request(:retire))
+        post(invalid_vm_url, :params => gen_request(:retire))
 
-      expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "to an invalid vm without appropriate role" do
+        api_basic_authorize
+
+        post(invalid_vm_url, :params => gen_request(:retire))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it "to a single Vm" do
+        api_basic_authorize action_identifier(:vms, :retire)
+
+        post(vm_url, :params => gen_request(:retire))
+
+        expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm))
+      end
+
+      it "to multiple Vms" do
+        api_basic_authorize collection_action_identifier(:vms, :retire)
+
+        post(api_vms_url, :params => gen_request(:retire, [{"href" => vm1_url}, {"href" => vm2_url}]))
+
+        expected = {
+          "results" => a_collection_containing_exactly(
+            {
+              "message" => a_string_matching(/#{vm1.id}.* retiring/i),
+              "success" => true,
+              "href"    => api_vm_url(nil, vm1)
+            },
+            {
+              "message" => a_string_matching(/#{vm2.id}.* retiring/ii),
+              "success" => true,
+              "href"    => api_vm_url(nil, vm2)
+            }
+          )
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "in the future" do
+        api_basic_authorize action_identifier(:vms, :retire)
+        date = 2.weeks.from_now
+        post(vm_url, :params => gen_request(:retire, :date => date.iso8601))
+
+        expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm))
+      end
     end
 
-    it "to an invalid vm without appropriate role" do
-      api_basic_authorize
+    context "request_retire" do
+      context "valid" do
+        it "to a single Vm" do
+          api_basic_authorize(action_identifier(:vms, :request_retire), :miq_request_approval)
 
-      post(invalid_vm_url, :params => gen_request(:retire))
+          post(vm_url, :params => gen_request(:request_retire))
 
-      expect(response).to have_http_status(:forbidden)
-    end
-
-    it "to a single Vm" do
-      api_basic_authorize action_identifier(:vms, :retire)
-
-      post(vm_url, :params => gen_request(:retire))
-
-      expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm))
-    end
-
-    it "to multiple Vms" do
-      api_basic_authorize collection_action_identifier(:vms, :retire)
-
-      post(api_vms_url, :params => gen_request(:retire, [{"href" => vm1_url}, {"href" => vm2_url}]))
-
-      expected = {
-        "results" => a_collection_containing_exactly(
-          {
-            "message" => a_string_matching(/#{vm1.id}.* retiring/i),
-            "success" => true,
-            "href"    => api_vm_url(nil, vm1)
-          },
-          {
-            "message" => a_string_matching(/#{vm2.id}.* retiring/ii),
-            "success" => true,
-            "href"    => api_vm_url(nil, vm2)
+          expected = {
+            "href"    => a_string_matching(api_requests_url),
+            "message" => a_string_matching(/VM Retire - Request Created/),
+            "options" => a_hash_including("src_ids" => a_collection_containing_exactly(vm.id))
           }
-        )
-      }
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
-    end
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
 
-    it "in the future" do
-      api_basic_authorize action_identifier(:vms, :retire)
-      date = 2.weeks.from_now
-      post(vm_url, :params => gen_request(:retire, :date => date.iso8601))
+        it "to a single Vm without approval" do
+          api_basic_authorize(action_identifier(:vms, :request_retire))
 
-      expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm))
+          post(vm_url, :params => gen_request(:request_retire))
+
+          expected = {
+            "href"    => a_string_matching(api_requests_url),
+            "message" => a_string_matching(/VM Retire - Request Created/),
+            "options" => a_hash_including("src_ids" => a_collection_containing_exactly(vm.id))
+          }
+          expect(response).to have_http_status(:forbidden)
+          expect(response.parsed_body).to_not include(expected)
+        end
+
+        it "to multiple Vms" do
+          api_basic_authorize(collection_action_identifier(:vms, :request_retire), :miq_request_approval)
+
+          post(api_vms_url, :params => gen_request(:request_retire, [{"href" => vm1_url}, {"href" => vm2_url}]))
+
+          expected = {
+            "results" => a_collection_containing_exactly(
+              a_hash_including(
+                "message" => a_string_matching(/VM Retire - Request Created/),
+                "href"    => a_string_matching(api_requests_url),
+                "options" => a_hash_including("src_ids" => a_collection_containing_exactly(vm1.id))
+              ),
+              a_hash_including(
+                "message" => a_string_matching(/VM Retire - Request Created/),
+                "href"    => a_string_matching(api_requests_url),
+                "options" => a_hash_including("src_ids" => a_collection_containing_exactly(vm2.id))
+              )
+            )
+          }
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
+      end
+
+      context "invalid" do
+        it "to an invalid vm" do
+          api_basic_authorize(action_identifier(:vms, :request_retire), :miq_request_approval)
+
+          post(invalid_vm_url, :params => gen_request(:request_retire))
+
+          expect(response).to have_http_status(:not_found)
+        end
+
+        it "to an invalid vm without approval" do
+          api_basic_authorize(action_identifier(:vms, :request_retire))
+
+          post(invalid_vm_url, :params => gen_request(:request_retire))
+
+          expect(response).to have_http_status(:forbidden)
+        end
+
+        it "to an invalid vm with only basic auth" do
+          api_basic_authorize
+
+          post(invalid_vm_url, :params => gen_request(:request_retire))
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
     end
   end
 

@@ -2811,6 +2811,8 @@
         :identifier: service_edit
       - :name: retire
         :identifier: service_retire
+      - :name: request_retire
+        :identifier: service_retire
       - :name: set_ownership
         :identifier: service_ownership
       - :name: delete
@@ -2843,6 +2845,8 @@
       - :name: edit
         :identifier: service_edit
       - :name: retire
+        :identifier: service_retire
+      - :name: request_retire
         :identifier: service_retire
       - :name: set_ownership
         :identifier: service_ownership
@@ -3275,6 +3279,8 @@
         :identifier: vm_reset
       - :name: retire
         :identifier: vm_retire_now
+      - :name: request_retire
+        :identifier: vm_retire_now
       - :name: set_owner
         :identifier: vm_edit
       - :name: set_ownership
@@ -3323,6 +3329,8 @@
       - :name: reset
         :identifier: vm_reset
       - :name: retire
+        :identifier: vm_retire_now
+      - :name: request_retire
         :identifier: vm_retire_now
       - :name: delete
         :identifier: vm_delete
