@@ -131,6 +131,34 @@ describe "Transformation Mappings" do
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:bad_request)
       end
+
+      it 'can delete a transformation mapping by id' do
+        api_basic_authorize action_identifier(:transformation_mappings, :delete)
+
+        post(api_transformation_mapping_url(nil, transformation_mapping), :params => { :action => 'delete' })
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'can delete transformation mapping in bulk by id' do
+        api_basic_authorize collection_action_identifier(:transformation_mappings, :delete)
+
+        request = {
+          'action'    => 'delete',
+          'resources' => [
+            { 'id' => transformation_mapping.id.to_s}
+          ]
+        }
+        post(api_transformation_mappings_url, :params => request)
+
+        expected = {
+          'results' => a_collection_including(
+            a_hash_including('success' => true, 'message' => "transformation_mappings id: #{transformation_mapping.id} deleting")
+          )
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
     end
 
     context "without an appropriate role" do
@@ -190,6 +218,24 @@ describe "Transformation Mappings" do
         post(api_transformation_mapping_url(nil, transformation_mapping), :params => {"action" => "validate_vms"})
 
         expect(response).to have_http_status(:forbidden)
+      end
+
+      it "cannot delete transformation mappings" do
+        api_basic_authorize
+
+        post(api_transformation_mapping_url(nil, transformation_mapping), :params => {"action" => "delete"})
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe 'DELETE /api/transformation_mappings/:id' do
+      it 'can delete a transformation mapping by id' do
+        api_basic_authorize action_identifier(:transformation_mappings, :delete, :resource_actions, :delete)
+
+        delete(api_transformation_mapping_url(nil, transformation_mapping))
+
+        expect(response).to have_http_status(:no_content)
       end
     end
   end
