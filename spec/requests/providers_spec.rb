@@ -402,7 +402,11 @@ describe "Providers API" do
     it 'creates valid foreman provider' do
       api_basic_authorize collection_action_identifier(:providers, :create)
 
-      post(api_providers_url + '?provider_class=provider', :params => gen_request(:create, sample_foreman))
+      post(
+        api_providers_url,
+        :headers => {"QUERY_STRING" => "provider_class=provider"},
+        :params  => {:action => "create", :resource => sample_foreman}
+      )
 
       expect(response).to have_http_status(:ok)
 
@@ -972,7 +976,11 @@ describe "Providers API" do
       provider.update_authentication(:default => default_credentials.symbolize_keys)
       provider.authentication_type(:default).update(:status => "Valid")
 
-      post(api_provider_url(nil, provider) + '?provider_class=provider', :params => gen_request(:refresh))
+      post(
+        api_provider_url(nil, provider),
+        :headers => {"QUERY_STRING" => "provider_class=provider"},
+        :params  => {:action => "refresh"}
+      )
 
       expect_single_action_result(:success => true,
                                   :message => a_string_matching("Provider .* refreshing"),
@@ -987,7 +995,11 @@ describe "Providers API" do
       provider.update_authentication(:default => default_credentials.symbolize_keys)
       provider.authentication_type(:default).update(:status => "Valid")
 
-      post(api_provider_url(nil, provider) + '?provider_class=provider', :params => gen_request(:refresh))
+      post(
+        api_provider_url(nil, provider),
+        :headers => {"QUERY_STRING" => "provider_class=provider"},
+        :params  => {:action => "refresh"}
+      )
 
       expected = {
         "success"   => true,
@@ -1536,19 +1548,30 @@ describe "Providers API" do
     context 'provider_class=provider' do
       let(:generic_provider) { FactoryGirl.create(:provider) }
       let(:attr) { FactoryGirl.create(:custom_attribute) }
-      let(:url) do
-        api_provider_custom_attributes_url(nil, generic_provider) + '?provider_class=provider'
-      end
 
       it 'cannot add a custom_attribute' do
         api_basic_authorize subcollection_action_identifier(:providers, :custom_attributes, :add, :post)
-        post(url, :params => gen_request(:add, :name => 'x'))
+
+        post(
+          api_provider_custom_attributes_url(nil, generic_provider),
+          :headers => {"QUERY_STRING" => "provider_class=provider"},
+          :params  => {:action => "add", :resource => {:name => "x"}}
+        )
+
         expect_bad_request("#{generic_provider.class.name} does not support management of custom attributes")
       end
 
       it 'cannot edit custom_attribute' do
         api_basic_authorize subcollection_action_identifier(:providers, :custom_attributes, :edit, :post)
-        post(url, :params => gen_request(:edit, :href => api_provider_custom_attribute_url(nil, generic_provider, attr)))
+        post(
+          api_provider_custom_attributes_url(nil, generic_provider),
+          :headers => {"QUERY_STRING" => "provider_class=provider"},
+          :params  => {
+            :action   => "edit",
+            :resource => {:href => api_provider_custom_attribute_url(nil, generic_provider, attr)}
+          }
+        )
+
         expect_bad_request("#{generic_provider.class.name} does not support management of custom attributes")
       end
     end
