@@ -318,72 +318,134 @@ describe "Services API" do
       time.in_time_zone('UTC').strftime("%Y-%m-%dT%H:%M:%SZ")
     end
 
-    it "rejects requests without appropriate role" do
-      api_basic_authorize
+    context "retire_now" do
+      it "rejects requests without appropriate role" do
+        api_basic_authorize
 
-      post(api_service_url(nil, 100), :params => gen_request(:retire))
+        post(api_service_url(nil, 100), :params => gen_request(:retire))
 
-      expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it "rejects multiple requests without appropriate role" do
+        api_basic_authorize
+
+        post(api_services_url, :params => gen_request(:retire, [{"href" => api_service_url(nil, 1)}, {"href" => api_service_url(nil, 2)}]))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it "supports single service retirement now" do
+        api_basic_authorize collection_action_identifier(:services, :retire)
+
+        expect(MiqEvent).to receive(:raise_evm_event).once
+
+        post(api_service_url(nil, svc), :params => gen_request(:retire))
+
+        expect_single_resource_query("id" => svc.id.to_s, "href" => api_service_url(nil, svc))
+      end
+
+      it "supports single service retirement in future" do
+        api_basic_authorize collection_action_identifier(:services, :retire)
+
+        ret_date = format_retirement_date(Time.zone.now + 5.days)
+
+        post(api_service_url(nil, svc), :params => gen_request(:retire, "date" => ret_date, "warn" => 2))
+
+        expect_single_resource_query("id" => svc.id.to_s, "retires_on" => ret_date, "retirement_warn" => 2)
+        expect(format_retirement_date(svc.reload.retires_on)).to eq(ret_date)
+        expect(svc.retirement_warn).to eq(2)
+      end
+
+      it "supports multiple service retirement now" do
+        api_basic_authorize collection_action_identifier(:services, :retire)
+
+        expect(MiqEvent).to receive(:raise_evm_event).twice
+
+        post(api_services_url, :params => gen_request(:retire,
+                                                      [{"href" => api_service_url(nil, svc1)},
+                                                       {"href" => api_service_url(nil, svc2)}]))
+
+        expect_results_to_match_hash("results", [{"id" => svc1.id.to_s}, {"id" => svc2.id.to_s}])
+      end
+
+      it "supports multiple service retirement in future" do
+        api_basic_authorize collection_action_identifier(:services, :retire)
+
+        ret_date = format_retirement_date(Time.zone.now + 2.days)
+
+        post(api_services_url, :params => gen_request(:retire,
+                                                      [{"href" => api_service_url(nil, svc1), "date" => ret_date, "warn" => 3},
+                                                       {"href" => api_service_url(nil, svc2), "date" => ret_date, "warn" => 5}]))
+
+        expect_results_to_match_hash("results",
+                                     [{"id" => svc1.id.to_s, "retires_on" => ret_date, "retirement_warn" => 3},
+                                      {"id" => svc2.id.to_s, "retires_on" => ret_date, "retirement_warn" => 5}])
+        expect(format_retirement_date(svc1.reload.retires_on)).to eq(ret_date)
+        expect(svc1.retirement_warn).to eq(3)
+        expect(format_retirement_date(svc2.reload.retires_on)).to eq(ret_date)
+        expect(svc2.retirement_warn).to eq(5)
+      end
     end
 
-    it "rejects multiple requests without appropriate role" do
-      api_basic_authorize
+    context "request_retire" do
+      context "bad permissions" do
+        it "rejects requests without appropriate role" do
+          api_basic_authorize
 
-      post(api_services_url, :params => gen_request(:retire, [{"href" => api_service_url(nil, 1)}, {"href" => api_service_url(nil, 2)}]))
+          post(api_service_url(nil, 100), :params => gen_request(:request_retire))
 
-      expect(response).to have_http_status(:forbidden)
-    end
+          expect(response).to have_http_status(:forbidden)
+        end
 
-    it "supports single service retirement now" do
-      api_basic_authorize collection_action_identifier(:services, :retire)
+        it "rejects multiple requests without appropriate role" do
+          api_basic_authorize
 
-      expect(MiqEvent).to receive(:raise_evm_event).once
+          post(api_services_url, :params => gen_request(:request_retire, [{"href" => api_service_url(nil, 1)}, {"href" => api_service_url(nil, 2)}]))
 
-      post(api_service_url(nil, svc), :params => gen_request(:retire))
+          expect(response).to have_http_status(:forbidden)
+        end
 
-      expect_single_resource_query("id" => svc.id.to_s, "href" => api_service_url(nil, svc))
-    end
+        it "rejects multiple requests without approval" do
+          api_basic_authorize(action_identifier(:services, :request_retire))
 
-    it "supports single service retirement in future" do
-      api_basic_authorize collection_action_identifier(:services, :retire)
+          post(api_service_url(nil, svc), :params => gen_request(:request_retire))
 
-      ret_date = format_retirement_date(Time.now + 5.days)
+          expected = {
+            "href"    => a_string_matching(api_requests_url),
+            "message" => a_string_matching(/Service Retire - Request Created/),
+            "options" => a_hash_including("src_ids" => a_collection_containing_exactly(svc.id))
+          }
+          expect(response).to have_http_status(:forbidden)
+          expect(response.parsed_body).to_not include(expected)
+        end
+      end
 
-      post(api_service_url(nil, svc), :params => gen_request(:retire, "date" => ret_date, "warn" => 2))
+      context "good permissions" do
+        it "supports single service retirement now" do
+          api_basic_authorize(action_identifier(:services, :request_retire), :miq_request_approval)
 
-      expect_single_resource_query("id" => svc.id.to_s, "retires_on" => ret_date, "retirement_warn" => 2)
-      expect(format_retirement_date(svc.reload.retires_on)).to eq(ret_date)
-      expect(svc.retirement_warn).to eq(2)
-    end
+          post(api_service_url(nil, svc), :params => gen_request(:request_retire))
 
-    it "supports multiple service retirement now" do
-      api_basic_authorize collection_action_identifier(:services, :retire)
+          expected = {
+            "href"    => a_string_matching(api_requests_url),
+            "message" => a_string_matching(/Service Retire - Request Created/),
+            "options" => a_hash_including("src_ids" => a_collection_containing_exactly(svc.id))
+          }
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
 
-      expect(MiqEvent).to receive(:raise_evm_event).twice
+        it "supports multiple service retirement now" do
+          api_basic_authorize collection_action_identifier(:services, :request_retire)
 
-      post(api_services_url, :params => gen_request(:retire,
-                                                    [{"href" => api_service_url(nil, svc1)},
-                                                     {"href" => api_service_url(nil, svc2)}]))
+          post(api_services_url, :params => gen_request(:retire,
+                                                        [{"href" => api_service_url(nil, svc1)},
+                                                         {"href" => api_service_url(nil, svc2)}]))
 
-      expect_results_to_match_hash("results", [{"id" => svc1.id.to_s}, {"id" => svc2.id.to_s}])
-    end
-
-    it "supports multiple service retirement in future" do
-      api_basic_authorize collection_action_identifier(:services, :retire)
-
-      ret_date = format_retirement_date(Time.now + 2.days)
-
-      post(api_services_url, :params => gen_request(:retire,
-                                                    [{"href" => api_service_url(nil, svc1), "date" => ret_date, "warn" => 3},
-                                                     {"href" => api_service_url(nil, svc2), "date" => ret_date, "warn" => 5}]))
-
-      expect_results_to_match_hash("results",
-                                   [{"id" => svc1.id.to_s, "retires_on" => ret_date, "retirement_warn" => 3},
-                                    {"id" => svc2.id.to_s, "retires_on" => ret_date, "retirement_warn" => 5}])
-      expect(format_retirement_date(svc1.reload.retires_on)).to eq(ret_date)
-      expect(svc1.retirement_warn).to eq(3)
-      expect(format_retirement_date(svc2.reload.retires_on)).to eq(ret_date)
-      expect(svc2.retirement_warn).to eq(5)
+          expect_results_to_match_hash("results", [{"id" => svc1.id.to_s}, {"id" => svc2.id.to_s}])
+        end
+      end
     end
   end
 
@@ -411,7 +473,7 @@ describe "Services API" do
       get api_service_url(nil, svc1)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to declare_actions("retire")
+      expect(response.parsed_body).to declare_actions("retire", "request_retire")
     end
 
     it "returns reconfigure action for reconfigurable services" do
@@ -426,7 +488,7 @@ describe "Services API" do
       get api_service_url(nil, svc1)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to declare_actions("retire", "reconfigure")
+      expect(response.parsed_body).to declare_actions("retire", "request_retire", "reconfigure")
     end
 
     it "accepts action when service is reconfigurable" do
