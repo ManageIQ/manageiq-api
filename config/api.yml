@@ -2760,7 +2760,7 @@
   :transformation_mappings:
     :description: Transformation Mappings
     :identifier: transformation_mapping
-    :verbs: *gp
+    :verbs: *gpd
     :klass: TransformationMapping
     :options:
     - :collection
@@ -2771,6 +2771,8 @@
       :post:
       - :name: create
         :identifier: transformation_mapping_new
+      - :name: delete
+        :identifier: transformation_mapping_delete
     :resource_actions:
       :get:
       - :name: read
@@ -2778,6 +2780,11 @@
       :post:
       - :name: validate_vms
         :identifier: transformation_mapping_new
+      - :name: delete
+        :identifier: transformation_mapping_delete
+      :delete:
+      - :name: delete
+        :identifier: transformation_mapping_delete
   :users:
     :description: Users
     :identifier: rbac_user
