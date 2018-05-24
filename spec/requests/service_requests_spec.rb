@@ -233,7 +233,7 @@ describe "Service Requests API" do
     end
 
     it "lists all the service requests if you are admin" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :role => "administrator")
+      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_superadmin))
       other_user = FactoryGirl.create(:user)
       service_request_1 = FactoryGirl.create(:service_template_provision_request,
                                              :requester   => other_user,
@@ -260,7 +260,7 @@ describe "Service Requests API" do
     end
 
     it "an admin can see another user's request" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :role => "administrator")
+      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_superadmin))
       other_user = FactoryGirl.create(:user)
       service_request = FactoryGirl.create(:service_template_provision_request,
                                            :requester   => other_user,

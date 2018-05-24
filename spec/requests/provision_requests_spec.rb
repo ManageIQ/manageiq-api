@@ -222,7 +222,7 @@ describe "Provision Requests API" do
     end
 
     it "lists all the provision requests if you are admin" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :role => "administrator")
+      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_superadmin))
       other_user = FactoryGirl.create(:user)
       provision_request1 = FactoryGirl.create(:miq_provision_request, :requester => other_user)
       provision_request2 = FactoryGirl.create(:miq_provision_request, :requester => @user)
@@ -253,7 +253,7 @@ describe "Provision Requests API" do
     end
 
     it "an admin can see another user's request" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :role => "administrator")
+      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_superadmin))
       other_user = FactoryGirl.create(:user)
       provision_request = FactoryGirl.create(:miq_provision_request, :requester => other_user)
       api_basic_authorize action_identifier(:provision_requests, :read, :resource_actions, :get)
@@ -383,7 +383,7 @@ describe "Provision Requests API" do
     let(:provreq2_url)  { api_provision_request_url(nil, provreq2) }
 
     before do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :role => "administrator")
+      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_superadmin))
     end
 
     it "supports approving a request" do
