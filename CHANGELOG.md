@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Delete API for transformation_mappings [(#383)](https://github.com/ManageIQ/manageiq-api/pull/383)
-- Adds request_retirement start [(#380)](https://github.com/ManageIQ/manageiq-api/pull/380)
+- Adds request_retire action for Vms and Services [(#380)](https://github.com/ManageIQ/manageiq-api/pull/380)
 - Creating PhysicalChassis controller and adding endpoint configuration [(#362)](https://github.com/ManageIQ/manageiq-api/pull/362)
 
 ## Unreleased as of Sprint 85 ending 2018-05-07
