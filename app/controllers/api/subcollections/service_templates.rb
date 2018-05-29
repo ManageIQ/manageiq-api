@@ -97,7 +97,7 @@ module Api
         refresh_fields = data["fields"]
         return action_result(false, "Must specify fields to refresh") if refresh_fields.blank?
 
-        dialog = define_service_template_dialog(st, dialog_fields)
+        dialog = define_service_template_dialog(st, dialog_fields, :refresh => true)
         return action_result(false, "Service Template has no provision dialog defined") unless dialog
 
         refresh_dialog_fields_action(dialog, refresh_fields, service_template_ident(st))
@@ -105,9 +105,9 @@ module Api
         action_result(false, err.to_s)
       end
 
-      def define_service_template_dialog(st, dialog_fields)
+      def define_service_template_dialog(st, dialog_fields, options = {})
         resource_action = st.resource_actions.find_by(:action => "Provision")
-        workflow = ResourceActionWorkflow.new({}, User.current_user, resource_action, :target => st)
+        workflow = ResourceActionWorkflow.new({}, User.current_user, resource_action, {:target => st}.merge(options))
         dialog_fields.each { |key, value| workflow.set_value(key, value) }
         workflow.dialog
       end
