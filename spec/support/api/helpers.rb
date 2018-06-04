@@ -21,10 +21,10 @@ module Spec
 
         def api_basic_authorize(*identifiers, user: @user.userid, password: @user.password)
           if identifiers.present?
-            product_features = identifiers.flatten.collect do |identifier|
-              MiqProductFeature.find_or_create_by(:identifier => identifier)
+            identifiers.flatten.collect do |identifier|
+              @role.miq_product_features << MiqProductFeature.find_or_create_by(:identifier => identifier)
             end
-            @role.update_attributes!(:miq_product_features => product_features)
+            @role.save
           end
 
           request_headers["HTTP_AUTHORIZATION"] = ActionController::HttpAuthentication::Basic.encode_credentials(user, password)

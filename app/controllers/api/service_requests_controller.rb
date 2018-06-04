@@ -35,12 +35,12 @@ module Api
 
     def find_service_requests(id)
       klass = collection_class(:service_requests)
-      return klass.find(id) if User.current_user.admin_user?
+      return klass.find(id) if User.current_user.miq_user_role.request_admin_user?
       klass.find_by!(:requester => User.current_user, :id => id)
     end
 
     def service_requests_search_conditions
-      return {} if User.current_user.admin_user?
+      return {} if User.current_user.miq_user_role.request_admin_user?
       {:requester => User.current_user}
     end
 
