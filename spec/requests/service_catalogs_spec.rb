@@ -525,5 +525,17 @@ describe "Service Catalogs API" do
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
     end
+
+    it "creates a ResourceActionWorkflow by passing in a true refresh option" do
+      allow(ResourceActionWorkflow).to receive(:new).and_call_original
+      expect(ResourceActionWorkflow).to receive(:new).with(
+        {}, instance_of(User), instance_of(ResourceAction), hash_including(:refresh => true)
+      )
+
+      api_basic_authorize subcollection_action_identifier(:service_catalogs, :service_templates, :refresh_dialog_fields)
+      init_st_dialog
+
+      post(sc_template_url(sc.id, st1.id), :params => gen_request(:refresh_dialog_fields, "fields" => %w(text1)))
+    end
   end
 end
