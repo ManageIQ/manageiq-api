@@ -12,6 +12,22 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Adds request_retire action for Vms and Services [(#380)](https://github.com/ManageIQ/manageiq-api/pull/380)
 - Creating PhysicalChassis controller and adding endpoint configuration [(#362)](https://github.com/ManageIQ/manageiq-api/pull/362)
 
+## Gaprindashvili-3 released 2018-05-15
+
+### Added
+- Adding support for /api/containers primary collection. [(#332)](https://github.com/ManageIQ/manageiq-api/pull/332)
+- Allow multiple role identifiers for cloud volume [(#299)](https://github.com/ManageIQ/manageiq-api/pull/299)
+
+### Fixed
+- Update role identifiers for tasks collection [(#296)](https://github.com/ManageIQ/manageiq-api/pull/296)
+- Allow read-only access to quotas subcollection [(#283)](https://github.com/ManageIQ/manageiq-api/pull/283)
+- Default section to "metadata" across custom attributes add action [(#320)](https://github.com/ManageIQ/manageiq-api/pull/320)
+- Ensure array is returned for subcollections [(#322)](https://github.com/ManageIQ/manageiq-api/pull/322)
+- Raise bad request when current_group is specified on edit [(#329)](https://github.com/ManageIQ/manageiq-api/pull/329)
+- Fix specifying of additional attributes on pictures [(#327)](https://github.com/ManageIQ/manageiq-api/pull/327)
+- Add svc_catalog_provision product feature to service dialog queries [(#343)](https://github.com/ManageIQ/manageiq-api/pull/343)
+- Add refresh parameter to ResourceActionWorkflow initialization [(#365)](https://github.com/ManageIQ/manageiq-api/pull/365)
+
 ## Unreleased as of Sprint 85 ending 2018-05-07
 
 ### Added
@@ -22,7 +38,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Downcase userid to match how it is stored in the DB. [(#371)](https://github.com/ManageIQ/manageiq-api/pull/371)
-- Add refresh parameter to ResourceActionWorkflow initialization [(#365)](https://github.com/ManageIQ/manageiq-api/pull/365)
 
 ## Unreleased as of Sprint 84 ending 2018-04-23
 
@@ -58,9 +73,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Add pause and resume actions to Providers [(#334)](https://github.com/ManageIQ/manageiq-api/pull/334)
 - Queue chargeback reports of services [(#301)](https://github.com/ManageIQ/manageiq-api/pull/301)
 
-### Fixed
-- Add svc_catalog_provision product feature to service dialog queries [(#343)](https://github.com/ManageIQ/manageiq-api/pull/343)
-
 ## Gaprindashvili-2 released 2018-03-06
 
 ### Fixed
@@ -84,9 +96,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Set user when queueing VM actions [(#326)](https://github.com/ManageIQ/manageiq-api/pull/326)
 - Only allow one cart to be created at a time [(#324)](https://github.com/ManageIQ/manageiq-api/pull/324)
-- Ensure array is returned for subcollections [(#322)](https://github.com/ManageIQ/manageiq-api/pull/322)
 - Make cloud_tenants and flavors subcollections consistent with others [(#321)](https://github.com/ManageIQ/manageiq-api/pull/321)
-- Default section to "metadata" across custom attributes add action [(#320)](https://github.com/ManageIQ/manageiq-api/pull/320)
 - Fix error message for required params on metric rollups subcollection [(#308)](https://github.com/ManageIQ/manageiq-api/pull/308)
 - AssetDetails model should be AssetDetail [(#291)](https://github.com/ManageIQ/manageiq-api/pull/291)
 
@@ -94,7 +104,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Do not return duplicate "edit" action entries [(#318)](https://github.com/ManageIQ/manageiq-api/pull/318)
-- Allow multiple role identifiers for cloud volume [(#299)](https://github.com/ManageIQ/manageiq-api/pull/299)
 
 ## Gaprindashvili-1
 
@@ -202,12 +211,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Return Time in API entrypoint server_info [(#297)](https://github.com/ManageIQ/manageiq-api/pull/297)
 
 ### Fixed
-- Update role identifiers for tasks collection [(#296)](https://github.com/ManageIQ/manageiq-api/pull/296)
 - Fix picture fetching as an attribute [(#294)](https://github.com/ManageIQ/manageiq-api/pull/294)
 - Do not return picture content on create [(#292)](https://github.com/ManageIQ/manageiq-api/pull/292)
 - Fix special characters in MIQ_GROUP header [(#287)](https://github.com/ManageIQ/manageiq-api/pull/287)
 - Remove groups from editable attributes for users [(#286)](https://github.com/ManageIQ/manageiq-api/pull/286)
-- Allow read-only access to quotas subcollection [(#283)](https://github.com/ManageIQ/manageiq-api/pull/283)
 - Updating the API so it now returns nil attributes. [(#253)](https://github.com/ManageIQ/manageiq-api/pull/253)
 - add image scanning endpoint [(#245)](https://github.com/ManageIQ/manageiq-api/pull/245)
 
