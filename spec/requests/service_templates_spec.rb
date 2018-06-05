@@ -548,4 +548,122 @@ describe "Service Templates API" do
       end
     end
   end
+
+  describe "Service Templates archive" do
+    let(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog) }
+
+    it "is forbidden without appropriate role" do
+      api_basic_authorize
+
+      post(api_service_template_url(nil, service_template), :params => { :action => "archive" })
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "can be archived as a resource action" do
+      api_basic_authorize action_identifier(:service_templates, :archive, :resource_actions, :post)
+
+      post(api_service_template_url(nil, service_template), :params => { :action => "archive" })
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("message" => "Archived Service Template")
+    end
+
+    it "can be archived as an action on the collection" do
+      api_basic_authorize action_identifier(:service_templates, :archive, :resource_actions, :post)
+
+      post(api_service_templates_url, :params => { :action => "archive", :resources => [{:href => api_service_template_url(nil, service_template)}] })
+
+      expected = {
+        "results" => [a_hash_including("message" => "Archived Service Template")]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "shows the action" do
+      api_basic_authorize(action_identifier(:service_templates, :archive, :resource_actions, :post),
+                          action_identifier(:service_templates, :read, :resource_actions, :get))
+
+      get(api_service_template_url(nil, service_template))
+
+      actions = response.parsed_body["actions"].collect { |action| action["name"] }
+      expect(actions).to include("archive")
+    end
+
+    it "can archive multiple service templates" do
+      service_template2 = FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog)
+      api_basic_authorize action_identifier(:service_templates, :archive, :resource_actions, :post)
+
+      post(api_service_templates_url, :params => { :action => "archive", :resources =>
+        [{:href => api_service_template_url(nil, service_template)},
+         {:href => api_service_template_url(nil, service_template2)}]})
+
+      expected = {
+        "results" => [a_hash_including("message" => "Archived Service Template"),
+                      a_hash_including("message" => "Archived Service Template")]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
+
+  describe "Service Templates unarchive" do
+    let(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog) }
+
+    it "is forbidden without appropriate role" do
+      api_basic_authorize
+
+      post(api_service_template_url(nil, service_template), :params => { :action => "unarchive" })
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "can be unarchived as a resource action" do
+      api_basic_authorize action_identifier(:service_templates, :unarchive, :resource_actions, :post)
+
+      post(api_service_template_url(nil, service_template), :params => { :action => "unarchive" })
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("message" => "Unarchived Service Template")
+    end
+
+    it "can be unarchived as an action on the collection" do
+      api_basic_authorize action_identifier(:service_templates, :unarchive, :resource_actions, :post)
+
+      post(api_service_templates_url, :params => { :action => "unarchive", :resources => [{:href => api_service_template_url(nil, service_template)}] })
+
+      expected = {
+        "results" => [a_hash_including("message" => "Unarchived Service Template")]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it "shows the action" do
+      api_basic_authorize(action_identifier(:service_templates, :unarchive, :resource_actions, :post),
+                          action_identifier(:service_templates, :read, :resource_actions, :get))
+
+      get(api_service_template_url(nil, service_template))
+
+      actions = response.parsed_body["actions"].collect { |action| action["name"] }
+      expect(actions).to include("unarchive")
+    end
+
+    it "can unarchive multiple service templates" do
+      service_template2 = FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog)
+      api_basic_authorize action_identifier(:service_templates, :unarchive, :resource_actions, :post)
+
+      post(api_service_templates_url, :params => { :action => "unarchive", :resources =>
+        [{:href => api_service_template_url(nil, service_template)},
+         {:href => api_service_template_url(nil, service_template2)}]})
+
+      expected = {
+        "results" => [a_hash_including("message" => "Unarchived Service Template"),
+                      a_hash_including("message" => "Unarchived Service Template")]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
 end

@@ -2775,6 +2775,10 @@
         :identifier: atomic_catalogitem_new
       - :name: order
         :identifier: svc_catalog_provision
+      - :name: archive
+        :identifier: svc_catalog_archive
+      - :name: unarchive
+        :identifier: svc_catalog_unarchive
     :subcollection_actions:
       :post:
       - :name: edit
@@ -2802,6 +2806,10 @@
         :identifier: svc_catalog_provision
         :options:
         - :validate_action
+      - :name: archive
+        :identifier: svc_catalog_archive
+      - :name: unarchive
+        :identifier: svc_catalog_unarchive
       :delete:
       - :name: delete
         :identifier: catalogitem_delete
