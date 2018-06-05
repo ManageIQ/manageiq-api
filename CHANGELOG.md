@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 87 ending 2018-06-04
+
+### Added
+- Adding Physical Switches support [(#370)](https://github.com/ManageIQ/manageiq-api/pull/370)
+
+### Fixed
+- Ensure refresh => true option gets passed for service_template refresh [(#386)](https://github.com/ManageIQ/manageiq-api/pull/386)
+- use request_admin_user? [(#385)](https://github.com/ManageIQ/manageiq-api/pull/385)
+
 ## Unreleased as of Sprint 86 ending 2018-05-21
 
 ### Added
