@@ -29,6 +29,22 @@ module Api
       order_service_template(id, data)
     end
 
+    def archive_resource(type, id, _data)
+      service_template = resource_search(id, type, collection_class(type))
+      service_template.archive!
+      action_result(true, "Archived Service Template")
+    rescue => err
+      action_result(false, "Could not archive Service Template - #{err}")
+    end
+
+    def unarchive_resource(type, id, _data)
+      service_template = resource_search(id, type, collection_class(type))
+      service_template.unarchive!
+      action_result(true, "Unarchived Service Template")
+    rescue => err
+      action_result(false, "Could not unarchive Service Template - #{err}")
+    end
+
     private
 
     def set_additional_attributes
