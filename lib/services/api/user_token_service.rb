@@ -75,7 +75,7 @@ module Api
     end
 
     def validate_userid(userid)
-      raise "Invalid userid #{userid} specified" unless User.exists?(:userid => userid)
+      raise "Invalid userid #{userid} specified" unless User.where('lower(userid) = ?', userid.downcase).exists?
     end
   end
 end
