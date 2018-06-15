@@ -2537,6 +2537,8 @@
         :identifier: instance_add_security_group
       - :name: remove
         :identifier: instance_remove_security_group
+      - :name: create
+        :identifier: security_group_new
     :subresource_actions:
       :get:
       - :name: read
