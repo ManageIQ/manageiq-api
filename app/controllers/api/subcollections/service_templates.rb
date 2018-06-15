@@ -29,7 +29,8 @@ module Api
       end
 
       def service_templates_order_resource(_object, _type, id = nil, data = nil)
-        order_service_template(id, data)
+        schedule_time = data&.delete(:schedule_time)
+        order_service_template(id, data, schedule_time)
       end
 
       def service_templates_refresh_dialog_fields_resource(object, type, id = nil, data = nil)

@@ -26,7 +26,8 @@ module Api
     end
 
     def order_resource(_type, id, data)
-      order_service_template(id, data)
+      schedule_time = data&.delete("schedule_time")
+      order_service_template(id, data, schedule_time)
     end
 
     def archive_resource(type, id, _data)
