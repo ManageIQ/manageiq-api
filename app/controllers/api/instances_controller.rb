@@ -17,6 +17,32 @@ module Api
       end
     end
 
+    def special_stop_resource(type, id = nil, _data = nil)
+      raise BadRequestError, "Must specify an id for stopping a #{type} resource" unless id
+
+      api_action(type, id) do |klass|
+        instance = resource_search(id, type, klass)
+        api_log_info("Stopping #{instance_ident(instance)}")
+
+        result = validate_instance_for_action(instance, "stop")
+        result = stop_instance(instance) if result[:success]
+        result
+      end
+    end
+
+    def special_start_resource(type, id = nil, _data = nil)
+      raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
+
+      api_action(type, id) do |klass|
+        instance = resource_search(id, type, klass)
+        api_log_info("Starting #{instance_ident(instance)}")
+
+        result = validate_instance_for_action(instance, "start")
+        result = start_instance(instance) if result[:success]
+        result
+      end
+    end
+
     def stop_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for stopping a #{type} resource" unless id
 

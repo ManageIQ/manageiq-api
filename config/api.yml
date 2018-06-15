@@ -1489,6 +1489,10 @@
         :identifier: instance_show_list
       - :name: terminate
         :identifier: instance_terminate
+      - :name: special_stop
+        :identifier: instance_stop
+      - :name: special_start
+        :identifier: instance_start
       - :name: stop
         :identifier: instance_stop
       - :name: start
@@ -1510,6 +1514,10 @@
       :post:
       - :name: terminate
         :identifier: instance_terminate
+      - :name: special_stop
+        :identifier: instance_stop
+      - :name: special_start
+        :identifier: instance_start
       - :name: stop
         :identifier: instance_stop
       - :name: start
