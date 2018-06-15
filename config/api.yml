@@ -2615,9 +2615,9 @@
       - :name: delete
         :identifier: dialog_delete
       - :name: create
-        :identifier: dialog_new
+        :identifier: dialog_new_editor
       - :name: edit
-        :identifier: dialog_edit
+        :identifier: dialog_edit_editor
       - :name: copy
         :identifier: dialog_copy_editor
     :resource_actions:
@@ -2632,7 +2632,7 @@
       - :name: delete
         :identifier: dialog_delete
       - :name: edit
-        :identifier: dialog_edit
+        :identifier: dialog_edit_editor
       - :name: copy
         :identifier: dialog_copy_editor
       :delete:
