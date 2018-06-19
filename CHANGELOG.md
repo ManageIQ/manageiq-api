@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 88 ending 2018-06-18
+
+### Fixed
+- Fix tests after identifier rename [(#399)](https://github.com/ManageIQ/manageiq-api/pull/399)
+
 ## Unreleased as of Sprint 87 ending 2018-06-04
 
 ### Added
