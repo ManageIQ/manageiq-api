@@ -1847,6 +1847,8 @@
         :identifier: physical_switch_show_list
       - :name: refresh
         :identifier: physical_switch_refresh
+      - :name: restart
+        :identifier: physical_switch_restart
     :resource_actions:
       :get:
       - :name: read
@@ -1854,6 +1856,8 @@
       :post:
       - :name: refresh
         :identifier: physical_switch_refresh
+      - :name: restart
+        :identifier: physical_switch_restart
   :pictures:
     :description: Pictures
     :options:
