@@ -506,16 +506,23 @@ describe "Services API" do
 
   describe "Services" do
     let(:hw1) { FactoryGirl.build(:hardware, :cpu_total_cores => 2) }
-    let(:vm1) { FactoryGirl.create(:vm_vmware, :hardware => hw1) }
+    let(:vm1) { FactoryGirl.create(:vm_vmware, :hardware => hw1, :evm_owner_id => @user.id) }
 
     let(:hw2) { FactoryGirl.build(:hardware, :cpu_total_cores => 4) }
-    let(:vm2) { FactoryGirl.create(:vm_vmware, :hardware => hw2) }
+    let(:vm2) { FactoryGirl.create(:vm_vmware, :hardware => hw2, :evm_owner_id => @user.id) }
+
+    let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'admin', :password => 'adminpassword') }
+    let(:hw3) { FactoryGirl.build(:hardware, :cpu_total_cores => 6) }
+    let(:vm3) { FactoryGirl.create(:vm_vmware, :hardware => hw3, :evm_owner_id => super_admin.id) }
 
     before do
+      @user.current_group.miq_user_role.update_attributes(:settings => {:restrictions => {:vms => :user_or_group}})
       api_basic_authorize(action_identifier(:services, :read, :resource_actions, :get))
 
       svc1 << vm1
       svc1 << vm2
+      svc1 << vm3
+      svc1.evm_owner_id = @user.id
       svc1.save
     end
 
@@ -528,7 +535,7 @@ describe "Services API" do
     it "can query vms as subcollection" do
       get(api_service_vms_url(nil, svc1))
 
-      expect_query_result(:vms, 2, 2)
+      expect_query_result(:vms, 2, 3)
       expect_result_resources_to_include_hrefs("resources",
                                                [api_service_vm_url(nil, svc1, vm1),
                                                 api_service_vm_url(nil, svc1, vm2)])
@@ -564,6 +571,14 @@ describe "Services API" do
       get api_service_url(nil, svc1), :params => { :expand => "vms", :attributes => "vms" }
 
       expect_bad_request("Cannot expand subcollection vms by name and virtual attribute")
+    end
+
+    it "can query all vms as subcollection via expand as admin user" do
+      request_headers['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(super_admin.userid, super_admin.password)
+      get api_service_url(nil, svc1), :params => { :expand => "vms" }
+      expect_single_resource_query("href" => api_service_url(nil, svc1))
+      expect_result_resources_to_include_hrefs("vms",
+                                               [api_service_vm_url(nil, svc1, vm1), api_service_vm_url(nil, svc1, vm2), api_service_vm_url(nil, svc1, vm3)])
     end
   end
 
