@@ -511,6 +511,29 @@ describe "Service Templates API" do
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include(expected)
       end
+
+      context "with a schedule_time" do
+        it "can be ordered as a resource action" do
+          api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+
+          post(api_service_template_url(nil, service_template), :params => { :action => "order", :schedule_time => Time.now.utc.to_s })
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include("name"=>"Order ServiceTemplate #{ServiceTemplate.first.id}")
+        end
+
+        it "can be ordered as an action on the collection" do
+          api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+
+          post(api_service_templates_url, :params => { :action => "order", :resources => [{:href => api_service_template_url(nil, service_template), :schedule_time => Time.now.utc.to_s}] })
+
+          expected = {
+            "results" => [a_hash_including("name"=>"Order ServiceTemplate #{ServiceTemplate.first.id}")]
+          }
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
+      end
     end
 
     context "with an unorderable template" do
