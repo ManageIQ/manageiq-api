@@ -3,6 +3,7 @@ module Api
     module Vms
       def vms_query_resource(object)
         vms = object.try(:vms) || []
+        vms = Rbac.filtered(vms)
 
         vm_attrs = attribute_selection_for("vms")
         return vms if vm_attrs.blank?
