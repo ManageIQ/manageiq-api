@@ -509,7 +509,8 @@ describe "Services API" do
     end
 
     it "can query all vms as subcollection via expand as admin user" do
-      request_headers['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(super_admin.userid, super_admin.password)
+      @role = super_admin.miq_user_role
+      api_basic_authorize(action_identifier(:services, :read, :resource_actions, :get), :user => super_admin.userid, :password => super_admin.password)
       get api_service_url(nil, svc1), :params => { :expand => "vms" }
       expect_single_resource_query("href" => api_service_url(nil, svc1))
       expect_result_resources_to_include_hrefs("vms",
