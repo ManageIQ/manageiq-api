@@ -485,7 +485,8 @@ describe "Service Templates API" do
         post(api_service_templates_url, :params => { :action => "order", :resources => [{:href => api_service_template_url(nil, service_template)}] })
 
         expected = {
-          "results" => [a_hash_including("href" => a_string_including(api_service_requests_url))]
+          "results" => [a_hash_including("href"    => a_string_including(api_service_requests_url),
+                                         "options" => a_hash_including("request_options" => a_hash_including("submit_workflow"=>true)))]
         }
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include(expected)
