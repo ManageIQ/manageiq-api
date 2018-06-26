@@ -44,6 +44,7 @@ describe "Authentication API" do
     end
 
     it "test basic authentication with a user without a group" do
+      @user.miq_groups = []
       @user.current_group = nil
       @user.save
 
@@ -53,6 +54,18 @@ describe "Authentication API" do
 
       expect(response).to have_http_status(:unauthorized)
       expect(response.headers["WWW-Authenticate"]).to match("Basic")
+    end
+
+    it "test basic authentication with a user without a current group" do
+      @user.current_group = nil
+      @user.save
+
+      api_basic_authorize
+
+      get api_entrypoint_url
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["identity"]["group"]).to eq(@group.description)
     end
 
     it "returns a correctly formatted versions href" do
