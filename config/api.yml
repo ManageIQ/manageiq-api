@@ -2330,8 +2330,6 @@
       - :name: create
         :identifiers:
         - :klass: AutomationRequest
-        - :klass: MiqHostProvisionRequest
-          :identifier: host_miq_request_new
         - :klass: MiqProvisionRequest
           :identifier: vm_miq_request_new
         - :klass: MiqProvisionConfiguredSystemRequest
