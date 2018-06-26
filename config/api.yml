@@ -1854,6 +1854,28 @@
         :identifier: physical_server_turn_off_loc_led
       - :name: apply_config_pattern
         :identifier: physical_server_apply_config_pattern
+  :physical_storages:
+    :description: Physical Storages
+    :identifier: physical_storage
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: PhysicalStorage
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: physical_storage_show_list
+      :post:
+      - :name: refresh
+        :identifier: physical_storage_refresh
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: physical_storage_show
+      :post:
+      - :name: refresh
+        :identifier: physical_storage_refresh
   :physical_switches:
     :description: Physical Switches
     :identifier: physical_switch
