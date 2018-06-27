@@ -15,7 +15,7 @@ module Api
     end
 
     def self.time_attributes
-      @time_attributes ||= ApiConfig.collections.each.with_object(Set.new(%w(expires_on))) do |(_, cspec), result|
+      @time_attributes ||= ApiConfig.collections.each.with_object(Set.new(%w(expires_on schedule_time))) do |(_, cspec), result|
         next if cspec[:klass].blank?
         klass = cspec[:klass].constantize
         klass.columns_hash.each do |name, typeobj|
