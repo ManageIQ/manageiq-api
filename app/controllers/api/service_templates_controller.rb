@@ -20,6 +20,14 @@ module Api
 
     def edit_resource(type, id, data)
       catalog_item = resource_search(id, type, collection_class(:service_templates))
+      if data.key?("schedule_time")
+        schedule_time = data&.delete("schedule_time")
+        if schedule_time.nil?
+          catalog_item.delete_schedule
+        else
+          catalog_item.update_schedule(schedule_time)
+        end
+      end
       catalog_item.update_catalog_item(data.deep_symbolize_keys, User.current_user.userid)
     rescue => err
       raise BadRequestError, "Could not update Service Template - #{err}"

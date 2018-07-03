@@ -99,6 +99,30 @@ describe "Service Templates API" do
       expect(response).to have_http_status(:ok)
       response.parsed_body['service_resources'].each { |resource| expect(resource.keys).to_not include('href') }
     end
+
+    context "with a schedule" do
+      let(:st)            { FactoryGirl.create(:service_template, :name => "st") }
+      let(:schedule_time) { Time.now.utc }
+      let!(:schedule)     { st.order(@user, {}, {}, schedule_time.to_s) }
+
+      it "gets the miq_schedule" do
+        api_basic_authorize collection_action_identifier(:service_templates, :read, :get)
+
+        get(api_service_template_url(nil, st), :params => {:attributes => 'miq_schedule'})
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["miq_schedule"]["run_at"]["start_time"]).to eq(schedule_time.iso8601)
+      end
+
+      it "gets the scheduled time" do
+        api_basic_authorize collection_action_identifier(:service_templates, :read, :get)
+
+        get(api_service_template_url(nil, st), :params => {:attributes => 'schedule_time'})
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["schedule_time"]).to eq(schedule_time.iso8601)
+      end
+    end
   end
 
   describe "Service Templates edit" do
@@ -183,6 +207,30 @@ describe "Service Templates API" do
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
+    end
+
+    context "with a schedule" do
+      let(:st)        { FactoryGirl.create(:service_template, :name => "st") }
+      let!(:schedule) { st.order(@user, {}, {}, Time.now.utc.to_s) }
+
+      it "can update scheduled time" do
+        api_basic_authorize collection_action_identifier(:service_templates, :edit)
+        new_time = 1.day.from_now.utc
+        post(api_service_template_url(nil, st), :params => { :action => "edit", :schedule_time => new_time.to_s })
+
+        st.reload
+        expect(st.schedule_time.to_s).to eq(new_time.to_s)
+      end
+
+      it "can delete a schedule" do
+        api_basic_authorize collection_action_identifier(:service_templates, :edit)
+
+        post(api_service_template_url(nil, st), :params => { :action => "edit", :schedule_time => nil })
+
+        st.reload
+        expect(st.schedule_time).to be_nil
+        expect(st.miq_schedule).to be_nil
+      end
     end
   end
 
