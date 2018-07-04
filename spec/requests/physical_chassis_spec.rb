@@ -68,7 +68,7 @@ describe "Physical Chassis API" do
 
         post(api_one_physical_chassis_url(nil, physical_chassis), :params => gen_request(:refresh))
 
-        expect_single_action_result(:success => true, :message => /#{physical_chassis.id}.* refreshing/i, :href => api_one_physical_chassis_url(nil, physical_chassis))
+        expect_single_action_result(:success => true, :message => "Performing refresh_ems for Physical chassis id:#{physical_chassis.id} name: '#{physical_chassis.name}'", :href => api_one_physical_chassis_url(nil, physical_chassis))
       end
 
       it "refresh of multiple Physical Chassis" do
@@ -81,12 +81,12 @@ describe "Physical Chassis API" do
         expected = {
           "results" => a_collection_containing_exactly(
             a_hash_including(
-              "message" => a_string_matching(/#{physical_chassis.id}.* refreshing/i),
+              "message" => "Performing refresh_ems for Physical chassis id:#{physical_chassis.id} name: '#{physical_chassis.name}'",
               "success" => true,
               "href"    => api_one_physical_chassis_url(nil, physical_chassis)
             ),
             a_hash_including(
-              "message" => a_string_matching(/#{physical_chassis_two.id}.* refreshing/i),
+              "message" => "Performing refresh_ems for Physical chassis id:#{physical_chassis_two.id} name: '#{physical_chassis_two.name}'",
               "success" => true,
               "href"    => api_one_physical_chassis_url(nil, physical_chassis_two)
             )
@@ -142,6 +142,105 @@ describe "Physical Chassis API" do
           get(api_one_physical_chassis_event_stream_url(nil, physical_chassis, event_stream))
 
           expect(response).to have_http_status(:forbidden)
+        end
+      end
+    end
+  end
+
+  describe "turn on/off a physical chassis's location LED" do
+    let(:physical_chassis) { FactoryGirl.create(:physical_chassis) }
+    let(:actions) { %i(blink_loc_led turn_on_loc_led turn_off_loc_led) }
+
+    context "with valid action names" do
+      it "turns on a location LED successfully" do
+        api_basic_authorize('physical_chassis_turn_on_loc_led')
+        post(api_one_physical_chassis_url(nil, physical_chassis), :params => gen_request(:turn_on_loc_led))
+
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body).to include("success" => true)
+      end
+
+      it "turns off a location LED successfully" do
+        api_basic_authorize('physical_chassis_turn_off_loc_led')
+        post(api_one_physical_chassis_url(nil, physical_chassis), :params => gen_request(:turn_off_loc_led))
+
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body).to include("success" => true)
+      end
+
+      it "blinks a location LED successfully" do
+        api_basic_authorize('physical_chassis_blink_loc_led')
+        post(api_one_physical_chassis_url(nil, physical_chassis), :params => gen_request(:blink_loc_led))
+
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body).to include("success" => true)
+      end
+    end
+
+    context "without an appropriate role" do
+      it "fails to turn on a location LED" do
+        api_basic_authorize
+        post(api_one_physical_chassis_url(nil, physical_chassis), :params => gen_request(:turn_on_loc_led))
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body["error"]).to include("kind" => "forbidden")
+      end
+
+      it "fails to turn off a location LED" do
+        api_basic_authorize
+        post(api_one_physical_chassis_url(nil, physical_chassis), :params => gen_request(:turn_off_loc_led))
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body["error"]).to include("kind" => "forbidden")
+      end
+
+      it "fails to blink a location LED" do
+        api_basic_authorize
+        post(api_one_physical_chassis_url(nil, physical_chassis), :params => gen_request(:blink_loc_led))
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body["error"]).to include("kind" => "forbidden")
+      end
+    end
+
+    context "with a non existent physical chassis" do
+      actions = %i(blink_loc_led turn_on_loc_led turn_off_loc_led)
+
+      actions.each do |action|
+        it "fails to #{action} a physical chassis" do
+          api_basic_authorize("physical_chassis_#{action}")
+
+          post(api_one_physical_chassis_url(nil, 999_999), :params => gen_request(action))
+
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context "with an existent and a non existent physical server" do
+      actions = %i(blink_loc_led turn_on_loc_led turn_off_loc_led)
+
+      actions.each do |action|
+        it "for the action #{action} returns status 200 and a failure message for the non existent physical chassis" do
+          api_basic_authorize(action_identifier(:physical_chassis, action, :resource_actions, :post))
+
+          post(api_physical_chassis_url, :params => gen_request(action, [{"href" => api_one_physical_chassis_url(nil, physical_chassis)}, {"href" => api_one_physical_chassis_url(nil, 999_999)}]))
+
+          expected = {
+            "results" => a_collection_containing_exactly(
+              a_hash_including(
+                "message" => a_string_matching(/#{physical_chassis.id}/),
+                "success" => true,
+                "href"    => api_one_physical_chassis_url(nil, physical_chassis)
+              ),
+              a_hash_including(
+                "message" => a_string_matching(/#{999_999}/),
+                "success" => false
+              )
+            )
+          }
+          expect(response.parsed_body).to include(expected)
+          expect(response).to have_http_status(:ok)
         end
       end
     end
