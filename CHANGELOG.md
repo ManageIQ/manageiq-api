@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 89 ending 2018-07-02
+
+### Added
+- Allow ordering ServiceTemplate with a schedule_time [(#401)](https://github.com/ManageIQ/manageiq-api/pull/401)
+- Allow ordering ServiceTemplates with a schedule_time [(#400)](https://github.com/ManageIQ/manageiq-api/pull/400)
+- Creating PhysicalStorage controller and adding endpoint configuration [(#397)](https://github.com/ManageIQ/manageiq-api/pull/397)
+- Adding Physical Switch power action [(#392)](https://github.com/ManageIQ/manageiq-api/pull/392)
+- Creating an endpoint for a PhysicalRack to execute toolbar actions [(#349)](https://github.com/ManageIQ/manageiq-api/pull/349)
+
+### Fixed
+- In list of services fetch RBAC-filtered vms subcollection [(#404)](https://github.com/ManageIQ/manageiq-api/pull/404)
+- Ignore case of the userid when validating it. [(#396)](https://github.com/ManageIQ/manageiq-api/pull/396)
+
 ## Unreleased as of Sprint 88 ending 2018-06-18
 
 ### Fixed
