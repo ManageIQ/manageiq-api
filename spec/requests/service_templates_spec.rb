@@ -690,4 +690,70 @@ describe "Service Templates API" do
       expect(response.parsed_body).to include(expected)
     end
   end
+
+  context "schedules subcollection" do
+    let!(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog) }
+
+    context "with schedules" do
+      let!(:schedule_1)       { FactoryGirl.create(:miq_schedule, :towhat => "ServiceTemplate", :resource_id => service_template.id) }
+      let!(:schedule_2)       { FactoryGirl.create(:miq_schedule, :towhat => "ServiceTemplate", :resource_id => service_template.id) }
+
+      it "can fetch all related schedules" do
+        api_basic_authorize subcollection_action_identifier(:service_templates, :schedules, :read, :get)
+
+        get(api_service_template_schedules_url(nil, service_template))
+
+        expect_result_resources_to_include_hrefs(
+          "resources",
+          [
+            api_service_template_schedule_url(nil, service_template, schedule_1),
+            api_service_template_schedule_url(nil, service_template, schedule_2),
+          ]
+        )
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "will not show the schedules without the appropriate role" do
+        api_basic_authorize
+
+        get(api_service_template_schedules_url(nil, service_template))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it "can show a single schedule" do
+        api_basic_authorize subcollection_action_identifier(:service_templates, :schedules, :read, :get)
+
+        get(api_service_template_schedule_url(nil, service_template, schedule_1))
+
+        expect_result_to_match_hash(
+          response.parsed_body,
+          "href" => api_service_template_schedule_url(nil, service_template, schedule_1),
+          "id"   => schedule_1.id.to_s,
+        )
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "will not show a schedule without the appropriate role" do
+        api_basic_authorize
+
+        get(api_service_template_schedule_url(nil, service_template, schedule_1))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    it "without any schedules" do
+      api_basic_authorize subcollection_action_identifier(:service_templates, :schedules, :read, :get)
+
+      get(api_service_template_schedules_url(nil, service_template))
+
+      expect(response.parsed_body).to include(
+        "name"      => "schedules",
+        "resources" => [],
+        "subcount"  => 0
+      )
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end

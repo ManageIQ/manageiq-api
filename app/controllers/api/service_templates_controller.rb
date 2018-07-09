@@ -46,6 +46,10 @@ module Api
       action_result(false, "Could not unarchive Service Template - #{err}")
     end
 
+    def schedules_query_resource(object)
+      object.miq_schedules
+    end
+
     private
 
     def set_additional_attributes
