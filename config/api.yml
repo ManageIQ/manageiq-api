@@ -2346,6 +2346,7 @@
     :subcollections:
     - :resource_actions
     - :tags
+    - :schedules
     - :service_requests
     - :service_dialogs
     :collection_actions:
