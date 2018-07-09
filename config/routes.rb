@@ -9,11 +9,14 @@ Rails.application.routes.draw do
 
     Api::ApiConfig.collections.each do |collection_name, collection|
       # OPTIONS action for each collection
-      match collection_name.to_s, :controller => collection_name, :action => :options, :via => :options, :as => nil
+      controller = collection.controller
+      controller ||= collection_name
+
+      match collection_name.to_s, :controller => controller, :action => :options, :via => :options, :as => nil
 
       collection_name_pluralized, resource_name = Api::Routing.inflections_for_named_route_helpers(collection_name.to_s)
 
-      scope collection_name, :controller => collection_name do
+      scope collection_name, :controller => controller do
         collection.verbs.each do |verb|
           if collection.options.include?(:primary)
             case verb

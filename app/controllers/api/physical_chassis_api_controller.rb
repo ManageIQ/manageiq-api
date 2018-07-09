@@ -1,5 +1,5 @@
 module Api
-  class PhysicalChassisController < BaseController
+  class PhysicalChassisApiController < BaseController
     include Subcollections::EventStreams
 
     def refresh_resource(type, id, _data = nil)
@@ -25,7 +25,7 @@ module Api
       role = "ems_operations"
 
       act_refresh(physical_chassis, method_name, role)
-    rescue => err
+    rescue StandardError => err
       action_result(false, err.to_s)
     end
 

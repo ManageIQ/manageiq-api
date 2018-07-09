@@ -72,8 +72,13 @@ describe "Authentication API" do
 
       get api_entrypoint_url
 
-      collection_names = Api::ApiConfig.collections.to_h.select { |_, v| v.options.include?(:collection) }.keys
-      hrefs = collection_names.collect { |name| url_for(:controller => name, :action => "index") }
+      collections = Api::ApiConfig.collections.to_h.select { |_, v| v.options.include?(:collection) }
+      hrefs = collections.collect do |collection_name, collection|
+        controller = collection.controller
+        controller ||= collection_name
+        url_for(:controller => controller, :action => "index")
+      end
+
       expected = {
         "collections" => a_collection_containing_exactly(
           *hrefs.collect { |href| a_hash_including("href" => href) }

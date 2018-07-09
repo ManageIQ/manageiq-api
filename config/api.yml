@@ -1770,6 +1770,7 @@
     - :collection
     :verbs: *gp
     :klass: PhysicalChassis
+    :controller: physical_chassis_api
     :subcollections:
     - :event_streams
     :collection_actions:
