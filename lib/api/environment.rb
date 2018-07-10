@@ -17,7 +17,12 @@ module Api
     def self.time_attributes
       @time_attributes ||= ApiConfig.collections.each.with_object(Set.new(%w(expires_on))) do |(_, cspec), result|
         next if cspec[:klass].blank?
-        klass = cspec[:klass].constantize
+        klass = nil
+
+        # Temporary measure to avoid thread race condition which could lead to a deadlock
+        ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
+          klass = cspec[:klass].constantize
+        end
         klass.columns_hash.each do |name, typeobj|
           result << name if %w(date datetime).include?(typeobj.type.to_s)
         end
