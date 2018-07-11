@@ -4,7 +4,7 @@ module Api
       def order_service_template(id, data)
         service_template = resource_search(id, :service_templates, ServiceTemplate)
         raise BadRequestError, "#{service_template_ident(service_template)} cannot be ordered" unless service_template.orderable?
-        workflow = service_template.provision_workflow(User.current_user, data || {})
+        workflow = service_template.provision_workflow(User.current_user, data || {}, :submit_workflow => true)
         request_result = workflow.submit_request
         errors = request_result[:errors]
         if errors.present?
