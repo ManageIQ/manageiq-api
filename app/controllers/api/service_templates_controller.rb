@@ -49,6 +49,11 @@ module Api
       object.miq_schedules
     end
 
+    def schedules_delete_resource(_parent, type, id, data)
+      delete_resource(type, id, data)
+    end
+    alias delete_resource_schedules schedules_delete_resource
+
     private
 
     def set_additional_attributes

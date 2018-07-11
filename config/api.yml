@@ -2095,16 +2095,25 @@
     :identifier: miq_report_reports
     :options:
     - :subcollection
-    :verbs: *gp
+    :verbs: *gpd
     :klass: MiqSchedule
     :subcollection_actions:
       :get:
       - :name: read
         :identifier: miq_report_view
+      :post:
+      - :name: delete
+        :identifier: schedule_delete
     :subresource_actions:
+      :delete:
+      - :name: delete
+        :identifier: schedule_delete
       :get:
       - :name: read
         :identifier: miq_report_view
+      :post:
+      - :name: delete
+        :identifier: schedule_delete
   :security_groups:
     :description: Security Groups
     :identifier: security_group
