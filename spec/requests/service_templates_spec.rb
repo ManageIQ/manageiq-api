@@ -741,6 +741,60 @@ describe "Service Templates API" do
 
         expect(response).to have_http_status(:forbidden)
       end
+
+      it "DELETE service_templates/x/schedules/x" do
+        api_basic_authorize(subresource_action_identifier(:service_templates, :schedules, :delete, :delete))
+
+        delete(api_service_template_schedule_url(nil, service_template, schedule_1))
+
+        expect(response).to have_http_status(:no_content)
+        expect { schedule_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      describe "POST /api/service_templates/:id/schedules/:id with delete action" do
+        it "can delete a schedule" do
+          api_basic_authorize(subresource_action_identifier(:service_templates, :schedules, :delete))
+
+          expect do
+            post(api_service_template_schedule_url(nil, service_template, schedule_1), :params => { :action => "delete" })
+          end.to change(MiqSchedule, :count).by(-1)
+
+          expected = {
+            "message" => "schedules id: #{schedule_1.id} deleting",
+            "success" => true,
+          }
+          expect(response.parsed_body).to include(expected)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it "will not delete a schedule unless authorized" do
+          api_basic_authorize
+
+          post(api_service_template_schedule_url(nil, service_template, schedule_1), :params => { :action => "delete" })
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      describe "POST /api/service_templates/:id/schedules/ with delete action" do
+        it "can delete multiple schedules" do
+          api_basic_authorize(subresource_action_identifier(:service_templates, :schedules, :delete))
+
+          expect do
+            post(api_service_template_schedules_url(nil, service_template), :params => {:action => "delete", :resources => [{:id => schedule_1.id}, {:id => schedule_2.id}]})
+          end.to change(MiqSchedule, :count).by(-2)
+
+          expect(response).to have_http_status(:ok)
+        end
+
+        it "forbids multiple schedule deletion without an appropriate role" do
+          api_basic_authorize
+
+          post(api_service_template_schedules_url(nil, service_template), :params => {:action => "delete", :resources => [{:id => schedule_1.id}, {:id => schedule_2.id}]})
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
     end
 
     it "without any schedules" do
