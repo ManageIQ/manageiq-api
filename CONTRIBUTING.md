@@ -50,10 +50,12 @@ Below is a breakdown of what some of the above elements mean:
     * Gives more details about the collection and whether it will act as a collection, subcollection
 * **:verbs:**
     * Specifies the [verb set](https://github.com/ManageIQ/manageiq-api/blob/4811ec9fcea2424a585560a761e05d56c53535f8/config/api.yml#L18-L36) that can be used on the collection
-* **:klass:** 
-    * Specifies the base class name of the resources under this collection 
+* **:klass:**
+    * Specifies the base class name of the resources under this collection
+* **:scope:**
+    * Specifies a default scope to be called on the klass defined above
 * **:name:**
-    * Name of the action to be performed 
+    * Name of the action to be performed
 * **:identifier:**
     * Name of the corresponding [product feature](https://github.com/ManageIQ/manageiq/blob/f77c75b4659f97be95f8976ef58abe521085c963/db/fixtures/miq_product_features.yml), which is used to control permissions to resources
 * **:collection_actions:** vs **:resource_actions:**

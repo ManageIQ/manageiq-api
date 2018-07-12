@@ -24,7 +24,14 @@ module Api
       end
 
       def collection_class(type)
-        @collection_klasses[type.to_sym] || collection_config.klass(type)
+        if @collection_klasses.key?(type.to_sym)
+          @collection_klasses[type.to_sym]
+        else
+          klass = collection_config.klass(type)
+          # If there's a default scope defined for the collection, call it immediately
+          scope = collection_config.scope(type)
+          scope ? klass.send(:scope) : klass
+        end
       end
 
       def put_resource(type, id)

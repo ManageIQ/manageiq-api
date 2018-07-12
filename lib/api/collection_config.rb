@@ -82,6 +82,10 @@ module Api
       end.try(:first)
     end
 
+    def scope(collection_name)
+      self[collection_name][:scope]
+    end
+
     def what_refers_to_feature(product_feature_name)
       referenced_identifiers[product_feature_name]
     end
