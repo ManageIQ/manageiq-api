@@ -301,6 +301,8 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
     :resource_actions:
@@ -312,6 +314,8 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
   :availability_zones:
@@ -2209,6 +2213,8 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
     :resource_actions:
@@ -2220,6 +2226,8 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
   :quotas:
@@ -2373,6 +2381,8 @@
       :post:
       - :name: query
         :identifier: miq_request_show_list
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: create
         :identifiers:
         - :klass: AutomationRequest
@@ -2399,6 +2409,8 @@
       - :name: read
         :identifier: miq_request_show
       :post:
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
       - :name: approve
@@ -2754,6 +2766,8 @@
       :post:
       - :name: query
         :identifier: miq_request_view
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: approve
         :identifier: miq_request_approval
       - :name: deny
@@ -2773,6 +2787,8 @@
       :post:
       - :name: approve
         :identifier: miq_request_approval
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: deny
         :identifier: miq_request_approval
       - :name: delete

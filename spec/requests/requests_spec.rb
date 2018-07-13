@@ -520,4 +520,10 @@ RSpec.describe "Requests API" do
       expect(task.reload.options.keys).to all(be_kind_of(Symbol))
     end
   end
+
+  context "Resource#cancel" do
+    let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for VmMigrateRequest"} }
+    let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for VmMigrateRequest"} }
+    include_context "Resource#cancel", "request", :vm_migrate_request
+  end
 end
