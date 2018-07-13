@@ -271,18 +271,13 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: miq_ae_domain_view
     :resource_actions:
       :get:
       - :name: read
-        :identifier: miq_ae_domain_view
       :post:
       - :name: edit
-        :identifier: miq_ae_domain_view
       - :name: encrypt
-        :identifier: miq_ae_domain_view
       - :name: decrypt
-        :identifier: miq_ae_domain_view
   :automation_requests:
     :description: Automation Requests
     :options:
