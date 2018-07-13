@@ -629,6 +629,12 @@ RSpec.describe "service orders API" do
         expect(shopping_cart.reload.state).to eq(ServiceOrder::STATE_CART)
       end
     end
+
+    context "ServiceRequest#cancel" do
+      let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for ServiceTemplateProvisionRequest"} }
+      let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for ServiceTemplateProvisionRequest"} }
+      include_context "SubResource#cancel", [:service_order, :service_request], :shopping_cart, :service_template_provision_request
+    end
   end
 
   context 'Copy Service Order' do

@@ -2820,6 +2820,8 @@
       :post:
       - :name: add
         :identifier: svc_catalog_provision
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: remove
         :identifier: svc_catalog_provision
     :subresource_actions:
@@ -2827,6 +2829,8 @@
       - :name: read
         :identifier: miq_request_view
       :post:
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: remove
         :identifier: svc_catalog_provision
   :service_templates:
