@@ -68,7 +68,7 @@ describe "Physical Switches API" do
 
         post(api_physical_switch_url(nil, physical_switch), :params => gen_request(:refresh))
 
-        expect_single_action_result(:success => true, :message => /#{physical_switch.id}.* refreshing/i, :href => api_physical_switch_url(nil, physical_switch))
+        expect_single_action_result(:success => true, :message => "Performing refresh_ems for Physical switch id:#{physical_switch.id} name: '#{physical_switch.name}'", :href => api_physical_switch_url(nil, physical_switch))
       end
 
       it "refresh of multiple Physical Switches" do
@@ -81,12 +81,12 @@ describe "Physical Switches API" do
         expected = {
           "results" => a_collection_containing_exactly(
             a_hash_including(
-              "message" => a_string_matching(/#{first_physical_switch.id}.* refreshing/i),
+              "message" => a_string_matching("Performing refresh_ems for Physical switch id:#{first_physical_switch.id} name: '#{first_physical_switch.name}'"),
               "success" => true,
               "href"    => api_physical_switch_url(nil, first_physical_switch)
             ),
             a_hash_including(
-              "message" => a_string_matching(/#{second_physical_switch.id}.* refreshing/i),
+              "message" => a_string_matching("Performing refresh_ems for Physical switch id:#{second_physical_switch.id} name: '#{second_physical_switch.name}'"),
               "success" => true,
               "href"    => api_physical_switch_url(nil, second_physical_switch)
             )
@@ -111,7 +111,7 @@ describe "Physical Switches API" do
           expected = {
             "results" => a_collection_containing_exactly(
               a_hash_including(
-                "message" => a_string_matching("Performing #{action} for Physical Switch id:#{physical_switch.id} name: '#{physical_switch.name}'"),
+                "message" => a_string_matching("Performing #{action} for Physical switch id:#{physical_switch.id} name: '#{physical_switch.name}'"),
                 "success" => true,
                 "href"    => api_physical_switch_url(nil, physical_switch)
               ),
@@ -134,7 +134,7 @@ describe "Physical Switches API" do
           expected = {
             "results" => a_collection_containing_exactly(
               a_hash_including(
-                "message" => a_string_matching("Performing #{action} for Physical Switch id:#{physical_switch.id} name: '#{physical_switch.name}'"),
+                "message" => a_string_matching("Performing #{action} for Physical switch id:#{physical_switch.id} name: '#{physical_switch.name}'"),
                 "success" => true,
                 "href"    => api_physical_switch_url(nil, physical_switch)
               )
@@ -165,7 +165,7 @@ describe "Physical Switches API" do
 
           expect_single_action_result(
             :success => true,
-            :message => a_string_matching("Performing #{action} for Physical Switch id:#{physical_switch.id} name: '#{physical_switch.name}'"),
+            :message => a_string_matching("Performing #{action} for Physical switch id:#{physical_switch.id} name: '#{physical_switch.name}'"),
             :href    => api_physical_switch_url(nil, physical_switch)
           )
         end
