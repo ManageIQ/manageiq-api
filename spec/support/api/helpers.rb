@@ -224,6 +224,12 @@ module Spec
           expect(response.headers['Access-Control-Allow-Methods']).to include('OPTIONS')
         end
 
+        def expect_unauthorized_request
+          api_basic_authorize
+          yield
+          expect(response).to have_http_status(:forbidden)
+        end
+
         def select_attributes(attrlist)
           attrlist.sort.select { |attr| !::Api.encrypted_attribute?(attr) }
         end
