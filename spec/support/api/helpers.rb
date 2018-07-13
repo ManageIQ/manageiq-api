@@ -22,7 +22,7 @@ module Spec
         def api_basic_authorize(*identifiers, user: @user.userid, password: @user.password)
           if identifiers.present?
             identifiers.flatten.collect do |identifier|
-              @role.miq_product_features << MiqProductFeature.find_or_create_by(:identifier => identifier)
+              @role.miq_product_features << MiqProductFeature.find_or_create_by(:identifier => identifier) if identifier
             end
             @role.save
           end
