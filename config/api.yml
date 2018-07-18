@@ -2354,6 +2354,13 @@
       :get:
       - :name: read
         :identifier: miq_request_show
+      :post:
+      - :name: cancel
+        :identifier: miq_request_control
+    :resource_actions:
+      :post:
+      - :name: cancel
+        :identifier: miq_request_control
     :subcollection_actions:
       :get:
       - :name: read
