@@ -2359,10 +2359,14 @@
       - :name: read
         :identifier: miq_request_show
       :post:
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
     :subresource_actions:
       :post:
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
   :requests:

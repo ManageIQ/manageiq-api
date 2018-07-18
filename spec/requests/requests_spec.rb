@@ -519,6 +519,12 @@ RSpec.describe "Requests API" do
       expect(response).to have_http_status(:ok)
       expect(task.reload.options.keys).to all(be_kind_of(Symbol))
     end
+
+    context "SubResource#cancel" do
+      let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for MiqRequestTask"} }
+      let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for MiqRequestTask"} }
+      include_context "SubResource#cancel", [:request, :request_task], :service_template_provision_request, :miq_request_task
+    end
   end
 
   context "Resource#cancel" do
