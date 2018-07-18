@@ -85,6 +85,18 @@ RSpec.describe "service orders API" do
     expect(response.parsed_body).to include(expected)
   end
 
+  it "provisions with workflow with the correct options" do
+    dialog = FactoryGirl.create(:dialog, :label => "ServiceDialog1")
+    resource_action = FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog)
+    service_template = FactoryGirl.create(:service_template, :resource_actions => [resource_action])
+
+    expect_any_instance_of(ServiceTemplate).to receive(:provision_workflow).with(@user, {}, :submit_workflow => true)
+
+    api_basic_authorize collection_action_identifier(:service_orders, :create)
+
+    post(api_service_orders_url, :params => { :service_requests => [{ :service_template_href => api_service_template_url(nil, service_template) }] })
+  end
+
   specify "the default state for a service order is 'cart'" do
     api_basic_authorize collection_action_identifier(:service_orders, :create)
 
