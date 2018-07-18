@@ -1063,6 +1063,7 @@
     :description: Event Streams
     :options:
     - :collection
+    - :subcollection
     :verbs: *gp
     :klass: EventStream
     :collection_actions:
@@ -1073,6 +1074,14 @@
       - :name: query
         identifier: event_streams_show_list
     :resource_actions:
+      :get:
+      - :name: read
+        :identifier: event_streams_show
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: event_streams_show_list
+    :subresource_actions:
       :get:
       - :name: read
         :identifier: event_streams_show
@@ -1748,6 +1757,7 @@
     :verbs: *gp
     :klass: PhysicalChassis
     :subcollections:
+    - :event_streams
     :collection_actions:
       :get:
       - :name: read
@@ -1794,6 +1804,7 @@
     :verbs: *gp
     :klass: PhysicalServer
     :subcollections:
+    - :event_streams
     :collection_actions:
       :get:
       - :name: read
@@ -1884,6 +1895,7 @@
     :verbs: *gp
     :klass: PhysicalSwitch
     :subcollections:
+    - :event_streams
     :collection_actions:
       :get:
       - :name: read

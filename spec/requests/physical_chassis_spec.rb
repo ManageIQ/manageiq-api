@@ -97,4 +97,53 @@ describe "Physical Chassis API" do
       end
     end
   end
+
+  describe "Subcollections" do
+    let(:physical_chassis) { FactoryGirl.create(:physical_chassis) }
+    let(:event_stream) { FactoryGirl.create(:event_stream, :physical_chassis_id => physical_chassis.id, :event_type => "Some Event") }
+
+    context 'Events subcollection' do
+      context 'GET /api/physical_chassis/:id/event_streams' do
+        it 'returns the event_streams with an appropriate role' do
+          api_basic_authorize(collection_action_identifier(:event_streams, :read, :get))
+
+          expected = {
+            'resources' => [
+              { 'href' => api_one_physical_chassis_event_stream_url(nil, physical_chassis, event_stream) }
+            ]
+          }
+          get(api_one_physical_chassis_event_streams_url(nil, physical_chassis))
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
+
+        it 'does not return the event_streams without an appropriate role' do
+          api_basic_authorize
+          get(api_one_physical_chassis_event_streams_url(nil, physical_chassis))
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      context 'GET /api/physical_chassis/:id/event_streams/:id' do
+        it 'returns the event_stream with an appropriate role' do
+          api_basic_authorize(action_identifier(:event_streams, :read, :resource_actions, :get))
+          url = api_one_physical_chassis_event_stream_url(nil, physical_chassis, event_stream)
+          expected = { 'href' => url }
+          get(url)
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
+
+        it 'does not return the event_stream without an appropriate role' do
+          api_basic_authorize
+          get(api_one_physical_chassis_event_stream_url(nil, physical_chassis, event_stream))
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+    end
+  end
 end
