@@ -2514,12 +2514,24 @@
       - :name: delete
         :identifier: rbac_role_delete
   :schedules:
-    :description: Report schedules
-    :identifier: miq_report_reports
+    :description: Schedules
+    :identifier: schedule
     :options:
+    - :collection
     - :subcollection
     :verbs: *gpd
     :klass: MiqSchedule
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: schedule_list
+      :post:
+      - :name: query
+        :identifier: schedule_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: schedule_show
     :subcollection_actions:
       :get:
       - :name: read

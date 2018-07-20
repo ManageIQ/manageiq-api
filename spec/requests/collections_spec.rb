@@ -241,6 +241,11 @@ describe "Rest API Collections" do
       test_collection_query(:roles, api_roles_url, MiqUserRole)
     end
 
+    it "query Schedules" do
+      FactoryGirl.create(:miq_schedule)
+      test_collection_query(:schedules, api_schedules_url, MiqSchedule)
+    end
+
     it "query Security Groups" do
       FactoryGirl.create(:security_group)
       test_collection_query(:security_groups, api_security_groups_url, SecurityGroup)
@@ -549,6 +554,11 @@ describe "Rest API Collections" do
     it "bulk query Roles" do
       FactoryGirl.create(:miq_user_role)
       test_collection_bulk_query(:roles, api_roles_url, MiqUserRole)
+    end
+
+    it "bulk query Schedules" do
+      FactoryGirl.create(:miq_schedule)
+      test_collection_bulk_query(:schedules, api_schedules_url, MiqSchedule)
     end
 
     it "bulk query Security Groups" do
