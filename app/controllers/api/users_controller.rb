@@ -100,10 +100,11 @@ module Api
 
     def validate_user_create_data(data)
       validate_user_data(data)
-      req_attrs = %w(name userid group)
+      req_attrs = %w(name userid)
       req_attrs << "password" if ::Settings.authentication.mode == "database"
       bad_attrs = []
       req_attrs.each { |attr| bad_attrs << attr if data[attr].blank? }
+      bad_attrs << "group or miq_groups" if !data['group'] && !data['miq_groups']
       raise BadRequestError, "Missing attribute(s) #{bad_attrs.join(', ')} for creating a user" if bad_attrs.present?
     end
   end
