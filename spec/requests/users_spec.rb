@@ -21,6 +21,7 @@ RSpec.describe "users API" do
 
   let(:sample_user1) { {:userid => "user1", :name => "User1", :password => "password1", :group => {"id" => group1.id}} }
   let(:sample_user2) { {:userid => "user2", :name => "User2", :password => "password2", :group => {"id" => group2.id}} }
+  let(:sample_user3) { {:userid => "user3", :name => "User3", :password => "password3", :miq_groups => [{"id" => group1.id}, {"id" => group2.id}]} }
 
   let(:user1) { FactoryGirl.create(:user, sample_user1.except(:group).merge(:miq_groups => [group1])) }
   let(:user2) { FactoryGirl.create(:user, sample_user2.except(:group).merge(:miq_groups => [group2])) }
@@ -198,6 +199,34 @@ RSpec.describe "users API" do
       expect(User.exists?(user2_hash["id"])).to be_truthy
       expect(user1_hash["current_group_id"]).to eq(group1.id.to_s)
       expect(user2_hash["current_group_id"]).to eq(group2.id.to_s)
+    end
+
+    it "supports creating user with multiple groups" do
+      api_basic_authorize collection_action_identifier(:users, :create)
+
+      post(api_users_url, :params => gen_request(:create, sample_user3))
+
+      expect(response).to have_http_status(:ok)
+      expect_result_resources_to_include_keys("results", expected_attributes)
+
+      user_id = response.parsed_body["results"].first["id"]
+      expect(User.exists?(user_id)).to be_truthy
+    end
+
+    it "rejects user creation with missing group attribute" do
+      api_basic_authorize collection_action_identifier(:users, :create)
+
+      post(api_users_url, :params => sample_user2.except(:group))
+
+      expect_bad_request(/Missing attribute/i)
+    end
+
+    it "rejects user creation with missing miq_groups attribute" do
+      api_basic_authorize collection_action_identifier(:users, :create)
+
+      post(api_users_url, :params => sample_user3.except(:miq_groups))
+
+      expect_bad_request(/Missing attribute/i)
     end
   end
 
