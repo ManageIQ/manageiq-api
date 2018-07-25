@@ -1,11 +1,12 @@
 module Api
   class ServiceTemplatesController < BaseController
-    include Subcollections::ServiceDialogs
-    include Subcollections::Tags
-    include Subcollections::ResourceActions
-    include Subcollections::ServiceRequests
     include Api::Mixins::Pictures
     include Api::Mixins::ServiceTemplates
+    include Subcollections::ResourceActions
+    include Subcollections::Schedules
+    include Subcollections::ServiceDialogs
+    include Subcollections::ServiceRequests
+    include Subcollections::Tags
 
     before_action :set_additional_attributes, :only => [:show]
 
@@ -45,15 +46,6 @@ module Api
     rescue => err
       action_result(false, "Could not unarchive Service Template - #{err}")
     end
-
-    def schedules_query_resource(object)
-      object.miq_schedules
-    end
-
-    def schedules_delete_resource(_parent, type, id, data)
-      delete_resource(type, id, data)
-    end
-    alias delete_resource_schedules schedules_delete_resource
 
     private
 

@@ -3,7 +3,6 @@ module Api
     SCHEDULE_ATTRS_TO_TRANSFORM = %w(start_date interval time_zone send_email).freeze
 
     include Subcollections::Results
-    include Subcollections::Schedules
 
     before_action :set_additional_attributes, :only => [:index, :show]
 
@@ -46,6 +45,10 @@ module Api
         report = resource_search(id, type, klass)
         schedule_reports(report, type, id, data)
       end
+    end
+
+    def schedules_query_resource(object)
+      object ? object.list_schedules : {}
     end
 
     private

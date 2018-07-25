@@ -2540,7 +2540,7 @@
       - :name: delete
         :identifier: rbac_role_delete
   :schedules:
-    :description: Report schedules
+    :description: Schedules
     :identifier: miq_report_reports
     :options:
     - :subcollection
@@ -2553,6 +2553,8 @@
       :post:
       - :name: delete
         :identifier: schedule_delete
+      - :name: edit
+        :identifier: schedule_edit
     :subresource_actions:
       :delete:
       - :name: delete
@@ -2563,6 +2565,8 @@
       :post:
       - :name: delete
         :identifier: schedule_delete
+      - :name: edit
+        :identifier: schedule_edit
   :search_filters:
     :description: Filters
     :verbs: *gpd
