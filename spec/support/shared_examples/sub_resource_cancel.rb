@@ -10,7 +10,7 @@ RSpec.shared_context "SubResource#cancel" do |ns, request_factory, factory|
 
   context "single instance cancel" do
     it "unauthorized" do
-      expect_unauthorized_request { post(send(instance_url, nil, request, resource_1.id), :params => gen_request(:cancel)) }
+      expect_forbidden_request { post(send(instance_url, nil, request, resource_1.id), :params => gen_request(:cancel)) }
     end
 
     it "authorized" do
@@ -24,7 +24,7 @@ RSpec.shared_context "SubResource#cancel" do |ns, request_factory, factory|
 
   context "multiple instance cancel" do
     it "unauthorized" do
-      expect_unauthorized_request { post(send(collection_url, nil, request), :params => gen_request(:cancel, [{:id => resource_1.id}, {:id => resource_2.id}])) }
+      expect_forbidden_request { post(send(collection_url, nil, request), :params => gen_request(:cancel, [{:id => resource_1.id}, {:id => resource_2.id}])) }
     end
 
     it "authorized" do

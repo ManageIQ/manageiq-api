@@ -224,7 +224,7 @@ module Spec
           expect(response.headers['Access-Control-Allow-Methods']).to include('OPTIONS')
         end
 
-        def expect_unauthorized_request
+        def expect_forbidden_request
           api_basic_authorize
           yield
           expect(response).to have_http_status(:forbidden)

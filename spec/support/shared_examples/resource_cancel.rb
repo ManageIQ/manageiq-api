@@ -11,7 +11,7 @@ RSpec.shared_context "Resource#cancel" do |ns, factory|
 
   context "on a single instance" do
     it "unauthorized" do
-      expect_unauthorized_request { post(instance_url(resource_1), :params => gen_request(:cancel)) }
+      expect_forbidden_request { post(instance_url(resource_1), :params => gen_request(:cancel)) }
     end
 
     it "authorized" do
@@ -25,7 +25,7 @@ RSpec.shared_context "Resource#cancel" do |ns, factory|
 
   context "on multiple instances" do
     it "unauthorized" do
-      expect_unauthorized_request { post(collection_url, :params => gen_request(:cancel, [{"href" => instance_url(resource_1)}, {"href" => instance_url(resource_2)}])) }
+      expect_forbidden_request { post(collection_url, :params => gen_request(:cancel, [{"href" => instance_url(resource_1)}, {"href" => instance_url(resource_2)}])) }
     end
 
     it "authorized" do
