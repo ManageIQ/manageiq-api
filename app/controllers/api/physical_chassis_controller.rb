@@ -1,5 +1,7 @@
 module Api
   class PhysicalChassisController < BaseController
+    include Subcollections::EventStreams
+
     def refresh_resource(type, id, _data = nil)
       raise BadRequestError, "Must specify an id for refreshing a #{type} resource" if id.blank?
 
