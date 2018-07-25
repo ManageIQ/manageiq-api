@@ -751,6 +751,20 @@
       :delete:
       - :name: delete
         :identifier: embedded_configuration_script_source_delete
+  :configuration_scripts:
+    :description: Configuration Scripts
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: ConfigurationScript
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: configuration_script_view
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: configuration_script_view
   :container_deployments:
     :description: Container Provider Deployment
     :identifier: container_deployment
