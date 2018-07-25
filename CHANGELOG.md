@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 90 ending 2018-07-16
+
+### Added
+- Add DELETE service_templates/X/schedules/X [(#414)](https://github.com/ManageIQ/manageiq-api/pull/414)
+- Add ServiceTemplate#schedules subcollection [(#412)](https://github.com/ManageIQ/manageiq-api/pull/412)
+
+### Fixed
+- Permit concurrent loads to avoid a deadlock [(#416)](https://github.com/ManageIQ/manageiq-api/pull/416)
+
+## Gaprindashvili-4
+
+### Added
+- Transformation Mappings Read and Create [(#313)](https://github.com/ManageIQ/manageiq-api/pull/313)
+- Add lans collection with read and show [(#325)](https://github.com/ManageIQ/manageiq-api/pull/325)
+- Add support for validate_vms action on transformation_mappings [(#358)](https://github.com/ManageIQ/manageiq-api/pull/358)
+- Delete API for transformation_mappings [(#383)](https://github.com/ManageIQ/manageiq-api/pull/383)
+- Allow ordering of service templates resource [(#316)](https://github.com/ManageIQ/manageiq-api/pull/316)
+- Add archive/unarchive actions to ServiceTemplate [(#389)](https://github.com/ManageIQ/manageiq-api/pull/389)
+
+### Fixed
+- Downcase userid to match how it is stored in the DB. [(#371)](https://github.com/ManageIQ/manageiq-api/pull/371)
+- In list of services, fetch RBAC-filtered vms subcollection [(#404)](https://github.com/ManageIQ/manageiq-api/pull/404)
+
 ## Unreleased as of Sprint 89 ending 2018-07-02
 
 ### Added
@@ -15,7 +38,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Creating an endpoint for a PhysicalRack to execute toolbar actions [(#349)](https://github.com/ManageIQ/manageiq-api/pull/349)
 
 ### Fixed
-- In list of services fetch RBAC-filtered vms subcollection [(#404)](https://github.com/ManageIQ/manageiq-api/pull/404)
 - Ignore case of the userid when validating it. [(#396)](https://github.com/ManageIQ/manageiq-api/pull/396)
 
 ## Unreleased as of Sprint 88 ending 2018-06-18
@@ -27,7 +49,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Adding Physical Switches support [(#370)](https://github.com/ManageIQ/manageiq-api/pull/370)
-- Add archive/unarchive actions to ServiceTemplate [(#389)](https://github.com/ManageIQ/manageiq-api/pull/389)
 
 ### Fixed
 - Ensure refresh => true option gets passed for service_template refresh [(#386)](https://github.com/ManageIQ/manageiq-api/pull/386)
@@ -36,7 +57,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ## Unreleased as of Sprint 86 ending 2018-05-21
 
 ### Added
-- Delete API for transformation_mappings [(#383)](https://github.com/ManageIQ/manageiq-api/pull/383)
 - Adds request_retire action for Vms and Services [(#380)](https://github.com/ManageIQ/manageiq-api/pull/380)
 - Creating PhysicalChassis controller and adding endpoint configuration [(#362)](https://github.com/ManageIQ/manageiq-api/pull/362)
 
@@ -61,11 +81,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Added
 - Updated token manager initializer to log the configured server session_store [(#376)](https://github.com/ManageIQ/manageiq-api/pull/376)
 - Adding support for collection_names whose plural and singular are the same [(#364)](https://github.com/ManageIQ/manageiq-api/pull/364)
-- Add support for validate_vms action on transformation_mappings [(#358)](https://github.com/ManageIQ/manageiq-api/pull/358)
 - Implementing change password action for providers endpoint [(#309)](https://github.com/ManageIQ/manageiq-api/pull/309)
-
-### Fixed
-- Downcase userid to match how it is stored in the DB. [(#371)](https://github.com/ManageIQ/manageiq-api/pull/371)
 
 ## Unreleased as of Sprint 84 ending 2018-04-23
 
@@ -113,9 +129,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ## Unreleased as of Sprint 80 ending 2018-02-26
 
 ### Added
-- Add lans collection with read and show [(#325)](https://github.com/ManageIQ/manageiq-api/pull/325)
-- Allow ordering of service templates resource [(#316)](https://github.com/ManageIQ/manageiq-api/pull/316)
-- Transformation Mappings Read and Create [(#313)](https://github.com/ManageIQ/manageiq-api/pull/313)
 - Return product features for all of a user's groups on the API entrypoint [(#311)](https://github.com/ManageIQ/manageiq-api/pull/311)
 - Delete of search filters [(#306)](https://github.com/ManageIQ/manageiq-api/pull/306)
 - Allow additional provider parameters to be specified on create [(#279)](https://github.com/ManageIQ/manageiq-api/pull/279)
