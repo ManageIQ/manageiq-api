@@ -760,6 +760,45 @@ describe "Service Templates API" do
           expect(response).to have_http_status(:forbidden)
         end
       end
+
+      describe "POST /api/service_templates/:id/schedules/:id with edit action" do
+        it "can queue a flavor for deletion" do
+          api_basic_authorize(subresource_action_identifier(:service_templates, :schedules, :edit))
+
+          post(api_service_template_schedule_url(nil, service_template, schedule_1), :params => gen_request(:edit, "name" => "Updated Schedule Name"))
+
+          expect_single_resource_query("id" => schedule_1.id.to_s, "href" => api_service_template_schedule_url(nil, service_template, schedule_1), "name" => "Updated Schedule Name")
+          expect(schedule_1.reload.name).to eq("Updated Schedule Name")
+        end
+
+        it "will not delete a schedule unless authorized" do
+          api_basic_authorize
+
+          post(api_service_template_schedule_url(nil, service_template, schedule_1), :params => gen_request(:edit, "name" => "Updated Schedule Name"))
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      describe "POST /api/service_templates/:id/schedules/ with edit action" do
+        it "can delete multiple schedules" do
+          api_basic_authorize(subcollection_action_identifier(:service_templates, :schedules, :edit))
+
+          post(api_service_template_schedules_url(nil, service_template), :params => gen_request(:edit, [{:id => schedule_1.id, :name => "Schedule1"}, {:id => schedule_2.id, :name => "Schedule2"}]))
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body["results"].count).to eq(2)
+          expect(MiqSchedule.pluck(:name)).to match_array(%w(Schedule1 Schedule2))
+        end
+
+        it "forbids multiple schedule deletion without an appropriate role" do
+          api_basic_authorize
+
+          post(api_service_template_schedules_url(nil, service_template), :params => gen_request(:edit, [{:id => schedule_1.id, :name => "Schedule1"}, {:id => schedule_2.id, :name => "Schedule2"}]))
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
     end
 
     it "without any schedules" do
