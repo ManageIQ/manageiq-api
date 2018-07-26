@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Gaprindashvili-4
+
+### Added
+- Transformation Mappings Read and Create [(#313)](https://github.com/ManageIQ/manageiq-api/pull/313)
+- Add lans collection with read and show [(#325)](https://github.com/ManageIQ/manageiq-api/pull/325)
+- Add support for validate_vms action on transformation_mappings [(#358)](https://github.com/ManageIQ/manageiq-api/pull/358)
+- Delete API for transformation_mappings [(#383)](https://github.com/ManageIQ/manageiq-api/pull/383)
+- Allow ordering of service templates resource [(#316)](https://github.com/ManageIQ/manageiq-api/pull/316)
+- Add archive/unarchive actions to ServiceTemplate [(#389)](https://github.com/ManageIQ/manageiq-api/pull/389)
+
+### Fixed
+- Downcase userid to match how it is stored in the DB. [(#371)](https://github.com/ManageIQ/manageiq-api/pull/371)
+- In list of services, fetch RBAC-filtered vms subcollection [(#404)](https://github.com/ManageIQ/manageiq-api/pull/404)
+
 ## Gaprindashvili-3
 
 ### Added
