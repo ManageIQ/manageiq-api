@@ -6,7 +6,7 @@ module Api
     AUTH_TYPE_ATTR    = "auth_type".freeze
     DEFAULT_AUTH_TYPE = "default".freeze
     CONNECTION_ATTRS  = %w(connection_configurations).freeze
-    ENDPOINT_ATTRS    = %w(hostname url ipaddress port security_protocol certificate_authority).freeze
+    ENDPOINT_ATTRS    = %w(verify_ssl hostname url ipaddress port security_protocol certificate_authority).freeze
     RESTRICTED_ATTRS  = [TYPE_ATTR, CREDENTIALS_ATTR, ZONE_ATTR, "zone_id"].freeze
 
     include Subcollections::Policies
