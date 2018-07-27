@@ -92,7 +92,7 @@ module Api
 
     def pause_resource(type, id, _data)
       provider = resource_search(id, type, collection_class(type))
-      provider.disable!
+      provider.pause!
       action_result(true, "Paused #{provider_ident(provider)}")
     rescue => err
       action_result(false, "Could not pause Provider - #{err}")
@@ -100,7 +100,7 @@ module Api
 
     def resume_resource(type, id, _data)
       provider = resource_search(id, type, collection_class(type))
-      provider.enable!
+      provider.resume!
       action_result(true, "Resumed #{provider_ident(provider)}")
     rescue => err
       action_result(false, "Could not resume Provider - #{err}")
