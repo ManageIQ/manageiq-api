@@ -805,6 +805,17 @@ describe "Service Templates API" do
           expect(schedule_1.reload.name).to eq("Updated Schedule Name")
         end
 
+        it "can edit a single schedule run_at" do
+          api_basic_authorize(subresource_action_identifier(:service_templates, :schedules, :edit))
+
+          t = Time.zone.now.utc
+          post(api_service_template_schedule_url(nil, service_template, schedule_1), :params => gen_request(:edit, "run_at" => {"start_time" => t.to_s, "interval" => {"unit" => "daily", "value" => "12"}}))
+
+          schedule_1.reload
+          expect(schedule_1.run_at[:interval]).to eq(:unit => "daily", :value => "12")
+          expect(schedule_1.run_at[:start_time]).to be_within(1).of(t)
+        end
+
         it "will not delete a schedule unless authorized" do
           api_basic_authorize
 
