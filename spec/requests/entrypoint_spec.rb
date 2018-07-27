@@ -65,7 +65,7 @@ RSpec.describe "API entrypoint" do
 
     expect(response.parsed_body).to include(
       "product_info" => a_hash_including(
-        "name"                 => I18n.t("product.name"),
+        "name"                 => Vmdb::Appliance.PRODUCT_NAME,
         "name_full"            => I18n.t("product.name_full"),
         "copyright"            => I18n.t("product.copyright"),
         "support_website"      => I18n.t("product.support_website"),
