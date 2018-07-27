@@ -3138,7 +3138,7 @@
     :options:
     - :collection
     - :custom_actions
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: MiqTemplate
     :subcollections:
     - :tags
@@ -3171,7 +3171,6 @@
         :disabled: true
       - :name: edit
         :identifier: miq_template_edit
-        :disabled: true
       - :name: set_ownership
         :identifier: miq_template_ownership
       - :name: delete
