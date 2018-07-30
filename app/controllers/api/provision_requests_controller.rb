@@ -1,5 +1,6 @@
 module Api
   class ProvisionRequestsController < BaseController
+    include Api::Mixins::ResourceCancel
     include Subcollections::RequestTasks
 
     def create_resource(type, _id, data)

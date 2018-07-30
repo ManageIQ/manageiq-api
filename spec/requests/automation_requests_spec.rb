@@ -311,5 +311,17 @@ describe "Automation Requests API" do
       expect(response.parsed_body['options']).to match(hash_including(options))
       expect(task.reload.options.keys).to all(be_kind_of(Symbol))
     end
+
+    context "SubResource#cancel" do
+      let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for AutomationTask"} }
+      let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for AutomationTask"} }
+      include_context "SubResource#cancel", [:automation_request, :request_task], :automation_request, :automation_task
+    end
+  end
+
+  context "Resource#cancel" do
+    let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for AutomationRequest"} }
+    let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for AutomationRequest"} }
+    include_context "Resource#cancel", "automation_request", :automation_request
   end
 end

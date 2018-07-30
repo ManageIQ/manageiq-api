@@ -2,6 +2,7 @@ module Api
   class ServiceRequestsController < BaseController
     include Subcollections::RequestTasks
     include Api::Mixins::Pictures
+    include Api::Mixins::ResourceCancel
 
     alias fetch_service_requests_picture fetch_picture
 
