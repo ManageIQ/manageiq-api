@@ -12,7 +12,7 @@ module Api
 
       def schedules_edit_resource(_parent, _type, id, data)
         # We need to hit #edit_resource from the BaseController, not any of the override methods in child controllers
-        BaseController.instance_method(:edit_resource).bind(self).call(:schedules, id, data)
+        BaseController.instance_method(:edit_resource).bind(self).call(:schedules, id, data.deep_symbolize_keys)
       rescue => err
         raise BadRequestError, "Could not update Schedule - #{err}"
       end

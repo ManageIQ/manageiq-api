@@ -791,7 +791,7 @@ describe "Service Templates API" do
       end
 
       describe "POST /api/service_templates/:id/schedules/:id with edit action" do
-        it "can queue a flavor for deletion" do
+        it "can edit a single schedule" do
           api_basic_authorize(subresource_action_identifier(:service_templates, :schedules, :edit))
 
           post(api_service_template_schedule_url(nil, service_template, schedule_1), :params => gen_request(:edit, "name" => "Updated Schedule Name"))
@@ -800,7 +800,18 @@ describe "Service Templates API" do
           expect(schedule_1.reload.name).to eq("Updated Schedule Name")
         end
 
-        it "will not delete a schedule unless authorized" do
+        it "can edit a single schedule run_at" do
+          api_basic_authorize(subresource_action_identifier(:service_templates, :schedules, :edit))
+
+          t = Time.zone.now.utc
+          post(api_service_template_schedule_url(nil, service_template, schedule_1), :params => gen_request(:edit, "run_at" => {"start_time" => t.to_s, "interval" => {"unit" => "daily", "value" => "12"}}))
+
+          schedule_1.reload
+          expect(schedule_1.run_at[:interval]).to eq(:unit => "daily", :value => "12")
+          expect(schedule_1.run_at[:start_time]).to be_within(1).of(t)
+        end
+
+        it "will not edit a schedule unless authorized" do
           api_basic_authorize
 
           post(api_service_template_schedule_url(nil, service_template, schedule_1), :params => gen_request(:edit, "name" => "Updated Schedule Name"))
@@ -810,7 +821,7 @@ describe "Service Templates API" do
       end
 
       describe "POST /api/service_templates/:id/schedules/ with edit action" do
-        it "can delete multiple schedules" do
+        it "can edit multiple schedules" do
           api_basic_authorize(subcollection_action_identifier(:service_templates, :schedules, :edit))
 
           post(api_service_template_schedules_url(nil, service_template), :params => gen_request(:edit, [{:id => schedule_1.id, :name => "Schedule1"}, {:id => schedule_2.id, :name => "Schedule2"}]))
@@ -820,7 +831,7 @@ describe "Service Templates API" do
           expect(MiqSchedule.pluck(:name)).to match_array(%w(Schedule1 Schedule2))
         end
 
-        it "forbids multiple schedule deletion without an appropriate role" do
+        it "forbids multiple schedule edit without an appropriate role" do
           api_basic_authorize
 
           post(api_service_template_schedules_url(nil, service_template), :params => gen_request(:edit, [{:id => schedule_1.id, :name => "Schedule1"}, {:id => schedule_2.id, :name => "Schedule2"}]))
