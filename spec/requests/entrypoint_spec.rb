@@ -69,9 +69,31 @@ RSpec.describe "API entrypoint" do
         "name_full"            => I18n.t("product.name_full"),
         "copyright"            => I18n.t("product.copyright"),
         "support_website"      => I18n.t("product.support_website"),
-        "support_website_text" => I18n.t("product.support_website_text"),
+        "support_website_text" => I18n.t("product.support_website_text")
       )
     )
+
+    # This test will fail if you have the UI checked out and built with yarn
+    expect(response.parsed_body['product_info']['branding_info']).to eq({})
+  end
+
+  context 'UI is available' do
+    it 'product_info contains branding_info' do
+      api_basic_authorize
+
+      expect(ActionController::Base.helpers).to receive(:image_path).at_least(2).times.and_return("foo")
+
+      get api_entrypoint_url
+
+      expect(response.parsed_body).to include(
+        "product_info" => a_hash_including(
+          "branding_info" => a_hash_including(
+            "brand"      => "foo",
+            "logo"       => "foo"
+          )
+        )
+      )
+    end
   end
 
   it "will squeeze consecutive slashes in the path portion of the URI" do
