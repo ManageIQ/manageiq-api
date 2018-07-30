@@ -15,6 +15,13 @@ module Api
         end
         request_task
       end
+
+      def request_tasks_cancel_resource(_object, type, id = nil, _data = {})
+        resource_search(id, type, collection_class(:request_tasks)).cancel
+        action_result(true, "RequestTask #{id} canceled")
+      rescue => err
+        action_result(false, err.to_s)
+      end
     end
   end
 end

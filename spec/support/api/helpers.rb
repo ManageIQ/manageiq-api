@@ -172,7 +172,7 @@ module Spec
 
         def expect_single_action_result(options = {})
           expect(response).to have_http_status(:ok)
-          expected = {}
+          expected = options.slice("href", "message", "success")
           expected["success"] = options[:success] if options.key?(:success)
           expected["message"] = a_string_matching(options[:message]) if options[:message]
           expected["href"] = a_string_matching(options[:href]) if options[:href]
@@ -222,6 +222,12 @@ module Spec
           }
           expect(response.parsed_body).to eq(expected)
           expect(response.headers['Access-Control-Allow-Methods']).to include('OPTIONS')
+        end
+
+        def expect_forbidden_request
+          api_basic_authorize
+          yield
+          expect(response).to have_http_status(:forbidden)
         end
 
         def select_attributes(attrlist)

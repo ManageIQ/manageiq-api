@@ -27,6 +27,13 @@ module Api
         end
       end
 
+      def service_requests_cancel_resource(_target, type, id, _data)
+        resource_search(id, type, collection_class(:service_requests)).cancel
+        action_result(true, "Service request #{id} canceled")
+      rescue => err
+        action_result(false, err.to_s)
+      end
+
       private
 
       def service_request_ident(service_request)

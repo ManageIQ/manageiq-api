@@ -305,6 +305,12 @@ describe "Service Templates API" do
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
     end
+
+    context "ServiceRequest#cancel" do
+      let(:resource_1_response) { {"success" => true, "message" => "Service request #{resource_1.id} canceled"} }
+      let(:resource_2_response) { {"success" => true, "message" => "Service request #{resource_2.id} canceled"} }
+      include_context "SubResource#cancel", [:service_template, :service_request], :service_template, :service_template_transformation_plan_request
+    end
   end
 
   describe "Service Templates create" do

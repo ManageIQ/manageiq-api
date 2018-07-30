@@ -301,6 +301,8 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
     :resource_actions:
@@ -312,6 +314,8 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
   :availability_zones:
@@ -2235,6 +2239,8 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
     :resource_actions:
@@ -2246,6 +2252,8 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
   :quotas:
@@ -2372,15 +2380,26 @@
       :get:
       - :name: read
         :identifier: miq_request_show
+      :post:
+      - :name: cancel
+        :identifier: miq_request_control
+    :resource_actions:
+      :post:
+      - :name: cancel
+        :identifier: miq_request_control
     :subcollection_actions:
       :get:
       - :name: read
         :identifier: miq_request_show
       :post:
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
     :subresource_actions:
       :post:
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
   :requests:
@@ -2399,6 +2418,8 @@
       :post:
       - :name: query
         :identifier: miq_request_show_list
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: create
         :identifiers:
         - :klass: AutomationRequest
@@ -2425,6 +2446,8 @@
       - :name: read
         :identifier: miq_request_show
       :post:
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
       - :name: approve
@@ -2784,6 +2807,8 @@
       :post:
       - :name: query
         :identifier: miq_request_view
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: approve
         :identifier: miq_request_approval
       - :name: deny
@@ -2803,6 +2828,8 @@
       :post:
       - :name: approve
         :identifier: miq_request_approval
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: deny
         :identifier: miq_request_approval
       - :name: delete
@@ -2823,6 +2850,8 @@
       :post:
       - :name: add
         :identifier: svc_catalog_provision
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: remove
         :identifier: svc_catalog_provision
     :subresource_actions:
@@ -2830,6 +2859,8 @@
       - :name: read
         :identifier: miq_request_view
       :post:
+      - :name: cancel
+        :identifier: miq_request_control
       - :name: remove
         :identifier: svc_catalog_provision
   :service_templates:
