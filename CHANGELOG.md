@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 91 ending 2018-07-30
+
+### Added
+- [RFE] Use Vmdb::Appliance.PRODUCT_NAME instead of calling i18n [(#437)](https://github.com/ManageIQ/manageiq-api/pull/437)
+- Added verify_ssl to the list of valid attributes [(#431)](https://github.com/ManageIQ/manageiq-api/pull/431)
+- Added support for fetching configuration scripts [(#430)](https://github.com/ManageIQ/manageiq-api/pull/430)
+- Add event_streams as subcollection of the physical resources [(#424)](https://github.com/ManageIQ/manageiq-api/pull/424)
+- Request cancel [(#421)](https://github.com/ManageIQ/manageiq-api/pull/421)
+- Allow plugins to bring api.yml extensions [(#418)](https://github.com/ManageIQ/manageiq-api/pull/418)
+- Edit schedules for service templates [(#417)](https://github.com/ManageIQ/manageiq-api/pull/417)
+
+### Fixed
+- Symbolize schedule data [(#436)](https://github.com/ManageIQ/manageiq-api/pull/436)
+- Fixed validation while adding user with multiple groups. [(#427)](https://github.com/ManageIQ/manageiq-api/pull/427)
+- Ensure 'submit_workflow' is true when adding a service to a cart [(#426)](https://github.com/ManageIQ/manageiq-api/pull/426)
+
 ## Unreleased as of Sprint 90 ending 2018-07-16
 
 ### Added
