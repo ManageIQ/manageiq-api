@@ -500,6 +500,9 @@
       :get:
       - :name: read
         :identifier: cloud_subnet_show_list
+      :post:
+      - :name: create
+        :identifier: cloud_subnet_new
     :subresource_actions:
       :get:
       - :name: read
