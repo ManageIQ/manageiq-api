@@ -196,7 +196,7 @@ module Api
                    wf_result = submit_custom_action_dialog(resource, custom_button, data)
                    action_result(true,
                                  "Invoked custom dialog action #{action} for #{type} id: #{resource.id}",
-                                 :result => wf_result[:request])
+                                 :result => wf_result[:request], :task_id => wf_result[:task_id])
                  rescue => err
                    action_result(false, err.to_s)
                  end
