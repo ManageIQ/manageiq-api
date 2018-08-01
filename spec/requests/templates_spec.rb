@@ -29,6 +29,32 @@ RSpec.describe "Templates API" do
     end
   end
 
+  context "editing a template" do
+    let!(:template) { FactoryGirl.create(:template, :name => 'foo', :description => 'bar') }
+    before { api_basic_authorize(action_identifier(:templates, :edit)) }
+    subject { send(req, api_template_url(nil, template), :params => params) }
+
+    describe "PUT /api/templates/:c_id" do
+      let(:req) { :put }
+      let(:params) { {:name => 'baz'} }
+
+      it 'edits the template name' do
+        expect { subject }.to change { template.reload.name }.to('baz')
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    describe "PATCH /api/templates/:c_id" do
+      let(:req) { :patch }
+      let(:params) { {:description => 'baz'} }
+
+      it 'edits the template description' do
+        expect { subject }.to change { template.reload.description }.to('baz')
+        expect(response).to have_http_status(:ok)
+      end
+    end
+  end
+
   describe "tags subcollection" do
     it "can list a template's tags" do
       template = FactoryGirl.create(:template)
