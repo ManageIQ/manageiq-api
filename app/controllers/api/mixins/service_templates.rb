@@ -4,7 +4,7 @@ module Api
       def order_service_template(id, data, scheduled_time = nil)
         service_template = resource_search(id, :service_templates, ServiceTemplate)
         raise BadRequestError, "#{service_template_ident(service_template)} cannot be ordered" unless service_template.orderable?
-        request_result = service_template.order(User.current_user, (data || {}), :submit_workflow => true, nil, scheduled_time)
+        request_result = service_template.order(User.current_user, (data || {}), {:submit_workflow => true}, nil, scheduled_time)
         errors = request_result[:errors]
         if errors.present?
           raise BadRequestError, "Failed to order #{service_template_ident(service_template)} - #{errors.join(", ")}"
