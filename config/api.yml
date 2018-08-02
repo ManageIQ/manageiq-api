@@ -1783,6 +1783,12 @@
       :post:
       - :name: refresh
         :identifier: physical_chassis_refresh
+      - :name: blink_loc_led
+        :identifier: physical_chassis_blink_loc_led
+      - :name: turn_on_loc_led
+        :identifier: physical_chassis_turn_on_loc_led
+      - :name: turn_off_loc_led
+        :identifier: physical_chassis_turn_off_loc_led
     :resource_actions:
       :get:
       - :name: read
@@ -1790,6 +1796,12 @@
       :post:
       - :name: refresh
         :identifier: physical_chassis_refresh
+      - :name: blink_loc_led
+        :identifier: physical_chassis_blink_loc_led
+      - :name: turn_on_loc_led
+        :identifier: physical_chassis_turn_on_loc_led
+      - :name: turn_off_loc_led
+        :identifier: physical_chassis_turn_off_loc_led
   :physical_racks:
     :description: Physical Racks
     :identifier: physical_rack
