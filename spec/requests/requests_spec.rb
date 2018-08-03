@@ -200,6 +200,22 @@ RSpec.describe "Requests API" do
       expect(response).to have_http_status(:ok)
     end
 
+    context "supported request types" do
+      Api::ApiConfig.collections.requests.collection_actions.post.detect { |i| i[:name] == "create" }.identifiers.collect do |type|
+        request_type = MiqRequest::REQUEST_TYPE_TO_MODEL.invert[type.klass.to_sym]
+        [type.klass, request_type, type.identifier&.to_sym]
+      end.each do |klass_name, request_type, identifier|
+        it "#{klass_name}" do
+          identifier ? api_basic_authorize(identifier) : api_basic_authorize
+          klass = klass_name.safe_constantize
+          expect(klass).to receive(:create_request).and_return(klass.new)
+          post(api_requests_url, :params => gen_request(:create, :options => {:__request_type__ => request_type}))
+
+          expect(response).to have_http_status(:ok)
+        end
+      end
+    end
+
     it "succeed immediately with optional data and auto_approve set to true" do
       api_basic_authorize :service_reconfigure
 

@@ -2447,6 +2447,12 @@
           :identifier: svc_catalog_provision
         - :klass: ServiceReconfigureRequest
           :identifier: service_reconfigure
+        - :klass: OrchestrationStackRetireRequest
+          :identifier: orchestration_stack_retire
+        - :klass: ServiceRetireRequest
+          :identifier: service_retire
+        - :klass: VmRetireRequest
+          :identifier: vm_retire
       - :name: edit
         :identifier: miq_request_edit
       - :name: approve
