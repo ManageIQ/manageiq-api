@@ -163,7 +163,7 @@ describe "Alerts API" do
       )
       expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include_error_with_message(
-        "Failed to add a new alert action resource - Assignee can't be blank"
+        "Failed to add a new alert action resource - MiqAlertStatusAction: Assignee can't be blank"
       )
     end
 
