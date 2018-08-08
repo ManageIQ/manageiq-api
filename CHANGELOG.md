@@ -13,7 +13,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Added support for fetching configuration scripts [(#430)](https://github.com/ManageIQ/manageiq-api/pull/430)
 - Add event_streams as subcollection of the physical resources [(#424)](https://github.com/ManageIQ/manageiq-api/pull/424)
 - Request cancel [(#421)](https://github.com/ManageIQ/manageiq-api/pull/421)
-- Allow plugins to bring api.yml extensions [(#418)](https://github.com/ManageIQ/manageiq-api/pull/418)
 - Edit schedules for service templates [(#417)](https://github.com/ManageIQ/manageiq-api/pull/417)
 
 ### Fixed
