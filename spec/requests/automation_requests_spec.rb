@@ -46,7 +46,7 @@ describe "Automation Requests API" do
     end
 
     it "lists all the automation requests if you are admin" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_superadmin))
+      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_approval))
       other_user = FactoryGirl.create(:user)
       automation_request1 = FactoryGirl.create(:automation_request, :requester => other_user)
       automation_request2 = FactoryGirl.create(:automation_request, :requester => @user)
@@ -77,7 +77,7 @@ describe "Automation Requests API" do
     end
 
     it "an admin can see another user's request" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_superadmin))
+      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_approval))
       other_user = FactoryGirl.create(:user)
       automation_request = FactoryGirl.create(:automation_request, :requester => other_user)
       api_basic_authorize action_identifier(:automation_requests, :read, :resource_actions, :get)
