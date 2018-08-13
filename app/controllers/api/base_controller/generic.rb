@@ -207,8 +207,7 @@ module Api
 
       def submit_custom_action_dialog(resource, custom_button, data)
         wf = ResourceActionWorkflow.new({}, User.current_user, custom_button.resource_action, :target => resource)
-        data.each { |key, value| wf.set_value(key, value) } if data.present?
-        wf_result = wf.submit_request
+        wf_result = wf.submit_request(data)
         raise StandardError, Array(wf_result[:errors]).join(", ") if wf_result[:errors].present?
         wf_result
       end
