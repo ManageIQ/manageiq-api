@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 92 ending 2018-08-13
+
+### Added
+- Expose CloudSubnet creation [(#440)](https://github.com/ManageIQ/manageiq-api/pull/440)
+- Allow retirement requests to be created through the api [(#439)](https://github.com/ManageIQ/manageiq-api/pull/439)
+- Allow the PUT/PATCH editing of templates and add a test for it [(#435)](https://github.com/ManageIQ/manageiq-api/pull/435)
+- Adding Physical Chassis Location LED actions [(#410)](https://github.com/ManageIQ/manageiq-api/pull/410)
+
 ## Unreleased as of Sprint 91 ending 2018-07-30
 
 ### Added
