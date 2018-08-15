@@ -11,7 +11,8 @@ module Api
         begin
           raise "Cannot add #{security_group} to #{parent.name}" unless parent.supports_create_security_group?
           message = "Adding security group #{security_group} to #{parent.name}"
-          task_id = queue_object_action(parent, message, :method_name => "create_security_group", :args => [data])
+          user_id = User.current_user.id
+          task_id = queue_object_action(parent, message, :method_name => "create_security_group", :args => [data, user_id])
           action_result(true, message, :task_id => task_id)
         rescue => e
           action_result(false, e.to_s)
