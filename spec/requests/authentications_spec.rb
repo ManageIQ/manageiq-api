@@ -1,5 +1,5 @@
 RSpec.describe 'Authentications API' do
-  let(:provider) { FactoryGirl.create(:provider_ansible_tower) }
+  let(:provider) { FactoryGirl.create(:automation_manager_ansible_tower) }
   let(:auth) { FactoryGirl.create(:ansible_cloud_credential, :resource => provider) }
   let(:auth_2) { FactoryGirl.create(:ansible_cloud_credential, :resource => provider) }
 
