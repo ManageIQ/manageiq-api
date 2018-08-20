@@ -31,6 +31,10 @@ module ManageIQ
         $api_log.info("  #{key.to_s.ljust([24, key.to_s.length].max, ' ')}: #{val}")
       end
 
+      def self.plugin_name
+        _('REST API')
+      end
+
       def vmdb_plugin?
         true
       end
