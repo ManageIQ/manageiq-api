@@ -46,6 +46,46 @@ describe "Transformation Mappings" do
     end
   end
 
+  describe "POST /api/transformation_mappings/" do
+    context "with an appropriate role" do
+      def href_slug(obj)
+        Api::Utils.build_href_slug(obj.class, obj.id)
+      end
+
+      it "can map vms to openstack flavors" do
+        openstack = FactoryGirl.create(:ems_openstack)
+        _flavor1  = openstack.flavors.create!(:cpus => 1, :memory => 1.gigabytes)
+        flavor2   = openstack.flavors.create!(:cpus => 2, :memory => 2.gigabytes)
+        flavor3   = openstack.flavors.create!(:cpus => 4, :memory => 4.gigabytes)
+        vm1       = FactoryGirl.create(:vm_vmware, :hardware => FactoryGirl.create(:hardware, :cpu1x2, :ram1GB))
+        vm2       = FactoryGirl.create(:vm_vmware, :hardware => FactoryGirl.create(:hardware, :cpu2x2, :ram1GB))
+        vm3       = FactoryGirl.create(:vm_vmware, :hardware => FactoryGirl.create(:hardware, :cpu4x2, :ram1GB))
+
+        api_basic_authorize(action_identifier(:transformation_mappings, :vm_flavor_fit, :collection_actions))
+
+        request = {
+          "action"   => "vm_flavor_fit",
+          "mappings" => [
+            {"source_href_slug" => href_slug(vm1), "destination_href_slug" => href_slug(openstack)},
+            {"source_href_slug" => href_slug(vm2), "destination_href_slug" => href_slug(openstack)},
+            {"source_href_slug" => href_slug(vm3), "destination_href_slug" => href_slug(openstack)},
+          ]
+        }
+
+        post(api_transformation_mappings_url, :params => request)
+
+        expect(response.parsed_body["results"]).to match_array(
+          [
+            {"source_href_slug" => href_slug(vm1), "best_fit" => href_slug(flavor2), "all_fit" => [href_slug(flavor2), href_slug(flavor3)]},
+            {"source_href_slug" => href_slug(vm2), "best_fit" => href_slug(flavor3), "all_fit" => [href_slug(flavor3)]},
+            {"source_href_slug" => href_slug(vm3), "best_fit" => nil, "all_fit" => []},
+          ]
+        )
+        expect(response).to have_http_status(:ok)
+      end
+    end
+  end
+
   describe "POST /api/transformation_mappings" do
     let(:cluster) { FactoryGirl.create(:ems_cluster) }
     let(:cluster2) { FactoryGirl.create(:ems_cluster) }
