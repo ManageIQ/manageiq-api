@@ -949,7 +949,7 @@ describe "Providers API" do
     end
 
     it "supports cloud provider refresh" do
-      api_basic_authorize collection_action_identifier(:providers, :refresh)
+      api_basic_authorize 'ems_cloud_refresh'
 
       provider = FactoryGirl.create(:ext_management_system, sample_amazon.symbolize_keys.except(:type, :credentials))
       provider.update_authentication(:default => default_credentials.symbolize_keys)
