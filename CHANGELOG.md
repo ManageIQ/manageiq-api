@@ -5,7 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Gaprindashvili-4
+## Gaprindashvili-5
+
+### Added
+- Pass option to retain dialog values so they're not rerun [(#406)](https://github.com/ManageIQ/manageiq-api/pull/406)
+- Add support for /api/orchestration_stacks [(#453)](https://github.com/ManageIQ/manageiq-api/pull/453)
+- Add ServiceTemplate#schedules subcollection [(#412)](https://github.com/ManageIQ/manageiq-api/pull/412)
+- Add DELETE service_templates/X/schedules/X [(#414)](https://github.com/ManageIQ/manageiq-api/pull/414)
+- Edit schedules for service templates [(#417)](https://github.com/ManageIQ/manageiq-api/pull/417)
+- Request cancel [(#421)](https://github.com/ManageIQ/manageiq-api/pull/421)
+- Allow ordering ServiceTemplates with a schedule_time [(#400)](https://github.com/ManageIQ/manageiq-api/pull/400)
+- Add support for /api/orchestration_stacks [(#196)](https://github.com/ManageIQ/manageiq-api/pull/196)
+
+### Fixed
+- Permit concurrent loads to avoid a deadlock [(#416)](https://github.com/ManageIQ/manageiq-api/pull/416)
+- Ensure 'submit_workflow' is true when adding a service to a cart [(#426)](https://github.com/ManageIQ/manageiq-api/pull/426)
+- Set user when queueing VM actions [(#326)](https://github.com/ManageIQ/manageiq-api/pull/326)
+- Symbolize schedule data [(#436)](https://github.com/ManageIQ/manageiq-api/pull/436)
+
+## Gaprindashvili-4 - Released 2018-07-16
 
 ### Added
 - Transformation Mappings Read and Create [(#313)](https://github.com/ManageIQ/manageiq-api/pull/313)
@@ -19,7 +37,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Downcase userid to match how it is stored in the DB. [(#371)](https://github.com/ManageIQ/manageiq-api/pull/371)
 - In list of services, fetch RBAC-filtered vms subcollection [(#404)](https://github.com/ManageIQ/manageiq-api/pull/404)
 
-## Gaprindashvili-3
+## Gaprindashvili-3 - Released 2018-05-15
 
 ### Added
 - Adding support for /api/containers primary collection. [(#332)](https://github.com/ManageIQ/manageiq-api/pull/332)
