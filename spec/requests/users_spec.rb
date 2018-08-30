@@ -426,9 +426,18 @@ RSpec.describe "users API" do
   describe "tags subcollection" do
     let(:user) { FactoryGirl.create(:user, :miq_groups => [group1], :current_group => group1) }
 
-    it "can list a user's tags" do
+    let(:tag1)         { {:category => "department", :name => "finance", :path => "/managed/department/finance"} }
+    let(:tag2)         { {:category => "cc",         :name => "001",     :path => "/managed/cc/001"} }
+
+    let(:invalid_tag_url) { api_tag_url(nil, 999_999) }
+
+    before do
       FactoryGirl.create(:classification_department_with_tags)
-      Classification.classify(user, "department", "finance")
+      FactoryGirl.create(:classification_cost_center_with_tags)
+    end
+
+    it "can list a user's tags" do
+      Classification.classify(user, tag1[:category], tag1[:name])
       api_basic_authorize
 
       get(api_user_tags_url(nil, user))
@@ -438,7 +447,6 @@ RSpec.describe "users API" do
     end
 
     it "can assign a tag to a user" do
-      FactoryGirl.create(:classification_department_with_tags)
       api_basic_authorize(subcollection_action_identifier(:users, :tags, :assign))
 
       post(api_user_tags_url(nil, user), :params => { :action => "assign", :category => "department", :name => "finance" })
@@ -458,8 +466,7 @@ RSpec.describe "users API" do
     end
 
     it "can unassign a tag from a user" do
-      FactoryGirl.create(:classification_department_with_tags)
-      Classification.classify(user, "department", "finance")
+      Classification.classify(user, tag1[:category], tag1[:name])
       api_basic_authorize(subcollection_action_identifier(:users, :tags, :unassign))
 
       post(api_user_tags_url(nil, user), :params => { :action => "unassign", :category => "department", :name => "finance" })
@@ -476,6 +483,44 @@ RSpec.describe "users API" do
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
+    end
+
+    it "assigns multiple tags to a User" do
+      api_basic_authorize subcollection_action_identifier(:users, :tags, :assign)
+
+      post(api_user_tags_url(nil, user), :params => gen_request(:assign, [{:name => tag1[:path]}, {:name => tag2[:path]}]))
+
+      expect_tagging_result(
+        [{:success => true, :href => api_user_url(nil, user), :tag_category => tag1[:category], :tag_name => tag1[:name]},
+         {:success => true, :href => api_user_url(nil, user), :tag_category => tag2[:category], :tag_name => tag2[:name]}]
+      )
+    end
+
+    it "assigns tags by mixed specification to a User" do
+      api_basic_authorize subcollection_action_identifier(:users, :tags, :assign)
+
+      tag = Tag.find_by(:name => tag2[:path])
+      post(api_user_tags_url(nil, user), :params => gen_request(:assign, [{:name => tag1[:path]}, {:href => api_tag_url(nil, tag)}]))
+
+      expect_tagging_result(
+        [{:success => true, :href => api_user_url(nil, user), :tag_category => tag1[:category], :tag_name => tag1[:name]},
+         {:success => true, :href => api_user_url(nil, user), :tag_category => tag2[:category], :tag_name => tag2[:name]}]
+      )
+    end
+
+    it "unassigns multiple tags from a User" do
+      Classification.classify(user, tag2[:category], tag2[:name])
+
+      api_basic_authorize subcollection_action_identifier(:users, :tags, :unassign)
+
+      tag = Tag.find_by(:name => tag2[:path])
+      post(api_user_tags_url(nil, user), :params => gen_request(:unassign, [{:name => tag1[:path]}, {:href => api_tag_url(nil, tag)}]))
+
+      expect_tagging_result(
+        [{:success => true, :href => api_user_url(nil, user), :tag_category => tag1[:category], :tag_name => tag1[:name]},
+         {:success => true, :href => api_user_url(nil, user), :tag_category => tag2[:category], :tag_name => tag2[:name]}]
+      )
+      expect(user.tags.count).to eq(0)
     end
   end
 
