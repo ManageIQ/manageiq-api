@@ -3402,6 +3402,10 @@
         :identifier: rbac_user_edit
       - :name: delete
         :identifier: rbac_user_delete
+      - :name: assign_tags
+        :identifier: rbac_user_tags_edit
+      - :name: unassign_tags
+        :identifier: rbac_user_tags_edit
     :resource_actions:
       :get:
       - :name: read
