@@ -97,4 +97,102 @@ describe "Physical Storages API" do
       end
     end
   end
+
+  context 'Physical Racks subcollection' do
+    let(:physical_rack) { FactoryGirl.create(:physical_rack) }
+    let(:physical_storage) { FactoryGirl.create(:physical_storage, :physical_rack_id => physical_rack.id) }
+
+    context 'GET /api/physical_storages/:id/physical_racks' do
+      it 'returns the physical racks with an appropriate role' do
+        api_basic_authorize(collection_action_identifier(:physical_racks, :read, :get))
+
+        url_get = api_physical_storage_physical_racks_url(nil, physical_storage)
+        url_resource = api_physical_storage_physical_rack_url(nil, physical_storage, physical_rack)
+
+        expected = {
+          'resources' => [{'href' => url_resource}]
+        }
+        get(url_get)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it 'does not return the physical racks without an appropriate role' do
+        api_basic_authorize
+
+        get(api_physical_storage_physical_rack_url(nil, physical_storage, physical_rack))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'GET /api/physical_storages/:id/physical_racks/:s_id' do
+      it 'returns the physical rack with an appropriate role' do
+        api_basic_authorize action_identifier(:physical_racks, :read, :resource_actions, :get)
+
+        get(api_physical_storage_physical_rack_url(nil, physical_storage, physical_rack))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('id' => physical_rack.id.to_s)
+      end
+
+      it 'does not return the physical rack without an appropriate role' do
+        api_basic_authorize
+
+        get(api_physical_storage_physical_rack_url(nil, physical_storage, physical_rack))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
+  context 'Physical Chassis subcollection' do
+    let(:physical_chassis) { FactoryGirl.create(:physical_chassis) }
+    let(:physical_storage) { FactoryGirl.create(:physical_storage, :physical_chassis_id => physical_chassis.id) }
+
+    context 'GET /api/physical_storages/:id/physical_chassis' do
+      it 'returns the physical chassis with an appropriate role' do
+        api_basic_authorize(collection_action_identifier(:physical_chassis, :read, :get))
+
+        url_get = api_physical_storage_physical_chassis_url(nil, physical_storage)
+        url_resource = api_physical_storage_one_physical_chassis_url(nil, physical_storage, physical_chassis)
+
+        expected = {
+          'resources' => [{'href' => url_resource}]
+        }
+        get(url_get)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it 'does not return the physical chassis without an appropriate role' do
+        api_basic_authorize
+
+        get(api_physical_storage_one_physical_chassis_url(nil, physical_storage, physical_chassis))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'GET /api/physical_storages/:id/physical_chassis/:s_id' do
+      it 'returns the physical chassis with an appropriate role' do
+        api_basic_authorize action_identifier(:physical_chassis, :read, :resource_actions, :get)
+
+        get(api_physical_storage_one_physical_chassis_url(nil, physical_storage, physical_chassis))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('id' => physical_chassis.id.to_s)
+      end
+
+      it 'does not return the physical chassis without an appropriate role' do
+        api_basic_authorize
+
+        get(api_physical_storage_one_physical_chassis_url(nil, physical_storage, physical_chassis))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
 end

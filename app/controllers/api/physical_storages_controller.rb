@@ -1,5 +1,8 @@
 module Api
   class PhysicalStoragesController < BaseController
+    include Subcollections::PhysicalRacks
+    include Subcollections::PhysicalChassis
+
     def refresh_resource(type, id, _data = nil)
       raise BadRequestError, "Must specify an id for refreshing a #{type} resource" if id.blank?
 

@@ -1775,6 +1775,7 @@
     :identifier: physical_chassis
     :options:
     - :collection
+    - :subcollection
     :verbs: *gp
     :klass: PhysicalChassis
     :subcollections:
@@ -1792,6 +1793,10 @@
         :identifier: physical_chassis_turn_on_loc_led
       - :name: turn_off_loc_led
         :identifier: physical_chassis_turn_off_loc_led
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: physical_chassis_show_list
     :resource_actions:
       :get:
       - :name: read
@@ -1805,11 +1810,16 @@
         :identifier: physical_chassis_turn_on_loc_led
       - :name: turn_off_loc_led
         :identifier: physical_chassis_turn_off_loc_led
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: physical_chassis_show
   :physical_racks:
     :description: Physical Racks
     :identifier: physical_rack
     :options:
     - :collection
+    - :subcollection
     :verbs: *gp
     :klass: PhysicalRack
     :subcollections:
@@ -1822,6 +1832,10 @@
         :identifier: physical_rack_show_list
       - :name: refresh
         :identifier: physical_rack_refresh
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: physical_rack_show_list
     :resource_actions:
       :get:
       - :name: read
@@ -1829,6 +1843,10 @@
       :post:
       - :name: refresh
         :identifier: physical_rack_refresh
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: physical_rack_show
   :physical_servers:
     :description: Physical Servers
     :identifier: physical_server
@@ -1906,6 +1924,8 @@
     :verbs: *gp
     :klass: PhysicalStorage
     :subcollections:
+    - :physical_racks
+    - :physical_chassis
     :collection_actions:
       :get:
       - :name: read
