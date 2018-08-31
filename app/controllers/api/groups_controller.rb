@@ -2,6 +2,7 @@ module Api
   class GroupsController < BaseController
     INVALID_GROUP_ATTRS = %w(id href group_type).freeze
 
+    include Subcollections::CustomButtonEvents
     include Subcollections::Tags
 
     def groups_search_conditions

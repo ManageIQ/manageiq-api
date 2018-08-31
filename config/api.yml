@@ -958,6 +958,16 @@
       - :name: delete
       :delete:
       - :name: delete
+  :custom_button_events:
+    :description: Custom Button Events
+    :options:
+    - :subcollection
+    :verbs: *g
+    :klass: CustomButtonEvent
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: custom_button_events_show_list
   :custom_button_sets:
     :description: Custom Button Sets
     :identifier: ab_buttons_accord
@@ -1352,6 +1362,7 @@
     :klass: MiqGroup
     :identifying_attrs: description
     :subcollections:
+    - :custom_button_events
     - :tags
     :collection_actions:
       :get:
@@ -3337,6 +3348,7 @@
     :verbs: *gpppd
     :klass: Tenant
     :subcollections:
+    - :custom_button_events
     - :tags
     - :quotas
     :collection_actions:
@@ -3438,6 +3450,7 @@
     :klass: User
     :identifying_attrs: name,userid
     :subcollections:
+    - :custom_button_events
     - :tags
     :collection_actions:
       :get:
