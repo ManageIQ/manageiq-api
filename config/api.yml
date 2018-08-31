@@ -3366,6 +3366,8 @@
         :identifier: transformation_mapping_new
       - :name: delete
         :identifier: transformation_mapping_delete
+      - :name: vm_flavor_fit
+        :identifier: transformation_mapping_new
     :resource_actions:
       :get:
       - :name: read

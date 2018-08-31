@@ -22,6 +22,19 @@ module Api
       end
     end
 
+    def vm_flavor_fit_resource(_type, _id, data)
+      data["mappings"].collect do |mapping|
+        source      = Api::Utils.resource_search_by_href_slug(mapping["source_href_slug"])
+        destination = Api::Utils.resource_search_by_href_slug(mapping["destination_href_slug"])
+        fit         = TransformationMapping::CloudBestFit.new(source, destination)
+        {
+          :source_href_slug => mapping["source_href_slug"],
+          :best_fit         => Api::Utils.build_href_slug(Flavor, fit.best_fit_flavor.try(:id)),
+          :all_fit          => fit.available_fit_flavors.collect { |f| Api::Utils.build_href_slug(Flavor, f.id) }
+        }
+      end
+    end
+
     private
 
     def create_mapping_items(items)
