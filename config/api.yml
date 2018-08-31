@@ -583,6 +583,21 @@
       :get:
       - :name: read
         :identifier: cloud_tenant_show
+  :cloud_volume_types:
+    :description: Cloud Volume Types
+    :identifier: cloud_volume_type
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: CloudVolumeType
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_volume_type_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_volume_type_show
   :cloud_volumes:
     :description: Cloud Volumes
     :identifier: cloud_volume
