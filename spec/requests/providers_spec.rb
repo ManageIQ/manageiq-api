@@ -175,6 +175,19 @@ describe "Providers API" do
     }
   end
 
+  let(:sample_amazon) do
+    {
+      "type"        => "ManageIQ::Providers::Amazon::CloudManager",
+      "name"        => "sample amazon",
+      "hostname"    => "sample-amazon.provider.com",
+      "ipaddress"   => "100.200.300.4",
+      "credentials" => {
+        "userid"   => "uname",
+        "password" => "pword"
+      }
+    }
+  end
+
   def have_endpoint_attributes(expected_hash)
     h = expected_hash.slice(*ENDPOINT_ATTRS)
     h["port"] = h["port"].to_i if h.key?("port")
@@ -928,6 +941,17 @@ describe "Providers API" do
       api_basic_authorize collection_action_identifier(:providers, :refresh)
 
       provider = FactoryGirl.create(:ext_management_system, sample_vmware.symbolize_keys.except(:type, :credentials))
+      provider.update_authentication(:default => default_credentials.symbolize_keys)
+
+      post(api_provider_url(nil, provider), :params => gen_request(:refresh))
+
+      expect_single_action_result(failed_auth_action(provider.id.to_s).symbolize_keys)
+    end
+
+    it "supports cloud provider refresh" do
+      api_basic_authorize 'ems_cloud_refresh'
+
+      provider = FactoryGirl.create(:ext_management_system, sample_amazon.symbolize_keys.except(:type, :credentials))
       provider.update_authentication(:default => default_credentials.symbolize_keys)
 
       post(api_provider_url(nil, provider), :params => gen_request(:refresh))

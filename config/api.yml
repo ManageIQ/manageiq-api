@@ -2119,7 +2119,9 @@
       - :name: edit
         :identifier: ems_infra_edit
       - :name: refresh
-        :identifier: ems_infra_refresh
+        :identifier:
+        - ems_infra_refresh
+        - ems_cloud_refresh
       - :name: delete
         :identifier: ems_infra_delete
       - :name: pause
@@ -2138,7 +2140,9 @@
       - :name: edit
         :identifier: ems_infra_edit
       - :name: refresh
-        :identifier: ems_infra_refresh
+        :identifier:
+        - ems_infra_refresh
+        - ems_cloud_refresh
       - :name: delete
         :identifier: ems_infra_delete
       - :name: import_vm
