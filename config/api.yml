@@ -2768,6 +2768,23 @@
       :delete:
       - :name: delete
         :identifier: dialog_delete
+  :service_offerings:
+    :description: Service Offerings
+    :identifier: service_offerings
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: ServiceOffering
+    :subcollections:
+    - :service_parameters_sets
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: service_offerings_view
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: service_offerings_view
   :service_orders:
     :description: Service Orders
     :identifier: svc_catalog_provision
@@ -2810,6 +2827,21 @@
       :delete:
       - :name: delete
         :identifier: svc_catalog_provision
+  :service_parameters_sets:
+    :description: Service Parameters Sets
+    :identifier: service_parameters_sets
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: ServiceParametersSet
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: service_parameters_sets_view
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: service_parameters_sets_view
   :service_requests:
     :description: Service Requests
     :identifier: miq_request
