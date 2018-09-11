@@ -24,8 +24,7 @@ describe "Conditions API" do
         :name        => "name",
         :description => "description",
         :expression  => {"=" => {"field" => "ContainerImage-architecture", "value" => "dsa"}},
-        :towhat      => "ExtManagementSystem",
-        :modifier    => "allow"
+        :towhat      => "ExtManagementSystem"
       }
     end
     let(:condition) { FactoryGirl.create(:condition) }
