@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 94 ending 2018-09-10
+
+### Added
+- Allow bulk assignment and unassignment of tags for users [(#462)](https://github.com/ManageIQ/manageiq-api/pull/462)
+- Add best fit API for transformations moving vms to openstack [(#455)](https://github.com/ManageIQ/manageiq-api/pull/455)
+
+### Fixed
+- EMS Cloud Refresh is missing [(#428)](https://github.com/ManageIQ/manageiq-api/pull/428)
+
+## Gaprindashvili-5 - Released 2018-09-07
+
+### Added
+- Pass option to retain dialog values so they're not rerun [(#406)](https://github.com/ManageIQ/manageiq-api/pull/406)
+- Add support for /api/orchestration_stacks [(#453)](https://github.com/ManageIQ/manageiq-api/pull/453)
+- Add ServiceTemplate#schedules subcollection [(#412)](https://github.com/ManageIQ/manageiq-api/pull/412)
+- Add DELETE service_templates/X/schedules/X [(#414)](https://github.com/ManageIQ/manageiq-api/pull/414)
+- Edit schedules for service templates [(#417)](https://github.com/ManageIQ/manageiq-api/pull/417)
+- Request cancel [(#421)](https://github.com/ManageIQ/manageiq-api/pull/421)
+- Allow ordering ServiceTemplates with a schedule_time [(#400)](https://github.com/ManageIQ/manageiq-api/pull/400)
+- Add support for /api/orchestration_stacks [(#196)](https://github.com/ManageIQ/manageiq-api/pull/196)
+
+### Fixed
+- Permit concurrent loads to avoid a deadlock [(#416)](https://github.com/ManageIQ/manageiq-api/pull/416)
+- Ensure 'submit_workflow' is true when adding a service to a cart [(#426)](https://github.com/ManageIQ/manageiq-api/pull/426)
+- Set user when queueing VM actions [(#326)](https://github.com/ManageIQ/manageiq-api/pull/326)
+- Symbolize schedule data [(#436)](https://github.com/ManageIQ/manageiq-api/pull/436)
+
 ## Unreleased as of Sprint 93 ending 2018-08-27
 
 ### Fixed
@@ -25,22 +52,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Added verify_ssl to the list of valid attributes [(#431)](https://github.com/ManageIQ/manageiq-api/pull/431)
 - Added support for fetching configuration scripts [(#430)](https://github.com/ManageIQ/manageiq-api/pull/430)
 - Add event_streams as subcollection of the physical resources [(#424)](https://github.com/ManageIQ/manageiq-api/pull/424)
-- Request cancel [(#421)](https://github.com/ManageIQ/manageiq-api/pull/421)
-- Edit schedules for service templates [(#417)](https://github.com/ManageIQ/manageiq-api/pull/417)
 
 ### Fixed
-- Symbolize schedule data [(#436)](https://github.com/ManageIQ/manageiq-api/pull/436)
 - Fixed validation while adding user with multiple groups. [(#427)](https://github.com/ManageIQ/manageiq-api/pull/427)
-- Ensure 'submit_workflow' is true when adding a service to a cart [(#426)](https://github.com/ManageIQ/manageiq-api/pull/426)
-
-## Unreleased as of Sprint 90 ending 2018-07-16
-
-### Added
-- Add DELETE service_templates/X/schedules/X [(#414)](https://github.com/ManageIQ/manageiq-api/pull/414)
-- Add ServiceTemplate#schedules subcollection [(#412)](https://github.com/ManageIQ/manageiq-api/pull/412)
-
-### Fixed
-- Permit concurrent loads to avoid a deadlock [(#416)](https://github.com/ManageIQ/manageiq-api/pull/416)
 
 ## Gaprindashvili-4
 
@@ -60,7 +74,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Allow ordering ServiceTemplate with a schedule_time [(#401)](https://github.com/ManageIQ/manageiq-api/pull/401)
-- Allow ordering ServiceTemplates with a schedule_time [(#400)](https://github.com/ManageIQ/manageiq-api/pull/400)
 - Creating PhysicalStorage controller and adding endpoint configuration [(#397)](https://github.com/ManageIQ/manageiq-api/pull/397)
 - Adding Physical Switch power action [(#392)](https://github.com/ManageIQ/manageiq-api/pull/392)
 - Creating an endpoint for a PhysicalRack to execute toolbar actions [(#349)](https://github.com/ManageIQ/manageiq-api/pull/349)
@@ -163,7 +176,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Adding support to apply_config_pattern operation via the REST API [(#278)](https://github.com/ManageIQ/manageiq-api/pull/278)
 
 ### Fixed
-- Set user when queueing VM actions [(#326)](https://github.com/ManageIQ/manageiq-api/pull/326)
 - Only allow one cart to be created at a time [(#324)](https://github.com/ManageIQ/manageiq-api/pull/324)
 - Make cloud_tenants and flavors subcollections consistent with others [(#321)](https://github.com/ManageIQ/manageiq-api/pull/321)
 - Fix error message for required params on metric rollups subcollection [(#308)](https://github.com/ManageIQ/manageiq-api/pull/308)
