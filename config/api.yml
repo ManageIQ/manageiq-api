@@ -513,6 +513,25 @@
         :identifier: cloud_subnet_tag
       - :name: unassign
         :identifier: cloud_subnet_tag
+  :network_ports:
+    :description: Network Ports
+    :identifier: network_port
+    :options:
+    - :collection
+    - :custom_actions
+    :verbs: *g
+    :klass: NetworkPort
+    :subcollections:
+    - :cloud_subnets
+    - :security_groups
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: network_port_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: network_port_show
   :cloud_templates:
     :description: Cloud Templates
     :identifier: image
