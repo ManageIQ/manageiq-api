@@ -1659,11 +1659,13 @@
     :identifier: network_router
     :options:
     - :collection
+    - :subcollection
     - :custom_actions
     :verbs: *gpd
     :klass: NetworkRouter
     :subcollections:
     - :tags
+    - :security_groups
     :collection_actions:
       :get:
       - :name: read
@@ -1689,6 +1691,10 @@
         :identifier: network_router_tag
       - :name: unassign
         :identifier: network_router_tag
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: security_group_show_list
   :networks:
     :description: Networks
     :options:

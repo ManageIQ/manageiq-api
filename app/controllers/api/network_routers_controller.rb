@@ -1,6 +1,7 @@
 module Api
   class NetworkRoutersController < BaseController
     include Subcollections::Tags
+    include Subcollections::SecurityGroups
 
     def delete_resource(type, id, _data = {})
       delete_action_handler do
