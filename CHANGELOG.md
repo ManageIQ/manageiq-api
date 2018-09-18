@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Added
 - Allow bulk assignment and unassignment of tags for users [(#462)](https://github.com/ManageIQ/manageiq-api/pull/462)
 - Add best fit API for transformations moving vms to openstack [(#455)](https://github.com/ManageIQ/manageiq-api/pull/455)
+- Apis for new servicey things [(#460)](https://github.com/ManageIQ/manageiq-api/pull/460)
 
 ### Fixed
 - EMS Cloud Refresh is missing [(#428)](https://github.com/ManageIQ/manageiq-api/pull/428)
