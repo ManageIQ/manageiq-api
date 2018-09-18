@@ -480,6 +480,7 @@
     :klass: CloudSubnet
     :subcollections:
     - :tags
+    - :security_groups
     :collection_actions:
       :get:
       - :name: read
@@ -495,6 +496,8 @@
       :get:
       - :name: read
         :identifier: cloud_subnet_show_list
+      - :name: read
+        :identifier: security_group_show_list
       :post:
       - :name: create
         :identifier: cloud_subnet_new

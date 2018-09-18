@@ -77,4 +77,17 @@ RSpec.describe 'CloudSubnets API' do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  describe 'security groups subcollection' do
+    it "can list a subnet's security groups" do
+      subnet = FactoryGirl.create(:cloud_subnet)
+      subnet.security_groups = [FactoryGirl.create(:security_group)]
+      api_basic_authorize(action_identifier(:cloud_subnets, :read, :subcollection_actions, :get))
+
+      get(api_cloud_subnet_security_groups_url(nil, subnet))
+
+      expect(response.parsed_body).to include('subcount' => 1)
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
