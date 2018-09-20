@@ -65,7 +65,8 @@ module Api
         :server_href     => "#{@req.api_prefix}/servers/#{MiqServer.my_server.id}",
         :zone_href       => "#{@req.api_prefix}/zones/#{MiqServer.my_server.zone.id}",
         :region_href     => "#{@req.api_prefix}/regions/#{MiqRegion.my_region.id}",
-        :enterprise_href => "#{@req.api_prefix}/enterprises/#{MiqEnterprise.my_enterprise.id}"
+        :enterprise_href => "#{@req.api_prefix}/enterprises/#{MiqEnterprise.my_enterprise.id}",
+        :plugins         => plugin_info
       }
     end
 
@@ -77,6 +78,15 @@ module Api
         :support_website      => I18n.t("product.support_website"),
         :support_website_text => I18n.t("product.support_website_text"),
       }
+    end
+
+    def plugin_info
+      Vmdb::Plugins.versions.each_with_object({}) do |(engine, version), hash|
+        hash[engine.to_s] = {
+          :display_name => engine.respond_to?(:plugin_name) ? engine.plugin_name : engine.to_s.gsub(/ManageIQ::|::Engine/, ''),
+          :version      => version
+        }
+      end
     end
 
     def miq_groups
