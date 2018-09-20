@@ -12,7 +12,7 @@ module Api
 
     def validate_vms_resource(type, id, data = {})
       transformation_mapping = resource_search(id, type, collection_class(type))
-      (transformation_mapping.validate_vms(data["import"]) || {}).tap do |res|
+      (transformation_mapping.search_vms_and_validate(data["import"]) || {}).tap do |res|
         %w(valid_vms invalid_vms conflict_vms).each do |key|
           next unless res.key?(key)
           res[key].each do |entry|

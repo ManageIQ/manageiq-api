@@ -233,9 +233,9 @@ describe "Transformation Mappings" do
           post(api_transformation_mapping_url(nil, transformation_mapping), :params => request)
 
           expected = {
-            "valid_vms"    => [a_hash_including("name" => vm.name, "id" => vm.id.to_s, "href" => a_string_including(api_vm_url(nil, vm)))],
-            "invalid_vms"  => [a_hash_including("name" => "bad name")],
-            "conflict_vms" => []
+            "valid"      => [a_hash_including("name" => vm.name, "id" => vm.id.to_s, "status" => "ok", "reason" => "ok", "cluster" => source_ems.name)],
+            "invalid"    => [a_hash_including("name" => "bad name")],
+            "conflicted" => []
           }
           expect(response).to have_http_status(:ok)
           expect(response.parsed_body).to include(expected)
