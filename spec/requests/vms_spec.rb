@@ -22,7 +22,7 @@ describe "Vms API" do
   let(:vm_guid)            { vm.guid }
   let(:vm_url)             { api_vm_url(nil, vm) }
 
-  let(:invalid_vm_url) { api_vm_url(nil, 999_999) }
+  let(:invalid_vm_url) { api_vm_url(nil, ApplicationRecord.id_in_region(999_999, ApplicationRecord.my_region_number)) }
 
   def update_raw_power_state(state, *vms)
     vms.each { |vm| vm.update_attributes!(:raw_power_state => state) }
