@@ -1819,4 +1819,15 @@ describe "Vms API" do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  describe "/api/vms central admin" do
+    let(:resource_type) { "vm" }
+
+    include_examples "resource power operations", :vm_vmware, :reboot_guest
+    include_examples "resource power operations", :vm_vmware, :reset
+    include_examples "resource power operations", :vm_vmware, :shutdown_guest
+    include_examples "resource power operations", :vm_vmware, :start
+    include_examples "resource power operations", :vm_vmware, :stop
+    include_examples "resource power operations", :vm_vmware, :suspend
+  end
 end
