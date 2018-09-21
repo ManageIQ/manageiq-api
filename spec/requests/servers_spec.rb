@@ -1,6 +1,6 @@
 RSpec.describe "Servers" do
   describe "/api/servers/:id/settings" do
-    let(:server) { FactoryGirl.create(:miq_server) }
+    let(:server) { FactoryGirl.create(:miq_server, :zone => FactoryGirl.create(:zone, :name => "default")) }
     let(:original_timeout) { server.settings_for_resource[:api][:authentication_timeout] }
     let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
 
