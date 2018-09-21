@@ -1,6 +1,6 @@
 RSpec.describe "Zones" do
   describe "/api/zones/:id/settings" do
-    let(:zone) { FactoryGirl.create(:zone) }
+    let(:zone) { FactoryGirl.create(:zone, :name => "default") }
     let(:original_timeout) { zone.settings_for_resource[:api][:authentication_timeout] }
     let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
 
