@@ -65,7 +65,39 @@ module Api
       action_result(false, err.to_s)
     end
 
+    def apply_config_pattern_ansible_resource(type, id, data)
+      raise(BadRequestError, 'Please provide a pattern_id') unless data.key?('pattern_id')
+      description = 'Applying a config pattern'
+      args = [:ansible_apply_pattern, data['pattern_id'], current_user.id]
+      execute_ansible_on_server(type, id, description, args)
+    end
+
+    def apply_firmware_update_ansible_resource(type, id, data)
+      description = 'Applying firmware update'
+      args = [:ansible_update_firmware, data['firmware_names'], current_user.id]
+      execute_ansible_on_server(type, id, description, args)
+    end
+
     private
+
+    def execute_ansible_on_server(type, id, desc, args)
+      api_action(type, id) do |klass|
+        begin
+          server = resource_search(id, type, klass)
+          desc = "Applying firmware update"
+          api_log_info(desc)
+          task_id = queue_object_action(server,
+                                        desc,
+                                        :method_name => 'task_ansible_run',
+                                        :role        => :ems_operations,
+                                        :args        => args)
+          action_result(true, desc, :task_id => task_id)
+        rescue => err
+          raise err if single_resource?
+          action_result(false, err.to_s)
+        end
+      end
+    end
 
     def change_resource_state(state, type, id, data = [])
       raise BadRequestError, "Must specify an id for changing a #{type} resource" unless id

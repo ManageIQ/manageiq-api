@@ -623,4 +623,39 @@ RSpec.describe "physical_servers API" do
       end
     end
   end
+
+  describe '#apply_config_pattern_ansible_resource' do
+    let(:ps) { FactoryGirl.create(:physical_server) }
+    context 'when valid request' do
+      it 'should apply a config pattern' do
+        api_basic_authorize action_identifier(:physical_servers, :apply_config_pattern_ansible, :resource_actions, :post)
+        post(api_physical_server_url(nil, ps), :params => gen_request(:apply_config_pattern_ansible, :pattern_id => 1))
+
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body).to include("success" => true)
+      end
+    end
+
+    context 'when invalid request' do
+      it 'should return bad request code' do
+        api_basic_authorize action_identifier(:physical_servers, :apply_config_pattern_ansible, :resource_actions, :post)
+        post(api_physical_server_url(nil, ps), :params => gen_request(:apply_config_pattern_ansible))
+
+        expect(response).to have_http_status(400)
+      end
+    end
+  end
+
+  describe '#apply_firmware_update_ansible_resource' do
+    let(:ps) { FactoryGirl.create(:physical_server) }
+    context 'when valid request' do
+      it 'should apply a firmware update' do
+        api_basic_authorize action_identifier(:physical_servers, :apply_firmware_update_ansible, :resource_actions, :post)
+        post(api_physical_server_url(nil, ps), :params => gen_request(:apply_firmware_update_ansible))
+
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body).to include("success" => true)
+      end
+    end
+  end
 end

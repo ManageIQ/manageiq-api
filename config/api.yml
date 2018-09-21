@@ -1815,6 +1815,17 @@
         :identifier: physical_chassis_turn_on_loc_led
       - :name: turn_off_loc_led
         :identifier: physical_chassis_turn_off_loc_led
+  :physical_infra_managers:
+    :description: Physical Infra Provider
+    :identifier: ems_physical_infra
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: EmsPhysicalInfra
+    :resource_actions:
+      :post:
+      - :name: ansible
+        :identifier: physical_infra_ansible
   :physical_racks:
     :description: Physical Racks
     :identifier: physical_rack
@@ -1879,6 +1890,10 @@
         :identifier: physical_server_turn_off_loc_led
       - :name: apply_config_pattern
         :identifier: physical_server_apply_config_pattern
+      - :name: apply_config_pattern_ansible
+        :identifier: physical_server_apply_config_pattern_ansible
+      - :name: apply_firmware_update_ansible
+        :identifier: physical_server_apply_firmware_update_ansible
     :resource_actions:
       :get:
       - :name: read
@@ -1908,6 +1923,10 @@
         :identifier: physical_server_turn_off_loc_led
       - :name: apply_config_pattern
         :identifier: physical_server_apply_config_pattern
+      - :name: apply_config_pattern_ansible
+        :identifier: physical_server_apply_config_pattern_ansible
+      - :name: apply_firmware_update_ansible
+        :identifier: physical_server_apply_firmware_update_ansible
   :physical_storages:
     :description: Physical Storages
     :identifier: physical_storage
