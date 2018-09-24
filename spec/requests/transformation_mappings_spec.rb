@@ -1,5 +1,32 @@
 describe "Transformation Mappings" do
-  let(:transformation_mapping) { FactoryGirl.create(:transformation_mapping) }
+  let(:source_cluster) { FactoryGirl.create(:ems_cluster) }
+  let(:destination_cluster) { FactoryGirl.create(:ems_cluster) }
+
+  let(:source_storage) { FactoryGirl.create(:storage) }
+  let(:destination_storage) { FactoryGirl.create(:storage) }
+
+  let(:source_lan) { FactoryGirl.create(:lan) }
+  let(:destination_lan) { FactoryGirl.create(:lan) }
+
+  let(:transformation_mapping) do
+    FactoryGirl.create(
+      :transformation_mapping,
+      :transformation_mapping_items => [
+        TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster),
+        TransformationMappingItem.new(:source => source_storage, :destination => destination_storage),
+        TransformationMappingItem.new(:source => source_lan, :destination => destination_lan)
+      ]
+    )
+  end
+
+  let(:source_cluster2) { FactoryGirl.create(:ems_cluster) }
+  let(:destination_cluster2) { FactoryGirl.create(:ems_cluster) }
+
+  let(:source_storage2) { FactoryGirl.create(:storage) }
+  let(:destination_storage2) { FactoryGirl.create(:storage) }
+
+  let(:source_lan2) { FactoryGirl.create(:lan) }
+  let(:destination_lan2) { FactoryGirl.create(:lan) }
 
   describe "GET /api/transformation_mappings" do
     context "with an appropriate role" do
@@ -247,6 +274,36 @@ describe "Transformation Mappings" do
           post(api_transformation_mapping_url(nil, transformation_mapping), :params => {"action" => "validate_vms"})
 
           expect(response).to have_http_status(:ok)
+        end
+
+        it "can update a transformation mapping" do
+          api_basic_authorize(action_identifier(:transformation_mappings, :edit, :resource_actions))
+
+          request = {
+            'action'                       => "edit",
+            "name"                         => "updated transformation mapping",
+            "transformation_mapping_items" => [
+              { "source" => api_cluster_url(nil, source_cluster), "destination" => api_cluster_url(nil, destination_cluster2) },
+              { "source" => api_cluster_url(nil, source_cluster2), "destination" => api_cluster_url(nil, destination_cluster2) },
+              { "source" => api_data_store_url(nil, source_storage), "destination" => api_data_store_url(nil, destination_storage) },
+              { "source" => api_data_store_url(nil, source_storage2), "destination" => api_data_store_url(nil, destination_storage) },
+              { "source" => api_lan_url(nil, source_lan2), "destination" => api_lan_url(nil, destination_lan) }
+            ]
+          }
+          post(api_transformation_mapping_url(nil, transformation_mapping), :params => request)
+
+          updated_mapping_source = transformation_mapping.reload.transformation_mapping_items.pluck(:source_id)
+          reference_source = TransformationMappingItem.all.pluck(:source_id)
+
+          updated_mapping_destination = transformation_mapping.reload.transformation_mapping_items.pluck(:destination_id)
+          reference_destination = TransformationMappingItem.all.pluck(:destination_id)
+
+          expected = {"name" => "updated transformation mapping"}
+          expect(response.parsed_body).to include(expected)
+          expect(response).to have_http_status(:ok)
+          expect(updated_mapping_source).to match_array(reference_source)
+          expect(updated_mapping_destination).to match_array(reference_destination)
+          expect(transformation_mapping.transformation_mapping_items.count).to eq(TransformationMappingItem.all.count)
         end
       end
     end

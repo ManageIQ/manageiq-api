@@ -3419,6 +3419,8 @@
       - :name: read
         :identifier: transformation_mapping_show
       :post:
+      - :name: edit
+        :identifier: transformation_mapping_edit
       - :name: validate_vms
         :identifier: transformation_mapping_new
       - :name: delete
