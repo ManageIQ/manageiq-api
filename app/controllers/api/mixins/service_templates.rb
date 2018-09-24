@@ -3,7 +3,9 @@ module Api
     module ServiceTemplates
       def order_service_template(id, data, scheduled_time = nil)
         service_template = resource_search(id, :service_templates, ServiceTemplate)
-        raise BadRequestError, "#{service_template_ident(service_template)} cannot be ordered" unless service_template.orderable?
+        unless api_request_allowed? && service_template.orderable?
+          raise BadRequestError, "#{service_template_ident(service_template)} cannot be ordered"
+        end
         init_defaults = !request_from_ui? && Settings.product.run_automate_methods_on_service_api_submit
         request_result = service_template.order(User.current_user, (data || {}), {:submit_workflow => request_from_ui?, :init_defaults => init_defaults}, scheduled_time)
         errors = request_result[:errors]
@@ -27,6 +29,15 @@ module Api
 
       def service_template_ident(st)
         "Service Template id:#{st.id} name:'#{st.name}'"
+      end
+
+      def api_request_allowed?
+        return true if request_from_ui?
+        Settings.product.allow_api_service_ordering
+      end
+
+      def request_from_ui?
+        !request.authorization.try(:downcase).try(:starts_with?, "basic")
       end
     end
   end

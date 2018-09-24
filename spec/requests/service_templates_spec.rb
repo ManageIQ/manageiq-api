@@ -466,6 +466,12 @@ describe "Service Templates API" do
 
   describe "Service Templates order" do
     let(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog, :orderable) }
+    let(:product_settings) { double(:allow_api_service_ordering => allow_api_service_ordering) }
+    let(:allow_api_service_ordering) { true }
+
+    before do
+      stub_settings_merge(:product => product_settings)
+    end
 
     it "is forbidden without appropriate role" do
       api_basic_authorize
