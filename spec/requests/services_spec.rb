@@ -1472,5 +1472,16 @@ describe "Services API" do
 
       expect(response).to have_http_status(:forbidden)
     end
+
+    it 'can queue chargeback report for the current user' do
+      api_basic_authorize action_identifier(:services, :queue_chargeback_report)
+
+      post(api_service_url(nil, svc1), :params => {:action => 'queue_chargeback_report'})
+
+      expect(response).to have_http_status(:ok)
+
+      q = MiqQueue.where(:class_name  => "Service", :method_name => "generate_chargeback_report").take
+      expect(q.args).to eq([{:userid=>"api_user_id"}])
+    end
   end
 end
