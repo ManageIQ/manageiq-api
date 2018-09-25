@@ -74,7 +74,7 @@ module Api
         if api_log_debug?
           method = api_get_method_name(caller.first, __method__)
 
-          $api_log.info("MIQ(#{self.class.name}.#{method}) #{msg}")
+          $api_log.debug("MIQ(#{self.class.name}.#{method}) #{msg}")
         end
       end
 
