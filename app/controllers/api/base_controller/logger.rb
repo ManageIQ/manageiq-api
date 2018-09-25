@@ -68,7 +68,6 @@ module Api
         method = api_get_method_name(caller.first, __method__)
         log_prefix = "MIQ(#{self.class.name}.#{method})"
 
-        $api_log.error("#{log_prefix} #{ApiConfig.base.name} Error")
         msg.split("\n").each { |l| $api_log.error("#{log_prefix} #{l}") }
       end
 
