@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 95 ending 2018-09-24
+
+### Added
+- transformation mappings `edit` action [(#467)](https://github.com/ManageIQ/manageiq-api/pull/467)
+- Endpoint api/cloud_volume_types [(#465)](https://github.com/ManageIQ/manageiq-api/pull/465)
+- Use the replacement backend method for searching and valiating VMs [(#463)](https://github.com/ManageIQ/manageiq-api/pull/463)
+
+### Fixed
+- Pass changed dialog field values to resource_action_workflow [(#448)](https://github.com/ManageIQ/manageiq-api/pull/448)
+
 ## Unreleased as of Sprint 94 ending 2018-09-10
 
 ### Added
