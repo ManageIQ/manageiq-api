@@ -5,15 +5,103 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Unreleased as of Sprint 94 ending 2018-09-10
+## Hammer Beta-1
 
 ### Added
+- transformation mappings `edit` action [(#467)](https://github.com/ManageIQ/manageiq-api/pull/467)
+- Endpoint api/cloud_volume_types [(#465)](https://github.com/ManageIQ/manageiq-api/pull/465)
+- Use the replacement backend method for searching and valiating VMs [(#463)](https://github.com/ManageIQ/manageiq-api/pull/463)
 - Allow bulk assignment and unassignment of tags for users [(#462)](https://github.com/ManageIQ/manageiq-api/pull/462)
 - Add best fit API for transformations moving vms to openstack [(#455)](https://github.com/ManageIQ/manageiq-api/pull/455)
 - Apis for new servicey things [(#460)](https://github.com/ManageIQ/manageiq-api/pull/460)
+- Include task_id in the response when invoking a custom button [(#444)](https://github.com/ManageIQ/manageiq-api/pull/444)
+- [RFE] Use Vmdb::Appliance.PRODUCT_NAME instead of calling i18n [(#437)](https://github.com/ManageIQ/manageiq-api/pull/437)
+- Added verify_ssl to the list of valid attributes [(#431)](https://github.com/ManageIQ/manageiq-api/pull/431)
+- Added support for fetching configuration scripts [(#430)](https://github.com/ManageIQ/manageiq-api/pull/430)
+- Add event_streams as subcollection of the physical resources [(#424)](https://github.com/ManageIQ/manageiq-api/pull/424)
+- Allow ordering ServiceTemplate with a schedule_time [(#401)](https://github.com/ManageIQ/manageiq-api/pull/401)
+- Creating PhysicalStorage controller and adding endpoint configuration [(#397)](https://github.com/ManageIQ/manageiq-api/pull/397)
+- Adding Physical Switch power action [(#392)](https://github.com/ManageIQ/manageiq-api/pull/392)
+- Creating an endpoint for a PhysicalRack to execute toolbar actions [(#349)](https://github.com/ManageIQ/manageiq-api/pull/349)
+- Adding Physical Switches support [(#370)](https://github.com/ManageIQ/manageiq-api/pull/370)
+- Adds request_retire action for Vms and Services [(#380)](https://github.com/ManageIQ/manageiq-api/pull/380)
+- Creating PhysicalChassis controller and adding endpoint configuration [(#362)](https://github.com/ManageIQ/manageiq-api/pull/362)
+- Updated token manager initializer to log the configured server session_store [(#376)](https://github.com/ManageIQ/manageiq-api/pull/376)
+- Adding support for collection_names whose plural and singular are the same [(#364)](https://github.com/ManageIQ/manageiq-api/pull/364)
+- Implementing change password action for providers endpoint [(#309)](https://github.com/ManageIQ/manageiq-api/pull/309)
+- Adding tagging support for additional collections [(#361)](https://github.com/ManageIQ/manageiq-api/pull/361)
+- Add update action for templates [(#341)](https://github.com/ManageIQ/manageiq-api/pull/341)
+- Add create action for templates [(#337)](https://github.com/ManageIQ/manageiq-api/pull/337)
+- Add delete action for templates [(#328)](https://github.com/ManageIQ/manageiq-api/pull/328)
+- Added the enterprise_href in the server_info section of the entrypoint [(#351)](https://github.com/ManageIQ/manageiq-api/pull/351)
+- Assign and Unassign alert definition profiles [(#348)](https://github.com/ManageIQ/manageiq-api/pull/348)
+- Add enterprise collection [(#346)](https://github.com/ManageIQ/manageiq-api/pull/346)
+- Add Lans subcollection to Hosts / Providers [(#342)](https://github.com/ManageIQ/manageiq-api/pull/342)
+- Add networks subcollection to providers [(#339)](https://github.com/ManageIQ/manageiq-api/pull/339)
+- Folders subcollection on providers [(#338)](https://github.com/ManageIQ/manageiq-api/pull/338)
+- Add pause and resume actions to Providers [(#334)](https://github.com/ManageIQ/manageiq-api/pull/334)
+- Queue chargeback reports of services [(#301)](https://github.com/ManageIQ/manageiq-api/pull/301)
+- Return product features for all of a user's groups on the API entrypoint [(#311)](https://github.com/ManageIQ/manageiq-api/pull/311)
+- Delete of search filters [(#306)](https://github.com/ManageIQ/manageiq-api/pull/306)
+- Allow additional provider parameters to be specified on create [(#279)](https://github.com/ManageIQ/manageiq-api/pull/279)
+- Adding support to apply_config_pattern operation via the REST API [(#278)](https://github.com/ManageIQ/manageiq-api/pull/278)
+- Adding support of basic PATCH signatures for API resources [(#302)](https://github.com/ManageIQ/manageiq-api/pull/302)
+- Return Time in API entrypoint server_info [(#297)](https://github.com/ManageIQ/manageiq-api/pull/297)
+- Add Settings API for servers and regions [(#275)](https://github.com/ManageIQ/manageiq-api/pull/275)
+- Allow assigning/un-assigning of alert definitions to alert profiles [(#149)](https://github.com/ManageIQ/manageiq-api/pull/149)
+- Generic Object Definition OPTIONS: send hashes rather than arrays [(#238)](https://github.com/ManageIQ/manageiq-api/pull/238)
+- Use type names directly from GenericObjectDefinition object [(#232)](https://github.com/ManageIQ/manageiq-api/pull/232)
+- Add delete for router [(#193)](https://github.com/ManageIQ/manageiq-api/pull/193)
+- Add subresource_action_identifier spec helper [(#225)](https://github.com/ManageIQ/manageiq-api/pull/225)
+- Adding support for optional token_ttl in the UserTokenService. [(#214)](https://github.com/ManageIQ/manageiq-api/pull/214)
+- Adding custom_actions support for /api/cloud_networks [(#200)](https://github.com/ManageIQ/manageiq-api/pull/200)
+- Add support for /api/switches [(#191)](https://github.com/ManageIQ/manageiq-api/pull/191)
+- Add support for /api/container_volumes [(#190)](https://github.com/ManageIQ/manageiq-api/pull/190)
+- Add support for /api/container_templates [(#188)](https://github.com/ManageIQ/manageiq-api/pull/188)
+- Adding support for /api/container_images [(#185)](https://github.com/ManageIQ/manageiq-api/pull/185)
+- Adding support for /api/container_groups [(#184)](https://github.com/ManageIQ/manageiq-api/pull/184)
+- Adding support for /api/cloud_object_store_containers [(#183)](https://github.com/ManageIQ/manageiq-api/pull/183)
+- Add custom action support for models already exposed in api that need it [(#163)](https://github.com/ManageIQ/manageiq-api/pull/163)
+- Container Nodes Collection [(#129)](https://github.com/ManageIQ/manageiq-api/pull/129)
+- encrypt/decrypt for Automate Workspace objects [(#124)](https://github.com/ManageIQ/manageiq-api/pull/124)
+- Allow update to request task as a subcollection of request [(#117)](https://github.com/ManageIQ/manageiq-api/pull/117)
+- Paginate all the things [(#113)](https://github.com/ManageIQ/manageiq-api/pull/113)
+- Add flavors create delete to api [(#14)](https://github.com/ManageIQ/manageiq-api/pull/14)
 
 ### Fixed
 - EMS Cloud Refresh is missing [(#428)](https://github.com/ManageIQ/manageiq-api/pull/428)
+- Pass changed dialog field values to resource_action_workflow [(#448)](https://github.com/ManageIQ/manageiq-api/pull/448)
+- Expose CloudSubnet creation [(#440)](https://github.com/ManageIQ/manageiq-api/pull/440)
+- Allow retirement requests to be created through the api [(#439)](https://github.com/ManageIQ/manageiq-api/pull/439)
+- Allow the PUT/PATCH editing of templates and add a test for it [(#435)](https://github.com/ManageIQ/manageiq-api/pull/435)
+- Adding Physical Chassis Location LED actions [(#410)](https://github.com/ManageIQ/manageiq-api/pull/410)
+- Fixed validation while adding user with multiple groups. [(#427)](https://github.com/ManageIQ/manageiq-api/pull/427)
+- Ignore case of the userid when validating it. [(#396)](https://github.com/ManageIQ/manageiq-api/pull/396)
+- Fix tests after identifier rename [(#399)](https://github.com/ManageIQ/manageiq-api/pull/399)
+- Ensure refresh => true option gets passed for service_template refresh [(#386)](https://github.com/ManageIQ/manageiq-api/pull/386)
+- use request_admin_user? [(#385)](https://github.com/ManageIQ/manageiq-api/pull/385)
+- Always challenge a user with no/bad credentials [(#359)](https://github.com/ManageIQ/manageiq-api/pull/359)
+- Enhanced API to catch Settings validation errors [(#356)](https://github.com/ManageIQ/manageiq-api/pull/356)
+- Only allow one cart to be created at a time [(#324)](https://github.com/ManageIQ/manageiq-api/pull/324)
+- Make cloud_tenants and flavors subcollections consistent with others [(#321)](https://github.com/ManageIQ/manageiq-api/pull/321)
+- Fix error message for required params on metric rollups subcollection [(#308)](https://github.com/ManageIQ/manageiq-api/pull/308)
+- AssetDetails model should be AssetDetail [(#291)](https://github.com/ManageIQ/manageiq-api/pull/291)
+- Do not return duplicate "edit" action entries [(#318)](https://github.com/ManageIQ/manageiq-api/pull/318)
+- Fix picture fetching as an attribute [(#294)](https://github.com/ManageIQ/manageiq-api/pull/294)
+- Do not return picture content on create [(#292)](https://github.com/ManageIQ/manageiq-api/pull/292)
+- Fix special characters in MIQ_GROUP header [(#287)](https://github.com/ManageIQ/manageiq-api/pull/287)
+- Remove groups from editable attributes for users [(#286)](https://github.com/ManageIQ/manageiq-api/pull/286)
+- Updating the API so it now returns nil attributes. [(#253)](https://github.com/ManageIQ/manageiq-api/pull/253)
+- add image scanning endpoint [(#245)](https://github.com/ManageIQ/manageiq-api/pull/245)
+- Update role identifiers for cloud subnets subcollection [(#280)](https://github.com/ManageIQ/manageiq-api/pull/280)
+- Update dialog copy product feature [(#262)](https://github.com/ManageIQ/manageiq-api/pull/262)
+- Fix regression for expansion of subcollection on a resource [(#261)](https://github.com/ManageIQ/manageiq-api/pull/261)
+- Squeeze consecutive slashes in the path portion of the URI [(#228)](https://github.com/ManageIQ/manageiq-api/pull/228)
+- Add symbolization to data for Custom Buttons to fix a UI icon issue [(#151)](https://github.com/ManageIQ/manageiq-api/pull/151)
+- Return correct href for collections on Index [(#150)](https://github.com/ManageIQ/manageiq-api/pull/150)
+- Return only id attributes if specified [(#144)](https://github.com/ManageIQ/manageiq-api/pull/144)
+- Blacklist Config Values [(#135)](https://github.com/ManageIQ/manageiq-api/pull/135)
+- Symbolize parameters before sending to backend [(#133)](https://github.com/ManageIQ/manageiq-api/pull/133)
 
 ## Gaprindashvili-5 - Released 2018-09-07
 
@@ -33,30 +121,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Set user when queueing VM actions [(#326)](https://github.com/ManageIQ/manageiq-api/pull/326)
 - Symbolize schedule data [(#436)](https://github.com/ManageIQ/manageiq-api/pull/436)
 
-## Unreleased as of Sprint 93 ending 2018-08-27
-
-### Fixed
-- Include task_id in the response when invoking a custom button [(#444)](https://github.com/ManageIQ/manageiq-api/pull/444)
-
-## Unreleased as of Sprint 92 ending 2018-08-13
-
-### Added
-- Expose CloudSubnet creation [(#440)](https://github.com/ManageIQ/manageiq-api/pull/440)
-- Allow retirement requests to be created through the api [(#439)](https://github.com/ManageIQ/manageiq-api/pull/439)
-- Allow the PUT/PATCH editing of templates and add a test for it [(#435)](https://github.com/ManageIQ/manageiq-api/pull/435)
-- Adding Physical Chassis Location LED actions [(#410)](https://github.com/ManageIQ/manageiq-api/pull/410)
-
-## Unreleased as of Sprint 91 ending 2018-07-30
-
-### Added
-- [RFE] Use Vmdb::Appliance.PRODUCT_NAME instead of calling i18n [(#437)](https://github.com/ManageIQ/manageiq-api/pull/437)
-- Added verify_ssl to the list of valid attributes [(#431)](https://github.com/ManageIQ/manageiq-api/pull/431)
-- Added support for fetching configuration scripts [(#430)](https://github.com/ManageIQ/manageiq-api/pull/430)
-- Add event_streams as subcollection of the physical resources [(#424)](https://github.com/ManageIQ/manageiq-api/pull/424)
-
-### Fixed
-- Fixed validation while adding user with multiple groups. [(#427)](https://github.com/ManageIQ/manageiq-api/pull/427)
-
 ## Gaprindashvili-4
 
 ### Added
@@ -70,37 +134,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Downcase userid to match how it is stored in the DB. [(#371)](https://github.com/ManageIQ/manageiq-api/pull/371)
 - In list of services, fetch RBAC-filtered vms subcollection [(#404)](https://github.com/ManageIQ/manageiq-api/pull/404)
-
-## Unreleased as of Sprint 89 ending 2018-07-02
-
-### Added
-- Allow ordering ServiceTemplate with a schedule_time [(#401)](https://github.com/ManageIQ/manageiq-api/pull/401)
-- Creating PhysicalStorage controller and adding endpoint configuration [(#397)](https://github.com/ManageIQ/manageiq-api/pull/397)
-- Adding Physical Switch power action [(#392)](https://github.com/ManageIQ/manageiq-api/pull/392)
-- Creating an endpoint for a PhysicalRack to execute toolbar actions [(#349)](https://github.com/ManageIQ/manageiq-api/pull/349)
-
-### Fixed
-- Ignore case of the userid when validating it. [(#396)](https://github.com/ManageIQ/manageiq-api/pull/396)
-
-## Unreleased as of Sprint 88 ending 2018-06-18
-
-### Fixed
-- Fix tests after identifier rename [(#399)](https://github.com/ManageIQ/manageiq-api/pull/399)
-
-## Unreleased as of Sprint 87 ending 2018-06-04
-
-### Added
-- Adding Physical Switches support [(#370)](https://github.com/ManageIQ/manageiq-api/pull/370)
-
-### Fixed
-- Ensure refresh => true option gets passed for service_template refresh [(#386)](https://github.com/ManageIQ/manageiq-api/pull/386)
-- use request_admin_user? [(#385)](https://github.com/ManageIQ/manageiq-api/pull/385)
-
-## Unreleased as of Sprint 86 ending 2018-05-21
-
-### Added
-- Adds request_retire action for Vms and Services [(#380)](https://github.com/ManageIQ/manageiq-api/pull/380)
-- Creating PhysicalChassis controller and adding endpoint configuration [(#362)](https://github.com/ManageIQ/manageiq-api/pull/362)
 
 ## Gaprindashvili-3 released 2018-05-15
 
@@ -118,47 +151,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Add svc_catalog_provision product feature to service dialog queries [(#343)](https://github.com/ManageIQ/manageiq-api/pull/343)
 - Add refresh parameter to ResourceActionWorkflow initialization [(#365)](https://github.com/ManageIQ/manageiq-api/pull/365)
 
-## Unreleased as of Sprint 85 ending 2018-05-07
-
-### Added
-- Updated token manager initializer to log the configured server session_store [(#376)](https://github.com/ManageIQ/manageiq-api/pull/376)
-- Adding support for collection_names whose plural and singular are the same [(#364)](https://github.com/ManageIQ/manageiq-api/pull/364)
-- Implementing change password action for providers endpoint [(#309)](https://github.com/ManageIQ/manageiq-api/pull/309)
-
-## Unreleased as of Sprint 84 ending 2018-04-23
-
-### Added
-- Adding tagging support for additional collections [(#361)](https://github.com/ManageIQ/manageiq-api/pull/361)
-- Add update action for templates [(#341)](https://github.com/ManageIQ/manageiq-api/pull/341)
-
-### Fixed
-- Always challenge a user with no/bad credentials [(#359)](https://github.com/ManageIQ/manageiq-api/pull/359)
-
-## Unreleased as of Sprint 83 ending 2018-04-09
-
-### Added
-- Add create action for templates [(#337)](https://github.com/ManageIQ/manageiq-api/pull/337)
-- Add delete action for templates [(#328)](https://github.com/ManageIQ/manageiq-api/pull/328)
-
-### Fixed
-- Enhanced API to catch Settings validation errors [(#356)](https://github.com/ManageIQ/manageiq-api/pull/356)
-
-## Unreleased as of Sprint 82 ending 2018-03-26
-
-### Added
-- Added the enterprise_href in the server_info section of the entrypoint [(#351)](https://github.com/ManageIQ/manageiq-api/pull/351)
-- Assign and Unassign alert definition profiles [(#348)](https://github.com/ManageIQ/manageiq-api/pull/348)
-- Add enterprise collection [(#346)](https://github.com/ManageIQ/manageiq-api/pull/346)
-
-## Unreleased as of Sprint 81 ending 2018-03-12
-
-### Added
-- Add Lans subcollection to Hosts / Providers [(#342)](https://github.com/ManageIQ/manageiq-api/pull/342)
-- Add networks subcollection to providers [(#339)](https://github.com/ManageIQ/manageiq-api/pull/339)
-- Folders subcollection on providers [(#338)](https://github.com/ManageIQ/manageiq-api/pull/338)
-- Add pause and resume actions to Providers [(#334)](https://github.com/ManageIQ/manageiq-api/pull/334)
-- Queue chargeback reports of services [(#301)](https://github.com/ManageIQ/manageiq-api/pull/301)
-
 ## Gaprindashvili-2 released 2018-03-06
 
 ### Fixed
@@ -167,25 +159,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Union edit service_dialog API call with other calls [(#285)](https://github.com/ManageIQ/manageiq-api/pull/285)
 - Add condition on log warning for service dialogs [(#314)](https://github.com/ManageIQ/manageiq-api/pull/314)
 - Ensure request task options are keyed with symbols [(#317)](https://github.com/ManageIQ/manageiq-api/pull/317)
-
-## Unreleased as of Sprint 80 ending 2018-02-26
-
-### Added
-- Return product features for all of a user's groups on the API entrypoint [(#311)](https://github.com/ManageIQ/manageiq-api/pull/311)
-- Delete of search filters [(#306)](https://github.com/ManageIQ/manageiq-api/pull/306)
-- Allow additional provider parameters to be specified on create [(#279)](https://github.com/ManageIQ/manageiq-api/pull/279)
-- Adding support to apply_config_pattern operation via the REST API [(#278)](https://github.com/ManageIQ/manageiq-api/pull/278)
-
-### Fixed
-- Only allow one cart to be created at a time [(#324)](https://github.com/ManageIQ/manageiq-api/pull/324)
-- Make cloud_tenants and flavors subcollections consistent with others [(#321)](https://github.com/ManageIQ/manageiq-api/pull/321)
-- Fix error message for required params on metric rollups subcollection [(#308)](https://github.com/ManageIQ/manageiq-api/pull/308)
-- AssetDetails model should be AssetDetail [(#291)](https://github.com/ManageIQ/manageiq-api/pull/291)
-
-## Unreleased as of Sprint 79 ending 2018-02-12
-
-### Fixed
-- Do not return duplicate "edit" action entries [(#318)](https://github.com/ManageIQ/manageiq-api/pull/318)
 
 ## Gaprindashvili-1
 
@@ -285,72 +258,5 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Removed
 - Remove Middleware API [(#255)](https://github.com/ManageIQ/manageiq-api/pull/255)
-
-## Unreleased as of Sprint 78 ending 2018-01-29
-
-### Added
-- Adding support of basic PATCH signatures for API resources [(#302)](https://github.com/ManageIQ/manageiq-api/pull/302)
-- Return Time in API entrypoint server_info [(#297)](https://github.com/ManageIQ/manageiq-api/pull/297)
-
-### Fixed
-- Fix picture fetching as an attribute [(#294)](https://github.com/ManageIQ/manageiq-api/pull/294)
-- Do not return picture content on create [(#292)](https://github.com/ManageIQ/manageiq-api/pull/292)
-- Fix special characters in MIQ_GROUP header [(#287)](https://github.com/ManageIQ/manageiq-api/pull/287)
-- Remove groups from editable attributes for users [(#286)](https://github.com/ManageIQ/manageiq-api/pull/286)
-- Updating the API so it now returns nil attributes. [(#253)](https://github.com/ManageIQ/manageiq-api/pull/253)
-- add image scanning endpoint [(#245)](https://github.com/ManageIQ/manageiq-api/pull/245)
-
-## Unreleased as of Sprint 77 ending 2018-01-15
-
-### Added
-- Add Settings API for servers and regions [(#275)](https://github.com/ManageIQ/manageiq-api/pull/275)
-
-### Fixed
-- Update role identifiers for cloud subnets subcollection [(#280)](https://github.com/ManageIQ/manageiq-api/pull/280)
-- Update dialog copy product feature [(#262)](https://github.com/ManageIQ/manageiq-api/pull/262)
-- Fix regression for expansion of subcollection on a resource [(#261)](https://github.com/ManageIQ/manageiq-api/pull/261)
-- Squeeze consecutive slashes in the path portion of the URI [(#228)](https://github.com/ManageIQ/manageiq-api/pull/228)
-
-## Unreleased as of Sprint 76 ending 2018-01-01
-
-### Added
-- Allow assigning/un-assigning of alert definitions to alert profiles [(#149)](https://github.com/ManageIQ/manageiq-api/pull/149)
-
-## Unreleased as of Sprint 75 ending 2017-12-11
-
-### Added
-- Generic Object Definition OPTIONS: send hashes rather than arrays [(#238)](https://github.com/ManageIQ/manageiq-api/pull/238)
-- Use type names directly from GenericObjectDefinition object [(#232)](https://github.com/ManageIQ/manageiq-api/pull/232)
-- Add delete for router [(#193)](https://github.com/ManageIQ/manageiq-api/pull/193)
-
-## Unreleased as of Sprint 74 ending 2017-11-27
-
-### Added
-- Add subresource_action_identifier spec helper [(#225)](https://github.com/ManageIQ/manageiq-api/pull/225)
-- Adding support for optional token_ttl in the UserTokenService. [(#214)](https://github.com/ManageIQ/manageiq-api/pull/214)
-- Adding custom_actions support for /api/cloud_networks [(#200)](https://github.com/ManageIQ/manageiq-api/pull/200)
-- Add support for /api/switches [(#191)](https://github.com/ManageIQ/manageiq-api/pull/191)
-- Add support for /api/container_volumes [(#190)](https://github.com/ManageIQ/manageiq-api/pull/190)
-- Add support for /api/container_templates [(#188)](https://github.com/ManageIQ/manageiq-api/pull/188)
-- Adding support for /api/container_images [(#185)](https://github.com/ManageIQ/manageiq-api/pull/185)
-- Adding support for /api/container_groups [(#184)](https://github.com/ManageIQ/manageiq-api/pull/184)
-- Adding support for /api/cloud_object_store_containers [(#183)](https://github.com/ManageIQ/manageiq-api/pull/183)
-- Add custom action support for models already exposed in api that need it [(#163)](https://github.com/ManageIQ/manageiq-api/pull/163)
-
-## Unreleased as of Sprint 72 ending 2017-10-30
-
-### Added
-- Container Nodes Collection [(#129)](https://github.com/ManageIQ/manageiq-api/pull/129)
-- encrypt/decrypt for Automate Workspace objects [(#124)](https://github.com/ManageIQ/manageiq-api/pull/124)
-- Allow update to request task as a subcollection of request [(#117)](https://github.com/ManageIQ/manageiq-api/pull/117)
-- Paginate all the things [(#113)](https://github.com/ManageIQ/manageiq-api/pull/113)
-- Add flavors create delete to api [(#14)](https://github.com/ManageIQ/manageiq-api/pull/14)
-
-### Fixed
-- Add symbolization to data for Custom Buttons to fix a UI icon issue [(#151)](https://github.com/ManageIQ/manageiq-api/pull/151)
-- Return correct href for collections on Index [(#150)](https://github.com/ManageIQ/manageiq-api/pull/150)
-- Return only id attributes if specified [(#144)](https://github.com/ManageIQ/manageiq-api/pull/144)
-- Blacklist Config Values [(#135)](https://github.com/ManageIQ/manageiq-api/pull/135)
-- Symbolize parameters before sending to backend [(#133)](https://github.com/ManageIQ/manageiq-api/pull/133)
 
 ### Initial changelog added
