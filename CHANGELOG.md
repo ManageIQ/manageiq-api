@@ -62,11 +62,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Adding support for /api/container_groups [(#184)](https://github.com/ManageIQ/manageiq-api/pull/184)
 - Adding support for /api/cloud_object_store_containers [(#183)](https://github.com/ManageIQ/manageiq-api/pull/183)
 - Add custom action support for models already exposed in api that need it [(#163)](https://github.com/ManageIQ/manageiq-api/pull/163)
-- Container Nodes Collection [(#129)](https://github.com/ManageIQ/manageiq-api/pull/129)
-- encrypt/decrypt for Automate Workspace objects [(#124)](https://github.com/ManageIQ/manageiq-api/pull/124)
-- Allow update to request task as a subcollection of request [(#117)](https://github.com/ManageIQ/manageiq-api/pull/117)
-- Paginate all the things [(#113)](https://github.com/ManageIQ/manageiq-api/pull/113)
-- Add flavors create delete to api [(#14)](https://github.com/ManageIQ/manageiq-api/pull/14)
 
 ### Fixed
 - EMS Cloud Refresh is missing [(#428)](https://github.com/ManageIQ/manageiq-api/pull/428)
@@ -97,11 +92,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Update dialog copy product feature [(#262)](https://github.com/ManageIQ/manageiq-api/pull/262)
 - Fix regression for expansion of subcollection on a resource [(#261)](https://github.com/ManageIQ/manageiq-api/pull/261)
 - Squeeze consecutive slashes in the path portion of the URI [(#228)](https://github.com/ManageIQ/manageiq-api/pull/228)
-- Add symbolization to data for Custom Buttons to fix a UI icon issue [(#151)](https://github.com/ManageIQ/manageiq-api/pull/151)
-- Return correct href for collections on Index [(#150)](https://github.com/ManageIQ/manageiq-api/pull/150)
-- Return only id attributes if specified [(#144)](https://github.com/ManageIQ/manageiq-api/pull/144)
-- Blacklist Config Values [(#135)](https://github.com/ManageIQ/manageiq-api/pull/135)
-- Symbolize parameters before sending to backend [(#133)](https://github.com/ManageIQ/manageiq-api/pull/133)
 
 ## Gaprindashvili-5 - Released 2018-09-07
 
@@ -160,7 +150,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Add condition on log warning for service dialogs [(#314)](https://github.com/ManageIQ/manageiq-api/pull/314)
 - Ensure request task options are keyed with symbols [(#317)](https://github.com/ManageIQ/manageiq-api/pull/317)
 
-## Gaprindashvili-1
+## Gaprindashvili-1 released 2018-01-31
 
 ### Added
 - Tasks: delete support [(#220)](https://github.com/ManageIQ/manageiq-api/pull/220)
@@ -211,6 +201,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Metric rollups api [(#4)](https://github.com/ManageIQ/manageiq-api/pull/4)
 - Mask password attributes from AutomateWorkspace [(#168)](https://github.com/ManageIQ/manageiq-api/pull/168)
 - API Enhancement making the system token a one-time token. [(#178)](https://github.com/ManageIQ/manageiq-api/pull/178)
+- Container Nodes Collection [(#129)](https://github.com/ManageIQ/manageiq-api/pull/129)
+- encrypt/decrypt for Automate Workspace objects [(#124)](https://github.com/ManageIQ/manageiq-api/pull/124)
+- Allow update to request task as a subcollection of request [(#117)](https://github.com/ManageIQ/manageiq-api/pull/117)
+- Paginate all the things [(#113)](https://github.com/ManageIQ/manageiq-api/pull/113)
+- Add flavors create delete to api [(#14)](https://github.com/ManageIQ/manageiq-api/pull/14)
 
 ### Fixed
 - Ensure that correct target is passed to resource_search on dialog refresh [(#246)](https://github.com/ManageIQ/manageiq-api/pull/246)
@@ -255,6 +250,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Don't respond with 400 on ArgumentError [(#174)](https://github.com/ManageIQ/manageiq-api/pull/174)
 - Update dialog copy product feature [(#262)](https://github.com/ManageIQ/manageiq-api/pull/262)
 - Fix regression for expansion of subcollection on a resource [(#261)](https://github.com/ManageIQ/manageiq-api/pull/261)
+- Add symbolization to data for Custom Buttons to fix a UI icon issue [(#151)](https://github.com/ManageIQ/manageiq-api/pull/151)
+- Return correct href for collections on Index [(#150)](https://github.com/ManageIQ/manageiq-api/pull/150)
+- Return only id attributes if specified [(#144)](https://github.com/ManageIQ/manageiq-api/pull/144)
+- Blacklist Config Values [(#135)](https://github.com/ManageIQ/manageiq-api/pull/135)
+- Symbolize parameters before sending to backend [(#133)](https://github.com/ManageIQ/manageiq-api/pull/133)
 
 ### Removed
 - Remove Middleware API [(#255)](https://github.com/ManageIQ/manageiq-api/pull/255)
