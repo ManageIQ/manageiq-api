@@ -466,11 +466,13 @@ describe "Service Templates API" do
 
   describe "Service Templates order" do
     let(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog, :orderable) }
-    let(:product_settings) { double(:allow_api_service_ordering => allow_api_service_ordering) }
     let(:allow_api_service_ordering) { true }
 
     before do
-      stub_settings_merge(:product => product_settings)
+      stub_settings_merge(:product => {:allow_api_service_ordering => allow_api_service_ordering})
+      userid = User.first.userid
+      test_token = Api::UserTokenService.new.generate_token(userid, "api")
+      request_headers["x-auth-token"] = test_token
     end
 
     it "is forbidden without appropriate role" do
@@ -498,7 +500,7 @@ describe "Service Templates API" do
 
         expected = {
           "results" => [a_hash_including("href"    => a_string_including(api_service_requests_url),
-                                         "options" => a_hash_including("request_options" => a_hash_including("submit_workflow"=>false)))]
+                                         "options" => a_hash_including("request_options" => a_hash_including("submit_workflow"=>true)))]
         }
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include(expected)
@@ -585,10 +587,13 @@ describe "Service Templates API" do
 
     context "with the product setting not allowing automate to run on submit" do
       let(:template_no_display) { FactoryGirl.create(:service_template, :display => false) }
+      let(:allow_api_service_ordering) { false }
+
       context "if the token info is blank" do
         before do
           request_headers["x-auth_token"] = ""
         end
+
         it "rejects the request" do
           api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
           post(api_service_template_url(nil, template_no_display), :params => { :action => "order" })
