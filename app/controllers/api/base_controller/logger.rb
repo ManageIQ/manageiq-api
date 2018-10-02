@@ -66,26 +66,22 @@ module Api
 
       def api_log_error(msg)
         method = api_get_method_name(caller.first, __method__)
-        log_prefix = "MIQ(#{self.class.name}.#{method})"
 
-        $api_log.error("#{log_prefix} #{ApiConfig.base.name} Error")
-        msg.split("\n").each { |l| $api_log.error("#{log_prefix} #{l}") }
+        $api_log.error("MIQ(#{self.class.name}.#{method}) #{msg}")
       end
 
       def api_log_debug(msg)
         if api_log_debug?
           method = api_get_method_name(caller.first, __method__)
-          log_prefix = "MIQ(#{self.class.name}.#{method})"
 
-          msg.split("\n").each { |l| $api_log.info("#{log_prefix} #{l}") }
+          $api_log.debug("MIQ(#{self.class.name}.#{method}) #{msg}")
         end
       end
 
       def api_log_info(msg)
         method = api_get_method_name(caller.first, __method__)
-        log_prefix = "MIQ(#{self.class.name}.#{method})"
 
-        msg.split("\n").each { |l| $api_log.info("#{log_prefix} #{l}") }
+        $api_log.info("MIQ(#{self.class.name}.#{method}) #{msg}")
       end
 
       private
