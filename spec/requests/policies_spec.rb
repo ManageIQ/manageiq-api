@@ -345,7 +345,7 @@ describe "Policies API" do
         "description"    => "sample policy",
         "name"           => "sample policy",
         "mode"           => "compliance",
-        "towhat"         => "ManageIQ::Providers::Redhat::InfraManager",
+        "towhat"         => "ExtManagementSystem",
         "conditions_ids" => [conditions.first.id, conditions.second.id],
       }
     end
@@ -355,7 +355,7 @@ describe "Policies API" do
       post(api_policies_url, :params => sample_policy.merge!(miq_policy_contents))
       policy = MiqPolicy.find(response.parsed_body["results"].first["id"])
       expect(response.parsed_body["results"].first["name"]).to eq("sample policy")
-      expect(response.parsed_body["results"].first["towhat"]).to eq("ManageIQ::Providers::Redhat::InfraManager")
+      expect(response.parsed_body["results"].first["towhat"]).to eq("ExtManagementSystem")
       expect(policy).to be_truthy
       expect(policy.conditions.count).to eq(2)
       expect(policy.actions.count).to eq(1)
