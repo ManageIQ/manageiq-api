@@ -4,6 +4,7 @@ module Api
     include Subcollections::LoadBalancers
     include Subcollections::SecurityGroups
     include Subcollections::Snapshots
+    extend Api::Mixins::CentralAdmin
 
     DEFAULT_ROLE = 'ems_operations'.freeze
 
@@ -29,6 +30,7 @@ module Api
         result
       end
     end
+    central_admin :stop_resource, :stop
 
     def start_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
@@ -42,6 +44,7 @@ module Api
         result
       end
     end
+    central_admin :start_resource, :start
 
     def pause_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for pausing a #{type} resource" unless id
@@ -68,6 +71,7 @@ module Api
         result
       end
     end
+    central_admin :suspend_resource, :suspend
 
     def shelve_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for shelving a #{type} resource" unless id
@@ -94,6 +98,7 @@ module Api
         result
       end
     end
+    central_admin :reboot_guest_resource, :reboot_guest
 
     def reset_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for resetting a #{type} resource" unless id
@@ -107,6 +112,7 @@ module Api
         result
       end
     end
+    central_admin :reset_resource, :reset
 
     private
 

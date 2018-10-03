@@ -17,7 +17,7 @@ RSpec.describe "Instances API" do
   let(:instance_url) { api_instance_url(nil, instance) }
   let(:instance1_url) { api_instance_url(nil, instance1) }
   let(:instance2_url) { api_instance_url(nil, instance2) }
-  let(:invalid_instance_url) { api_instance_url(nil, 999_999) }
+  let(:invalid_instance_url) { api_instance_url(nil, ApplicationRecord.id_in_region(999_999, ApplicationRecord.my_region_number)) }
   let(:instances_list) { [instance1_url, instance2_url] }
   let(:instance_guid) { instance.guid }
 
@@ -842,5 +842,15 @@ RSpec.describe "Instances API" do
       }
       expect(response.parsed_body).to include(expected)
     end
+  end
+
+  describe "/api/instances central admin" do
+    let(:resource_type) { "instance" }
+
+    include_examples "resource power operations", :vm_amazon, :reboot_guest
+    include_examples "resource power operations", :vm_amazon, :reset
+    include_examples "resource power operations", :vm_amazon, :start
+    include_examples "resource power operations", :vm_amazon, :stop
+    include_examples "resource power operations", :vm_amazon, :suspend
   end
 end
