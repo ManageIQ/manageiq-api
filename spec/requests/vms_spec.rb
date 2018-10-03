@@ -22,7 +22,7 @@ describe "Vms API" do
   let(:vm_guid)            { vm.guid }
   let(:vm_url)             { api_vm_url(nil, vm) }
 
-  let(:invalid_vm_url) { api_vm_url(nil, 999_999) }
+  let(:invalid_vm_url) { api_vm_url(nil, ApplicationRecord.id_in_region(999_999, ApplicationRecord.my_region_number)) }
 
   def update_raw_power_state(state, *vms)
     vms.each { |vm| vm.update_attributes!(:raw_power_state => state) }
@@ -1735,5 +1735,16 @@ describe "Vms API" do
 
       expect(response).to have_http_status(:forbidden)
     end
+  end
+
+  describe "/api/vms central admin" do
+    let(:resource_type) { "vm" }
+
+    include_examples "resource power operations", :vm_vmware, :reboot_guest
+    include_examples "resource power operations", :vm_vmware, :reset
+    include_examples "resource power operations", :vm_vmware, :shutdown_guest
+    include_examples "resource power operations", :vm_vmware, :start
+    include_examples "resource power operations", :vm_vmware, :stop
+    include_examples "resource power operations", :vm_vmware, :suspend
   end
 end

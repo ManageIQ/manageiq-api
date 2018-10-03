@@ -9,6 +9,7 @@ module Api
     include Subcollections::Software
     include Subcollections::Snapshots
     include Subcollections::MetricRollups
+    extend Api::Mixins::CentralAdmin
 
     VALID_EDIT_ATTRS = %w(description child_resources parent_resource).freeze
     RELATIONSHIP_COLLECTIONS = %w(vms templates).freeze
@@ -26,6 +27,7 @@ module Api
         result
       end
     end
+    central_admin :start_resource, :start
 
     def stop_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for stopping a #{type} resource" unless id
@@ -39,6 +41,7 @@ module Api
         result
       end
     end
+    central_admin :stop_resource, :stop
 
     def suspend_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for suspending a #{type} resource" unless id
@@ -52,6 +55,7 @@ module Api
         result
       end
     end
+    central_admin :suspend_resource, :suspend
 
     def pause_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for pausing a #{type} resource" unless id
@@ -188,6 +192,7 @@ module Api
         result
       end
     end
+    central_admin :reset_resource, :reset
 
     def reboot_guest_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for rebooting a #{type} resource" unless id
@@ -201,6 +206,7 @@ module Api
         result
       end
     end
+    central_admin :reboot_guest_resource, :reboot_guest
 
     def shutdown_guest_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for shutting down a #{type} resource" unless id
@@ -214,6 +220,7 @@ module Api
         result
       end
     end
+    central_admin :shutdown_guest_resource, :shutdown_guest
 
     def refresh_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for refreshing a #{type} resource" unless id
