@@ -305,6 +305,79 @@ describe "Transformation Mappings" do
           expect(updated_mapping_destination).to match_array(reference_destination)
           expect(transformation_mapping.transformation_mapping_items.count).to eq(TransformationMappingItem.all.count)
         end
+
+        context "can validate vms with csv data and service_template_id are specified" do
+          it "vm belongs to the service_template record" do
+            api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
+            source_ems = FactoryGirl.create(:ems_cluster)
+            destination_ems = FactoryGirl.create(:ems_cluster)
+            transformation_mapping =
+              FactoryGirl.create(:transformation_mapping,
+                                 :transformation_mapping_items => [TransformationMappingItem.new(:source => source_ems, :destination => destination_ems)])
+            vm = FactoryGirl.create(:vm_vmware, :name => 'test_vm', :ems_cluster => source_ems, :ext_management_system => FactoryGirl.create(:ext_management_system))
+            service_template = FactoryGirl.create(:service_template_transformation_plan)
+
+            FactoryGirl.create(
+              :service_resource,
+              :resource         => vm,
+              :service_template => service_template,
+              :status           => "Active"
+            )
+
+            request = {
+              "action"              => "validate_vms",
+              "import"              => [
+                {"name" => vm.name, "uid" => vm.uid_ems}
+              ],
+              "service_template_id" => service_template.id.to_s
+            }
+            post(api_transformation_mapping_url(nil, transformation_mapping), :params => request)
+
+            expected = {
+              "valid"      => [a_hash_including("name" => vm.name, "id" => vm.id.to_s, "status" => "ok", "reason" => "ok", "cluster" => source_ems.name)],
+              "invalid"    => [],
+              "conflicted" => []
+            }
+            expect(response).to have_http_status(:ok)
+            expect(response.parsed_body).to include(expected)
+          end
+
+          it "vm does not belong to the service_template record" do
+            api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
+            source_ems = FactoryGirl.create(:ems_cluster)
+            destination_ems = FactoryGirl.create(:ems_cluster)
+            transformation_mapping =
+              FactoryGirl.create(:transformation_mapping,
+                                 :transformation_mapping_items => [TransformationMappingItem.new(:source => source_ems, :destination => destination_ems)])
+            vm = FactoryGirl.create(:vm_vmware, :name => 'test_vm', :ems_cluster => source_ems, :ext_management_system => FactoryGirl.create(:ext_management_system))
+            service_template = FactoryGirl.create(:service_template_transformation_plan)
+            service_template2 = FactoryGirl.create(:service_template_transformation_plan)
+
+            FactoryGirl.create(
+              :service_resource,
+              :resource         => vm,
+              :service_template => service_template,
+              :status           => "Active"
+            )
+
+            request = {
+              "action"              => "validate_vms",
+              "import"              => [
+                {"name" => vm.name, "uid" => vm.uid_ems}
+              ],
+              "service_template_id" => service_template2.id.to_s
+            }
+            post(api_transformation_mapping_url(nil, transformation_mapping), :params => request)
+
+            expected = {
+              "valid"      => [],
+              "invalid"    => [a_hash_including("name" => "test_vm", "reason" => "in_other_plan")],
+              "conflicted" => []
+            }
+            expect(response).to have_http_status(:ok)
+            expect(response.parsed_body).to include(expected)
+          end
+        end
       end
     end
 
