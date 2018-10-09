@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 96 ending 2018-10-08
+
+### Added
+- Add basic CentralAdmin support to the API [(#472)](https://github.com/ManageIQ/manageiq-api/pull/472)
+
+### Fixed
+- Pass `User#userid` instead of `User#id` to queue chargeback report [(#480)](https://github.com/ManageIQ/manageiq-api/pull/480)
+- Display plugins in the product_info under the root route [(#473)](https://github.com/ManageIQ/manageiq-api/pull/473)
+
 ## Unreleased as of Sprint 95 ending 2018-09-24
 
 ### Added
