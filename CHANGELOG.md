@@ -9,10 +9,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Add basic CentralAdmin support to the API [(#472)](https://github.com/ManageIQ/manageiq-api/pull/472)
+- Display plugins in the product_info under the root route [(#473)](https://github.com/ManageIQ/manageiq-api/pull/473)
 
 ### Fixed
 - Pass `User#userid` instead of `User#id` to queue chargeback report [(#480)](https://github.com/ManageIQ/manageiq-api/pull/480)
-- Display plugins in the product_info under the root route [(#473)](https://github.com/ManageIQ/manageiq-api/pull/473)
 
 ## Unreleased as of Sprint 95 ending 2018-09-24
 
