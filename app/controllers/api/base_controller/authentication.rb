@@ -7,11 +7,13 @@ module Api
       # REST APIs Authenticator and Redirector
       #
       def require_api_user_or_token
+        using_http_basic = false
         if request.headers[HttpHeaders::MIQ_TOKEN]
           authenticate_with_system_token(request.headers[HttpHeaders::MIQ_TOKEN])
         elsif request.headers[HttpHeaders::AUTH_TOKEN]
           authenticate_with_user_token(request.headers[HttpHeaders::AUTH_TOKEN])
         else
+          using_http_basic = true
           success = authenticate_with_http_basic do |u, p|
             begin
               timeout = ::Settings.api.authentication_timeout.to_i_with_method
@@ -27,7 +29,11 @@ module Api
       rescue AuthenticationError => e
         api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
-        request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize.to_json)
+        if using_http_basic
+          request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize.to_json)
+        else
+          render :status => 401, :json => ErrorSerializer.new(:unauthorized, e).serialize.to_json
+        end
         log_api_response
       end
 
