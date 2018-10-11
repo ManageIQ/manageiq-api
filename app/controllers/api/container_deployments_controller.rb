@@ -17,9 +17,7 @@ module Api
     private
 
     def authentication_requested?
-      [HttpHeaders::MIQ_TOKEN, HttpHeaders::AUTH_TOKEN, "HTTP_AUTHORIZATION"].any? do |header|
-        request.headers.include?(header)
-      end
+      !!auth_mechanism
     end
   end
 end
