@@ -222,6 +222,12 @@ describe "Authentication API" do
           expect(response).to have_http_status(:unauthorized)
         end
 
+        it "authentication using a bad token doesn't fallback to HTTP Basic" do
+          get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => "badtoken"}
+
+          expect(response.headers.keys).not_to include('WWW-Authenticate')
+        end
+
         it "authentication using a valid token" do
           api_basic_authorize
 

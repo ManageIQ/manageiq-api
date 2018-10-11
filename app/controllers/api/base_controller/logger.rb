@@ -13,12 +13,9 @@ module Api
       def log_api_auth
         return unless api_log_info?
         if @miq_token_hash
-          auth_type = "system"
           log_request("System Auth", {:x_miq_token => request.headers[HttpHeaders::MIQ_TOKEN]}.merge(@miq_token_hash))
-        else
-          auth_type = request.headers[HttpHeaders::AUTH_TOKEN].blank? ? "basic" : "token"
         end
-        log_request("Authentication", :type        => auth_type,
+        log_request("Authentication", :type        => auth_mechanism.to_s,
                                       :token       => request.headers[HttpHeaders::AUTH_TOKEN],
                                       :x_miq_group => request.headers[HttpHeaders::MIQ_GROUP],
                                       :user        => User.current_user.userid)

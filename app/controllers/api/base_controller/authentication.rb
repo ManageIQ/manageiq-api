@@ -3,23 +3,34 @@ module Api
     module Authentication
       SYSTEM_TOKEN_TTL = 30.seconds
 
+      def auth_mechanism
+        if request.headers[HttpHeaders::MIQ_TOKEN]
+          :system
+        elsif request.headers[HttpHeaders::AUTH_TOKEN]
+          :token
+        elsif request.headers["HTTP_AUTHORIZATION"]
+          :basic
+        else
+          # no attempt at authentication, usually falls back to :basic
+          nil
+        end
+      end
+
       #
       # REST APIs Authenticator and Redirector
       #
       def require_api_user_or_token
-        if request.headers[HttpHeaders::MIQ_TOKEN]
+        case auth_mechanism
+        when :system
           authenticate_with_system_token(request.headers[HttpHeaders::MIQ_TOKEN])
-        elsif request.headers[HttpHeaders::AUTH_TOKEN]
+        when :token
           authenticate_with_user_token(request.headers[HttpHeaders::AUTH_TOKEN])
-        else
+        when :basic, nil
           success = authenticate_with_http_basic do |u, p|
             begin
               timeout = ::Settings.api.authentication_timeout.to_i_with_method
               user = User.authenticate(u, p, request, :require_user => true, :timeout => timeout)
-              auth_user_obj = userid_to_userobj(user.userid)
-              authorize_user_group(auth_user_obj)
-              validate_user_identity(auth_user_obj)
-              User.current_user = auth_user_obj
+              auth_user(user.userid)
             rescue MiqException::MiqEVMLoginError => e
               raise AuthenticationError, e.message
             end
@@ -30,7 +41,12 @@ module Api
       rescue AuthenticationError => e
         api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
-        request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize.to_json)
+        case auth_mechanism
+        when :system, :token
+          render :status => 401, :json => ErrorSerializer.new(:unauthorized, e).serialize.to_json
+        when :basic, nil
+          request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize.to_json)
+        end
         log_api_response
       end
 
@@ -39,10 +55,6 @@ module Api
           :locale                     => I18n.locale.to_s.sub('-', '_'),
           :asynchronous_notifications => ::Settings.server.asynchronous_notifications,
         }.merge(User.current_user.settings)
-      end
-
-      def userid_to_userobj(userid)
-        User.lookup_by_identity(userid)
       end
 
       def authorize_user_group(user_obj)
@@ -68,6 +80,13 @@ module Api
         Environment.user_token_service.token_mgr('api')
       end
 
+      def auth_user(userid)
+        auth_user_obj = User.lookup_by_identity(userid)
+        authorize_user_group(auth_user_obj)
+        validate_user_identity(auth_user_obj)
+        User.current_user = auth_user_obj
+      end
+
       def authenticate_with_user_token(auth_token)
         if !api_token_mgr.token_valid?(auth_token)
           raise AuthenticationError, "Invalid Authentication Token #{auth_token} specified"
@@ -75,15 +94,11 @@ module Api
           userid = api_token_mgr.token_get_info(auth_token, :userid)
           raise AuthenticationError, "Invalid Authentication Token #{auth_token} specified" unless userid
 
-          auth_user_obj = userid_to_userobj(userid)
-
           unless request.headers['X-Auth-Skip-Token-Renewal'] == 'true'
             api_token_mgr.reset_token(auth_token)
           end
 
-          authorize_user_group(auth_user_obj)
-          validate_user_identity(auth_user_obj)
-          User.current_user = auth_user_obj
+          auth_user(userid)
         end
       end
 
@@ -95,11 +110,7 @@ module Api
 
         User.authorize_user(@miq_token_hash[:userid])
 
-        auth_user_obj = userid_to_userobj(@miq_token_hash[:userid])
-
-        authorize_user_group(auth_user_obj)
-        validate_user_identity(auth_user_obj)
-        User.current_user = auth_user_obj
+        auth_user(@miq_token_hash[:userid])
       rescue => err
         api_log_error("Authentication Failed with System Token\nX-MIQ-Token: #{x_miq_token}\nError: #{err}")
         raise AuthenticationError, "Invalid System Authentication Token specified"
