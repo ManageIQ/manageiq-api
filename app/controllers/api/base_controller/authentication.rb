@@ -3,17 +3,29 @@ module Api
     module Authentication
       SYSTEM_TOKEN_TTL = 30.seconds
 
+      def auth_mechanism
+        if request.headers[HttpHeaders::MIQ_TOKEN]
+          :system
+        elsif request.headers[HttpHeaders::AUTH_TOKEN]
+          :token
+        elsif request.headers["HTTP_AUTHORIZATION"]
+          :basic
+        else
+          # no attempt at authentication, usually falls back to :basic
+          nil
+        end
+      end
+
       #
       # REST APIs Authenticator and Redirector
       #
       def require_api_user_or_token
-        using_http_basic = false
-        if request.headers[HttpHeaders::MIQ_TOKEN]
+        case auth_mechanism
+        when :system
           authenticate_with_system_token(request.headers[HttpHeaders::MIQ_TOKEN])
-        elsif request.headers[HttpHeaders::AUTH_TOKEN]
+        when :token
           authenticate_with_user_token(request.headers[HttpHeaders::AUTH_TOKEN])
-        else
-          using_http_basic = true
+        when :basic, nil
           success = authenticate_with_http_basic do |u, p|
             begin
               timeout = ::Settings.api.authentication_timeout.to_i_with_method
@@ -29,10 +41,11 @@ module Api
       rescue AuthenticationError => e
         api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
-        if using_http_basic
-          request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize.to_json)
-        else
+        case auth_mechanism
+        when :system, :token
           render :status => 401, :json => ErrorSerializer.new(:unauthorized, e).serialize.to_json
+        when :basic, nil
+          request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize.to_json)
         end
         log_api_response
       end
