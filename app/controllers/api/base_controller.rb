@@ -20,10 +20,10 @@ module Api
     include ActionController::HttpAuthentication::Basic::ControllerMethods
 
     before_action :log_request_initiated
-    before_action :require_api_user_or_token, :except => [:options]
-    before_action :set_gettext_locale, :set_access_control_headers, :parse_api_request, :log_api_request,
-                  :validate_api_request
-    before_action :validate_api_action, :except => [:options]
+    before_action :require_api_user_or_token, :except => [:options, :product_info]
+    before_action :set_gettext_locale, :set_access_control_headers, :parse_api_request, :log_api_request
+    before_action :validate_api_request, :except => [:product_info]
+    before_action :validate_api_action, :except => [:options, :product_info]
     before_action :validate_response_format, :except => [:destroy]
     before_action :ensure_pagination, :only => :index
     after_action :log_api_response

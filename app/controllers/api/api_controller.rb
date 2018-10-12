@@ -6,18 +6,22 @@ module Api
 
     def index
       res = {
-        :name         => ApiConfig.base.name,
-        :description  => ApiConfig.base.description,
-        :version      => ManageIQ::Api::VERSION,
-        :versions     => entrypoint_versions,
-        :settings     => user_settings,
-        :identity     => auth_identity,
-        :server_info  => server_info,
-        :product_info => product_info
+        :name          => ApiConfig.base.name,
+        :description   => ApiConfig.base.description,
+        :version       => ManageIQ::Api::VERSION,
+        :versions      => entrypoint_versions,
+        :settings      => user_settings,
+        :identity      => auth_identity,
+        :server_info   => server_info,
+        :product_info  => product_info_data
       }
       res[:authorization] = auth_authorization if attribute_selection.include?("authorization")
       res[:collections]   = entrypoint_collections
       render_resource :entrypoint, res
+    end
+
+    def product_info
+      render_resource :product_info, product_info_data
     end
 
     private
@@ -70,14 +74,29 @@ module Api
       }
     end
 
-    def product_info
+    def product_info_data
       {
         :name                 => Vmdb::Appliance.PRODUCT_NAME,
         :name_full            => I18n.t("product.name_full"),
         :copyright            => I18n.t("product.copyright"),
         :support_website      => I18n.t("product.support_website"),
         :support_website_text => I18n.t("product.support_website_text"),
+        :branding_info        => branding_info
       }
+    end
+
+    def image_path(image)
+      ActionController::Base.helpers.image_path(image)
+    rescue Sprockets::FileNotFound # UI isn't loaded, we don't want images
+      nil
+    end
+
+    def branding_info
+      {
+        :brand      => Settings.server.custom_brand || image_path('layout/brand.svg'),
+        :logo       => Settings.server.custom_logo || image_path('layout/login-screen-logo.png'),
+        :login_logo => Settings.server.custom_login_logo.presence
+      }.compact
     end
 
     def plugin_info
