@@ -45,8 +45,6 @@ describe "Regions API" do
     let(:region_number) { ApplicationRecord.my_region_number + 1 }
     let(:id) { ApplicationRecord.id_in_region(1, region_number) }
     let(:region) { FactoryGirl.create(:miq_region, :id => id, :region => region_number) }
-    let(:zone) { FactoryGirl.create(:zone, :id => id) }
-    let!(:server) { EvmSpecHelper.remote_miq_server(:id => id, :zone => zone) }
     let(:original_timeout) { region.settings_for_resource[:api][:authentication_timeout] }
     let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
 
