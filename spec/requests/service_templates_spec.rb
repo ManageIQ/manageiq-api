@@ -480,7 +480,7 @@ describe "Service Templates API" do
 
         expected = {
           "results" => [a_hash_including("href"    => a_string_including(api_service_requests_url),
-                                         "options" => a_hash_including("request_options" => a_hash_including("submit_workflow"=>true)))]
+                                         "options" => a_hash_including("request_options" => a_hash_including("submit_workflow"=>false)))]
         }
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to include(expected)
@@ -562,6 +562,27 @@ describe "Service Templates API" do
 
         actions = response.parsed_body["actions"].collect { |action| action["name"] }
         expect(actions).to_not include("order")
+      end
+    end
+
+    context "with the product setting not allowing automate to run on submit" do
+      let(:template_no_display) { FactoryGirl.create(:service_template, :display => false) }
+      context "if the token info is blank" do
+        before do
+          request_headers["x-auth_token"] = ""
+        end
+        it "rejects the request" do
+          api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+          post(api_service_template_url(nil, template_no_display), :params => { :action => "order" })
+          expected = {
+            "error" => a_hash_including(
+              "kind"    => "bad_request",
+              "message" => /cannot be ordered/
+            )
+          }
+          expect(response).to have_http_status(:bad_request)
+          expect(response.parsed_body).to include(expected)
+        end
       end
     end
   end

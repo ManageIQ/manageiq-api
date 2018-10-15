@@ -358,15 +358,22 @@ describe "Service Catalogs API" do
        "status"         => "Ok"}
     end
 
-    let(:dialog1) { FactoryGirl.create(:dialog, :label => "Dialog1") }
-    let(:tab1)    { FactoryGirl.create(:dialog_tab, :label => "Tab1") }
-    let(:group1)  { FactoryGirl.create(:dialog_group, :label => "Group1") }
-    let(:text1)   { FactoryGirl.create(:dialog_field_text_box, :label => "TextBox1", :name => "text1") }
-    let(:ra1)     { FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog1) }
-    let(:st1)     { FactoryGirl.create(:service_template, :name => "service template 1", :display => true) }
-    let(:ra2)     { FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog1) }
-    let(:st2)     { FactoryGirl.create(:service_template, :name => "service template 2", :display => true) }
-    let(:sc)      { FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description") }
+    let(:dialog1)                                            { FactoryGirl.create(:dialog, :label => "Dialog1") }
+    let(:tab1)                                               { FactoryGirl.create(:dialog_tab, :label => "Tab1") }
+    let(:group1)                                             { FactoryGirl.create(:dialog_group, :label => "Group1") }
+    let(:text1)                                              { FactoryGirl.create(:dialog_field_text_box, :label => "TextBox1", :name => "text1") }
+    let(:ra1)                                                { FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog1) }
+    let(:st1)                                                { FactoryGirl.create(:service_template, :name => "service template 1", :display => true) }
+    let(:ra2)                                                { FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog1) }
+    let(:st2)                                                { FactoryGirl.create(:service_template, :name => "service template 2", :display => true) }
+    let(:sc)                                                 { FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description") }
+
+    before do
+      stub_settings_merge(:product => {:run_automate_methods_on_service_api_submit => true})
+      userid = User.first.userid
+      test_token = Api::UserTokenService.new.generate_token(userid, "api")
+      request_headers["x-auth-token"] = test_token
+    end
 
     def init_st(service_template, resource_action)
       service_template.resource_actions = [resource_action]
