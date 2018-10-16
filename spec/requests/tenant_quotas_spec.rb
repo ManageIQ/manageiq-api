@@ -131,6 +131,12 @@ describe "tenant quotas API" do
       expect(response).to have_http_status(:no_content)
     end
 
+    it "supports OPTIONS requests on a subcollection without authorization" do
+      options "/api/tenants/#{tenant.id}/quotas"
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to be_empty
+    end
+
     it "can delete multiple quotas from a tenant with POST" do
       api_basic_authorize action_identifier(:quotas, :delete, :subcollection_actions, :post)
 
