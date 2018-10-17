@@ -62,6 +62,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Adding support for /api/container_groups [(#184)](https://github.com/ManageIQ/manageiq-api/pull/184)
 - Adding support for /api/cloud_object_store_containers [(#183)](https://github.com/ManageIQ/manageiq-api/pull/183)
 - Add custom action support for models already exposed in api that need it [(#163)](https://github.com/ManageIQ/manageiq-api/pull/163)
+- Add basic CentralAdmin support to the API [(#472)](https://github.com/ManageIQ/manageiq-api/pull/472)
 
 ### Fixed
 - EMS Cloud Refresh is missing [(#428)](https://github.com/ManageIQ/manageiq-api/pull/428)
@@ -92,6 +93,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Update dialog copy product feature [(#262)](https://github.com/ManageIQ/manageiq-api/pull/262)
 - Fix regression for expansion of subcollection on a resource [(#261)](https://github.com/ManageIQ/manageiq-api/pull/261)
 - Squeeze consecutive slashes in the path portion of the URI [(#228)](https://github.com/ManageIQ/manageiq-api/pull/228)
+- Pass `User#userid` instead of `User#id` to queue chargeback report [(#480)](https://github.com/ManageIQ/manageiq-api/pull/480)
+- Fix policy spec due to new validation [(#484)](https://github.com/ManageIQ/manageiq-api/pull/484)
 
 ## Gaprindashvili-5 - Released 2018-09-07
 
