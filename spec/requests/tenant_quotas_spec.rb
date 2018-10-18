@@ -132,7 +132,7 @@ describe "tenant quotas API" do
     end
 
     it "supports OPTIONS requests on a subcollection without authorization" do
-      options "/api/tenants/#{tenant.id}/quotas"
+      options api_tenant_quotas_url(:c_id => tenant.id)
       expect(response).to have_http_status(:ok)
       expect(response.body).to be_empty
     end
