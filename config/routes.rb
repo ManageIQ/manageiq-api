@@ -57,6 +57,9 @@ Rails.application.routes.draw do
         end
 
         Array(collection.subcollections).each do |subcollection_name|
+          # OPTIONS action for each subcollection
+          match "/:c_id/#{subcollection_name}", :controller => collection_name, :action => :options, :via => :options, :as => nil, :subcollection => true
+
           Api::ApiConfig.collections[subcollection_name].verbs.each do |verb|
             case verb
             when :get

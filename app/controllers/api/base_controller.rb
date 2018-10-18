@@ -106,7 +106,11 @@ module Api
     end
 
     def options
-      render_options(@req.collection)
+      if params.key?(:subcollection)
+        render :json => ""
+      else
+        render_options(@req.collection)
+      end
     end
 
     def settings
