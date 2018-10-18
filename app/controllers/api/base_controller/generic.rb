@@ -65,10 +65,10 @@ module Api
         if api_user_role_allows?('miq_request_approval')
           klass = collection_class(type)
           if id
-            msg = "Retiring #{type} id #{id} immediately as a request."
+            msg = "#{User.current_user.userid} retiring #{type} id #{id} immediately as a request."
             resource = resource_search(id, type, klass)
             api_log_info(msg)
-            klass.make_retire_request(resource.id)
+            klass.make_retire_request(resource.id, User.current_user)
           else
             raise BadRequestError, "Must specify an id for retiring a #{type} resource"
           end
