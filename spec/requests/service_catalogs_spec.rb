@@ -375,6 +375,13 @@ describe "Service Catalogs API" do
       request_headers["x-auth-token"] = test_token
     end
 
+    before do
+      stub_settings_merge(:product => {:allow_api_service_ordering => true})
+      userid = User.first.userid
+      test_token = Api::UserTokenService.new.generate_token(userid, "api")
+      request_headers["x-auth-token"] = test_token
+    end
+
     def init_st(service_template, resource_action)
       service_template.resource_actions = [resource_action]
       dialog1.dialog_tabs << tab1
