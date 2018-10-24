@@ -309,12 +309,14 @@ describe "Transformation Mappings" do
         context "can validate vms with csv data and service_template_id are specified" do
           it "vm belongs to the service_template record" do
             api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
-            source_ems = FactoryGirl.create(:ems_cluster)
-            destination_ems = FactoryGirl.create(:ems_cluster)
+            ems_source = FactoryGirl.create(:ext_management_system)
+            ems_destination = FactoryGirl.create(:ext_management_system)
+            source_cluster = FactoryGirl.create(:ems_cluster, :ext_management_system => ems_source)
+            destination_cluster = FactoryGirl.create(:ems_cluster, :ext_management_system => ems_destination)
             transformation_mapping =
               FactoryGirl.create(:transformation_mapping,
-                                 :transformation_mapping_items => [TransformationMappingItem.new(:source => source_ems, :destination => destination_ems)])
-            vm = FactoryGirl.create(:vm_vmware, :name => 'test_vm', :ems_cluster => source_ems, :ext_management_system => FactoryGirl.create(:ext_management_system))
+                                 :transformation_mapping_items => [TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster)])
+            vm = FactoryGirl.create(:vm_vmware, :ems_cluster => source_cluster, :ext_management_system => ems_source)
             service_template = FactoryGirl.create(:service_template_transformation_plan)
 
             FactoryGirl.create(
@@ -334,7 +336,7 @@ describe "Transformation Mappings" do
             post(api_transformation_mapping_url(nil, transformation_mapping), :params => request)
 
             expected = {
-              "valid"      => [a_hash_including("name" => vm.name, "id" => vm.id.to_s, "status" => "ok", "reason" => "ok", "cluster" => source_ems.name)],
+              "valid"      => [a_hash_including("name" => vm.name, "id" => vm.id.to_s, "status" => "ok", "reason" => "ok", "cluster" => source_cluster.name)],
               "invalid"    => [],
               "conflicted" => []
             }
@@ -344,12 +346,14 @@ describe "Transformation Mappings" do
 
           it "vm does not belong to the service_template record" do
             api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
-            source_ems = FactoryGirl.create(:ems_cluster)
-            destination_ems = FactoryGirl.create(:ems_cluster)
+            source_ems = FactoryGirl.create(:ext_management_system)
+            source_cluster = FactoryGirl.create(:ems_cluster, :ext_management_system => source_ems)
+            destination_ems = FactoryGirl.create(:ext_management_system)
+            destination_cluster = FactoryGirl.create(:ems_cluster, :ext_management_system => destination_ems)
             transformation_mapping =
               FactoryGirl.create(:transformation_mapping,
-                                 :transformation_mapping_items => [TransformationMappingItem.new(:source => source_ems, :destination => destination_ems)])
-            vm = FactoryGirl.create(:vm_vmware, :name => 'test_vm', :ems_cluster => source_ems, :ext_management_system => FactoryGirl.create(:ext_management_system))
+                                 :transformation_mapping_items => [TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster)])
+            vm = FactoryGirl.create(:vm_vmware, :ems_cluster => source_cluster, :ext_management_system => source_ems)
             service_template = FactoryGirl.create(:service_template_transformation_plan)
             service_template2 = FactoryGirl.create(:service_template_transformation_plan)
 
@@ -371,7 +375,7 @@ describe "Transformation Mappings" do
 
             expected = {
               "valid"      => [],
-              "invalid"    => [a_hash_including("name" => "test_vm", "reason" => "in_other_plan")],
+              "invalid"    => [a_hash_including("name" => vm.name, "reason" => "in_other_plan")],
               "conflicted" => []
             }
             expect(response).to have_http_status(:ok)
