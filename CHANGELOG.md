@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer Beta-1
+## Hammer Beta-2
+
+### Added
+- Add subcollection options support for CORS preflight requests [(#495)](https://github.com/ManageIQ/manageiq-api/pull/495)
+
+### Fixed
+- Don't request HTTP Basic authenticaion when using a token [(#488)](https://github.com/ManageIQ/manageiq-api/pull/488)
+- Add flag to initialize field default values [(#485)](https://github.com/ManageIQ/manageiq-api/pull/485)
+- Need the user on this call [(#497)](https://github.com/ManageIQ/manageiq-api/pull/497)
+- Deny standalone service template ordering when product setting is enabled [(#476)](https://github.com/ManageIQ/manageiq-api/pull/476)
+- provide `service_template` to `orderable?` method [(#498)](https://github.com/ManageIQ/manageiq-api/pull/498)
+
+## Hammer Beta-1 - Released 2018-10-12
 
 ### Added
 - transformation mappings `edit` action [(#467)](https://github.com/ManageIQ/manageiq-api/pull/467)
