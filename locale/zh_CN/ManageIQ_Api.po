@@ -1,27 +1,28 @@
-# Chinese translations for ManageIQ_Api package.
-# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the ManageIQ_Api package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
-#
+# Joy Cai <joy.sh@linguitronics.com>, 2017. #zanata
+# puger dog <ella.cheng.sh@linguitronics.com>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: ManageIQ_Api 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2018-10-02 16:07+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Chinese\n"
-"Language: zh_CN\n"
+"POT-Creation-Date: 2018-10-02 16:07+0200\n"
+"PO-Revision-Date: 2018-10-23 08:35+0000\n"
+"Last-Translator: puger dog <ella.cheng.sh@linguitronics.com>\n"
+"Language-Team: Chinese (Simplified, China)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"\n"
+"Language: zh_Hans_CN\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"X-Generator: Zanata 4.6.2\n"
 
+#: ../lib/api/utils.rb:15
 msgid "Invalid href_slug %{href_slug} specified"
-msgstr ""
+msgstr "指定了无效的 href_slug %{href_slug}"
 
+#: ../lib/manageiq/api/engine.rb:35
 msgid "REST API"
-msgstr ""
+msgstr "REST API"
 
+#: ../lib/api/utils.rb:16
 msgid "User must be defined"
-msgstr ""
+msgstr "必须指定用户"
