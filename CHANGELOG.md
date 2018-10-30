@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Gaprindashvili-6
+
+### Added
+- Add basic CentralAdmin support to the API [(#472)](https://github.com/ManageIQ/manageiq-api/pull/472)
+
+### Fixed
+- Deep symbolize keys when parsing options [(#312)](https://github.com/ManageIQ/manageiq-api/pull/312)
+- Include task_id in the response when invoking a custom button [(#444)](https://github.com/ManageIQ/manageiq-api/pull/444)
+- Make cloud_tenants and flavors subcollections consistent with others [(#321)](https://github.com/ManageIQ/manageiq-api/pull/321)
+- Add flag to initialize field default values [(#485)](https://github.com/ManageIQ/manageiq-api/pull/485)
+
 ## Gaprindashvili-5
 
 ### Added
