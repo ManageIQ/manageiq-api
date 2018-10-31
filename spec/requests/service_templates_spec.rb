@@ -472,6 +472,25 @@ describe "Service Templates API" do
     end
 
     context "with an orderable template" do
+      context "when the request headers do not indicate that the request is coming from the UI" do
+        before do
+          request_headers.delete("x-auth-token")
+        end
+
+        it "orders the request with 'submit_workflow' set to true" do
+          api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+
+          post(api_service_templates_url, :params => { :action => "order", :resources => [{:href => api_service_template_url(nil, service_template)}] })
+
+          expected = {
+            "results" => [a_hash_including("href"    => a_string_including(api_service_requests_url),
+                                           "options" => a_hash_including("request_options" => a_hash_including("submit_workflow"=>true)))]
+          }
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
+        end
+      end
+
       it "can be ordered as a resource action" do
         api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
 
