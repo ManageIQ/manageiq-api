@@ -30,8 +30,9 @@ module Api
 
       def order_request_options
         init_defaults = !request_from_ui? && Settings.product.run_automate_methods_on_service_api_submit
+        submit_workflow = request_from_ui? || Settings.product.allow_api_service_ordering
 
-        {:submit_workflow => request_from_ui?, :init_defaults => init_defaults}
+        {:submit_workflow => submit_workflow, :init_defaults => init_defaults}
       end
 
       def token_info
