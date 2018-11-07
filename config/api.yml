@@ -938,6 +938,21 @@
       :get:
       - :name: read
         :identifier: container_show
+  :conversion_hosts:
+    :description: Conversion Hosts
+    :identifier: conversion_host
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: ConversionHost
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: conversion_host_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: conversion_host_show
   :currencies:
     :description: Currencies
     :identifier: currency
@@ -2835,7 +2850,7 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: 
+        :identifier:
         - svc_catalog_provision
         - sui_orders_view
       :post:
