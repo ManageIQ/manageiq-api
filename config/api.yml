@@ -354,8 +354,7 @@
       - :name: read
         :identifier:
         - ops_settings
-        - sui_services_show
-        - sui_vm_details_view
+        - sui_tags
       :post:
       - :name: query
         :identifier: ops_settings
@@ -370,8 +369,7 @@
       - :name: read
         :identifier:
         - ops_settings
-        - sui_services_show
-        - sui_vm_details_view
+        - sui_tags
       :post:
       - :name: edit
         :identifier: ops_settings
@@ -1667,15 +1665,13 @@
       - :name: read
         :identifier:
         - metrics_view
-        - sui_services_show
-        - sui_vm_details_view
+        - sui_metrics
     :subcollection_actions:
       :get:
       - :name: read
         :identifier:
         - metrics_view
-        - sui_services_show
-        - sui_vm_details_view
+        - sui_metrics
   :network_routers:
     :description: Network_Routers
     :identifier: network_router
@@ -3342,8 +3338,7 @@
       - :name: read
         :identifier:
         - ops_settings
-        - sui_services_show
-        - sui_vm_details_view
+        - sui_tags
       :post:
       - :name: query
         :identifier: ops_settings
@@ -3358,8 +3353,7 @@
       - :name: read
         :identifier:
         - ops_settings
-        - sui_services_show
-        - sui_vm_details_view
+        - sui_tags
       :post:
       - :name: edit
         :identifier: ops_settings
