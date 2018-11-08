@@ -110,7 +110,10 @@ module Api
 
     def miq_groups
       current_user.miq_groups.collect do |group|
-        group.attributes.merge(:sui_product_features => group.sui_product_features)
+        group.attributes.merge(
+          :sui_product_features => group.sui_product_features,
+          :product_features     => group.miq_product_features.map(&:identifier)
+        )
       end
     end
 
