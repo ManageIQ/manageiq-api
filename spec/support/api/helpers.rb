@@ -25,6 +25,8 @@ module Spec
               @role.miq_product_features << MiqProductFeature.find_or_create_by(:identifier => identifier) if identifier
             end
             @role.save
+
+            MiqProductFeature.seed_tenant_miq_product_features if identifiers & MiqProductFeature::TENANT_FEATURE_ROOT_IDENTIFIERS == identifiers
           end
 
           request_headers["HTTP_AUTHORIZATION"] = ActionController::HttpAuthentication::Basic.encode_credentials(user, password)
