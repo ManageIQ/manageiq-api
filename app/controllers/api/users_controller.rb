@@ -4,6 +4,7 @@ module Api
     INVALID_SELF_USER_ATTRS = %w(id href current_group_id current_group).freeze
     EDITABLE_ATTRS = %w(password email settings).freeze
 
+    include Subcollections::CustomButtonEvents
     include Subcollections::Tags
 
     skip_before_action :validate_api_action, :only => :update

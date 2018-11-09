@@ -282,4 +282,29 @@ RSpec.describe "tenants API" do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  describe 'GET /tenants/:id/custom_button_events' do
+    let(:tenant) { FactoryGirl.create(:tenant, :parent => root_tenant) }
+    let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+    let!(:custom_button_event) { FactoryGirl.create(:custom_button_event, :target => tenant) }
+
+    it 'returns with the custom button events for the given user' do
+      api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
+
+      get(api_tenant_custom_button_events_url(nil, tenant))
+
+      expected = {
+        "name"      => "custom_button_events",
+        "count"     => 1,
+        "resources" => contain_exactly(
+          a_hash_including(
+            'href' => a_string_matching("custom_button_events/#{custom_button_event.id}")
+          )
+        )
+      }
+
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
