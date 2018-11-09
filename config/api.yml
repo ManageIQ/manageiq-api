@@ -352,7 +352,9 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: ops_settings
+        :identifier:
+        - ops_settings
+        - sui_tags
       :post:
       - :name: query
         :identifier: ops_settings
@@ -365,7 +367,9 @@
     :resource_actions:
       :get:
       - :name: read
-        :identifier: ops_settings
+        :identifier:
+        - ops_settings
+        - sui_tags
       :post:
       - :name: edit
         :identifier: ops_settings
@@ -1659,11 +1663,15 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: metrics_view
+        :identifier:
+        - metrics_view
+        - sui_metrics
     :subcollection_actions:
       :get:
       - :name: read
-        :identifier: metrics_view
+        :identifier:
+        - metrics_view
+        - sui_metrics
   :network_routers:
     :description: Network_Routers
     :identifier: network_router
@@ -2712,7 +2720,9 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_svc_catalog_view
       :post:
       - :name: query
         :identifier: svc_catalog_provision
@@ -2727,7 +2737,9 @@
     :resource_actions:
       :get:
       - :name: read
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_svc_catalog_view
       :post:
       - :name: edit
         :identifier: st_catalog_edit
@@ -2812,36 +2824,56 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: svc_catalog_provision
+        :identifier: 
+        - svc_catalog_provision
+        - sui_orders_view
       :post:
       - :name: query
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_orders_view
       - :name: create
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_orders_operations
       - :name: edit
         :identifier: svc_catalog_provision
       - :name: delete
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_orders_delete
       - :name: copy
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_orders_duplicate
     :resource_actions:
       :get:
       - :name: read
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_orders_view
       :post:
       - :name: edit
         :identifier: svc_catalog_provision
       - :name: delete
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_orders_delete
       - :name: clear
         :identifier: svc_catalog_provision
       - :name: order
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_cart_order
       - :name: copy
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_orders_duplicate
       :delete:
       - :name: delete
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_orders_delete
   :service_parameters_sets:
     :description: Service Parameters Sets
     :identifier: service_parameters_sets
@@ -2870,66 +2902,100 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: miq_request_view
+        :identifier:
+        - miq_request_view
+        - sui_cart_view
       :post:
       - :name: query
-        :identifier: miq_request_view
+        :identifier:
+        - miq_request_view
+        - sui_cart_view
       - :name: cancel
-        :identifier: miq_request_control
+        :identifier:
+        - miq_request_control
+        - sui_cart_delete
       - :name: approve
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
       - :name: delete
-        :identifier: miq_request_delete
+        :identifier:
+        - miq_request_delete
+        - sui_cart_delete
       - :name: add_approver
         :identifier: miq_request_approval
       - :name: remove_approver
         :identifier: miq_request_approval
       - :name: edit
-        :identifier: miq_request_edit
+        :identifier:
+        - miq_request_edit
+        - sui_svc_catalog_cart
     :resource_actions:
       :get:
       - :name: read
-        :identifier: miq_request_view
+        :identifier:
+        - miq_request_view
+        - sui_cart_view
       :post:
       - :name: approve
         :identifier: miq_request_approval
       - :name: cancel
-        :identifier: miq_request_control
+        :identifier:
+        - miq_request_control
+        - sui_cart_delete
       - :name: deny
         :identifier: miq_request_approval
       - :name: delete
-        :identifier: miq_request_delete
+        :identifier:
+        - miq_request_delete
+        - sui_cart_delete
       - :name: add_approver
         :identifier: miq_request_approval
       - :name: remove_approver
         :identifier: miq_request_approval
       - :name: edit
-        :identifier: miq_request_edit
+        :identifier:
+        - miq_request_edit
+        - sui_svc_catalog_cart
       :delete:
       - :name: delete
-        :identifier: miq_request_delete
+        :identifier:
+        - miq_request_delete
+        - sui_cart_delete
     :subcollection_actions:
       :get:
       - :name: read
-        :identifier: miq_request_view
+        :identifier:
+        - miq_request_view
+        - sui_cart_view
       :post:
       - :name: add
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_svc_catalog_cart
       - :name: cancel
-        :identifier: miq_request_control
+        :identifier:
+        - miq_request_control
+        - sui_cart_delete
       - :name: remove
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_cart_delete
     :subresource_actions:
       :get:
       - :name: read
-        :identifier: miq_request_view
+        :identifier:
+        - miq_request_view
+        - sui_cart_view
       :post:
       - :name: cancel
-        :identifier: miq_request_control
+        :identifier:
+        - miq_request_control
+        - sui_cart_delete
       - :name: remove
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_cart_delete
   :service_templates:
     :description: Service Templates
     :identifier: catalog_items_accord
@@ -2949,7 +3015,9 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_svc_catalog_view
       :post:
       - :name: query
         :identifier: svc_catalog_provision
@@ -2982,7 +3050,9 @@
     :resource_actions:
       :get:
       - :name: read
-        :identifier: svc_catalog_provision
+        :identifier:
+        - svc_catalog_provision
+        - sui_svc_catalog_view
       :post:
       - :name: edit
         :identifier: catalogitem_edit
@@ -3041,98 +3111,170 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: service_view
+        :identifier:
+        - service_view
+        - sui_services_show
       :post:
       - :name: query
-        :identifier: service_view
+        :identifier:
+        - service_view
+        - sui_services_show
       - :name: create
         :identifier: service_create
       - :name: edit
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: retire
-        :identifier: service_retire
+        :identifier:
+        - service_retire
+        - sui_services_retire
       - :name: request_retire
-        :identifier: service_retire
+        :identifier:
+        - service_retire
+        - sui_services_retire_date
       - :name: set_ownership
-        :identifier: service_ownership
+        :identifier:
+        - service_ownership
+        - sui_services_ownership
       - :name: delete
-        :identifier: service_delete
+        :identifier:
+        - service_delete
+        - sui_services_delete
       - :name: start
-        :identifier: service_admin
+        :identifier:
+        - service_admin
+        - sui_services_start
       - :name: stop
-        :identifier: service_admin
+        :identifier:
+        - service_admin
+        - sui_services_stop
       - :name: suspend
-        :identifier: service_admin
+        :identifier:
+        - service_admin
+        - sui_services_suspend
       - :name: assign_tags
-        :identifier: service_tag
+        :identifier:
+        - service_tag
+        - sui_services_tags
       - :name: unassign_tags
-        :identifier: service_tag
+        :identifier:
+        - service_tag
+        - sui_services_tags
       - :name: add_resource
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: remove_all_resources
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: remove_resource
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: add_provider_vms
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: queue_chargeback_report
         :identifier: service_admin
     :resource_actions:
       :get:
       - :name: read
-        :identifier: service_view
+        :identifier:
+        - service_view
+        - sui_services_show
       :post:
       - :name: edit
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: retire
-        :identifier: service_retire
+        :identifier:
+        - service_retire
+        - sui_services_retire
       - :name: request_retire
-        :identifier: service_retire
+        :identifier:
+        - service_retire
+        - sui_services_retire_date
       - :name: set_ownership
-        :identifier: service_ownership
+        :identifier:
+        - service_ownership
+        - sui_services_ownership
       - :name: reconfigure
         :identifier: service_reconfigure
         :options:
         - :validate_action
       - :name: start
-        :identifier: service_admin
+        :identifier:
+        - service_admin
+        - sui_services_start
       - :name: stop
-        :identifier: service_admin
+        :identifier:
+        - service_admin
+        - sui_services_stop
       - :name: suspend
-        :identifier: service_admin
+        :identifier:
+        - service_admin
+        - sui_services_suspend
       - :name: delete
-        :identifier: service_delete
+        :identifier:
+        - service_delete
+        - sui_services_delete
       - :name: add_resource
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: remove_all_resources
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: remove_resource
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: add_provider_vms
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: queue_chargeback_report
         :identifier: service_admin
       :delete:
       - :name: delete
-        :identifier: service_delete
+        :identifier:
+        - service_delete
+        - sui_services_delete
     :tags_subcollection_actions:
       :post:
       - :name: assign
-        :identifier: service_tag
+        :identifier:
+        - service_tag
+        - sui_services_ownership
       - :name: unassign
-        :identifier: service_tag
+        :identifier:
+        - service_tag
+        - sui_services_ownership
     :generic_objects_subcollection_actions:
       :get:
       - :name: read
-        :identifier: generic_object_show_list
+        :identifier:
+        - generic_object_show_list
+        - sui_services_show
     :custom_attributes_subcollection_actions:
       :post:
       - :name: add
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: edit
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       - :name: delete
-        :identifier: service_edit
+        :identifier:
+        - service_edit
+        - sui_services_delete
   :settings:
     :description: Settings
     :identifier: ops_settings
@@ -3194,7 +3336,9 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: ops_settings
+        :identifier:
+        - ops_settings
+        - sui_tags
       :post:
       - :name: query
         :identifier: ops_settings
@@ -3207,7 +3351,9 @@
     :resource_actions:
       :get:
       - :name: read
-        :identifier: ops_settings
+        :identifier:
+        - ops_settings
+        - sui_tags
       :post:
       - :name: edit
         :identifier: ops_settings
@@ -3496,10 +3642,14 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: vm_show_list
+        :identifier:
+        - vm_show_list
+        - sui_vm_details_view
       :post:
       - :name: query
-        :identifier: vm_show_list
+        :identifier:
+        - vm_show_list
+        - sui_vm_details_view
       - :name: add
         :identifier: vm_miq_request_new
         :disabled: true
@@ -3516,11 +3666,17 @@
       - :name: reboot_guest
         :identifier: vm_guest_restart
       - :name: start
-        :identifier: vm_start
+        :identifier:
+        - vm_start
+        - sui_vm_start
       - :name: stop
-        :identifier: vm_stop
+        :identifier:
+        - vm_stop
+        - sui_vm_stop
       - :name: suspend
-        :identifier: vm_suspend
+        :identifier:
+        - vm_suspend
+        - sui_vm_suspend
       - :name: shelve
         :identifier: instance_shelve
       - :name: shelve_offload
@@ -3528,13 +3684,20 @@
       - :name: pause
         :identifier: vm_pause
       - :name: request_console
-        :identifier: vm_console
+        :identifier:
+        - vm_console
+        - sui_vm_console
+        - sui_vm_web_console
       - :name: reset
         :identifier: vm_reset
       - :name: retire
-        :identifier: vm_retire_now
+        :identifier:
+        - vm_retire_now
+        - sui_vm_retire
       - :name: request_retire
-        :identifier: vm_retire_now
+        :identifier:
+        - vm_retire_now
+        - sui_vm_retire
       - :name: set_owner
         :identifier: vm_edit
       - :name: set_ownership
@@ -3546,13 +3709,19 @@
       - :name: delete
         :identifier: vm_delete
       - :name: assign_tags
-        :identifier: vm_tag
+        :identifier:
+        - vm_tag
+        - sui_vm_tags
       - :name: unassign_tags
-        :identifier: vm_tag
+        :identifier:
+        - vm_tag
+        - sui_vm_tags
     :resource_actions:
       :get:
       - :name: read
-        :identifier: vm_show
+        :identifier:
+        - vm_show
+        - sui_vm_details_view
       :post:
       - :name: edit
         :identifier: vm_edit
@@ -3567,11 +3736,17 @@
       - :name: reboot_guest
         :identifier: vm_guest_restart
       - :name: start
-        :identifier: vm_start
+        :identifier:
+        - vm_start
+        - sui_vm_start
       - :name: stop
-        :identifier: vm_stop
+        :identifier:
+        - vm_stop
+        - sui_vm_stop
       - :name: suspend
-        :identifier: vm_suspend
+        :identifier:
+        - vm_suspend
+        - sui_vm_suspend
       - :name: shelve
         :identifier: instance_shelve
       - :name: shelve_offload
@@ -3579,13 +3754,20 @@
       - :name: pause
         :identifier: vm_pause
       - :name: request_console
-        :identifier: vm_console
+        :identifier:
+        - vm_console
+        - sui_vm_console
+        - sui_vm_web_console
       - :name: reset
         :identifier: vm_reset
       - :name: retire
-        :identifier: vm_retire_now
+        :identifier:
+        - vm_retire_now
+        - sui_vm_retire
       - :name: request_retire
-        :identifier: vm_retire_now
+        :identifier:
+        - vm_retire_now
+        - sui_vm_retire
       - :name: delete
         :identifier: vm_delete
       - :name: set_owner
@@ -3602,9 +3784,13 @@
     :tags_subcollection_actions:
       :post:
       - :name: assign
-        :identifier: vm_tag
+        :identifier:
+        - vm_tag
+        - sui_vm_tags
       - :name: unassign
-        :identifier: vm_tag
+        :identifier:
+        - vm_tag
+        - sui_vm_tags
     :custom_attributes_subcollection_actions:
       :post:
       - :name: add
@@ -3632,24 +3818,36 @@
     :snapshots_subcollection_actions:
       :get:
       - :name: read
-        :identifier: vm_snapshot_view
+        :identifier:
+        - vm_snapshot_view
+        - sui_vm_snapshots_view
       :post:
       - :name: create
-        :identifier: vm_snapshot_add
+        :identifier:
+        - vm_snapshot_add
+        - sui_vm_snapshot_create
       - :name: delete
-        :identifier: vm_snapshot_delete
+        :identifier:
+        - vm_snapshot_delete
+        - sui_vm_snapshot_delete
     :snapshots_subresource_actions:
       :get:
       - :name: read
-        :identifier: vm_snapshot_view
+        :identifier:
+        - vm_snapshot_view
+        - sui_vm_snapshots_view
       :post:
       - :name: revert
         :identifier: vm_snapshot_revert
       - :name: delete
-        :identifier: vm_snapshot_delete
+        :identifier:
+        - vm_snapshot_delete
+        - sui_vm_snapshot_delete
       :delete:
       - :name: delete
-        :identifier: vm_snapshot_delete
+        :identifier:
+        - vm_snapshot_delete
+        - sui_vm_snapshot_delete
   :zones:
     :description: Zones
     :identifier: zone
