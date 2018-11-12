@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer Beta-2
+## Hammer RC-1
+
+### Fixed
+- Post body changes for `validate_vms_resource ` to include service template_id [(#486)](https://github.com/ManageIQ/manageiq-api/pull/486)
+- Ensure ServiceTemplate ordering passes through the submit_workflow flag [(#504)](https://github.com/ManageIQ/manageiq-api/pull/504)
+
+## Hammer Beta-2 - Released 2018-10-29
 
 ### Added
 - Add subcollection options support for CORS preflight requests [(#495)](https://github.com/ManageIQ/manageiq-api/pull/495)
