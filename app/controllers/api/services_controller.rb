@@ -143,7 +143,27 @@ module Api
       action_result(false, "Could not queue chargeback report generation - #{err}")
     end
 
+    def retire_resource(type, id = nil, data = nil)
+      raise BadRequestError, "Must specify an id for retiring a #{type} resource" unless id
+      api_log_info("############## type=#{type}")
+      api_action(type, id) do |klass|
+        # error will be raised if access to the resource is forbidden
+        _service = resource_search(id, type, klass)
+        api_log_info("Retiring Service id:#{id}")
+        retire_service(id, data)
+      end
+    end
+
     private
+
+    def retire_service(id, data)
+      desc = "Service id:#{id} retiring"
+      desc << " on #{data['date']}" if Hash(data)['date'].present?
+      generic_retire_resource(:services, id, data)
+      action_result(true, desc)
+    rescue StandardError => err
+      action_result(false, err.to_s)
+    end
 
     def validate_resource(data)
       resource_href = data.fetch_path("resource", "href")
