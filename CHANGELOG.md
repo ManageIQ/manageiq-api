@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 99 ending 2018-11-19
+
+### Added
+- Include product features list in the identity section of /api [(#490)](https://github.com/ManageIQ/manageiq-api/pull/490)
+- Add custom_button_events subcollection for users tenants and groups [(#464)](https://github.com/ManageIQ/manageiq-api/pull/464)
+
+### Fixed
+- Seed tenant product features in Spec::Support::API::Helpers [(#508)](https://github.com/ManageIQ/manageiq-api/pull/508)
+- Expose conversion hosts as part of REST API [(#507)](https://github.com/ManageIQ/manageiq-api/pull/507)
+- Add support for sui product features [(#501)](https://github.com/ManageIQ/manageiq-api/pull/501)
+
 ## Unreleased as of Sprint 97 ending 2018-10-22
 
 ### Added
