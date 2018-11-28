@@ -751,8 +751,8 @@ describe "Service Templates API" do
     let!(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog) }
 
     context "with schedules" do
-      let!(:schedule_1)       { FactoryGirl.create(:miq_schedule, :towhat => "ServiceTemplate", :resource_id => service_template.id) }
-      let!(:schedule_2)       { FactoryGirl.create(:miq_schedule, :towhat => "ServiceTemplate", :resource_id => service_template.id) }
+      let!(:schedule_1)       { FactoryGirl.create(:miq_schedule, :resource_type => "ServiceTemplate", :resource_id => service_template.id) }
+      let!(:schedule_2)       { FactoryGirl.create(:miq_schedule, :resource_type => "ServiceTemplate", :resource_id => service_template.id) }
 
       it "can fetch all related schedules" do
         api_basic_authorize subcollection_action_identifier(:service_templates, :schedules, :read, :get)
