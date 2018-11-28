@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer RC-1
+## Hammer RC-2
+
+### Added
+- Add support for sui product features [(#501)](https://github.com/ManageIQ/manageiq-api/pull/501)
+- Expose conversion hosts as part of REST API [(#507)](https://github.com/ManageIQ/manageiq-api/pull/507)
+
+### Fixed
+- Seed tenant product features in Spec::Support::API::Helpers [(#508)](https://github.com/ManageIQ/manageiq-api/pull/508)
+
+## Hammer RC-1 - Released 2018-11-16
 
 ### Fixed
 - Post body changes for `validate_vms_resource ` to include service template_id [(#486)](https://github.com/ManageIQ/manageiq-api/pull/486)
