@@ -581,9 +581,12 @@ describe "Custom Actions API" do
     it "accept custom actions" do
       api_basic_authorize
 
+      expect(CustomButtonEvent.count).to eq(0)
+
       post api_generic_object_url(nil, @resource), :params => gen_request(@button.name, "key1" => "value1")
 
       expect_single_action_result(:success => true, :message => /.*/, :href => api_generic_object_url(nil, @resource))
+      expect(CustomButtonEvent.count).to eq(1)
     end
   end
 
