@@ -2,8 +2,8 @@
 #
 # Helper Script to access the ManageIQ REST API
 #
-# Makes use of the Trollop and Faraday Client Gems
-#   gem install trollop
+# Makes use of the Optimist and Faraday Client Gems
+#   gem install optimist
 #   gem install faraday
 #   gem install faraday_middleware
 #
@@ -15,7 +15,7 @@
 require 'manageiq/api/version'
 require 'uri'
 require 'json'
-require 'trollop'
+require 'optimist'
 require 'faraday'
 require 'faraday_middleware'
 
@@ -87,7 +87,7 @@ module ManageIQ
         data      = ""
         params    = {}
 
-        opts = Trollop.options do
+        opts = Optimist.options do
           version "#{API_CMD} #{VERSION} - ManageIQ REST API Access Script"
           banner <<-EOS
         #{version}
@@ -141,17 +141,17 @@ module ManageIQ
         end
 
         unless opts[:inputfile].empty?
-          Trollop.die :inputfile, "File specified #{opts[:inputfile]} does not exist" unless File.exist?(opts[:inputfile])
+          Optimist.die :inputfile, "File specified #{opts[:inputfile]} does not exist" unless File.exist?(opts[:inputfile])
         end
 
         begin
           URI.parse(opts[:url])
         rescue
-          Trollop.die :url, "Invalid URL syntax specified #{opts[:url]}"
+          Optimist.die :url, "Invalid URL syntax specified #{opts[:url]}"
         end
 
         action = ARGV.shift
-        Trollop.die "Must specify an action" if action.nil?
+        Optimist.die "Must specify an action" if action.nil?
 
         if SCRIPTDIR_ACTIONS.include?(action)
           msg_exit("Script directory #{opts[:scriptdir]} does not exist") unless File.directory?(opts[:scriptdir])
@@ -183,7 +183,7 @@ module ManageIQ
           msg_exit("Must specify a script to run.") if api_script.nil?
           msg_exit("Script file #{api_script} does not exist") unless File.exist?(api_script)
         else
-          api_params = Trollop.options do
+          api_params = Optimist.options do
             norm_options  = {:default => ""}
             multi_options = {:default => "", :multi => true}
             API_PARAMETERS.each { |p| opt p.intern, p, (MULTI_PARAMS.include?(p) ? multi_options.dup : norm_options.dup) }
