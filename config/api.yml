@@ -943,16 +943,39 @@
     :identifier: conversion_host
     :options:
     - :collection
-    :verbs: *g
+    :verbs: *gpd
     :klass: ConversionHost
+    :subcollections:
+    - :tags
     :collection_actions:
       :get:
       - :name: read
         :identifier: conversion_host_show_list
+      :post:
+      - :name: create
+        :identifier: conversion_host_new
+      - :name: edit
+        :identifier: conversion_host_edit
+      - :name: delete
+        :identifier: conversion_host_delete
     :resource_actions:
       :get:
       - :name: read
         :identifier: conversion_host_show
+      :post:
+      - :name: edit
+        :identifier: conversion_host_edit
+      - :name: delete
+        :identifier: conversion_host_delete
+      :delete:
+      - :name: delete
+        :identifier: conversion_host_delete
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: conversion_host_tag
+      - :name: unassign
+        :identifier: conversion_host_tag
   :currencies:
     :description: Currencies
     :identifier: currency
