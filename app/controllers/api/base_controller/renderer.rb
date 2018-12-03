@@ -265,6 +265,13 @@ module Api
         return unless attr_accessible?(resource, attr)
         virtattr_accessor = virtual_attribute_accessor(type, attr)
         value = virtattr_accessor ? send(virtattr_accessor, resource) : virtual_attribute_search(resource, attr)
+        value = handle_virtual_attributes(attr, value)
+        result = {attr => normalize_attr(attr, value)}
+        # set nil vtype above to "#{type}/#{resource.id}/#{attr}" to support id normalization
+        [value, result]
+      end
+
+      def handle_virtual_attributes(attr, value)
         case attr
         when "custom_actions"
           value = add_custom_action_hrefs(value)
@@ -273,9 +280,7 @@ module Api
           limit = request.params[:limit] ? request.params[:limit].to_i : 0
           value = value.sort_by{|hash| hash[:id] }[offset...offset+limit] if limit > 0
         end
-        result = {attr => normalize_attr(attr, value)}
-        # set nil vtype above to "#{type}/#{resource.id}/#{attr}" to support id normalization
-        [value, result]
+        value
       end
 
       #
