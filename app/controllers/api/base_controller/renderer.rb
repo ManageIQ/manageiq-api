@@ -276,9 +276,16 @@ module Api
         when "custom_actions"
           value = add_custom_action_hrefs(value)
         when "result_set"
-          offset = request.params[:offset] ? request.params[:offset].to_i : 0
-          limit = request.params[:limit] ? request.params[:limit].to_i : 0
-          value = value.sort_by{|hash| hash[:id] }[offset...offset+limit] if limit > 0
+          value = get_result_set(value)
+        end
+        value
+      end
+
+      def get_result_set(value)
+        offset = request.params[:offset] ? request.params[:offset].to_i : 0
+        limit = request.params[:limit] ? request.params[:limit].to_i : 0
+        if limit > 0
+          return value.sort_by{|hash| hash[:id] }[offset...offset+limit]
         end
         value
       end
