@@ -284,9 +284,7 @@ module Api
       def get_result_set(value)
         offset = request.params[:offset] ? request.params[:offset].to_i : 0
         limit = request.params[:limit] ? request.params[:limit].to_i : 0
-        if limit > 0
-          return value.sort_by{|hash| hash[:id] }[offset...offset+limit]
-        end
+        return value.sort_by { |hash| hash[:id] }[offset...offset + limit] if limit.positive?
         value
       end
 
