@@ -263,10 +263,12 @@ module Api
       def fetch_direct_virtual_attribute(type, resource, attr)
         unless attr_accessible?(resource, attr)
           return
+        end
         virtattr_accessor = virtual_attribute_accessor(type, attr)
         value = virtattr_accessor ? send(virtattr_accessor, resource) : virtual_attribute_search(resource, attr)
         if attr == "custom_actions"
           value = add_custom_action_hrefs(value)
+        end
         if attr == "result_set"
           offset = request.params[:offset] ? request.params[:offset].to_i : 0
           limit = request.params[:limit] ? request.params[:limit].to_i : 0
