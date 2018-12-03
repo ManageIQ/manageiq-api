@@ -1,7 +1,7 @@
 module Api
   module Subcollections
     module Results
-      def initialize()
+      def initialize
         @results_controller = Api::ResultsController.new
       end
 
