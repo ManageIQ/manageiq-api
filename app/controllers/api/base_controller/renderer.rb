@@ -260,7 +260,6 @@ module Api
         add_hash json, result
       end
 
-
       def fetch_direct_virtual_attribute(type, resource, attr)
         return unless attr_accessible?(resource, attr)
         virtattr_accessor = virtual_attribute_accessor(type, attr)
