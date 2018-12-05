@@ -203,6 +203,33 @@ RSpec.describe "reports API" do
   end
 
   context "with an appropriate role" do
+    # Setup in a similar was to the reproduction steps in this BZ:
+    #
+    #   https://bugzilla.redhat.com/show_bug.cgi?id=1656242
+    #
+    # But note that this is only a spec valid for gaprindashvili.  If you are
+    # seeing this elsewhere in a newer release, please do some git blaming...
+    it "can fetch all the reports" do
+      report_1 = FactoryGirl.create(:miq_report_with_results)
+      report_2 = FactoryGirl.create(:miq_report_with_results)
+
+      api_basic_authorize collection_action_identifier(:reports, :read, :get)
+      @role.name = MiqUserRole::ADMIN_ROLE_NAME
+      @role.save
+
+      get api_reports_url
+      expect_result_resources_to_include_hrefs(
+        "resources",
+        [
+          api_report_url(nil, report_1),
+          api_report_url(nil, report_2)
+        ]
+      )
+      expect_result_to_match_hash(response.parsed_body, "count" => 2, "name" => "reports")
+      expect(response).to have_http_status(:ok)
+    end
+
+
     it "can run a report" do
       report = FactoryGirl.create(:miq_report)
 

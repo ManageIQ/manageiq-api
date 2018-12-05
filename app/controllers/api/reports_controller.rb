@@ -7,7 +7,7 @@ module Api
     before_action :set_additional_attributes, :only => [:index, :show]
 
     def reports_search_conditions
-      MiqReport.for_user(User.current_user).where_clause.ast unless User.current_user.admin?
+      MiqReport.for_user(User.current_user).where_clause.ast unless User.current_user.admin_user?
     end
 
     def find_reports(id)
