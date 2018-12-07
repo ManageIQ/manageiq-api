@@ -203,6 +203,30 @@ RSpec.describe "reports API" do
   end
 
   context "with an appropriate role" do
+    # Setup in a similar was to the reproduction steps in this BZ:
+    #
+    #   https://bugzilla.redhat.com/show_bug.cgi?id=1650531
+    #
+    it "can fetch all the reports" do
+      report_1 = FactoryGirl.create(:miq_report_with_results)
+      report_2 = FactoryGirl.create(:miq_report_with_results)
+
+      # Includes roles "API" and "Cloud Intel"
+      MiqProductFeature.seed
+      api_basic_authorize :dashboard, :miq_report, :chargeback, :timeline, :rss, :api_exclusive
+      get api_reports_url
+
+      expect_result_resources_to_include_hrefs(
+        "resources",
+        [
+          api_report_url(nil, report_1),
+          api_report_url(nil, report_2)
+        ]
+      )
+      expect_result_to_match_hash(response.parsed_body, "count" => 2, "name" => "reports")
+      expect(response).to have_http_status(:ok)
+    end
+
     it "can run a report" do
       report = FactoryGirl.create(:miq_report)
 
