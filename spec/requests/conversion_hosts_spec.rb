@@ -162,6 +162,31 @@ describe "ConversionHosts API" do
     end
   end
 
+  context "polymorphic resource" do
+    let(:vm) { FactoryGirl.create(:vm, :name => "polymorphic_vm") }
+    let(:host) { FactoryGirl.create(:host, :name => "polymorphic_host") }
+    let(:conversion_host_resource_vm){ FactoryGirl.create(:conversion_host, :resource_type => "Vm", :resource_id => vm.id) }
+    let(:conversion_host_resource_host){ FactoryGirl.create(:conversion_host, :resource_type => "Host", :resource_id => host.id) }
+
+    it "retrieves the Vm polymorphic resource as expected" do
+      api_basic_authorize(resource_action_identifier(:conversion_hosts, :resource))
+      url = api_conversion_host_url(nil, conversion_host_resource_vm)
+      post(url, :params => {:action => 'resource'})
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include('href' => api_vm_url(nil, vm))
+    end
+
+    it "retrieves the Host polymorphic resource as expected" do
+      api_basic_authorize(resource_action_identifier(:conversion_hosts, :resource))
+      url = api_conversion_host_url(nil, conversion_host_resource_host)
+      post(url, :params => {:action => 'resource'})
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include('href' => api_host_url(nil, host))
+    end
+  end
+
   context "tags" do
     let(:tag1) { {:category => "department", :name => "finance", :path => "/managed/department/finance"} }
     let(:tag2) { {:category => "cc",         :name => "001",     :path => "/managed/cc/001"} }
