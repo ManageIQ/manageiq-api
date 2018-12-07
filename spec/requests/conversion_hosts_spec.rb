@@ -165,8 +165,8 @@ describe "ConversionHosts API" do
   context "polymorphic resource" do
     let(:vm) { FactoryGirl.create(:vm, :name => "polymorphic_vm") }
     let(:host) { FactoryGirl.create(:host, :name => "polymorphic_host") }
-    let(:conversion_host_resource_vm){ FactoryGirl.create(:conversion_host, :resource_type => "Vm", :resource_id => vm.id) }
-    let(:conversion_host_resource_host){ FactoryGirl.create(:conversion_host, :resource_type => "Host", :resource_id => host.id) }
+    let(:conversion_host_resource_vm) { FactoryGirl.create(:conversion_host, :resource_type => "Vm", :resource_id => vm.id) }
+    let(:conversion_host_resource_host) { FactoryGirl.create(:conversion_host, :resource_type => "Host", :resource_id => host.id) }
 
     it "retrieves the Vm polymorphic resource as expected" do
       api_basic_authorize(resource_action_identifier(:conversion_hosts, :resource))
