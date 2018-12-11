@@ -7,8 +7,7 @@ module Api
     #
     # POST /api/conversion_hosts/1 {'action': 'resource'}
     #
-    def resource_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for fetching a #{type}.resource" unless id
+    def resource_resource(type, id, _data = nil)
       conversion_host = resource_search(id, type, collection_class(type))
       conversion_host.resource
     rescue => err
