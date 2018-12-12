@@ -5,7 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Gaprindashvili-6
+## Gaprindashvili-7
+
+### Added
+- Add subcollection options support for CORS preflight requests [(#495)](https://github.com/ManageIQ/manageiq-api/pull/495)
+
+### Fixed
+- Deny standalone service template ordering when product setting is enabled [(#476)](https://github.com/ManageIQ/manageiq-api/pull/476)
+- Ensure ServiceTemplate ordering passes through the submit_workflow flag [(#504)](https://github.com/ManageIQ/manageiq-api/pull/504)
+- Fix tests after identifier rename [(#399)](https://github.com/ManageIQ/manageiq-api/pull/399)
+- Ignore case of the userid when validating it. [(#396)](https://github.com/ManageIQ/manageiq-api/pull/396)
+- provide `service_template` to `orderable?` method [(#498)](https://github.com/ManageIQ/manageiq-api/pull/498)
+- Add support for sui product features [(#501)](https://github.com/ManageIQ/manageiq-api/pull/501)
+
+## Gaprindashvili-6 - Released 2018-11-06
 
 ### Added
 - Add basic CentralAdmin support to the API [(#472)](https://github.com/ManageIQ/manageiq-api/pull/472)
@@ -16,7 +29,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Make cloud_tenants and flavors subcollections consistent with others [(#321)](https://github.com/ManageIQ/manageiq-api/pull/321)
 - Add flag to initialize field default values [(#485)](https://github.com/ManageIQ/manageiq-api/pull/485)
 
-## Gaprindashvili-5
+## Gaprindashvili-5 - Released 2018-09-07
 
 ### Added
 - Pass option to retain dialog values so they're not rerun [(#406)](https://github.com/ManageIQ/manageiq-api/pull/406)
