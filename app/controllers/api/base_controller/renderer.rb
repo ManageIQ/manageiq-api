@@ -132,10 +132,14 @@ module Api
           if respond_to?("find_#{type}")
             public_send("find_#{type}", id)
           else
-            key_id == "id" ? klass.find(id) : klass.find_by(key_id => id)
+            find_resource(klass, key_id, id)
           end
         raise NotFoundError, "Couldn't find #{klass} with '#{key_id}'=#{id}" unless target
         filter_resource(target, type, klass)
+      end
+
+      def find_resource(klass, key_id, id)
+        key_id == "id" ? klass.find(id) : klass.find_by(key_id => id)
       end
 
       def filter_resource(target, type, klass)
@@ -151,11 +155,15 @@ module Api
           elsif by_tag_param
             klass.find_tagged_with(:all => by_tag_param, :ns => TAG_NAMESPACE, :separator => ',')
           else
-            klass.all
+            find_collection(klass)
           end
 
         res = res.where(public_send("#{type}_search_conditions")) if respond_to?("#{type}_search_conditions")
         collection_filterer(res, type, klass, is_subcollection)
+      end
+
+      def find_collection(klass)
+        klass.all
       end
 
       def collection_filterer(res, type, klass, is_subcollection = false)
