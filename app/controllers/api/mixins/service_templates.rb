@@ -24,8 +24,9 @@ module Api
       end
 
       def request_from_ui?
+        $api_log.info("requester_type: #{params['requester_type']}")
         return false if request.headers["x-auth-token"].blank?
-        token_info.present?
+        token_info.present? && params['requester_type'] == "ui"
       end
 
       def order_request_options
