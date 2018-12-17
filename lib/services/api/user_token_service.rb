@@ -36,7 +36,7 @@ module Api
       $api_log.info("Generating Authentication Token for userid: #{userid} requester_type: #{requester_type} token_ttl: #{token_ttl}")
 
       token_metadata = { :userid => userid, :token_ttl_override => token_ttl }
-      token_metadata.merge!(:requester_type => requester_type) if requester_type != "api"
+      token_metadata[:requester_type] = requester_type if requester_type != "api"
       token_mgr(requester_type).gen_token(token_metadata)
     end
 
