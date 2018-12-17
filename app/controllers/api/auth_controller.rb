@@ -12,6 +12,7 @@ module Api
         :token_ttl  => token_info[:token_ttl],
         :expires_on => token_info[:expires_on],
       }
+      res.merge!(:requester_type => token_info[:requester_type]) if token_info[:requester_type]
       render_resource :auth, res
     end
 
