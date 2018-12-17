@@ -28,7 +28,7 @@ module Api
         return false if api_token.blank?
         token_info = Environment.user_token_service.token_mgr("api").token_get_info(api_token)
         $api_log.info("XXXXXXXXXXX service_templates.rb:  The Token Used #{token_info}")
-        token_info["requester_type"] == "ui"
+        token_info[:requester_type] == "ui"
       end
 
       def order_request_options
