@@ -24,8 +24,11 @@ module Api
       end
 
       def request_from_ui?
-        return false if request.headers["x-auth-token"].blank?
-        token_info.present?
+        api_token = request.headers["x-auth-token"]
+        return false if api_token.blank?
+
+        token_info = Environment.user_token_service.token_mgr("api").token_get_info(api_token)
+        token_info[:requester_type] == "ui"
       end
 
       def order_request_options
@@ -33,11 +36,6 @@ module Api
         submit_workflow = request_from_ui? || Settings.product.allow_api_service_ordering
 
         {:submit_workflow => submit_workflow, :init_defaults => init_defaults}
-      end
-
-      def token_info
-        requester_type = params['requester_type'] || 'api'
-        Environment.user_token_service.token_mgr(requester_type).token_get_info(request.headers["x-auth-token"])
       end
 
       def service_template_ident(st)
