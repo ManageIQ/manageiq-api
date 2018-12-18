@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 101 ending 2018-12-17
+
+### Fixed
+- Updated service template's ui token info check to use token metadata for requester_type [(#529)](https://github.com/ManageIQ/manageiq-api/pull/529)
+- Fix invalid count query [(#520)](https://github.com/ManageIQ/manageiq-api/pull/520)
+
 ## Unreleased as of Sprint 100 ending 2018-12-03
 
 ### Fixed
