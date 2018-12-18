@@ -10,8 +10,9 @@ module Api
       res = {
         :auth_token => auth_token,
         :token_ttl  => token_info[:token_ttl],
-        :expires_on => token_info[:expires_on],
+        :expires_on => token_info[:expires_on]
       }
+      res[:requester_type] = token_info[:requester_type] if token_info[:requester_type]
       render_resource :auth, res
     end
 

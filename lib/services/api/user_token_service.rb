@@ -32,9 +32,9 @@ module Api
 
       # Additional Requester type token ttl's for authentication
       type_to_ttl_override = {'ui' => ::Settings.session.timeout}
-
-      token_mgr(requester_type).gen_token(:userid             => userid,
-                                          :token_ttl_override => type_to_ttl_override[requester_type])
+      token_metadata = { :userid => userid, :token_ttl_override => type_to_ttl_override[requester_type] }
+      token_metadata[:requester_type] = requester_type if requester_type != "api"
+      token_mgr(requester_type).gen_token(token_metadata)
     end
 
     def validate_requester_type(requester_type)

@@ -491,6 +491,27 @@ describe "Service Templates API" do
         end
       end
 
+      context "with requests that are not coming from UI" do
+        context "when the product setting for 'run_automate_methods_on_service_api_submit' is true" do
+          before do
+            stub_settings_merge(:product => {:run_automate_methods_on_service_api_submit => true})
+          end
+
+          it "orders the request with 'init_defaults' set to true" do
+            api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+
+            post(api_service_templates_url, :params => { :action => "order", :resources => [{:href => api_service_template_url(nil, service_template)}] })
+
+            expected = {
+              "results" => [a_hash_including("href"    => a_string_including(api_service_requests_url),
+                                             "options" => a_hash_including("request_options" => a_hash_including("init_defaults"=>true)))]
+            }
+            expect(response).to(have_http_status(:ok))
+            expect(response.parsed_body).to(include(expected))
+          end
+        end
+      end
+
       it "can be ordered as a resource action" do
         api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
 
