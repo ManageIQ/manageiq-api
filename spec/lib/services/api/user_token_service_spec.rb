@@ -1,6 +1,6 @@
 RSpec.describe Api::UserTokenService do
   before do
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
   end
 
   let(:user_token_service) { described_class.new }

@@ -2,9 +2,9 @@
 # REST API Request Tests - Tags subcollection specs for Non-Vm collections
 #
 describe "Tag Collections API" do
-  let(:zone)         { FactoryGirl.create(:zone, :name => "api_zone") }
-  let(:ems)          { FactoryGirl.create(:ems_vmware, :zone => zone) }
-  let(:host)         { FactoryGirl.create(:host) }
+  let(:zone)         { FactoryBot.create(:zone, :name => "api_zone") }
+  let(:ems)          { FactoryBot.create(:ems_vmware, :zone => zone) }
+  let(:host)         { FactoryBot.create(:host) }
 
   let(:tag1)         { {:category => "department", :name => "finance", :path => "/managed/department/finance"} }
   let(:tag2)         { {:category => "cc",         :name => "001",     :path => "/managed/cc/001"} }
@@ -26,12 +26,12 @@ describe "Tag Collections API" do
   end
 
   before do
-    FactoryGirl.create(:classification_department_with_tags)
-    FactoryGirl.create(:classification_cost_center_with_tags)
+    FactoryBot.create(:classification_department_with_tags)
+    FactoryBot.create(:classification_cost_center_with_tags)
   end
 
   context "Availability Zone Tag subcollection" do
-    let(:availability_zone) { FactoryGirl.create(:availability_zone) }
+    let(:availability_zone) { FactoryBot.create(:availability_zone) }
 
     it "query all tags of an Availability Zone and verify tag category and names" do
       api_basic_authorize
@@ -79,7 +79,7 @@ describe "Tag Collections API" do
   end
 
   context "Cloud Network Tag subcollection" do
-    let(:cloud_network) { FactoryGirl.create(:cloud_network) }
+    let(:cloud_network) { FactoryBot.create(:cloud_network) }
 
     it "query all tags of an Cloud Network and verify tag category and names" do
       api_basic_authorize
@@ -127,7 +127,7 @@ describe "Tag Collections API" do
   end
 
   context "Cloud Subnet Tag subcollection" do
-    let(:cloud_subnet) { FactoryGirl.create(:cloud_subnet) }
+    let(:cloud_subnet) { FactoryBot.create(:cloud_subnet) }
 
     it "query all tags of a Cloud Subnet and verify tag category and names" do
       api_basic_authorize
@@ -175,7 +175,7 @@ describe "Tag Collections API" do
   end
 
   context "Flavor Tag subcollection" do
-    let(:flavor) { FactoryGirl.create(:flavor) }
+    let(:flavor) { FactoryBot.create(:flavor) }
 
     it "query all tags of a Flavor and verify tag category and names" do
       api_basic_authorize
@@ -223,7 +223,7 @@ describe "Tag Collections API" do
   end
 
   context "Network Router Tag subcollection" do
-    let(:network_router) { FactoryGirl.create(:network_router) }
+    let(:network_router) { FactoryBot.create(:network_router) }
 
     it "query all tags of a Network Router and verify tag category and names" do
       api_basic_authorize
@@ -365,7 +365,7 @@ describe "Tag Collections API" do
   end
 
   context "Data Store Tag subcollection" do
-    let(:ds)          { FactoryGirl.create(:storage, :name => "Storage 1", :store_type => "VMFS") }
+    let(:ds)          { FactoryBot.create(:storage, :name => "Storage 1", :store_type => "VMFS") }
 
     it "query all tags of a Data Store and verify tag category and names" do
       api_basic_authorize
@@ -413,7 +413,7 @@ describe "Tag Collections API" do
   end
 
   context "Resource Pool Tag subcollection" do
-    let(:rp)          { FactoryGirl.create(:resource_pool, :name => "Resource Pool 1") }
+    let(:rp)          { FactoryBot.create(:resource_pool, :name => "Resource Pool 1") }
 
     it "query all tags of a Resource Pool and verify tag category and names" do
       api_basic_authorize
@@ -462,7 +462,7 @@ describe "Tag Collections API" do
 
   context "Cluster Tag subcollection" do
     let(:cluster) do
-      FactoryGirl.create(:ems_cluster,
+      FactoryBot.create(:ems_cluster,
                          :name                  => "cluster 1",
                          :ext_management_system => ems,
                          :hosts                 => [host],
@@ -515,7 +515,7 @@ describe "Tag Collections API" do
   end
 
   context "Security Group Tag subcollection" do
-    let(:security_group) { FactoryGirl.create(:security_group) }
+    let(:security_group) { FactoryBot.create(:security_group) }
 
     it "query all tags of a Security Group and verify tag category and names" do
       api_basic_authorize
@@ -563,7 +563,7 @@ describe "Tag Collections API" do
   end
 
   context "Service Tag subcollection" do
-    let(:service)          { FactoryGirl.create(:service) }
+    let(:service)          { FactoryBot.create(:service) }
 
     it "query all tags of a Service and verify tag category and names" do
       api_basic_authorize
@@ -611,7 +611,7 @@ describe "Tag Collections API" do
   end
 
   context "Service Template Tag subcollection" do
-    let(:service_template)          { FactoryGirl.create(:service_template) }
+    let(:service_template)          { FactoryBot.create(:service_template) }
 
     it "query all tags of a Service Template and verify tag category and names" do
       api_basic_authorize
@@ -659,7 +659,7 @@ describe "Tag Collections API" do
   end
 
   context "Tenant Tag subcollection" do
-    let(:tenant)          { FactoryGirl.create(:tenant, :name => "Tenant A", :description => "Tenant A Description") }
+    let(:tenant)          { FactoryBot.create(:tenant, :name => "Tenant A", :description => "Tenant A Description") }
 
     it "query all tags of a Tenant and verify tag category and names" do
       api_basic_authorize
@@ -708,8 +708,8 @@ describe "Tag Collections API" do
 
   context 'Vm assign_tags action' do
     let(:bad_tag) { {:category => "cc", :name => "002"} }
-    let(:vm1)                { FactoryGirl.create(:vm_vmware,    :host => host, :ems_id => ems.id) }
-    let(:vm2)                { FactoryGirl.create(:vm_vmware,    :host => host, :ems_id => ems.id) }
+    let(:vm1)                { FactoryBot.create(:vm_vmware,    :host => host, :ems_id => ems.id) }
+    let(:vm2)                { FactoryBot.create(:vm_vmware,    :host => host, :ems_id => ems.id) }
 
     it 'can bulk assign tags to multiple vms' do
       api_basic_authorize collection_action_identifier(:vms, :assign_tags)
@@ -862,8 +862,8 @@ describe "Tag Collections API" do
 
   context 'Services assign_tags action' do
     let(:bad_tag) { {:category => "cc", :name => "002"} }
-    let(:service1)                { FactoryGirl.create(:service) }
-    let(:service2)                { FactoryGirl.create(:service) }
+    let(:service1)                { FactoryBot.create(:service) }
+    let(:service2)                { FactoryBot.create(:service) }
 
     it 'can bulk assign tags to multiple services' do
       api_basic_authorize collection_action_identifier(:services, :assign_tags)
@@ -1010,8 +1010,8 @@ describe "Tag Collections API" do
 
   context 'Services unassign_tags action' do
     let(:bad_tag) { {:category => "cc", :name => "002"} }
-    let(:service1)                { FactoryGirl.create(:service) }
-    let(:service2)                { FactoryGirl.create(:service) }
+    let(:service1)                { FactoryBot.create(:service) }
+    let(:service2)                { FactoryBot.create(:service) }
 
     before do
       classify_resource(service1)
@@ -1168,8 +1168,8 @@ describe "Tag Collections API" do
 
   context 'Vms unassign_tags action' do
     let(:bad_tag) { {:category => "cc", :name => "002"} }
-    let(:vm1)                { FactoryGirl.create(:vm_vmware,    :host => host, :ems_id => ems.id) }
-    let(:vm2)                { FactoryGirl.create(:vm_vmware,    :host => host, :ems_id => ems.id) }
+    let(:vm1)                { FactoryBot.create(:vm_vmware,    :host => host, :ems_id => ems.id) }
+    let(:vm2)                { FactoryBot.create(:vm_vmware,    :host => host, :ems_id => ems.id) }
 
     before do
       classify_resource(vm1)
@@ -1321,7 +1321,7 @@ describe "Tag Collections API" do
   end
 
   context 'Generic Objects subcollection' do
-    let(:object) { FactoryGirl.create(:generic_object) }
+    let(:object) { FactoryBot.create(:generic_object) }
 
     describe 'POST /api/generic_objects/:id/tags' do
       it 'cannot assign tags without an appropriate role' do

@@ -12,19 +12,19 @@
 RSpec.describe "users API" do
   let(:expected_attributes) { %w(id name userid current_group_id) }
 
-  let(:tenant1)  { FactoryGirl.create(:tenant, :name => "Tenant1") }
-  let(:role1)    { FactoryGirl.create(:miq_user_role) }
-  let(:group1)   { FactoryGirl.create(:miq_group, :description => "Group1", :role => role1, :tenant => tenant1) }
+  let(:tenant1)  { FactoryBot.create(:tenant, :name => "Tenant1") }
+  let(:role1)    { FactoryBot.create(:miq_user_role) }
+  let(:group1)   { FactoryBot.create(:miq_group, :description => "Group1", :role => role1, :tenant => tenant1) }
 
-  let(:role2)    { FactoryGirl.create(:miq_user_role) }
-  let(:group2)   { FactoryGirl.create(:miq_group, :description => "Group2", :role => role2, :tenant => tenant1) }
+  let(:role2)    { FactoryBot.create(:miq_user_role) }
+  let(:group2)   { FactoryBot.create(:miq_group, :description => "Group2", :role => role2, :tenant => tenant1) }
 
   let(:sample_user1) { {:userid => "user1", :name => "User1", :password => "password1", :group => {"id" => group1.id}} }
   let(:sample_user2) { {:userid => "user2", :name => "User2", :password => "password2", :group => {"id" => group2.id}} }
   let(:sample_user3) { {:userid => "user3", :name => "User3", :password => "password3", :miq_groups => [{"id" => group1.id}, {"id" => group2.id}]} }
 
-  let(:user1) { FactoryGirl.create(:user, sample_user1.except(:group).merge(:miq_groups => [group1])) }
-  let(:user2) { FactoryGirl.create(:user, sample_user2.except(:group).merge(:miq_groups => [group2])) }
+  let(:user1) { FactoryBot.create(:user, sample_user1.except(:group).merge(:miq_groups => [group1])) }
+  let(:user2) { FactoryBot.create(:user, sample_user2.except(:group).merge(:miq_groups => [group2])) }
 
   before do
     @user.miq_groups << group1
@@ -44,7 +44,7 @@ RSpec.describe "users API" do
 
     it "can change another user's password" do
       api_basic_authorize action_identifier(:users, :edit)
-      user = FactoryGirl.create(:user, :miq_groups => [group1], :current_group => group1)
+      user = FactoryBot.create(:user, :miq_groups => [group1], :current_group => group1)
 
       expect do
         post api_user_url(nil, user), :params => gen_request(:edit, :password => "new_password")
@@ -107,7 +107,7 @@ RSpec.describe "users API" do
 
     it "cannot change another user's password" do
       api_basic_authorize
-      user = FactoryGirl.create(:user)
+      user = FactoryBot.create(:user)
 
       expect do
         post api_user_url(nil, user), :params => gen_request(:edit, :password => "new_password")
@@ -118,7 +118,7 @@ RSpec.describe "users API" do
 
     it "cannot change another user's settings" do
       api_basic_authorize
-      user = FactoryGirl.create(:user, :settings => {:locale => "en"})
+      user = FactoryBot.create(:user, :settings => {:locale => "en"})
 
       expect do
         post api_user_url(nil, user), :params => gen_request(:edit, :settings => {:locale => "ja"})
@@ -424,7 +424,7 @@ RSpec.describe "users API" do
   end
 
   describe "tags subcollection" do
-    let(:user) { FactoryGirl.create(:user, :miq_groups => [group1], :current_group => group1) }
+    let(:user) { FactoryBot.create(:user, :miq_groups => [group1], :current_group => group1) }
 
     let(:tag1)         { {:category => "department", :name => "finance", :path => "/managed/department/finance"} }
     let(:tag2)         { {:category => "cc",         :name => "001",     :path => "/managed/cc/001"} }
@@ -432,8 +432,8 @@ RSpec.describe "users API" do
     let(:invalid_tag_url) { api_tag_url(nil, 999_999) }
 
     before do
-      FactoryGirl.create(:classification_department_with_tags)
-      FactoryGirl.create(:classification_cost_center_with_tags)
+      FactoryBot.create(:classification_department_with_tags)
+      FactoryBot.create(:classification_cost_center_with_tags)
     end
 
     it "can list a user's tags" do
@@ -541,7 +541,7 @@ RSpec.describe "users API" do
     end
 
     it "requires that the user belong to the current group" do
-      group3 = FactoryGirl.create(:miq_group)
+      group3 = FactoryBot.create(:miq_group)
       api_basic_authorize
 
       post(api_user_url(nil, @user), :params => {
@@ -591,8 +591,8 @@ RSpec.describe "users API" do
   end
 
   describe 'GET /users/:id/custom_button_events' do
-    let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
-    let!(:custom_button_event) { FactoryGirl.create(:custom_button_event, :target => user1) }
+    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+    let!(:custom_button_event) { FactoryBot.create(:custom_button_event, :target => user1) }
 
     it 'returns with the custom button events for the given user' do
       api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)

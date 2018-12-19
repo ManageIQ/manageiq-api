@@ -3,8 +3,8 @@ RSpec.describe "Flavors API" do
     describe "GET /api/providers/:c_id/flavors" do
       it "can list the flavors of a provider" do
         api_basic_authorize(action_identifier(:flavors, :read, :subcollection_actions, :get))
-        ems = FactoryGirl.create(:ems_cloud)
-        flavor = FactoryGirl.create(:flavor, :ext_management_system => ems)
+        ems = FactoryBot.create(:ems_cloud)
+        flavor = FactoryBot.create(:flavor, :ext_management_system => ems)
 
         get(api_provider_flavors_url(nil, ems))
 
@@ -21,8 +21,8 @@ RSpec.describe "Flavors API" do
 
       it "will not list flavors unless authorized" do
         api_basic_authorize
-        ems = FactoryGirl.create(:ems_cloud)
-        FactoryGirl.create(:flavor, :ext_management_system => ems)
+        ems = FactoryBot.create(:ems_cloud)
+        FactoryBot.create(:flavor, :ext_management_system => ems)
 
         get(api_provider_flavors_url(nil, ems))
 
@@ -30,7 +30,7 @@ RSpec.describe "Flavors API" do
       end
 
       it 'returns an empty array for collections that do not have flavors' do
-        ems_infra = FactoryGirl.create(:ems_infra)
+        ems_infra = FactoryBot.create(:ems_infra)
         api_basic_authorize(subcollection_action_identifier(:providers, :flavors, :read, :get))
 
         get(api_provider_flavors_url(nil, ems_infra))
@@ -43,8 +43,8 @@ RSpec.describe "Flavors API" do
     describe "GET /api/providers/:c_id/flavors/:id" do
       it "can show a provider's flavor" do
         api_basic_authorize(action_identifier(:flavors, :read, :subresource_actions, :get))
-        ems = FactoryGirl.create(:ems_cloud)
-        flavor = FactoryGirl.create(:flavor, :ext_management_system => ems)
+        ems = FactoryBot.create(:ems_cloud)
+        flavor = FactoryBot.create(:flavor, :ext_management_system => ems)
 
         get(api_provider_flavor_url(nil, ems, flavor))
 
@@ -58,8 +58,8 @@ RSpec.describe "Flavors API" do
 
       it "will not show a flavor unless authorized" do
         api_basic_authorize
-        ems = FactoryGirl.create(:ems_cloud)
-        flavor = FactoryGirl.create(:flavor, :ext_management_system => ems)
+        ems = FactoryBot.create(:ems_cloud)
+        flavor = FactoryBot.create(:flavor, :ext_management_system => ems)
 
         get(api_provider_flavor_url(nil, ems, flavor))
 
@@ -70,7 +70,7 @@ RSpec.describe "Flavors API" do
     describe "POST /api/providers/:c_id/flavors" do
       it "can queue the creation of a flavors" do
         api_basic_authorize(action_identifier(:flavors, :create, :subcollection_actions))
-        ems = FactoryGirl.create(:ems_cloud)
+        ems = FactoryBot.create(:ems_cloud)
 
         post(api_provider_flavors_url(nil, ems), :params => { :name => "test-flavor" })
 
@@ -90,7 +90,7 @@ RSpec.describe "Flavors API" do
 
       it "will not create a flavor unless authorized" do
         api_basic_authorize
-        ems = FactoryGirl.create(:ems_cloud)
+        ems = FactoryBot.create(:ems_cloud)
 
         post(api_provider_flavors_url(nil, ems), :params => { :name => "test-flavor" })
 
@@ -102,8 +102,8 @@ RSpec.describe "Flavors API" do
       it "can queue a flavor for deletion" do
         api_basic_authorize(action_identifier(:flavors, :delete, :subresource_actions))
 
-        ems = FactoryGirl.create(:ems_cloud)
-        flavor = FactoryGirl.create(:flavor, :ext_management_system => ems)
+        ems = FactoryBot.create(:ems_cloud)
+        flavor = FactoryBot.create(:flavor, :ext_management_system => ems)
 
         post(api_provider_flavor_url(nil, ems, flavor), :params => { :action => "delete" })
 
@@ -119,8 +119,8 @@ RSpec.describe "Flavors API" do
 
       it "will not delete a flavor unless authorized" do
         api_basic_authorize
-        ems = FactoryGirl.create(:ems_cloud)
-        flavor = FactoryGirl.create(:flavor, :ext_management_system => ems)
+        ems = FactoryBot.create(:ems_cloud)
+        flavor = FactoryBot.create(:flavor, :ext_management_system => ems)
 
         post(api_provider_flavor_url(nil, ems, flavor), :params => { :action => "delete" })
 
@@ -130,8 +130,8 @@ RSpec.describe "Flavors API" do
 
     describe "POST /api/providers/:c_id/flavors/ with delete action" do
       it "can delete multiple flavors" do
-        ems = FactoryGirl.create(:ems_cloud)
-        flavor1, flavor2 = FactoryGirl.create_list(:flavor, 2)
+        ems = FactoryBot.create(:ems_cloud)
+        flavor1, flavor2 = FactoryBot.create_list(:flavor, 2)
 
         api_basic_authorize(action_identifier(:flavors, :delete, :subresource_actions))
 
@@ -142,8 +142,8 @@ RSpec.describe "Flavors API" do
       end
 
       it "forbids multiple flavor deletion without an appropriate role" do
-        ems = FactoryGirl.create(:ems_cloud)
-        flavor1, flavor2 = FactoryGirl.create_list(:flavor, 2)
+        ems = FactoryBot.create(:ems_cloud)
+        flavor1, flavor2 = FactoryBot.create_list(:flavor, 2)
 
         api_basic_authorize
 
@@ -156,8 +156,8 @@ RSpec.describe "Flavors API" do
 
     describe "DELETE /api/providers/:c_id/flavors/:s_id" do
       it "can delete a flavor" do
-        ems = FactoryGirl.create(:ems_cloud)
-        flavor = FactoryGirl.create(:flavor, :ext_management_system => ems)
+        ems = FactoryBot.create(:ems_cloud)
+        flavor = FactoryBot.create(:flavor, :ext_management_system => ems)
 
         api_basic_authorize(action_identifier(:flavors, :delete, :subresource_actions, :delete))
 
@@ -167,8 +167,8 @@ RSpec.describe "Flavors API" do
       end
 
       it "will not delete a flavor unless authorized" do
-        ems = FactoryGirl.create(:ems_cloud)
-        flavor = FactoryGirl.create(:flavor, :ext_management_system => ems)
+        ems = FactoryBot.create(:ems_cloud)
+        flavor = FactoryBot.create(:flavor, :ext_management_system => ems)
 
         api_basic_authorize
 

@@ -9,7 +9,7 @@ describe "Container Projects API" do
     end
 
     it 'returns container projects with an appropriate role' do
-      container_project = FactoryGirl.create(:container_project)
+      container_project = FactoryBot.create(:container_project)
       api_basic_authorize(collection_action_identifier(:container_projects, :read, :get))
 
       get(api_container_projects_url)
@@ -23,7 +23,7 @@ describe "Container Projects API" do
   end
 
   context 'GET /api/container_projects' do
-    let(:container_project) { FactoryGirl.create(:container_project) }
+    let(:container_project) { FactoryBot.create(:container_project) }
 
     it 'forbids access to a container project without an appropriate role' do
       api_basic_authorize

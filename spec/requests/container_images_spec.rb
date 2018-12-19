@@ -9,7 +9,7 @@ describe "Container Images API" do
     end
 
     it 'returns container images with an appropriate role' do
-      container_images = FactoryGirl.create(:container_image)
+      container_images = FactoryBot.create(:container_image)
       api_basic_authorize(collection_action_identifier(:container_images, :read, :get))
 
       get(api_container_images_url)
@@ -23,7 +23,7 @@ describe "Container Images API" do
   end
 
   context 'GET /api/container_images' do
-    let(:container_image) { FactoryGirl.create(:container_image) }
+    let(:container_image) { FactoryBot.create(:container_image) }
 
     it 'forbids access to a container image without an appropriate role' do
       api_basic_authorize
@@ -47,8 +47,8 @@ describe "Container Images API" do
   end
 
   context 'POST /api/container_images with action scan' do
-    let(:provider) { FactoryGirl.create(:ems_kubernetes) }
-    let(:container_image) { FactoryGirl.create(:container_image, :ext_management_system => provider) }
+    let(:provider) { FactoryBot.create(:ems_kubernetes) }
+    let(:container_image) { FactoryBot.create(:container_image, :ext_management_system => provider) }
     let(:invalid_image_url) { api_container_image_url(nil, container_image.id + 1) }
     let(:valid_image_url) { api_container_image_url(nil, container_image) }
 
@@ -81,7 +81,7 @@ describe "Container Images API" do
     it "scan a Container Image" do
       api_basic_authorize(action_identifier(:container_images, :scan, :resource_actions, :post))
       # MiqEventDefinition that is called for scanning container images.
-      _med = FactoryGirl.create(:miq_event_definition, :name => "request_containerimage_scan")
+      _med = FactoryBot.create(:miq_event_definition, :name => "request_containerimage_scan")
       post valid_image_url, :params => { :action => "scan" }
 
       expected = {

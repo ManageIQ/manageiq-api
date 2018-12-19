@@ -1,8 +1,8 @@
 describe "Alert Definition Profiles API" do
-  let(:alert_definition_profile) { FactoryGirl.create(:miq_alert_set) }
-  let(:cluster) { FactoryGirl.create(:ems_cluster) }
-  let(:department_classification) { FactoryGirl.create(:classification_department) }
-  let(:classification_tag) { FactoryGirl.create(:classification_tag, :name => "foo", :parent => department_classification) }
+  let(:alert_definition_profile) { FactoryBot.create(:miq_alert_set) }
+  let(:cluster) { FactoryBot.create(:ems_cluster) }
+  let(:department_classification) { FactoryBot.create(:classification_department) }
+  let(:classification_tag) { FactoryBot.create(:classification_tag, :name => "foo", :parent => department_classification) }
 
   describe "POST /api/alert_definition_profiles" do
     context "assign" do
@@ -46,8 +46,8 @@ describe "Alert Definition Profiles API" do
 
       it "assigns alert profiles with an appropriate role via tag href or classification name" do
         api_basic_authorize(collection_action_identifier(:alert_definition_profiles, :edit))
-        cc_classification = FactoryGirl.create(:classification_cost_center)
-        FactoryGirl.create(:classification_tag, :name => "bar", :parent => cc_classification)
+        cc_classification = FactoryBot.create(:classification_cost_center)
+        FactoryBot.create(:classification_tag, :name => "bar", :parent => cc_classification)
 
         request = {
           "action"    => "assign",
@@ -90,8 +90,8 @@ describe "Alert Definition Profiles API" do
 
       it "unassigns alert profiles with an appropriate role via tag href or classification name" do
         api_basic_authorize(collection_action_identifier(:alert_definition_profiles, :edit))
-        cc_classification = FactoryGirl.create(:classification_cost_center)
-        classification_tag2 = FactoryGirl.create(:classification_tag, :name => "bar", :parent => cc_classification)
+        cc_classification = FactoryBot.create(:classification_cost_center)
+        classification_tag2 = FactoryBot.create(:classification_tag, :name => "bar", :parent => cc_classification)
         alert_definition_profile.assign_to_tags([classification_tag], "host")
         alert_definition_profile.assign_to_tags([classification_tag2], "host")
 

@@ -14,7 +14,7 @@ describe "Set Ownership" do
   end
 
   context "Service set_ownership action" do
-    let(:svc) { FactoryGirl.create(:service, :name => "svc", :description => "svc description") }
+    let(:svc) { FactoryBot.create(:service, :name => "svc", :description => "svc description") }
 
     it "to an invalid service" do
       api_basic_authorize action_identifier(:services, :set_ownership)
@@ -107,8 +107,8 @@ describe "Set Ownership" do
     it "to multiple services" do
       api_basic_authorize action_identifier(:services, :set_ownership)
 
-      svc1 = FactoryGirl.create(:service, :name => "svc1", :description => "svc1 description")
-      svc2 = FactoryGirl.create(:service, :name => "svc2", :description => "svc2 description")
+      svc1 = FactoryBot.create(:service, :name => "svc1", :description => "svc1 description")
+      svc2 = FactoryBot.create(:service, :name => "svc2", :description => "svc2 description")
 
       svc_urls = [api_service_url(nil, svc1), api_service_url(nil, svc2)]
       post(api_services_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => @user.userid}}, *svc_urls))
@@ -121,7 +121,7 @@ describe "Set Ownership" do
   end
 
   context "Vms set_ownership action" do
-    let(:vm) { FactoryGirl.create(:vm, :name => "vm", :description => "vm description") }
+    let(:vm) { FactoryBot.create(:vm, :name => "vm", :description => "vm description") }
 
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
@@ -214,8 +214,8 @@ describe "Set Ownership" do
     it "to multiple vms" do
       api_basic_authorize action_identifier(:vms, :set_ownership)
 
-      vm1 = FactoryGirl.create(:vm, :name => "vm1", :description => "vm1 description")
-      vm2 = FactoryGirl.create(:vm, :name => "vm2", :description => "vm2 description")
+      vm1 = FactoryBot.create(:vm, :name => "vm1", :description => "vm1 description")
+      vm2 = FactoryBot.create(:vm, :name => "vm2", :description => "vm2 description")
 
       vm_urls = [api_vm_url(nil, vm1), api_vm_url(nil, vm2)]
       post(api_vms_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => @user.userid}}, *vm_urls))
@@ -228,7 +228,7 @@ describe "Set Ownership" do
   end
 
   context "Template set_ownership action" do
-    let(:template) { FactoryGirl.create(:template_vmware, :name => "template") }
+    let(:template) { FactoryBot.create(:template_vmware, :name => "template") }
 
     it "to an invalid template" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
@@ -322,8 +322,8 @@ describe "Set Ownership" do
     it "to multiple templates" do
       api_basic_authorize action_identifier(:templates, :set_ownership)
 
-      template1 = FactoryGirl.create(:template_vmware, :name => "template1")
-      template2 = FactoryGirl.create(:template_vmware, :name => "template2")
+      template1 = FactoryBot.create(:template_vmware, :name => "template1")
+      template2 = FactoryBot.create(:template_vmware, :name => "template2")
 
       template_urls = [api_template_url(nil, template1), api_template_url(nil, template2)]
       post(api_templates_url, :params => gen_request(:set_ownership, {"owner" => {"userid" => @user.userid}}, *template_urls))

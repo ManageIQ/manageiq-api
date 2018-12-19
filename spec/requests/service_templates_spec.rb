@@ -7,14 +7,14 @@
 # - Delete multiple service templates   /api/service_templates        action "delete"
 #
 describe "Service Templates API" do
-  let(:dialog1)    { FactoryGirl.create(:dialog, :label => "ServiceDialog1") }
-  let(:dialog2)    { FactoryGirl.create(:dialog, :label => "ServiceDialog2") }
+  let(:dialog1)    { FactoryBot.create(:dialog, :label => "ServiceDialog1") }
+  let(:dialog2)    { FactoryBot.create(:dialog, :label => "ServiceDialog2") }
 
-  let(:ra1)        { FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog1) }
-  let(:ra2)        { FactoryGirl.create(:resource_action, :action => "Retirement", :dialog => dialog2) }
+  let(:ra1)        { FactoryBot.create(:resource_action, :action => "Provision", :dialog => dialog1) }
+  let(:ra2)        { FactoryBot.create(:resource_action, :action => "Retirement", :dialog => dialog2) }
 
-  let(:picture)    { FactoryGirl.create(:picture, :extension => "jpg") }
-  let(:template)   { FactoryGirl.create(:service_template, :name => "ServiceTemplate") }
+  let(:picture)    { FactoryBot.create(:picture, :extension => "jpg") }
+  let(:template)   { FactoryBot.create(:service_template, :name => "ServiceTemplate") }
 
   describe "Service Templates query" do
     before do
@@ -90,7 +90,7 @@ describe "Service Templates API" do
 
     it 'does not return hrefs on resources that do not have a collection' do
       api_basic_authorize action_identifier(:service_templates, :read, :resource_actions, :get)
-      vm = FactoryGirl.create(:vm)
+      vm = FactoryBot.create(:vm)
       template.add_resource(vm)
       template.save
 
@@ -102,13 +102,13 @@ describe "Service Templates API" do
   end
 
   describe "Service Templates edit" do
-    let(:ems) { FactoryGirl.create(:ems_amazon) }
-    let(:new_vm) { FactoryGirl.create(:vm_amazon, :ext_management_system => ems) }
-    let(:vm) { FactoryGirl.create(:vm_amazon, :ems_id => ems.id) }
-    let(:flavor) { FactoryGirl.create(:flavor_amazon) }
-    let(:dialog) { FactoryGirl.create(:miq_dialog_provision) }
-    let(:request_dialog) { FactoryGirl.create(:miq_dialog_provision) }
-    let(:service_dialog) { FactoryGirl.create(:dialog) }
+    let(:ems) { FactoryBot.create(:ems_amazon) }
+    let(:new_vm) { FactoryBot.create(:vm_amazon, :ext_management_system => ems) }
+    let(:vm) { FactoryBot.create(:vm_amazon, :ems_id => ems.id) }
+    let(:flavor) { FactoryBot.create(:flavor_amazon) }
+    let(:dialog) { FactoryBot.create(:miq_dialog_provision) }
+    let(:request_dialog) { FactoryBot.create(:miq_dialog_provision) }
+    let(:service_dialog) { FactoryBot.create(:dialog) }
     let(:updated_catalog_item_options) do
       {
         :name        => 'Updated Template Name',
@@ -138,7 +138,7 @@ describe "Service Templates API" do
     it "rejects requests without appropriate role" do
       api_basic_authorize
 
-      st = FactoryGirl.create(:service_template, :name => "st")
+      st = FactoryBot.create(:service_template, :name => "st")
       post(api_service_template_url(nil, st), :params => gen_request(:edit, updated_catalog_item_options))
 
       expect(response).to have_http_status(:forbidden)
@@ -147,7 +147,7 @@ describe "Service Templates API" do
     it "supports edits of single resource" do
       api_basic_authorize collection_action_identifier(:service_templates, :edit)
 
-      st = FactoryGirl.create(:service_template, :name => "st1")
+      st = FactoryBot.create(:service_template, :name => "st1")
       post(api_service_template_url(nil, st), :params => gen_request(:edit, updated_catalog_item_options))
 
       expect_single_resource_query("id" => st.id.to_s, "href" => api_service_template_url(nil, st), "name" => "Updated Template Name")
@@ -157,8 +157,8 @@ describe "Service Templates API" do
     it "supports edits of multiple resources" do
       api_basic_authorize collection_action_identifier(:service_templates, :edit)
 
-      st1 = FactoryGirl.create(:service_template, :name => "st1")
-      st2 = FactoryGirl.create(:service_template, :name => "st2")
+      st1 = FactoryBot.create(:service_template, :name => "st1")
+      st2 = FactoryBot.create(:service_template, :name => "st2")
 
       post(api_service_templates_url, :params => gen_request(:edit, [updated_catalog_item_options.merge('id' => st1.id),
                                                                      updated_catalog_item_options.merge('id' => st2.id)]))
@@ -173,7 +173,7 @@ describe "Service Templates API" do
 
     it 'can update without config info' do
       api_basic_authorize collection_action_identifier(:service_templates, :edit)
-      st1 = FactoryGirl.create(:service_template, :name => 'st1')
+      st1 = FactoryBot.create(:service_template, :name => 'st1')
 
       post(api_service_template_url(nil, st1), :params => gen_request(:edit, 'name' => 'updated template'))
 
@@ -214,7 +214,7 @@ describe "Service Templates API" do
     it "supports single resource deletes" do
       api_basic_authorize collection_action_identifier(:service_templates, :delete)
 
-      st = FactoryGirl.create(:service_template, :name => "st", :description => "st description")
+      st = FactoryBot.create(:service_template, :name => "st", :description => "st description")
 
       delete(api_service_template_url(nil, st))
 
@@ -224,7 +224,7 @@ describe "Service Templates API" do
 
     it "can delete a service template via POST with an appropriate role" do
       api_basic_authorize(action_identifier(:service_templates, :delete))
-      service_template = FactoryGirl.create(:service_template)
+      service_template = FactoryBot.create(:service_template)
 
       expect do
         post(api_service_template_url(nil, service_template), :params => { :action => "delete" })
@@ -241,7 +241,7 @@ describe "Service Templates API" do
 
     it "will not delete a service template via POST without an appropriate role" do
       api_basic_authorize
-      service_template = FactoryGirl.create(:service_template)
+      service_template = FactoryBot.create(:service_template)
 
       expect do
         post(api_service_template_url(nil, service_template), :params => { :action => "delete" })
@@ -253,8 +253,8 @@ describe "Service Templates API" do
     it "supports multiple resource deletes" do
       api_basic_authorize collection_action_identifier(:service_templates, :delete)
 
-      st1 = FactoryGirl.create(:service_template, :name => "st1", :description => "st1 description")
-      st2 = FactoryGirl.create(:service_template, :name => "st2", :description => "st2 description")
+      st1 = FactoryBot.create(:service_template, :name => "st1", :description => "st1 description")
+      st2 = FactoryBot.create(:service_template, :name => "st2", :description => "st2 description")
 
       post(api_service_templates_url, :params => gen_request(:delete,
                                                              [{"href" => api_service_template_url(nil, st1)},
@@ -268,8 +268,8 @@ describe "Service Templates API" do
     end
 
     it "can delete a service template through its nested URI" do
-      service_catalog = FactoryGirl.create(:service_template_catalog)
-      service_template = FactoryGirl.create(:service_template, :service_template_catalog => service_catalog)
+      service_catalog = FactoryBot.create(:service_template_catalog)
+      service_template = FactoryBot.create(:service_template, :service_template_catalog => service_catalog)
       api_basic_authorize action_identifier(:service_templates, :delete, :subresource_actions, :delete)
 
       expect do
@@ -282,8 +282,8 @@ describe "Service Templates API" do
 
   describe "service requests subcollection" do
     it "can list a service template's service requests" do
-      service_template = FactoryGirl.create(:service_template)
-      service_request = FactoryGirl.create(:service_template_provision_request,
+      service_template = FactoryBot.create(:service_template)
+      service_request = FactoryBot.create(:service_template_provision_request,
                                            :requester => @user,
                                            :source    => service_template)
       api_basic_authorize(action_identifier(:service_requests, :read, :subcollection_actions, :get))
@@ -314,11 +314,11 @@ describe "Service Templates API" do
   end
 
   describe "Service Templates create" do
-    let(:ems) { FactoryGirl.create(:ems_amazon) }
-    let(:vm) { FactoryGirl.create(:vm_amazon, :ems_id => ems.id) }
-    let(:flavor) { FactoryGirl.create(:flavor_amazon) }
-    let(:dialog) { FactoryGirl.create(:miq_dialog_provision) }
-    let(:service_dialog) { FactoryGirl.create(:dialog) }
+    let(:ems) { FactoryBot.create(:ems_amazon) }
+    let(:vm) { FactoryBot.create(:vm_amazon, :ems_id => ems.id) }
+    let(:flavor) { FactoryBot.create(:flavor_amazon) }
+    let(:dialog) { FactoryBot.create(:miq_dialog_provision) }
+    let(:service_dialog) { FactoryBot.create(:dialog) }
     let(:template_parameters) do
       {
         :name         => 'Atomic Service Template',
@@ -403,7 +403,7 @@ describe "Service Templates API" do
 
     it 'can create other resource types' do
       api_basic_authorize collection_action_identifier(:service_templates, :create)
-      template = FactoryGirl.create(:orchestration_template)
+      template = FactoryBot.create(:orchestration_template)
       template_parameters = {
         :name         => 'Orchestration Template',
         :service_type => 'atomic',
@@ -438,7 +438,7 @@ describe "Service Templates API" do
 
     it 'returns a bad request error for an invalid request' do
       api_basic_authorize collection_action_identifier(:service_templates, :create)
-      template = FactoryGirl.create(:orchestration_template)
+      template = FactoryBot.create(:orchestration_template)
       template_parameters = {
         :name         => 'Orchestration Template',
         :service_type => 'atomic',
@@ -465,7 +465,7 @@ describe "Service Templates API" do
   end
 
   describe "Service Templates order" do
-    let(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog, :orderable) }
+    let(:service_template) { FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog, :orderable) }
     let(:allow_api_service_ordering) { true }
 
     before do
@@ -557,7 +557,7 @@ describe "Service Templates API" do
       end
 
       it "can order multiple service templates" do
-        service_template2 = FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog, :orderable)
+        service_template2 = FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog, :orderable)
         api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
 
         post(api_service_templates_url, :params => { :action => "order", :resources =>
@@ -596,7 +596,7 @@ describe "Service Templates API" do
     end
 
     context "with an unorderable template" do
-      let(:template_no_display) { FactoryGirl.create(:service_template, :display => false) }
+      let(:template_no_display) { FactoryBot.create(:service_template, :display => false) }
 
       it "cannot be ordered" do
         api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
@@ -626,7 +626,7 @@ describe "Service Templates API" do
     end
 
     context "with the product setting not allowing automate to run on submit" do
-      let(:template_no_display) { FactoryGirl.create(:service_template, :display => false) }
+      let(:template_no_display) { FactoryBot.create(:service_template, :display => false) }
       let(:allow_api_service_ordering) { false }
 
       context "if the token info is blank" do
@@ -651,7 +651,7 @@ describe "Service Templates API" do
   end
 
   describe "Service Templates archive" do
-    let(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog) }
+    let(:service_template) { FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog) }
 
     it "is forbidden without appropriate role" do
       api_basic_authorize
@@ -693,7 +693,7 @@ describe "Service Templates API" do
     end
 
     it "can archive multiple service templates" do
-      service_template2 = FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog)
+      service_template2 = FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog)
       api_basic_authorize action_identifier(:service_templates, :archive, :resource_actions, :post)
 
       post(api_service_templates_url, :params => { :action => "archive", :resources =>
@@ -710,7 +710,7 @@ describe "Service Templates API" do
   end
 
   describe "Service Templates unarchive" do
-    let(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog) }
+    let(:service_template) { FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog) }
 
     it "is forbidden without appropriate role" do
       api_basic_authorize
@@ -752,7 +752,7 @@ describe "Service Templates API" do
     end
 
     it "can unarchive multiple service templates" do
-      service_template2 = FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog)
+      service_template2 = FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog)
       api_basic_authorize action_identifier(:service_templates, :unarchive, :resource_actions, :post)
 
       post(api_service_templates_url, :params => { :action => "unarchive", :resources =>
@@ -769,11 +769,11 @@ describe "Service Templates API" do
   end
 
   context "schedules subcollection" do
-    let!(:service_template) { FactoryGirl.create(:service_template, :with_provision_resource_action_and_dialog) }
+    let!(:service_template) { FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog) }
 
     context "with schedules" do
-      let!(:schedule_1)       { FactoryGirl.create(:miq_schedule, :towhat => "ServiceTemplate", :resource_id => service_template.id) }
-      let!(:schedule_2)       { FactoryGirl.create(:miq_schedule, :towhat => "ServiceTemplate", :resource_id => service_template.id) }
+      let!(:schedule_1)       { FactoryBot.create(:miq_schedule, :towhat => "ServiceTemplate", :resource_id => service_template.id) }
+      let!(:schedule_2)       { FactoryBot.create(:miq_schedule, :towhat => "ServiceTemplate", :resource_id => service_template.id) }
 
       it "can fetch all related schedules" do
         api_basic_authorize subcollection_action_identifier(:service_templates, :schedules, :read, :get)

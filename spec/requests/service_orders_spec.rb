@@ -1,6 +1,6 @@
 RSpec.describe "service orders API" do
   it "can list all service orders" do
-    service_order = FactoryGirl.create(:shopping_cart, :user => @user)
+    service_order = FactoryBot.create(:shopping_cart, :user => @user)
     api_basic_authorize collection_action_identifier(:service_orders, :read, :get)
 
     get api_service_orders_url
@@ -10,8 +10,8 @@ RSpec.describe "service orders API" do
   end
 
   it "won't show another user's service orders" do
-    shopping_cart_for_user = FactoryGirl.create(:shopping_cart, :user => @user)
-    _shopping_cart_for_some_other_user = FactoryGirl.create(:shopping_cart)
+    shopping_cart_for_user = FactoryBot.create(:shopping_cart, :user => @user)
+    _shopping_cart_for_some_other_user = FactoryBot.create(:shopping_cart)
     api_basic_authorize collection_action_identifier(:service_orders, :read, :get)
 
     get api_service_orders_url
@@ -37,7 +37,7 @@ RSpec.describe "service orders API" do
 
   it "cannot create multiple carts" do
     api_basic_authorize collection_action_identifier(:service_orders, :create)
-    FactoryGirl.create(:shopping_cart, :user => @user)
+    FactoryBot.create(:shopping_cart, :user => @user)
 
     post(api_service_orders_url, :params => { :name => "Cart 2" })
 
@@ -70,9 +70,9 @@ RSpec.describe "service orders API" do
   end
 
   it "can specify service_template_hrefs when creating a service order" do
-    dialog = FactoryGirl.create(:dialog, :label => "ServiceDialog1")
-    resource_action = FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog)
-    service_template = FactoryGirl.create(:service_template, :resource_actions => [resource_action])
+    dialog = FactoryBot.create(:dialog, :label => "ServiceDialog1")
+    resource_action = FactoryBot.create(:resource_action, :action => "Provision", :dialog => dialog)
+    service_template = FactoryBot.create(:service_template, :resource_actions => [resource_action])
 
     api_basic_authorize collection_action_identifier(:service_orders, :create)
 
@@ -86,9 +86,9 @@ RSpec.describe "service orders API" do
   end
 
   it "provisions with workflow with the correct options" do
-    dialog = FactoryGirl.create(:dialog, :label => "ServiceDialog1")
-    resource_action = FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog)
-    service_template = FactoryGirl.create(:service_template, :resource_actions => [resource_action])
+    dialog = FactoryBot.create(:dialog, :label => "ServiceDialog1")
+    resource_action = FactoryBot.create(:resource_action, :action => "Provision", :dialog => dialog)
+    service_template = FactoryBot.create(:service_template, :resource_actions => [resource_action])
 
     expect_any_instance_of(ServiceTemplate).to receive(:provision_workflow).with(@user, {}, :submit_workflow => true)
 
@@ -118,7 +118,7 @@ RSpec.describe "service orders API" do
   end
 
   it "can read a service order" do
-    service_order = FactoryGirl.create(:service_order, :user => @user)
+    service_order = FactoryBot.create(:service_order, :user => @user)
     api_basic_authorize action_identifier(:service_orders, :read, :resource_actions, :get)
 
     get api_service_order_url(nil, service_order)
@@ -128,7 +128,7 @@ RSpec.describe "service orders API" do
   end
 
   it "can show the shopping cart" do
-    shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user)
+    shopping_cart = FactoryBot.create(:shopping_cart, :user => @user)
     api_basic_authorize action_identifier(:service_orders, :read, :resource_actions, :get)
 
     get api_service_order_url(nil, "cart")
@@ -149,7 +149,7 @@ RSpec.describe "service orders API" do
   end
 
   it "can update a service order" do
-    service_order = FactoryGirl.create(:service_order, :name => "old name", :user => @user)
+    service_order = FactoryBot.create(:service_order, :name => "old name", :user => @user)
     api_basic_authorize action_identifier(:service_orders, :edit)
 
     post api_service_order_url(nil, service_order), :params => { :action => "edit", :resource => {:name => "new name"} }
@@ -159,8 +159,8 @@ RSpec.describe "service orders API" do
   end
 
   it "can update multiple service orders" do
-    service_order_1 = FactoryGirl.create(:service_order, :user => @user, :name => "old name 1")
-    service_order_2 = FactoryGirl.create(:service_order, :user => @user, :name => "old name 2")
+    service_order_1 = FactoryBot.create(:service_order, :user => @user, :name => "old name 1")
+    service_order_2 = FactoryBot.create(:service_order, :user => @user, :name => "old name 2")
     api_basic_authorize collection_action_identifier(:service_orders, :edit)
 
     post(
@@ -179,7 +179,7 @@ RSpec.describe "service orders API" do
   end
 
   it "can delete a service order" do
-    service_order = FactoryGirl.create(:service_order, :user => @user)
+    service_order = FactoryBot.create(:service_order, :user => @user)
     api_basic_authorize action_identifier(:service_orders, :delete, :resource_actions, :delete)
 
     expect do
@@ -189,7 +189,7 @@ RSpec.describe "service orders API" do
   end
 
   it "can delete a service order through POST" do
-    service_order = FactoryGirl.create(:service_order, :user => @user)
+    service_order = FactoryBot.create(:service_order, :user => @user)
     api_basic_authorize action_identifier(:service_orders, :delete)
 
     expect do
@@ -199,8 +199,8 @@ RSpec.describe "service orders API" do
   end
 
   it "can delete multiple service orders" do
-    service_order_1 = FactoryGirl.create(:service_order, :user => @user, :name => "old name")
-    service_order_2 = FactoryGirl.create(:service_order, :user => @user, :name => "old name")
+    service_order_1 = FactoryBot.create(:service_order, :user => @user, :name => "old name")
+    service_order_2 = FactoryBot.create(:service_order, :user => @user, :name => "old name")
     api_basic_authorize collection_action_identifier(:service_orders, :delete)
 
     expect do
@@ -221,8 +221,8 @@ RSpec.describe "service orders API" do
   context "service requests subcollection" do
     context "with an appropriate role" do
       it "can list a shopping cart's service requests" do
-        service_request = FactoryGirl.create(:service_template_provision_request, :requester => @user)
-        _shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
+        service_request = FactoryBot.create(:service_template_provision_request, :requester => @user)
+        _shopping_cart = FactoryBot.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
         api_basic_authorize action_identifier(:service_requests, :read, :subcollection_actions, :get)
 
         get(api_service_order_service_requests_url(nil, "cart"))
@@ -236,8 +236,8 @@ RSpec.describe "service orders API" do
       end
 
       it "can show a shopping cart's service request" do
-        service_request = FactoryGirl.create(:service_template_provision_request, :requester => @user)
-        _shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
+        service_request = FactoryBot.create(:service_template_provision_request, :requester => @user)
+        _shopping_cart = FactoryBot.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
         api_basic_authorize action_identifier(:service_requests, :read, :subresource_actions, :get)
 
         get(api_service_order_service_request_url(nil, "cart", service_request))
@@ -251,12 +251,12 @@ RSpec.describe "service orders API" do
       end
 
       it "can add a service request to a shopping cart" do
-        dialog = FactoryGirl.create(:dialog_with_tab_and_group_and_field)
-        service_template = FactoryGirl.create(:service_template)
-        service_template.resource_actions << FactoryGirl.create(:resource_action,
+        dialog = FactoryBot.create(:dialog_with_tab_and_group_and_field)
+        service_template = FactoryBot.create(:service_template)
+        service_template.resource_actions << FactoryBot.create(:resource_action,
                                                                 :action => "Provision",
                                                                 :dialog => dialog)
-        shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user)
+        shopping_cart = FactoryBot.create(:shopping_cart, :user => @user)
         api_basic_authorize action_identifier(:service_requests, :add, :subcollection_actions)
 
         expect do
@@ -287,17 +287,17 @@ RSpec.describe "service orders API" do
       end
 
       it "can add muliple service requests to a shopping cart by href" do
-        dialog = FactoryGirl.create(:dialog_with_tab_and_group_and_field)
+        dialog = FactoryBot.create(:dialog_with_tab_and_group_and_field)
 
-        service_template_1, service_template_2 = FactoryGirl.create_list(:service_template, 2)
-        service_template_1.resource_actions << FactoryGirl.create(:resource_action,
+        service_template_1, service_template_2 = FactoryBot.create_list(:service_template, 2)
+        service_template_1.resource_actions << FactoryBot.create(:resource_action,
                                                                   :action => "Provision",
                                                                   :dialog => dialog)
-        service_template_2.resource_actions << FactoryGirl.create(:resource_action,
+        service_template_2.resource_actions << FactoryBot.create(:resource_action,
                                                                   :action => "Provision",
                                                                   :dialog => dialog)
 
-        shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user)
+        shopping_cart = FactoryBot.create(:shopping_cart, :user => @user)
         api_basic_authorize action_identifier(:service_requests, :add, :subcollection_actions)
 
         expect do
@@ -335,8 +335,8 @@ RSpec.describe "service orders API" do
       end
 
       it "can remove a service request from a shopping cart" do
-        service_request = FactoryGirl.create(:service_template_provision_request, :requester => @user)
-        shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
+        service_request = FactoryBot.create(:service_template_provision_request, :requester => @user)
+        shopping_cart = FactoryBot.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
         api_basic_authorize action_identifier(:service_requests, :remove, :subresource_actions)
 
         post(api_service_order_service_request_url(nil, "cart", service_request), :params => { :action => :remove })
@@ -353,10 +353,10 @@ RSpec.describe "service orders API" do
       end
 
       it "can remove multiple service requests from a shopping cart by href" do
-        service_request_1, service_request_2 = FactoryGirl.create_list(:service_template_provision_request,
+        service_request_1, service_request_2 = FactoryBot.create_list(:service_template_provision_request,
                                                                        2,
                                                                        :requester => @user)
-        shopping_cart = FactoryGirl.create(:shopping_cart,
+        shopping_cart = FactoryBot.create(:shopping_cart,
                                            :user         => @user,
                                            :miq_requests => [service_request_1, service_request_2])
         api_basic_authorize action_identifier(:service_requests, :remove, :subcollection_actions)
@@ -394,10 +394,10 @@ RSpec.describe "service orders API" do
       end
 
       it "can remove multiple service requests from a shopping cart by id" do
-        service_request_1, service_request_2 = FactoryGirl.create_list(:service_template_provision_request,
+        service_request_1, service_request_2 = FactoryBot.create_list(:service_template_provision_request,
                                                                        2,
                                                                        :requester => @user)
-        shopping_cart = FactoryGirl.create(:shopping_cart,
+        shopping_cart = FactoryBot.create(:shopping_cart,
                                            :user         => @user,
                                            :miq_requests => [service_request_1, service_request_2])
         api_basic_authorize action_identifier(:service_requests, :remove, :subcollection_actions)
@@ -435,10 +435,10 @@ RSpec.describe "service orders API" do
       end
 
       it "can clear a shopping cart" do
-        service_request_1, service_request_2 = FactoryGirl.create_list(:service_template_provision_request,
+        service_request_1, service_request_2 = FactoryBot.create_list(:service_template_provision_request,
                                                                        2,
                                                                        :requester => @user)
-        shopping_cart = FactoryGirl.create(:shopping_cart,
+        shopping_cart = FactoryBot.create(:shopping_cart,
                                            :user         => @user,
                                            :miq_requests => [service_request_1, service_request_2])
         api_basic_authorize action_identifier(:service_orders, :clear)
@@ -455,8 +455,8 @@ RSpec.describe "service orders API" do
       end
 
       it "notifies that a shopping cart cannot be cleared if it has already been checked out" do
-        service_request = FactoryGirl.create(:service_template_provision_request, :requester => @user)
-        shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
+        service_request = FactoryBot.create(:service_template_provision_request, :requester => @user)
+        shopping_cart = FactoryBot.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
         api_basic_authorize action_identifier(:service_orders, :clear)
 
         shopping_cart.checkout
@@ -473,10 +473,10 @@ RSpec.describe "service orders API" do
       end
 
       it "can checkout a shopping cart" do
-        service_request_1, service_request_2 = FactoryGirl.create_list(:service_template_provision_request,
+        service_request_1, service_request_2 = FactoryBot.create_list(:service_template_provision_request,
                                                                        2,
                                                                        :requester => @user)
-        shopping_cart = FactoryGirl.create(:shopping_cart,
+        shopping_cart = FactoryBot.create(:shopping_cart,
                                            :user         => @user,
                                            :miq_requests => [service_request_1, service_request_2])
         api_basic_authorize action_identifier(:service_orders, :order)
@@ -494,8 +494,8 @@ RSpec.describe "service orders API" do
 
     context "without an appropriate role" do
       it "will not list a shopping cart's service requests" do
-        service_request = FactoryGirl.create(:service_template_provision_request, :requester => @user)
-        _shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
+        service_request = FactoryBot.create(:service_template_provision_request, :requester => @user)
+        _shopping_cart = FactoryBot.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
         api_basic_authorize
 
         get(api_service_order_service_requests_url(nil, "cart"))
@@ -504,8 +504,8 @@ RSpec.describe "service orders API" do
       end
 
       it "will not show a service orders's shopping cart" do
-        service_request = FactoryGirl.create(:service_template_provision_request, :requester => @user)
-        _shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
+        service_request = FactoryBot.create(:service_template_provision_request, :requester => @user)
+        _shopping_cart = FactoryBot.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
         api_basic_authorize
 
         get(api_service_order_service_request_url(nil, "cart", service_request))
@@ -514,12 +514,12 @@ RSpec.describe "service orders API" do
       end
 
       it "will not add a service request to a shopping cart" do
-        dialog = FactoryGirl.create(:dialog_with_tab_and_group_and_field)
-        service_template = FactoryGirl.create(:service_template)
-        service_template.resource_actions << FactoryGirl.create(:resource_action,
+        dialog = FactoryBot.create(:dialog_with_tab_and_group_and_field)
+        service_template = FactoryBot.create(:service_template)
+        service_template.resource_actions << FactoryBot.create(:resource_action,
                                                                 :action => "Provision",
                                                                 :dialog => dialog)
-        shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user)
+        shopping_cart = FactoryBot.create(:shopping_cart, :user => @user)
         api_basic_authorize
 
         post(
@@ -537,15 +537,15 @@ RSpec.describe "service orders API" do
       end
 
       it "will not add multiple service requests to a shopping cart" do
-        dialog = FactoryGirl.create(:dialog_with_tab_and_group_and_field)
-        service_template_1, service_template_2 = FactoryGirl.create_list(:service_template, 2)
-        service_template_1.resource_actions << FactoryGirl.create(:resource_action,
+        dialog = FactoryBot.create(:dialog_with_tab_and_group_and_field)
+        service_template_1, service_template_2 = FactoryBot.create_list(:service_template, 2)
+        service_template_1.resource_actions << FactoryBot.create(:resource_action,
                                                                   :action => "Provision",
                                                                   :dialog => dialog)
-        service_template_2.resource_actions << FactoryGirl.create(:resource_action,
+        service_template_2.resource_actions << FactoryBot.create(:resource_action,
                                                                   :action => "Provision",
                                                                   :dialog => dialog)
-        shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user)
+        shopping_cart = FactoryBot.create(:shopping_cart, :user => @user)
         api_basic_authorize
 
         expect do
@@ -565,8 +565,8 @@ RSpec.describe "service orders API" do
       end
 
       it "will not remove a service request from a shopping cart" do
-        service_request = FactoryGirl.create(:service_template_provision_request, :requester => @user)
-        shopping_cart = FactoryGirl.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
+        service_request = FactoryBot.create(:service_template_provision_request, :requester => @user)
+        shopping_cart = FactoryBot.create(:shopping_cart, :user => @user, :miq_requests => [service_request])
         api_basic_authorize
 
         post(api_service_order_service_request_url(nil, "cart", service_request), :params => { :action => :remove })
@@ -576,10 +576,10 @@ RSpec.describe "service orders API" do
       end
 
       it "will not remove multiple service requests from a shopping cart" do
-        service_request_1, service_request_2 = FactoryGirl.create_list(:service_template_provision_request,
+        service_request_1, service_request_2 = FactoryBot.create_list(:service_template_provision_request,
                                                                        2,
                                                                        :requester => @user)
-        shopping_cart = FactoryGirl.create(:shopping_cart,
+        shopping_cart = FactoryBot.create(:shopping_cart,
                                            :user         => @user,
                                            :miq_requests => [service_request_1, service_request_2])
         api_basic_authorize
@@ -600,10 +600,10 @@ RSpec.describe "service orders API" do
       end
 
       it "will not clear a shopping cart" do
-        service_request_1, service_request_2 = FactoryGirl.create_list(:service_template_provision_request,
+        service_request_1, service_request_2 = FactoryBot.create_list(:service_template_provision_request,
                                                                        2,
                                                                        :requester => @user)
-        shopping_cart = FactoryGirl.create(:shopping_cart,
+        shopping_cart = FactoryBot.create(:shopping_cart,
                                            :user         => @user,
                                            :miq_requests => [service_request_1, service_request_2])
         api_basic_authorize
@@ -615,10 +615,10 @@ RSpec.describe "service orders API" do
       end
 
       it "will not checkout a shopping cart" do
-        service_request_1, service_request_2 = FactoryGirl.create_list(:service_template_provision_request,
+        service_request_1, service_request_2 = FactoryBot.create_list(:service_template_provision_request,
                                                                        2,
                                                                        :requester => @user)
-        shopping_cart = FactoryGirl.create(:shopping_cart,
+        shopping_cart = FactoryBot.create(:shopping_cart,
                                            :user         => @user,
                                            :miq_requests => [service_request_1, service_request_2])
         api_basic_authorize
@@ -639,8 +639,8 @@ RSpec.describe "service orders API" do
 
   context 'Copy Service Order' do
     before do
-      @service_order = FactoryGirl.create(:service_order, :user => @user)
-      @service_order2 = FactoryGirl.create(:service_order, :user => @user)
+      @service_order = FactoryBot.create(:service_order, :user => @user)
+      @service_order2 = FactoryBot.create(:service_order, :user => @user)
     end
 
     it 'forbids service order copy without an appropriate role' do

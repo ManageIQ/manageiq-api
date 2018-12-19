@@ -7,7 +7,7 @@ describe "Alerts API" do
 
   it "reads 2 alerts as a collection" do
     api_basic_authorize collection_action_identifier(:alerts, :read, :get)
-    alert_statuses = FactoryGirl.create_list(:miq_alert_status, 2)
+    alert_statuses = FactoryBot.create_list(:miq_alert_status, 2)
     get(api_alerts_url)
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
@@ -27,14 +27,14 @@ describe "Alerts API" do
 
   it "forbids access to an alert resource without an appropriate role" do
     api_basic_authorize
-    alert_status = FactoryGirl.create(:miq_alert_status)
+    alert_status = FactoryBot.create(:miq_alert_status)
     get(api_alert_url(nil, alert_status))
     expect(response).to have_http_status(:forbidden)
   end
 
   it "reads an alert as a resource" do
     api_basic_authorize action_identifier(:alerts, :read, :resource_actions, :get)
-    alert_status = FactoryGirl.create(:miq_alert_status)
+    alert_status = FactoryBot.create(:miq_alert_status)
     get(api_alert_url(nil, alert_status))
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
@@ -44,8 +44,8 @@ describe "Alerts API" do
   end
 
   context "alert_actions subcollection" do
-    let(:alert) { FactoryGirl.create(:miq_alert_status) }
-    let(:assignee) { FactoryGirl.create(:user) }
+    let(:alert) { FactoryBot.create(:miq_alert_status) }
+    let(:assignee) { FactoryBot.create(:user) }
     let(:expected_assignee) do
       {
         'results' => a_collection_containing_exactly(
@@ -55,10 +55,10 @@ describe "Alerts API" do
     end
 
     it "forbids access to alerts actions subcolletion without an appropriate role" do
-      FactoryGirl.create(
+      FactoryBot.create(
         :miq_alert_status_action,
         :miq_alert_status => alert,
-        :user             => FactoryGirl.create(:user)
+        :user             => FactoryBot.create(:user)
       )
       api_basic_authorize
       get(api_alert_alert_actions_url(nil, alert))
@@ -67,10 +67,10 @@ describe "Alerts API" do
 
     it "reads an alert action as a sub collection under an alert" do
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :read, :get)
-      alert_action = FactoryGirl.create(
+      alert_action = FactoryBot.create(
         :miq_alert_status_action,
         :miq_alert_status => alert,
-        :user             => FactoryGirl.create(:user)
+        :user             => FactoryBot.create(:user)
       )
       get(api_alert_alert_actions_url(nil, alert))
       expect(response).to have_http_status(:ok)
@@ -115,7 +115,7 @@ describe "Alerts API" do
     end
 
     it "creates an alert action on the current user" do
-      user = FactoryGirl.create(:user)
+      user = FactoryBot.create(:user)
       attributes = {
         "action_type" => "comment",
         "comment"     => "comment text",
@@ -169,8 +169,8 @@ describe "Alerts API" do
 
     it "reads an alert action as a resource under an alert" do
       api_basic_authorize subcollection_action_identifier(:alerts, :alert_actions, :read, :get)
-      user = FactoryGirl.create(:user)
-      alert_action = FactoryGirl.create(
+      user = FactoryBot.create(:user)
+      alert_action = FactoryBot.create(
         :miq_alert_status_action,
         :miq_alert_status => alert,
         :user             => user

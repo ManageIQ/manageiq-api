@@ -84,8 +84,8 @@ describe "Authentication API" do
   end
 
   context "Basic Authentication with Group Authorization" do
-    let(:group1) { FactoryGirl.create(:miq_group, :description => "Group1", :miq_user_role => @role) }
-    let(:group2) { FactoryGirl.create(:miq_group, :description => "Group2", :miq_user_role => @role) }
+    let(:group1) { FactoryBot.create(:miq_group, :description => "Group1", :miq_user_role => @role) }
+    let(:group2) { FactoryBot.create(:miq_group, :description => "Group2", :miq_user_role => @role) }
 
     before(:each) do
       @user.miq_groups = [group1, group2, @user.current_group]
@@ -120,7 +120,7 @@ describe "Authentication API" do
   end
 
   context "Group Authorization with special characters" do
-    let(:special_char_group) { FactoryGirl.create(:miq_group, :description => "équipe", :miq_user_role => @role) }
+    let(:special_char_group) { FactoryBot.create(:miq_group, :description => "équipe", :miq_user_role => @role) }
 
     it "permits group headers to be specified with properly escaped descriptions" do
       @user.miq_groups << special_char_group
@@ -133,8 +133,8 @@ describe "Authentication API" do
   end
 
   context "Authentication/Authorization Identity" do
-    let(:group1) { FactoryGirl.create(:miq_group, :description => "Group1", :miq_user_role => @role) }
-    let(:group2) { FactoryGirl.create(:miq_group, :description => "Group2", :miq_user_role => @role) }
+    let(:group1) { FactoryBot.create(:miq_group, :description => "Group1", :miq_user_role => @role) }
+    let(:group2) { FactoryBot.create(:miq_group, :description => "Group2", :miq_user_role => @role) }
 
     before do
       @user.miq_groups = [group1, group2, @user.current_group]
@@ -402,7 +402,7 @@ describe "Authentication API" do
 
   context "Role Based Authorization" do
     before do
-      FactoryGirl.create(:vm_vmware, :name => "vm1")
+      FactoryBot.create(:vm_vmware, :name => "vm1")
     end
 
     context "actions with single role identifier" do

@@ -23,16 +23,16 @@
 #   /api/templates/:id/policy_profiles
 #
 describe "Policies API" do
-  let(:zone)        { FactoryGirl.create(:zone, :name => "api_zone") }
-  let(:ems)         { FactoryGirl.create(:ems_vmware, :zone => zone) }
-  let(:host)        { FactoryGirl.create(:host) }
+  let(:zone)        { FactoryBot.create(:zone, :name => "api_zone") }
+  let(:ems)         { FactoryBot.create(:ems_vmware, :zone => zone) }
+  let(:host)        { FactoryBot.create(:host) }
 
-  let(:p1)          { FactoryGirl.create(:miq_policy, :description => "Policy 1") }
-  let(:p2)          { FactoryGirl.create(:miq_policy, :description => "Policy 2") }
-  let(:p3)          { FactoryGirl.create(:miq_policy, :description => "Policy 3") }
+  let(:p1)          { FactoryBot.create(:miq_policy, :description => "Policy 1") }
+  let(:p2)          { FactoryBot.create(:miq_policy, :description => "Policy 2") }
+  let(:p3)          { FactoryBot.create(:miq_policy, :description => "Policy 3") }
 
-  let(:ps1)         { FactoryGirl.create(:miq_policy_set, :description => "Policy Set 1") }
-  let(:ps2)         { FactoryGirl.create(:miq_policy_set, :description => "Policy Set 2") }
+  let(:ps1)         { FactoryBot.create(:miq_policy_set, :description => "Policy Set 1") }
+  let(:ps2)         { FactoryBot.create(:miq_policy_set, :description => "Policy Set 2") }
 
   let(:p_guids)     { [p1.guid, p2.guid] }
   let(:p_all_guids) { [p1.guid, p2.guid, p3.guid] }
@@ -230,7 +230,7 @@ describe "Policies API" do
   end
 
   context "Resource Pool policies subcollection" do
-    let(:rp) { FactoryGirl.create(:resource_pool, :name => "Resource Pool 1") }
+    let(:rp) { FactoryBot.create(:resource_pool, :name => "Resource Pool 1") }
 
     it "query Resource Pool policies with no policies defined" do
       test_no_policy_query(api_resource_pool_policies_url(nil, rp))
@@ -255,7 +255,7 @@ describe "Policies API" do
 
   context "Cluster policies subcollection" do
     let(:cluster) do
-      FactoryGirl.create(:ems_cluster,
+      FactoryBot.create(:ems_cluster,
                          :name => "Cluster 1", :ext_management_system => ems, :hosts => [host], :vms => [])
     end
 
@@ -281,7 +281,7 @@ describe "Policies API" do
   end
 
   context "Vms policies subcollection" do
-    let(:vm)  { FactoryGirl.create(:vm) }
+    let(:vm)  { FactoryBot.create(:vm) }
 
     it "query Vm policies with no policies defined" do
       test_no_policy_query(api_vm_policies_url(nil, vm))
@@ -306,7 +306,7 @@ describe "Policies API" do
 
   context "Template policies subcollection" do
     let(:template)  do
-      FactoryGirl.create(:miq_template,
+      FactoryBot.create(:miq_template,
                          :name => "Template 1", :vendor => "vmware", :location => "template_1.vmtx")
     end
 
@@ -332,10 +332,10 @@ describe "Policies API" do
   end
 
   context "Policy CRUD actions" do
-    let(:action) { FactoryGirl.create(:miq_action) }
-    let(:conditions) { FactoryGirl.create_list(:condition, 2) }
-    let(:event) { FactoryGirl.create(:miq_event_definition) }
-    let(:miq_policy) { FactoryGirl.create(:miq_policy) }
+    let(:action) { FactoryBot.create(:miq_action) }
+    let(:conditions) { FactoryBot.create_list(:condition, 2) }
+    let(:event) { FactoryBot.create(:miq_event_definition) }
+    let(:miq_policy) { FactoryBot.create(:miq_policy) }
     let(:miq_policy_contents) do
       {"policy_contents" => [{'event_id' => event.id,
                               "actions"  => [{"action_id" => action.id, "opts" => { :qualifier => "failure" }}] }]}
@@ -373,7 +373,7 @@ describe "Policies API" do
     describe "POST /api/policies/:id with 'delete' action" do
       it "can delete a policy with appropriate role" do
         api_basic_authorize(action_identifier(:policies, :delete))
-        policy = FactoryGirl.create(:miq_policy)
+        policy = FactoryBot.create(:miq_policy)
 
         expect { post(api_policy_url(nil, policy), :params => { :action => "delete" }) }.to change(MiqPolicy, :count).by(-1)
 
@@ -382,7 +382,7 @@ describe "Policies API" do
 
       it "will not delete a policy without an appropriate role" do
         api_basic_authorize
-        policy = FactoryGirl.create(:miq_policy)
+        policy = FactoryBot.create(:miq_policy)
 
         expect { post(api_policy_url(nil, policy), :params => { :action => "delete" }) }.not_to change(MiqPolicy, :count)
 
@@ -393,7 +393,7 @@ describe "Policies API" do
     describe "POST /api/policies with 'delete' action" do
       it "can delete a policy with appropriate role" do
         api_basic_authorize(collection_action_identifier(:policies, :delete))
-        policy = FactoryGirl.create(:miq_policy)
+        policy = FactoryBot.create(:miq_policy)
 
         expect do
           post(api_policies_url, :params => { :action => "delete", :resources => [{:id => policy.id}] })
@@ -405,7 +405,7 @@ describe "Policies API" do
 
       it "will not delete a policy without an appropriate role" do
         api_basic_authorize
-        policy = FactoryGirl.create(:miq_policy)
+        policy = FactoryBot.create(:miq_policy)
 
         expect do
           post(api_policies_url, :params => { :action => "delete", :resources => [{:id => policy.id}] })
@@ -418,7 +418,7 @@ describe "Policies API" do
     describe "DELETE /api/policies/:id" do
       it "can delete a policy with appropriate role" do
         api_basic_authorize(action_identifier(:policies, :delete, :resource_actions, :delete))
-        policy = FactoryGirl.create(:miq_policy)
+        policy = FactoryBot.create(:miq_policy)
 
         expect { delete(api_policy_url(nil, policy)) }.to change(MiqPolicy, :count).by(-1)
 
@@ -427,7 +427,7 @@ describe "Policies API" do
 
       it "will not delete a policy without an appropriate role" do
         api_basic_authorize
-        policy = FactoryGirl.create(:miq_policy)
+        policy = FactoryBot.create(:miq_policy)
 
         expect { delete(api_policy_url(nil, policy)) }.not_to change(MiqPolicy, :count)
 

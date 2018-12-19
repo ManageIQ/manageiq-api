@@ -4,9 +4,9 @@ RSpec.shared_context "SubResource#cancel" do |ns, request_factory, factory|
   let(:namespace)      { ns.join("_") }
   let(:collection_url) { "api_#{namespace.pluralize}_url" }
   let(:instance_url)   { "api_#{namespace}_url" }
-  let(:request)        { FactoryGirl.create(request_factory, :with_api_user) }
-  let(:resource_1)     { FactoryGirl.create(factory, :with_api_user) }
-  let(:resource_2)     { FactoryGirl.create(factory, :with_api_user) }
+  let(:request)        { FactoryBot.create(request_factory, :with_api_user) }
+  let(:resource_1)     { FactoryBot.create(factory, :with_api_user) }
+  let(:resource_2)     { FactoryBot.create(factory, :with_api_user) }
 
   context "single instance cancel" do
     it "unauthorized" do

@@ -27,17 +27,17 @@ describe "Pictures" do
   end
 
   context "As an attribute" do
-    let(:dialog1)  { FactoryGirl.create(:dialog, :label => "ServiceDialog1") }
-    let(:ra1)      { FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog1) }
+    let(:dialog1)  { FactoryBot.create(:dialog, :label => "ServiceDialog1") }
+    let(:ra1)      { FactoryBot.create(:resource_action, :action => "Provision", :dialog => dialog1) }
     let(:template) do
-      FactoryGirl.create(:service_template,
+      FactoryBot.create(:service_template,
                          :name             => "ServiceTemplate",
                          :resource_actions => [ra1],
                          :picture          => @picture)
     end
-    let(:service) { FactoryGirl.create(:service, :service_template_id => template.id) }
+    let(:service) { FactoryBot.create(:service, :service_template_id => template.id) }
     let(:service_request) do
-      FactoryGirl.create(:service_template_provision_request,
+      FactoryBot.create(:service_template_provision_request,
                          :description => 'Service Request',
                          :requester   => @user,
                          :source_id   => template.id)

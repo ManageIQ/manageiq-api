@@ -195,18 +195,18 @@ describe "Providers API" do
   end
 
   context 'Provider\'s virtual attributes(= direct or indirect associations) with RBAC' do
-    let(:ems_openstack)  { FactoryGirl.create(:ems_openstack, :tenant_mapping_enabled => true) }
+    let(:ems_openstack)  { FactoryBot.create(:ems_openstack, :tenant_mapping_enabled => true) }
     let(:ems_cinder)     { ManageIQ::Providers::StorageManager::CinderManager.find_by(:parent_manager => ems_openstack) }
     let(:ems_cinder_url) { api_provider_url(nil, ems_cinder) }
 
-    let(:tenant) { FactoryGirl.create(:tenant, :source_type => 'CloudTenant') }
-    let!(:cloud_tenant_1) { FactoryGirl.create(:cloud_tenant, :source_tenant => tenant, :ext_management_system => ems_openstack) }
-    let!(:cloud_tenant_2) { FactoryGirl.create(:cloud_tenant, :source_tenant => Tenant.root_tenant, :ext_management_system => ems_openstack) }
+    let(:tenant) { FactoryBot.create(:tenant, :source_type => 'CloudTenant') }
+    let!(:cloud_tenant_1) { FactoryBot.create(:cloud_tenant, :source_tenant => tenant, :ext_management_system => ems_openstack) }
+    let!(:cloud_tenant_2) { FactoryBot.create(:cloud_tenant, :source_tenant => Tenant.root_tenant, :ext_management_system => ems_openstack) }
 
-    let(:role)   { FactoryGirl.create(:miq_user_role) }
-    let!(:group) { FactoryGirl.create(:miq_group, :tenant => tenant, :miq_user_role => role) }
-    let!(:vm)    { FactoryGirl.create(:vm_openstack, :ext_management_system => ems_cinder, :miq_group => group) }
-    let!(:vm_1)  { FactoryGirl.create(:vm_openstack, :ext_management_system => ems_cinder) }
+    let(:role)   { FactoryBot.create(:miq_user_role) }
+    let!(:group) { FactoryBot.create(:miq_group, :tenant => tenant, :miq_user_role => role) }
+    let!(:vm)    { FactoryBot.create(:vm_openstack, :ext_management_system => ems_cinder, :miq_group => group) }
+    let!(:vm_1)  { FactoryBot.create(:vm_openstack, :ext_management_system => ems_cinder) }
 
     context 'with restricted user' do
       before do
@@ -238,10 +238,10 @@ describe "Providers API" do
   end
 
   context "Provider custom_attributes" do
-    let(:provider) { FactoryGirl.create(:ext_management_system, sample_rhevm.except("credentials")) }
+    let(:provider) { FactoryBot.create(:ext_management_system, sample_rhevm.except("credentials")) }
     let(:provider_url) { api_provider_url(nil, provider) }
-    let(:ca1) { FactoryGirl.create(:custom_attribute, :name => "name1", :value => "value1") }
-    let(:ca2) { FactoryGirl.create(:custom_attribute, :name => "name2", :value => "value2") }
+    let(:ca1) { FactoryBot.create(:custom_attribute, :name => "name1", :value => "value1") }
+    let(:ca2) { FactoryBot.create(:custom_attribute, :name => "name2", :value => "value2") }
     let(:provider_ca_url) { api_provider_custom_attributes_url(nil, provider) }
     let(:ca1_url) { api_provider_custom_attribute_url(nil, provider, ca1) }
     let(:ca2_url) { api_provider_custom_attribute_url(nil, provider, ca2) }
@@ -404,7 +404,7 @@ describe "Providers API" do
     it "supports requests with valid provider_class" do
       api_basic_authorize collection_action_identifier(:providers, :read, :get)
 
-      FactoryGirl.build(:provider_foreman)
+      FactoryBot.build(:provider_foreman)
       get api_providers_url, :params => { :provider_class => "provider", :expand => "resources" }
 
       klass = Provider
@@ -427,7 +427,7 @@ describe "Providers API" do
     end
 
     it 'returns the correct href reference on the collection' do
-      provider = FactoryGirl.create(:provider_foreman)
+      provider = FactoryBot.create(:provider_foreman)
       api_basic_authorize collection_action_identifier(:providers, :read, :get)
 
       get api_providers_url, :params => { :provider_class => 'provider' }
@@ -443,7 +443,7 @@ describe "Providers API" do
     end
 
     it 'returns the correct href reference on a resource' do
-      provider = FactoryGirl.create(:provider_foreman)
+      provider = FactoryBot.create(:provider_foreman)
       api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get),
                           action_identifier(:providers, :edit)
 
@@ -470,7 +470,7 @@ describe "Providers API" do
 
     it 'allows provider specific attributes to be specified' do
       allow(ManageIQ::Providers::Azure::CloudManager).to receive(:api_allowed_attributes).and_return(%w(azure_tenant_id))
-      tenant = FactoryGirl.create(:cloud_tenant)
+      tenant = FactoryBot.create(:cloud_tenant)
       api_basic_authorize collection_action_identifier(:providers, :create)
 
       post(api_providers_url, :params => { "type"            => "ManageIQ::Providers::Azure::CloudManager",
@@ -723,7 +723,7 @@ describe "Providers API" do
     it "supports single resource edit" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
-      provider = FactoryGirl.create(:ext_management_system, sample_rhevm.except("credentials"))
+      provider = FactoryBot.create(:ext_management_system, sample_rhevm.except("credentials"))
 
       post(api_provider_url(nil, provider), :params => gen_request(:edit, "name" => "updated provider", "port" => "8080"))
 
@@ -735,7 +735,7 @@ describe "Providers API" do
     it "supports editing per provider options" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
-      provider = FactoryGirl.create(:ext_management_system, sample_rhevm.except("credentials"))
+      provider = FactoryBot.create(:ext_management_system, sample_rhevm.except("credentials"))
 
       options = {"hello" => "world"}
       options_symbolized = options.deep_symbolize_keys
@@ -748,7 +748,7 @@ describe "Providers API" do
     it "only returns real attributes" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
-      provider = FactoryGirl.create(:ext_management_system, sample_rhevm.except("credentials"))
+      provider = FactoryBot.create(:ext_management_system, sample_rhevm.except("credentials"))
 
       post(api_provider_url(nil, provider), :params => gen_request(:edit, "name" => "updated provider", "port" => "8080"))
 
@@ -760,7 +760,7 @@ describe "Providers API" do
     it "supports updates of credentials" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
-      provider = FactoryGirl.create(:ext_management_system, sample_vmware.except("credentials"))
+      provider = FactoryBot.create(:ext_management_system, sample_vmware.except("credentials"))
       provider.update_authentication(:default => default_credentials.symbolize_keys)
 
       post(api_provider_url(nil, provider), :params => gen_request(:edit,
@@ -779,7 +779,7 @@ describe "Providers API" do
         it "does not schedule a new credentials check if endpoint does not change" do
           api_basic_authorize collection_action_identifier(:providers, :edit)
 
-          provider = FactoryGirl.create(:ext_management_system, sample_containers_multi_end_point_with_hawkular)
+          provider = FactoryBot.create(:ext_management_system, sample_containers_multi_end_point_with_hawkular)
           MiqQueue.where(:method_name => "authentication_check_types",
                          :class_name  => "ExtManagementSystem",
                          :instance_id => provider.id).delete_all
@@ -798,7 +798,7 @@ describe "Providers API" do
         it "schedules a new credentials check if endpoint change" do
           api_basic_authorize collection_action_identifier(:providers, :edit)
 
-          provider = FactoryGirl.create(:ext_management_system, sample_containers_multi_end_point_with_hawkular)
+          provider = FactoryBot.create(:ext_management_system, sample_containers_multi_end_point_with_hawkular)
           MiqQueue.where(:method_name => "authentication_check_types",
                          :class_name  => "ExtManagementSystem",
                          :instance_id => provider.id).delete_all
@@ -823,7 +823,7 @@ describe "Providers API" do
     it "supports additions of credentials" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
-      provider = FactoryGirl.create(:ext_management_system, sample_rhevm.except("credentials"))
+      provider = FactoryBot.create(:ext_management_system, sample_rhevm.except("credentials"))
       provider.update_authentication(:default => default_credentials.symbolize_keys)
 
       post(api_provider_url(nil, provider), :params => gen_request(:edit,
@@ -839,8 +839,8 @@ describe "Providers API" do
     it "supports multiple resource edits" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
-      p1 = FactoryGirl.create(:ems_redhat, :name => "name1")
-      p2 = FactoryGirl.create(:ems_redhat, :name => "name2")
+      p1 = FactoryBot.create(:ems_redhat, :name => "name1")
+      p2 = FactoryBot.create(:ems_redhat, :name => "name2")
 
       post(api_providers_url, :params => gen_request(:edit,
                                                      [{"href" => api_provider_url(nil, p1), "name" => "updated name1"},
@@ -883,7 +883,7 @@ describe "Providers API" do
     it "supports single provider delete" do
       api_basic_authorize collection_action_identifier(:providers, :delete)
 
-      provider = FactoryGirl.create(:ext_management_system, :name => "provider", :hostname => "provider.com")
+      provider = FactoryBot.create(:ext_management_system, :name => "provider", :hostname => "provider.com")
 
       delete(api_provider_url(nil, provider))
 
@@ -893,7 +893,7 @@ describe "Providers API" do
     it "supports single provider delete action" do
       api_basic_authorize collection_action_identifier(:providers, :delete)
 
-      provider = FactoryGirl.create(:ext_management_system, :name => "provider", :hostname => "provider.com")
+      provider = FactoryBot.create(:ext_management_system, :name => "provider", :hostname => "provider.com")
 
       post(api_provider_url(nil, provider), :params => gen_request(:delete))
 
@@ -907,8 +907,8 @@ describe "Providers API" do
     it "supports multiple provider deletes" do
       api_basic_authorize collection_action_identifier(:providers, :delete)
 
-      p1 = FactoryGirl.create(:ext_management_system, :name => "provider name 1")
-      p2 = FactoryGirl.create(:ext_management_system, :name => "provider name 2")
+      p1 = FactoryBot.create(:ext_management_system, :name => "provider name 1")
+      p2 = FactoryBot.create(:ext_management_system, :name => "provider name 2")
 
       post(api_providers_url, :params => gen_request(:delete,
                                                      [{"href" => api_provider_url(nil, p1)},
@@ -940,7 +940,7 @@ describe "Providers API" do
     it "supports single provider refresh" do
       api_basic_authorize collection_action_identifier(:providers, :refresh)
 
-      provider = FactoryGirl.create(:ext_management_system, sample_vmware.symbolize_keys.except(:type, :credentials))
+      provider = FactoryBot.create(:ext_management_system, sample_vmware.symbolize_keys.except(:type, :credentials))
       provider.update_authentication(:default => default_credentials.symbolize_keys)
 
       post(api_provider_url(nil, provider), :params => gen_request(:refresh))
@@ -951,7 +951,7 @@ describe "Providers API" do
     it "supports cloud provider refresh" do
       api_basic_authorize 'ems_cloud_refresh'
 
-      provider = FactoryGirl.create(:ext_management_system, sample_amazon.symbolize_keys.except(:type, :credentials))
+      provider = FactoryBot.create(:ext_management_system, sample_amazon.symbolize_keys.except(:type, :credentials))
       provider.update_authentication(:default => default_credentials.symbolize_keys)
 
       post(api_provider_url(nil, provider), :params => gen_request(:refresh))
@@ -962,10 +962,10 @@ describe "Providers API" do
     it "supports multiple provider refreshes" do
       api_basic_authorize collection_action_identifier(:providers, :refresh)
 
-      p1 = FactoryGirl.create(:ext_management_system, sample_vmware.symbolize_keys.except(:type, :credentials))
+      p1 = FactoryBot.create(:ext_management_system, sample_vmware.symbolize_keys.except(:type, :credentials))
       p1.update_authentication(:default => default_credentials.symbolize_keys)
 
-      p2 = FactoryGirl.create(:ext_management_system, sample_rhevm.symbolize_keys.except(:type, :credentials))
+      p2 = FactoryBot.create(:ext_management_system, sample_rhevm.symbolize_keys.except(:type, :credentials))
       p2.update_authentication(:default => default_credentials.symbolize_keys)
 
       post(api_providers_url, :params => gen_request(:refresh, [{"href" => api_provider_url(nil, p1)},
@@ -977,7 +977,7 @@ describe "Providers API" do
     it "provider refresh are created with a task" do
       api_basic_authorize collection_action_identifier(:providers, :refresh)
 
-      provider = FactoryGirl.create(:ext_management_system, sample_vmware.symbolize_keys.except(:type, :credentials))
+      provider = FactoryBot.create(:ext_management_system, sample_vmware.symbolize_keys.except(:type, :credentials))
       provider.update_authentication(:default => default_credentials.symbolize_keys)
       provider.authentication_type(:default).update(:status => "Valid")
 
@@ -992,7 +992,7 @@ describe "Providers API" do
     it "provider refresh for provider_class=provider are created with a task" do
       api_basic_authorize collection_action_identifier(:providers, :refresh)
 
-      provider = FactoryGirl.create(:provider_foreman, :zone => @zone, :url => "example.com", :verify_ssl => false)
+      provider = FactoryBot.create(:provider_foreman, :zone => @zone, :url => "example.com", :verify_ssl => false)
       provider.update_authentication(:default => default_credentials.symbolize_keys)
       provider.authentication_type(:default).update(:status => "Valid")
 
@@ -1007,7 +1007,7 @@ describe "Providers API" do
     it "provider refresh for provider_class=provider are created with multiple tasks for multi-manager providers" do
       api_basic_authorize collection_action_identifier(:providers, :refresh)
 
-      provider = FactoryGirl.create(:provider_foreman, :zone => @zone, :url => "example.com", :verify_ssl => false)
+      provider = FactoryBot.create(:provider_foreman, :zone => @zone, :url => "example.com", :verify_ssl => false)
       provider.update_authentication(:default => default_credentials.symbolize_keys)
       provider.authentication_type(:default).update(:status => "Valid")
 
@@ -1029,7 +1029,7 @@ describe "Providers API" do
   end
 
   describe "Providers pause" do
-    let(:provider) { FactoryGirl.create(:ext_management_system) }
+    let(:provider) { FactoryBot.create(:ext_management_system) }
 
     it "rejects pause requests without an appropriate role" do
       api_basic_authorize
@@ -1049,7 +1049,7 @@ describe "Providers API" do
     end
 
     it "can pause multiple providers" do
-      provider2 = FactoryGirl.create(:ext_management_system)
+      provider2 = FactoryBot.create(:ext_management_system)
       api_basic_authorize collection_action_identifier(:providers, :pause)
 
       post(api_providers_url, :params =>
@@ -1077,7 +1077,7 @@ describe "Providers API" do
   end
 
   describe "Providers resume" do
-    let(:provider) { FactoryGirl.create(:ext_management_system) }
+    let(:provider) { FactoryBot.create(:ext_management_system) }
 
     it "rejects resume requests without an appropriate role" do
       api_basic_authorize
@@ -1097,7 +1097,7 @@ describe "Providers API" do
     end
 
     it "can resume multiple providers" do
-      provider2 = FactoryGirl.create(:ext_management_system)
+      provider2 = FactoryBot.create(:ext_management_system)
       api_basic_authorize collection_action_identifier(:providers, :resume)
 
       post(api_providers_url, :params =>
@@ -1125,16 +1125,16 @@ describe "Providers API" do
   end
 
   describe 'Providers import VM' do
-    let(:provider)      { FactoryGirl.create(:ems_redhat, sample_rhevm.except("credentials")) }
+    let(:provider)      { FactoryBot.create(:ems_redhat, sample_rhevm.except("credentials")) }
     let(:provider_url)  { api_provider_url(nil, provider) }
 
-    let(:vm)            { FactoryGirl.create(:vm_vmware) }
+    let(:vm)            { FactoryBot.create(:vm_vmware) }
     let(:vm_url)        { api_vm_url(nil, vm) }
 
-    let(:cluster)       { FactoryGirl.create(:ems_cluster) }
+    let(:cluster)       { FactoryBot.create(:ems_cluster) }
     let(:cluster_url)   { api_cluster_url(nil, cluster) }
 
-    let(:storage)       { FactoryGirl.create(:storage) }
+    let(:storage)       { FactoryBot.create(:storage) }
     let(:storage_url)   { api_data_store_url(nil, storage) }
 
     NAME = 'new_vm_name'.freeze
@@ -1181,7 +1181,7 @@ describe "Providers API" do
   end
 
   describe 'change provider password' do
-    let(:ems_physical_infra) { FactoryGirl.create(:ems_physical_infra) }
+    let(:ems_physical_infra) { FactoryBot.create(:ems_physical_infra) }
     let(:invalid_change_password_payload) do
       { "action"           => "change_password",
         "current_password" => "current_password",
@@ -1315,7 +1315,7 @@ describe "Providers API" do
 
   describe 'query Providers' do
     describe 'query custom_attributes' do
-      let!(:generic_provider) { FactoryGirl.create(:provider) }
+      let!(:generic_provider) { FactoryBot.create(:provider) }
       it 'does not blow-up on provider without custom_attributes' do
         api_basic_authorize collection_action_identifier(:providers, :read, :get)
         get(api_providers_url, :params => { :expand => 'resources,custom_attributes', :provider_class => 'provider' })
@@ -1326,13 +1326,13 @@ describe "Providers API" do
 
   context 'load balancers subcollection' do
     before do
-      @provider = FactoryGirl.create(:ems_amazon_network)
-      @load_balancer = FactoryGirl.create(:load_balancer_amazon, :ext_management_system => @provider)
-      load_balancer_listener = FactoryGirl.create(:load_balancer_listener_amazon,
+      @provider = FactoryBot.create(:ems_amazon_network)
+      @load_balancer = FactoryBot.create(:load_balancer_amazon, :ext_management_system => @provider)
+      load_balancer_listener = FactoryBot.create(:load_balancer_listener_amazon,
                                                   :ext_management_system => @provider)
-      load_balancer_pool = FactoryGirl.create(:load_balancer_pool_amazon,
+      load_balancer_pool = FactoryBot.create(:load_balancer_pool_amazon,
                                               :ext_management_system => @provider)
-      load_balancer_pool_member = FactoryGirl.create(:load_balancer_pool_member_amazon,
+      load_balancer_pool_member = FactoryBot.create(:load_balancer_pool_member_amazon,
                                                      :ext_management_system => @provider)
       @load_balancer.load_balancer_listeners << load_balancer_listener
       load_balancer_listener.load_balancer_pools << load_balancer_pool
@@ -1383,8 +1383,8 @@ describe "Providers API" do
 
   context 'cloud subnets subcollection' do
     before do
-      @provider = FactoryGirl.create(:ems_openstack).network_manager
-      @cloud_subnet = FactoryGirl.create(:cloud_subnet, :ext_management_system => @provider)
+      @provider = FactoryBot.create(:ems_openstack).network_manager
+      @cloud_subnet = FactoryBot.create(:cloud_subnet, :ext_management_system => @provider)
     end
 
     it 'queries all cloud subnets' do
@@ -1429,7 +1429,7 @@ describe "Providers API" do
 
     it "returns an empty array for providers that return nil" do
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_subnets, :read, :get)
-      provider = FactoryGirl.create(:ems_redhat)
+      provider = FactoryBot.create(:ems_redhat)
 
       get(api_provider_cloud_subnets_url(nil, provider))
 
@@ -1440,8 +1440,8 @@ describe "Providers API" do
 
   context 'cloud tenants subcollection' do
     before do
-      @provider = FactoryGirl.create(:ems_openstack)
-      @cloud_tenant = FactoryGirl.create(:cloud_tenant, :ext_management_system => @provider)
+      @provider = FactoryBot.create(:ems_openstack)
+      @cloud_tenant = FactoryBot.create(:cloud_tenant, :ext_management_system => @provider)
     end
 
     it 'queries all cloud tenants' do
@@ -1487,9 +1487,9 @@ describe "Providers API" do
 
   context 'security groups subcollection' do
     before do
-      @provider = FactoryGirl.create(:ems_openstack).network_manager
-      @infra_provider = FactoryGirl.create(:ems_openstack_infra)
-      @security_group = FactoryGirl.create(:security_group, :ext_management_system => @provider)
+      @provider = FactoryBot.create(:ems_openstack).network_manager
+      @infra_provider = FactoryBot.create(:ems_openstack_infra)
+      @security_group = FactoryBot.create(:security_group, :ext_management_system => @provider)
     end
 
     it 'queries all security groups from a provider that responds to security_groups' do
@@ -1547,7 +1547,7 @@ describe "Providers API" do
 
     it "returns an empty array for providers that return nil" do
       api_basic_authorize subcollection_action_identifier(:providers, :security_groups, :read, :get)
-      provider = FactoryGirl.create(:ems_redhat)
+      provider = FactoryBot.create(:ems_redhat)
 
       get(api_provider_security_groups_url(nil, provider))
 
@@ -1558,8 +1558,8 @@ describe "Providers API" do
 
   describe 'edit custom_attributes on providers' do
     context 'provider_class=provider' do
-      let(:generic_provider) { FactoryGirl.create(:provider) }
-      let(:attr) { FactoryGirl.create(:custom_attribute) }
+      let(:generic_provider) { FactoryBot.create(:provider) }
+      let(:attr) { FactoryBot.create(:custom_attribute) }
       let(:url) do
         api_provider_custom_attributes_url(nil, generic_provider) + '?provider_class=provider'
       end
@@ -1590,8 +1590,8 @@ describe "Providers API" do
 
   context 'GET /api/providers/:id/vms' do
     it 'returns the vms for a provider with an appropriate role' do
-      ems = FactoryGirl.create(:ext_management_system)
-      vm = FactoryGirl.create(:vm_amazon, :ext_management_system => ems)
+      ems = FactoryBot.create(:ext_management_system)
+      vm = FactoryBot.create(:vm_amazon, :ext_management_system => ems)
       api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
 
       get(api_provider_vms_url(nil, ems))
@@ -1608,8 +1608,8 @@ describe "Providers API" do
     end
 
     it 'allows for expansion of vms on a provider' do
-      ems = FactoryGirl.create(:ext_management_system)
-      vm = FactoryGirl.create(:vm_amazon, :ext_management_system => ems)
+      ems = FactoryBot.create(:ext_management_system)
+      vm = FactoryBot.create(:vm_amazon, :ext_management_system => ems)
       api_basic_authorize collection_action_identifier(:providers, :read, :get)
       get(api_providers_url, :params => { :expand => 'resources,vms' })
 
@@ -1630,8 +1630,8 @@ describe "Providers API" do
   end
 
   context 'Folders subcollection' do
-    let(:folder) { FactoryGirl.create(:ems_folder) }
-    let(:ems) { FactoryGirl.create(:ext_management_system) }
+    let(:folder) { FactoryBot.create(:ems_folder) }
+    let(:ems) { FactoryBot.create(:ext_management_system) }
 
     before do
       ems.add_folder(folder)
@@ -1680,13 +1680,13 @@ describe "Providers API" do
   end
 
   context 'Networks subcollection' do
-    let(:hardware) { FactoryGirl.create(:hardware) }
-    let(:network) { FactoryGirl.create(:network, :hardware => hardware) }
-    let(:ems) { FactoryGirl.create(:ext_management_system) }
+    let(:hardware) { FactoryBot.create(:hardware) }
+    let(:network) { FactoryBot.create(:network, :hardware => hardware) }
+    let(:ems) { FactoryBot.create(:ext_management_system) }
 
     context 'GET /api/providers/:id/networks' do
       it 'returns the networks with an appropriate role' do
-        FactoryGirl.create(:vm, :ext_management_system => ems, :hardware => hardware)
+        FactoryBot.create(:vm, :ext_management_system => ems, :hardware => hardware)
         api_basic_authorize(collection_action_identifier(:providers, :read, :get))
 
         expected = {
@@ -1709,7 +1709,7 @@ describe "Providers API" do
 
     context 'GET /api/providers/:id/networks/:s_id' do
       it 'returns the network with an appropriate role' do
-        FactoryGirl.create(:vm, :ext_management_system => ems, :hardware => hardware)
+        FactoryBot.create(:vm, :ext_management_system => ems, :hardware => hardware)
         api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
 
         get(api_provider_network_url(nil, ems, network))
@@ -1729,10 +1729,10 @@ describe "Providers API" do
   end
 
   context 'Lans subcollection' do
-    let(:lan) { FactoryGirl.create(:lan) }
-    let(:switch) { FactoryGirl.create(:switch, :lans => [lan]) }
-    let(:host) { FactoryGirl.create(:host, :switches => [switch]) }
-    let(:ems) { FactoryGirl.create(:ext_management_system) }
+    let(:lan) { FactoryBot.create(:lan) }
+    let(:switch) { FactoryBot.create(:switch, :lans => [lan]) }
+    let(:host) { FactoryBot.create(:host, :switches => [switch]) }
+    let(:ems) { FactoryBot.create(:ext_management_system) }
 
     before do
       ems.hosts << host
@@ -1783,7 +1783,7 @@ describe "Providers API" do
   context "Cloud networks subcollection" do
     it "returns an empty array for providers that return nil" do
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
-      provider = FactoryGirl.create(:ems_redhat)
+      provider = FactoryBot.create(:ems_redhat)
 
       get(api_provider_cloud_networks_url(nil, provider))
 

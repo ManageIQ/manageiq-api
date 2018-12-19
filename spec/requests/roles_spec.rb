@@ -55,7 +55,7 @@ describe "Roles API" do
 
   before(:each) do
     @product_features = feature_identifiers.collect do |identifier|
-      FactoryGirl.create(:miq_product_feature, :identifier => identifier)
+      FactoryBot.create(:miq_product_feature, :identifier => identifier)
     end
   end
 
@@ -74,7 +74,7 @@ describe "Roles API" do
   end
 
   describe "Features" do
-    let(:role) { FactoryGirl.create(:miq_user_role, :name => "Test Role", :miq_product_features => @product_features) }
+    let(:role) { FactoryBot.create(:miq_user_role, :name => "Test Role", :miq_product_features => @product_features) }
 
     it "query available features" do
       test_features_query(role, api_role_url(nil, role), MiqProductFeature, :identifier)
@@ -188,7 +188,7 @@ describe "Roles API" do
 
   describe "Roles edit" do
     it "rejects role edits without appropriate role" do
-      role = FactoryGirl.create(:miq_user_role)
+      role = FactoryBot.create(:miq_user_role)
       api_basic_authorize
       post(api_roles_url, :params => gen_request(:edit, "name" => "role name", "href" => api_role_url(nil, role)))
 
@@ -206,7 +206,7 @@ describe "Roles API" do
     it "supports single role edit" do
       api_basic_authorize collection_action_identifier(:roles, :edit)
 
-      role = FactoryGirl.create(:miq_user_role)
+      role = FactoryBot.create(:miq_user_role)
 
       post(
         api_role_url(nil, role),
@@ -227,8 +227,8 @@ describe "Roles API" do
     it "supports multiple role edits" do
       api_basic_authorize collection_action_identifier(:roles, :edit)
 
-      r1 = FactoryGirl.create(:miq_user_role, :name => "role1")
-      r2 = FactoryGirl.create(:miq_user_role, :name => "role2")
+      r1 = FactoryBot.create(:miq_user_role, :name => "role1")
+      r2 = FactoryBot.create(:miq_user_role, :name => "role2")
 
       post(api_roles_url, :params => gen_request(:edit,
                                                  [{"href" => api_role_url(nil, r1), "name" => "updated role1"},
@@ -246,7 +246,7 @@ describe "Roles API" do
   describe "Role Feature Assignments" do
     it "supports assigning just a single product feature" do
       api_basic_authorize collection_action_identifier(:roles, :edit)
-      role = FactoryGirl.create(:miq_user_role, :features => "miq_request_approval")
+      role = FactoryBot.create(:miq_user_role, :features => "miq_request_approval")
 
       new_feature = {:identifier => "miq_request_view"}
       url = api_role_features_url(nil, role)
@@ -267,7 +267,7 @@ describe "Roles API" do
 
     it "supports assigning multiple product features" do
       api_basic_authorize collection_action_identifier(:roles, :edit)
-      role = FactoryGirl.create(:miq_user_role, :features => "miq_request_approval")
+      role = FactoryBot.create(:miq_user_role, :features => "miq_request_approval")
 
       post(api_role_features_url(nil, role), :params => gen_request(:assign, features_list))
 
@@ -288,7 +288,7 @@ describe "Roles API" do
 
     it "supports un-assigning just a single product feature" do
       api_basic_authorize collection_action_identifier(:roles, :edit)
-      role = FactoryGirl.create(:miq_user_role, :miq_product_features => @product_features)
+      role = FactoryBot.create(:miq_user_role, :miq_product_features => @product_features)
 
       removed_feature = {:identifier => "ems_infra_tag"}
       url = api_role_features_url(nil, role)
@@ -313,7 +313,7 @@ describe "Roles API" do
 
     it "supports un-assigning multiple product features" do
       api_basic_authorize collection_action_identifier(:roles, :edit)
-      role = FactoryGirl.create(:miq_user_role, :miq_product_features => @product_features)
+      role = FactoryBot.create(:miq_user_role, :miq_product_features => @product_features)
 
       url = api_role_features_url(nil, role)
       post(url, :params => gen_request(:unassign, features_list))
@@ -367,7 +367,7 @@ describe "Roles API" do
     it "supports single role delete" do
       api_basic_authorize collection_action_identifier(:roles, :delete)
 
-      role = FactoryGirl.create(:miq_user_role, :name => "role1")
+      role = FactoryBot.create(:miq_user_role, :name => "role1")
 
       delete(api_role_url(nil, role))
 
@@ -378,7 +378,7 @@ describe "Roles API" do
     it "supports single role delete action" do
       api_basic_authorize collection_action_identifier(:roles, :delete)
 
-      role = FactoryGirl.create(:miq_user_role, :name => "role1")
+      role = FactoryBot.create(:miq_user_role, :name => "role1")
 
       post(api_role_url(nil, role), :params => gen_request(:delete))
 
@@ -389,8 +389,8 @@ describe "Roles API" do
     it "supports multiple role deletes" do
       api_basic_authorize collection_action_identifier(:roles, :delete)
 
-      r1 = FactoryGirl.create(:miq_user_role, :name => "role name 1")
-      r2 = FactoryGirl.create(:miq_user_role, :name => "role name 2")
+      r1 = FactoryBot.create(:miq_user_role, :name => "role name 1")
+      r2 = FactoryBot.create(:miq_user_role, :name => "role name 2")
 
       post(api_roles_url, :params => gen_request(:delete,
                                                  [{"href" => api_role_url(nil, r1)},

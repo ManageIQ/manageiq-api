@@ -29,7 +29,7 @@ describe "Service Catalogs API" do
 
   describe "Service Catalog Index" do
     it "will return only the requested attributes" do
-      FactoryGirl.create(:service_template_catalog)
+      FactoryBot.create(:service_template_catalog)
       api_basic_authorize collection_action_identifier(:service_catalogs, :read, :get)
 
       get api_service_catalogs_url, :params => { :expand => 'resources', :attributes => 'name' }
@@ -130,8 +130,8 @@ describe "Service Catalogs API" do
     it "supports single resource creation with service templates" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :add)
 
-      st1 = FactoryGirl.create(:service_template)
-      st2 = FactoryGirl.create(:service_template)
+      st1 = FactoryBot.create(:service_template)
+      st2 = FactoryBot.create(:service_template)
 
       post(
         api_service_catalogs_url,
@@ -176,7 +176,7 @@ describe "Service Catalogs API" do
     it "supports single resource edit" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :edit)
 
-      sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
+      sc = FactoryBot.create(:service_template_catalog, :name => "sc", :description => "sc description")
 
       post(api_service_catalog_url(nil, sc), :params => gen_request(:edit, "description" => "updated sc description"))
 
@@ -202,8 +202,8 @@ describe "Service Catalogs API" do
     it "supports multiple resource edits" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :edit)
 
-      sc1 = FactoryGirl.create(:service_template_catalog, :name => "sc1", :description => "sc1 description")
-      sc2 = FactoryGirl.create(:service_template_catalog, :name => "sc2", :description => "sc2 description")
+      sc1 = FactoryBot.create(:service_template_catalog, :name => "sc1", :description => "sc1 description")
+      sc2 = FactoryBot.create(:service_template_catalog, :name => "sc2", :description => "sc2 description")
 
       post(api_service_catalogs_url, :params => gen_request(:edit,
                                                             [{"href" => api_service_catalog_url(nil, sc1), "name" => "sc1 updated"},
@@ -246,7 +246,7 @@ describe "Service Catalogs API" do
     it "supports single resource deletes" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :delete)
 
-      sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
+      sc = FactoryBot.create(:service_template_catalog, :name => "sc", :description => "sc description")
 
       delete(api_service_catalog_url(nil, sc))
 
@@ -257,7 +257,7 @@ describe "Service Catalogs API" do
     it "supports resource deletes via action" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :delete)
 
-      sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
+      sc = FactoryBot.create(:service_template_catalog, :name => "sc", :description => "sc description")
 
       post(api_service_catalog_url(nil, sc), :params => gen_request(:delete))
 
@@ -268,8 +268,8 @@ describe "Service Catalogs API" do
     it "supports multiple resource deletes" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :delete)
 
-      sc1 = FactoryGirl.create(:service_template_catalog, :name => "sc1", :description => "sc1 description")
-      sc2 = FactoryGirl.create(:service_template_catalog, :name => "sc2", :description => "sc2 description")
+      sc1 = FactoryBot.create(:service_template_catalog, :name => "sc1", :description => "sc1 description")
+      sc2 = FactoryBot.create(:service_template_catalog, :name => "sc2", :description => "sc2 description")
 
       post(api_service_catalogs_url, :params => gen_request(:delete,
                                                             [{"href" => api_service_catalog_url(nil, sc1)},
@@ -302,7 +302,7 @@ describe "Service Catalogs API" do
     it "rejects assign requests with invalid service template" do
       api_basic_authorize subcollection_action_identifier(:service_catalogs, :service_templates, :assign)
 
-      sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
+      sc = FactoryBot.create(:service_template_catalog, :name => "sc", :description => "sc description")
 
       post(sc_template_url(sc.id), :params => gen_request(:assign, "href" => api_service_template_url(nil, 999_999)))
 
@@ -313,8 +313,8 @@ describe "Service Catalogs API" do
     it "supports assign requests" do
       api_basic_authorize subcollection_action_identifier(:service_catalogs, :service_templates, :assign)
 
-      sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
-      st = FactoryGirl.create(:service_template)
+      sc = FactoryBot.create(:service_template_catalog, :name => "sc", :description => "sc description")
+      st = FactoryBot.create(:service_template)
 
       post(sc_template_url(sc.id), :params => gen_request(:assign, "href" => api_service_template_url(nil, st)))
 
@@ -331,9 +331,9 @@ describe "Service Catalogs API" do
     it "supports unassign requests" do
       api_basic_authorize subcollection_action_identifier(:service_catalogs, :service_templates, :assign)
 
-      sc = FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description")
-      st1 = FactoryGirl.create(:service_template)
-      st2 = FactoryGirl.create(:service_template)
+      sc = FactoryBot.create(:service_template_catalog, :name => "sc", :description => "sc description")
+      st1 = FactoryBot.create(:service_template)
+      st2 = FactoryBot.create(:service_template)
       sc.service_templates = [st1, st2]
 
       post(sc_template_url(sc.id), :params => gen_request(:unassign, "href" => api_service_template_url(nil, st1)))
@@ -358,15 +358,15 @@ describe "Service Catalogs API" do
        "status"         => "Ok"}
     end
 
-    let(:dialog1)                                            { FactoryGirl.create(:dialog, :label => "Dialog1") }
-    let(:tab1)                                               { FactoryGirl.create(:dialog_tab, :label => "Tab1") }
-    let(:group1)                                             { FactoryGirl.create(:dialog_group, :label => "Group1") }
-    let(:text1)                                              { FactoryGirl.create(:dialog_field_text_box, :label => "TextBox1", :name => "text1") }
-    let(:ra1)                                                { FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog1) }
-    let(:st1)                                                { FactoryGirl.create(:service_template, :name => "service template 1", :display => true) }
-    let(:ra2)                                                { FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog1) }
-    let(:st2)                                                { FactoryGirl.create(:service_template, :name => "service template 2", :display => true) }
-    let(:sc)                                                 { FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description") }
+    let(:dialog1)                                            { FactoryBot.create(:dialog, :label => "Dialog1") }
+    let(:tab1)                                               { FactoryBot.create(:dialog_tab, :label => "Tab1") }
+    let(:group1)                                             { FactoryBot.create(:dialog_group, :label => "Group1") }
+    let(:text1)                                              { FactoryBot.create(:dialog_field_text_box, :label => "TextBox1", :name => "text1") }
+    let(:ra1)                                                { FactoryBot.create(:resource_action, :action => "Provision", :dialog => dialog1) }
+    let(:st1)                                                { FactoryBot.create(:service_template, :name => "service template 1", :display => true) }
+    let(:ra2)                                                { FactoryBot.create(:resource_action, :action => "Provision", :dialog => dialog1) }
+    let(:st2)                                                { FactoryBot.create(:service_template, :name => "service template 2", :display => true) }
+    let(:sc)                                                 { FactoryBot.create(:service_template_catalog, :name => "sc", :description => "sc description") }
 
     before do
       stub_settings_merge(:product => {:run_automate_methods_on_service_api_submit => true})
@@ -476,13 +476,13 @@ describe "Service Catalogs API" do
   end
 
   describe "Service Catalogs service template refresh dialog fields" do
-    let(:dialog1) { FactoryGirl.create(:dialog, :label => "Dialog1") }
-    let(:tab1)    { FactoryGirl.create(:dialog_tab, :label => "Tab1") }
-    let(:group1)  { FactoryGirl.create(:dialog_group, :label => "Group1") }
-    let(:text1)   { FactoryGirl.create(:dialog_field_text_box, :label => "TextBox1", :name => "text1") }
-    let(:ra1)     { FactoryGirl.create(:resource_action, :action => "Provision", :dialog => dialog1) }
-    let(:st1)     { FactoryGirl.create(:service_template, :name => "service template 1") }
-    let(:sc)      { FactoryGirl.create(:service_template_catalog, :name => "sc", :description => "sc description") }
+    let(:dialog1) { FactoryBot.create(:dialog, :label => "Dialog1") }
+    let(:tab1)    { FactoryBot.create(:dialog_tab, :label => "Tab1") }
+    let(:group1)  { FactoryBot.create(:dialog_group, :label => "Group1") }
+    let(:text1)   { FactoryBot.create(:dialog_field_text_box, :label => "TextBox1", :name => "text1") }
+    let(:ra1)     { FactoryBot.create(:resource_action, :action => "Provision", :dialog => dialog1) }
+    let(:st1)     { FactoryBot.create(:service_template, :name => "service template 1") }
+    let(:sc)      { FactoryBot.create(:service_template_catalog, :name => "sc", :description => "sc description") }
 
     def init_st
       sc.service_templates = [st1]

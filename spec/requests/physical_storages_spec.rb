@@ -1,7 +1,7 @@
 describe "Physical Storages API" do
   context "GET /api/physical_storages" do
     it "returns all physical_storages" do
-      physical_storage = FactoryGirl.create(:physical_storage)
+      physical_storage = FactoryBot.create(:physical_storage)
       api_basic_authorize('physical_storage_show_list')
 
       get(api_physical_storages_url)
@@ -17,7 +17,7 @@ describe "Physical Storages API" do
 
   context "GET /api/physical_storages/:id" do
     it "returns one physical_storage" do
-      physical_storage = FactoryGirl.create(:physical_storage)
+      physical_storage = FactoryBot.create(:physical_storage)
       api_basic_authorize('physical_storage_show')
 
       get(api_physical_storage_url(nil, physical_storage))
@@ -44,7 +44,7 @@ describe "Physical Storages API" do
 
     context "without an appropriate role" do
       it "it responds with 403 Forbidden" do
-        physical_storage = FactoryGirl.create(:physical_storage)
+        physical_storage = FactoryBot.create(:physical_storage)
         api_basic_authorize
 
         post(api_physical_storage_url(nil, physical_storage), :params => gen_request(:refresh))
@@ -63,7 +63,7 @@ describe "Physical Storages API" do
       end
 
       it "refresh of a single Physical Storage" do
-        physical_storage = FactoryGirl.create(:physical_storage)
+        physical_storage = FactoryBot.create(:physical_storage)
         api_basic_authorize('physical_storage_refresh')
 
         post(api_physical_storage_url(nil, physical_storage), :params => gen_request(:refresh))
@@ -72,8 +72,8 @@ describe "Physical Storages API" do
       end
 
       it "refresh of multiple Physical Storages" do
-        physical_storage = FactoryGirl.create(:physical_storage)
-        physical_storage_two = FactoryGirl.create(:physical_storage)
+        physical_storage = FactoryBot.create(:physical_storage)
+        physical_storage_two = FactoryBot.create(:physical_storage)
         api_basic_authorize('physical_storage_refresh')
 
         post(api_physical_storages_url, :params => gen_request(:refresh, [{"href" => api_physical_storage_url(nil, physical_storage)}, {"href" => api_physical_storage_url(nil, physical_storage_two)}]))

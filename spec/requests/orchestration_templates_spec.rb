@@ -1,11 +1,11 @@
 RSpec.describe 'Orchestration Template API' do
-  let(:ems) { FactoryGirl.create(:ext_management_system) }
+  let(:ems) { FactoryBot.create(:ext_management_system) }
 
   context 'orchestration_template index' do
     it 'can list the orchestration_template' do
-      FactoryGirl.create(:orchestration_template_amazon_in_json)
-      FactoryGirl.create(:orchestration_template_openstack_in_yaml)
-      FactoryGirl.create(:vnfd_template_openstack_in_yaml)
+      FactoryBot.create(:orchestration_template_amazon_in_json)
+      FactoryBot.create(:orchestration_template_openstack_in_yaml)
+      FactoryBot.create(:vnfd_template_openstack_in_yaml)
 
       api_basic_authorize collection_action_identifier(:orchestration_templates, :read, :get)
       get(api_orchestration_templates_url)
@@ -117,7 +117,7 @@ RSpec.describe 'Orchestration Template API' do
 
   context 'orchestration_template edit' do
     it 'supports single orchestration_template edit' do
-      hot = FactoryGirl.create(:orchestration_template_openstack_in_yaml, :name => "New Hot Template")
+      hot = FactoryBot.create(:orchestration_template_openstack_in_yaml, :name => "New Hot Template")
 
       api_basic_authorize collection_action_identifier(:orchestration_templates, :edit)
 
@@ -132,7 +132,7 @@ RSpec.describe 'Orchestration Template API' do
     it 'supports single orchestration_template delete' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
 
-      cfn = FactoryGirl.create(:orchestration_template_amazon_in_json)
+      cfn = FactoryBot.create(:orchestration_template_amazon_in_json)
 
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
 
@@ -145,7 +145,7 @@ RSpec.describe 'Orchestration Template API' do
     it 'runs callback before_destroy on the model' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
 
-      cfn = FactoryGirl.create(:vnfd_template_openstack_in_yaml)
+      cfn = FactoryBot.create(:vnfd_template_openstack_in_yaml)
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
       expect_any_instance_of(ManageIQ::Providers::Openstack::CloudManager::VnfdTemplate).to receive(:raw_destroy).with(no_args) # callback on the model
       delete(api_orchestration_template_url(nil, cfn))
@@ -157,8 +157,8 @@ RSpec.describe 'Orchestration Template API' do
     it 'supports multiple orchestration_template delete' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :delete)
 
-      cfn = FactoryGirl.create(:orchestration_template_amazon_in_json)
-      hot = FactoryGirl.create(:orchestration_template_openstack_in_yaml)
+      cfn = FactoryBot.create(:orchestration_template_amazon_in_json)
+      hot = FactoryBot.create(:orchestration_template_openstack_in_yaml)
 
       post(
         api_orchestration_templates_url,
@@ -182,7 +182,7 @@ RSpec.describe 'Orchestration Template API' do
     it 'forbids orchestration template copy without an appropriate role' do
       api_basic_authorize
 
-      orchestration_template = FactoryGirl.create(:orchestration_template_amazon)
+      orchestration_template = FactoryBot.create(:orchestration_template_amazon)
       new_content            = "{ 'Description': 'Test content 1' }\n"
 
       post(
@@ -196,7 +196,7 @@ RSpec.describe 'Orchestration Template API' do
     it 'forbids orchestration template copy with no content specified' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :copy)
 
-      orchestration_template = FactoryGirl.create(:orchestration_template_amazon)
+      orchestration_template = FactoryBot.create(:orchestration_template_amazon)
 
       post(api_orchestration_template_url(nil, orchestration_template), :params => gen_request(:copy))
 
@@ -206,7 +206,7 @@ RSpec.describe 'Orchestration Template API' do
     it 'can copy single orchestration template with a different content' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :copy)
 
-      orchestration_template = FactoryGirl.create(:orchestration_template_amazon)
+      orchestration_template = FactoryBot.create(:orchestration_template_amazon)
       new_content            = "{ 'Description': 'Test content 1' }\n"
 
       expected = {
@@ -232,9 +232,9 @@ RSpec.describe 'Orchestration Template API' do
     it 'can copy multiple orchestration templates with a different content' do
       api_basic_authorize collection_action_identifier(:orchestration_templates, :copy)
 
-      orchestration_template   = FactoryGirl.create(:orchestration_template_amazon)
+      orchestration_template   = FactoryBot.create(:orchestration_template_amazon)
       new_content              = "{ 'Description': 'Test content 1' }\n"
-      orchestration_template_2 = FactoryGirl.create(:orchestration_template_amazon)
+      orchestration_template_2 = FactoryBot.create(:orchestration_template_amazon)
       new_content_2            = "{ 'Description': 'Test content 2' }\n"
 
       expected = {

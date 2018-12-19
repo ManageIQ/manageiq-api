@@ -1,6 +1,6 @@
 RSpec.describe "categories API" do
   it "can list all the categories" do
-    categories = FactoryGirl.create_list(:category, 2)
+    categories = FactoryBot.create_list(:category, 2)
     api_basic_authorize collection_action_identifier(:categories, :read, :get)
 
     get api_categories_url
@@ -13,8 +13,8 @@ RSpec.describe "categories API" do
   end
 
   it "can filter the list of categories by name" do
-    category_1 = FactoryGirl.create(:category, :name => "foo")
-    _category_2 = FactoryGirl.create(:category, :name => "bar")
+    category_1 = FactoryBot.create(:category, :name => "foo")
+    _category_2 = FactoryBot.create(:category, :name => "bar")
     api_basic_authorize collection_action_identifier(:categories, :read, :get)
 
     get api_categories_url, :params => { :filter => ["name=foo"] }
@@ -24,7 +24,7 @@ RSpec.describe "categories API" do
   end
 
   it "will return a bad request error if the filter name is invalid" do
-    FactoryGirl.create(:category)
+    FactoryBot.create(:category)
     api_basic_authorize collection_action_identifier(:categories, :read, :get)
 
     get api_categories_url, :params => { :filter => ["not_an_attribute=foo"] }
@@ -33,7 +33,7 @@ RSpec.describe "categories API" do
   end
 
   it "can read a category" do
-    category = FactoryGirl.create(:category)
+    category = FactoryBot.create(:category)
     api_basic_authorize action_identifier(:categories, :read, :resource_actions, :get)
 
     get api_category_url(nil, category)
@@ -47,7 +47,7 @@ RSpec.describe "categories API" do
   end
 
   it "will only return the requested attributes" do
-    FactoryGirl.create(:category, :example_text => 'foo')
+    FactoryBot.create(:category, :example_text => 'foo')
     api_basic_authorize collection_action_identifier(:categories, :read, :get)
 
     get api_categories_url, :params => { :expand => 'resources', :attributes => 'example_text' }
@@ -57,8 +57,8 @@ RSpec.describe "categories API" do
   end
 
   it "can list all the tags under a category" do
-    classification = FactoryGirl.create(:classification_tag)
-    category = FactoryGirl.create(:category, :children => [classification])
+    classification = FactoryBot.create(:classification_tag)
+    category = FactoryBot.create(:category, :children => [classification])
     tag = classification.tag
     Tag.create(:name => "some_other_tag")
     api_basic_authorize
@@ -113,7 +113,7 @@ RSpec.describe "categories API" do
     end
 
     it "can update a category" do
-      category = FactoryGirl.create(:category)
+      category = FactoryBot.create(:category)
       api_basic_authorize action_identifier(:categories, :edit)
 
       expect do
@@ -125,7 +125,7 @@ RSpec.describe "categories API" do
     end
 
     it "can delete a category through POST" do
-      category = FactoryGirl.create(:category)
+      category = FactoryBot.create(:category)
       api_basic_authorize action_identifier(:categories, :delete)
 
       expect do
@@ -136,7 +136,7 @@ RSpec.describe "categories API" do
     end
 
     it "can delete a category through DELETE" do
-      category = FactoryGirl.create(:category)
+      category = FactoryBot.create(:category)
       api_basic_authorize action_identifier(:categories, :delete)
 
       expect do
@@ -148,7 +148,7 @@ RSpec.describe "categories API" do
 
     context "read-only categories" do
       it "can't delete a read-only category" do
-        category = FactoryGirl.create(:category, :read_only => true)
+        category = FactoryBot.create(:category, :read_only => true)
         api_basic_authorize action_identifier(:categories, :delete)
 
         expect do
@@ -159,7 +159,7 @@ RSpec.describe "categories API" do
       end
 
       it "can't update a read-only category" do
-        category = FactoryGirl.create(:category, :description => "old description", :read_only => true)
+        category = FactoryBot.create(:category, :description => "old description", :read_only => true)
         api_basic_authorize action_identifier(:categories, :edit)
 
         expect do
@@ -182,7 +182,7 @@ RSpec.describe "categories API" do
       end
 
       it "cannot update a category" do
-        category = FactoryGirl.create(:category)
+        category = FactoryBot.create(:category)
         api_basic_authorize
 
         expect do
@@ -193,7 +193,7 @@ RSpec.describe "categories API" do
       end
 
       it "cannot delete a category through POST" do
-        category = FactoryGirl.create(:category)
+        category = FactoryBot.create(:category)
         api_basic_authorize
 
         expect do
@@ -204,7 +204,7 @@ RSpec.describe "categories API" do
       end
 
       it "cannot delete a category through DELETE" do
-        category = FactoryGirl.create(:category)
+        category = FactoryBot.create(:category)
         api_basic_authorize
 
         expect do

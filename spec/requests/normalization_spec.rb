@@ -1,7 +1,7 @@
 RSpec.describe "Normalization of objects API" do
   it "represents datetimes in ISO8601 format" do
     api_basic_authorize action_identifier(:hosts, :read, :resource_actions, :get)
-    host = FactoryGirl.create(:host)
+    host = FactoryBot.create(:host)
 
     get(api_host_url(nil, host))
 

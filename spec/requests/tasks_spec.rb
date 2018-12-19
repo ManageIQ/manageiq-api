@@ -1,6 +1,6 @@
 describe 'TasksController' do
-  let(:task) { FactoryGirl.create(:miq_task, :state => MiqTask::STATE_FINISHED) }
-  let(:task2) { FactoryGirl.create(:miq_task, :state => MiqTask::STATE_FINISHED) }
+  let(:task) { FactoryBot.create(:miq_task, :state => MiqTask::STATE_FINISHED) }
+  let(:task2) { FactoryBot.create(:miq_task, :state => MiqTask::STATE_FINISHED) }
 
   def expect_deleted(*args)
     args.each do |arg|

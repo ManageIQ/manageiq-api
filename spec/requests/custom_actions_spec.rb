@@ -18,11 +18,11 @@
 #          { "action" : "<custom_action_button_name>" }
 #
 describe "Custom Actions API" do
-  let(:template1) { FactoryGirl.create(:service_template, :name => "template1") }
-  let(:svc1) { FactoryGirl.create(:service, :name => "svc1", :service_template_id => template1.id) }
+  let(:template1) { FactoryBot.create(:service_template, :name => "template1") }
+  let(:svc1) { FactoryBot.create(:service, :name => "svc1", :service_template_id => template1.id) }
 
   let(:button1) do
-    FactoryGirl.create(:custom_button,
+    FactoryBot.create(:custom_button,
                        :name        => "button1",
                        :description => "button one",
                        :applies_to  => template1,
@@ -30,7 +30,7 @@ describe "Custom Actions API" do
   end
 
   let(:button2) do
-    FactoryGirl.create(:custom_button,
+    FactoryBot.create(:custom_button,
                        :name        => "button2",
                        :description => "button two",
                        :applies_to  => template1,
@@ -38,7 +38,7 @@ describe "Custom Actions API" do
   end
 
   let(:button3) do
-    FactoryGirl.create(:custom_button,
+    FactoryBot.create(:custom_button,
                        :name        => "button3",
                        :description => "button three",
                        :applies_to  => template1,
@@ -46,7 +46,7 @@ describe "Custom Actions API" do
   end
 
   let(:button_group1) do
-    FactoryGirl.create(:custom_button_set,
+    FactoryBot.create(:custom_button_set,
                        :name        => "button_group1",
                        :description => "button group one",
                        :set_data    => {:applies_to_id => template1.id, :applies_to_class => template1.class.name},
@@ -68,7 +68,7 @@ describe "Custom Actions API" do
   end
 
   describe "Querying services with no custom actions" do
-    let(:service) { FactoryGirl.create(:service) }
+    let(:service) { FactoryBot.create(:service) }
 
     it "returns core actions as authorized" do
       api_basic_authorize(action_identifier(:services, :edit),
@@ -188,7 +188,7 @@ describe "Custom Actions API" do
   describe "Services with custom actions" do
     before do
       create_custom_buttons
-      button1.resource_action = FactoryGirl.create(:resource_action)
+      button1.resource_action = FactoryBot.create(:resource_action)
     end
 
     it "accepts a custom action" do
@@ -210,15 +210,15 @@ describe "Custom Actions API" do
 
   describe "Services with grouped generic custom buttons" do
     it "accepts a custom action" do
-      button = FactoryGirl.create(
+      button = FactoryBot.create(
         :custom_button,
         :name             => "test button",
         :applies_to_class => "Service",
-        :resource_action  => FactoryGirl.create(:resource_action)
+        :resource_action  => FactoryBot.create(:resource_action)
       )
-      button_group = FactoryGirl.create(:custom_button_set)
+      button_group = FactoryBot.create(:custom_button_set)
       button_group.add_member(button)
-      service = FactoryGirl.create(:service, :service_template => FactoryGirl.create(:service_template))
+      service = FactoryBot.create(:service, :service_template => FactoryBot.create(:service_template))
       api_basic_authorize
 
       post(api_service_url(nil, service), :params => { "action" => "test button" })
@@ -231,11 +231,11 @@ describe "Custom Actions API" do
     it "queries for custom_actions returns expanded details for dialog buttons" do
       api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
 
-      template2 = FactoryGirl.create(:service_template, :name => "template2")
-      dialog2   = FactoryGirl.create(:dialog, :label => "dialog2")
-      ra2       = FactoryGirl.create(:resource_action, :dialog_id => dialog2.id)
-      button2   = FactoryGirl.create(:custom_button, :applies_to => template2, :userid => @user.userid)
-      svc2      = FactoryGirl.create(:service, :name => "svc2", :service_template_id => template2.id)
+      template2 = FactoryBot.create(:service_template, :name => "template2")
+      dialog2   = FactoryBot.create(:dialog, :label => "dialog2")
+      ra2       = FactoryBot.create(:resource_action, :dialog_id => dialog2.id)
+      button2   = FactoryBot.create(:custom_button, :applies_to => template2, :userid => @user.userid)
+      svc2      = FactoryBot.create(:service, :name => "svc2", :service_template_id => template2.id)
       button2.resource_action = ra2
 
       get api_service_url(nil, svc2), :params => { :attributes => "custom_actions" }
@@ -256,12 +256,12 @@ describe "Custom Actions API" do
   end
 
   def define_custom_button1(resource)
-    FactoryGirl.create(:custom_button, :with_resource_action_dialog, :applies_to => resource)
+    FactoryBot.create(:custom_button, :with_resource_action_dialog, :applies_to => resource)
   end
 
   describe "Availability Zones" do
     before do
-      @resource = FactoryGirl.create(:availability_zone)
+      @resource = FactoryBot.create(:availability_zone)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -288,7 +288,7 @@ describe "Custom Actions API" do
 
   describe "Cloud Network" do
     before do
-      @resource = FactoryGirl.create(:cloud_network)
+      @resource = FactoryBot.create(:cloud_network)
       @button = define_custom_button1(@resource)
     end
 
@@ -315,7 +315,7 @@ describe "Custom Actions API" do
 
   describe "CloudTenant" do
     before do
-      @resource = FactoryGirl.create(:cloud_tenant)
+      @resource = FactoryBot.create(:cloud_tenant)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -342,9 +342,9 @@ describe "Custom Actions API" do
 
   describe "Clusters" do
     before do
-      @zone = FactoryGirl.create(:zone, :name => "api_zone")
-      @provider = FactoryGirl.create(:ems_vmware, :zone => @zone)
-      @resource = FactoryGirl.create(:ems_cluster, :ext_management_system => @provider)
+      @zone = FactoryBot.create(:zone, :name => "api_zone")
+      @provider = FactoryBot.create(:ems_vmware, :zone => @zone)
+      @resource = FactoryBot.create(:ems_cluster, :ext_management_system => @provider)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -371,7 +371,7 @@ describe "Custom Actions API" do
 
   describe "CloudSubnet" do
     before do
-      @resource = FactoryGirl.create(:cloud_subnet)
+      @resource = FactoryBot.create(:cloud_subnet)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -398,7 +398,7 @@ describe "Custom Actions API" do
 
   describe "Container Group" do
     before do
-      @resource = FactoryGirl.create(:container_group)
+      @resource = FactoryBot.create(:container_group)
       @button = define_custom_button1(@resource)
     end
 
@@ -425,7 +425,7 @@ describe "Custom Actions API" do
 
   describe "Container Image" do
     before do
-      @resource = FactoryGirl.create(:container_image)
+      @resource = FactoryBot.create(:container_image)
       @button = define_custom_button1(@resource)
     end
 
@@ -452,7 +452,7 @@ describe "Custom Actions API" do
 
   describe "ContainerNode" do
     before do
-      @resource = FactoryGirl.create(:container_node)
+      @resource = FactoryBot.create(:container_node)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -479,7 +479,7 @@ describe "Custom Actions API" do
 
   describe "ContainerProjects" do
     before do
-      @resource = FactoryGirl.create(:container_project)
+      @resource = FactoryBot.create(:container_project)
       @button = define_custom_button1(@resource)
     end
 
@@ -506,7 +506,7 @@ describe "Custom Actions API" do
 
   describe "ContainerTemplate" do
     before(:each) do
-      @resource = FactoryGirl.create(:container_template)
+      @resource = FactoryBot.create(:container_template)
       @button = define_custom_button1(@resource)
     end
 
@@ -533,7 +533,7 @@ describe "Custom Actions API" do
 
   describe "ContainerVolume" do
     before(:each) do
-      @resource = FactoryGirl.create(:container_volume)
+      @resource = FactoryBot.create(:container_volume)
       @button = define_custom_button1(@resource)
     end
 
@@ -560,8 +560,8 @@ describe "Custom Actions API" do
 
   describe "Generic Objects" do
     before do
-      @object_definition = FactoryGirl.create(:generic_object_definition, :name => 'object def')
-      @resource = FactoryGirl.create(:generic_object, :generic_object_definition => @object_definition)
+      @object_definition = FactoryBot.create(:generic_object_definition, :name => 'object def')
+      @resource = FactoryBot.create(:generic_object, :generic_object_definition => @object_definition)
       @button = define_custom_button1(@object_definition)
     end
 
@@ -592,7 +592,7 @@ describe "Custom Actions API" do
 
   describe "Cloud Object Store Container" do
     before do
-      @resource = FactoryGirl.create(:cloud_object_store_container)
+      @resource = FactoryBot.create(:cloud_object_store_container)
       @button = define_custom_button1(@resource)
     end
 
@@ -619,7 +619,7 @@ describe "Custom Actions API" do
 
   describe "Group" do
     before do
-      @resource = FactoryGirl.create(:miq_group)
+      @resource = FactoryBot.create(:miq_group)
       @button1 = define_custom_button1(@resource)
       @user.miq_groups << @resource
     end
@@ -647,7 +647,7 @@ describe "Custom Actions API" do
 
   describe "Host" do
     before do
-      @resource = FactoryGirl.create(:host)
+      @resource = FactoryBot.create(:host)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -674,7 +674,7 @@ describe "Custom Actions API" do
 
   describe "LoadBalancer" do
     before do
-      @resource = FactoryGirl.create(:load_balancer)
+      @resource = FactoryBot.create(:load_balancer)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -701,7 +701,7 @@ describe "Custom Actions API" do
 
   describe "Providers" do
     before do
-      @resource = FactoryGirl.create(:ext_management_system)
+      @resource = FactoryBot.create(:ext_management_system)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -728,7 +728,7 @@ describe "Custom Actions API" do
 
   describe "NetworkRouter" do
     before do
-      @resource = FactoryGirl.create(:network_router)
+      @resource = FactoryBot.create(:network_router)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -755,7 +755,7 @@ describe "Custom Actions API" do
 
   describe "Orchestration Stacks" do
     before(:each) do
-      @resource = FactoryGirl.create(:orchestration_stack)
+      @resource = FactoryBot.create(:orchestration_stack)
       @button = define_custom_button1(@resource)
     end
 
@@ -782,7 +782,7 @@ describe "Custom Actions API" do
 
   describe "Storage" do
     before do
-      @resource = FactoryGirl.create(:storage)
+      @resource = FactoryBot.create(:storage)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -809,7 +809,7 @@ describe "Custom Actions API" do
 
   describe "Security Group" do
     before do
-      @resource = FactoryGirl.create(:security_group)
+      @resource = FactoryBot.create(:security_group)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -836,7 +836,7 @@ describe "Custom Actions API" do
 
   describe "Switches" do
     before(:each) do
-      @resource = FactoryGirl.create(:switch)
+      @resource = FactoryBot.create(:switch)
       @button = define_custom_button1(@resource)
     end
 
@@ -863,7 +863,7 @@ describe "Custom Actions API" do
 
   describe "Template" do
     before do
-      @resource = FactoryGirl.create(:miq_template)
+      @resource = FactoryBot.create(:miq_template)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -890,7 +890,7 @@ describe "Custom Actions API" do
 
   describe "Tenant" do
     before do
-      @resource = FactoryGirl.create(:tenant)
+      @resource = FactoryBot.create(:tenant)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -917,7 +917,7 @@ describe "Custom Actions API" do
 
   describe "Vms" do
     before do
-      @resource = FactoryGirl.create(:vm)
+      @resource = FactoryBot.create(:vm)
       @button1 = define_custom_button1(@resource)
     end
 
@@ -944,7 +944,7 @@ describe "Custom Actions API" do
 
   describe "User" do
     before do
-      @resource = FactoryGirl.create(:user)
+      @resource = FactoryBot.create(:user)
       @button1 = define_custom_button1(@resource)
       @resource.miq_groups << @user.current_group
     end

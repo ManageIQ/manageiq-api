@@ -1,11 +1,11 @@
 RSpec.describe 'Authentications API' do
-  let(:manager) { FactoryGirl.create(:automation_manager_ansible_tower) }
-  let(:auth) { FactoryGirl.create(:ansible_cloud_credential, :resource => manager) }
-  let(:auth_2) { FactoryGirl.create(:ansible_cloud_credential, :resource => manager) }
+  let(:manager) { FactoryBot.create(:automation_manager_ansible_tower) }
+  let(:auth) { FactoryBot.create(:ansible_cloud_credential, :resource => manager) }
+  let(:auth_2) { FactoryBot.create(:ansible_cloud_credential, :resource => manager) }
 
   describe 'GET/api/authentications' do
     it 'lists all the authentication configuration script bases with an appropriate role' do
-      auth = FactoryGirl.create(:authentication)
+      auth = FactoryBot.create(:authentication)
       api_basic_authorize collection_action_identifier(:authentications, :read, :get)
 
       get(api_authentications_url)
@@ -95,7 +95,7 @@ RSpec.describe 'Authentications API' do
 
     it 'verifies that the type is supported' do
       api_basic_authorize collection_action_identifier(:authentications, :delete, :post)
-      auth = FactoryGirl.create(:authentication)
+      auth = FactoryBot.create(:authentication)
 
       post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }] })
 
@@ -135,7 +135,7 @@ RSpec.describe 'Authentications API' do
     end
 
     it 'will forbid deletion to an authentication without appropriate role' do
-      auth = FactoryGirl.create(:authentication)
+      auth = FactoryBot.create(:authentication)
       api_basic_authorize
 
       post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }] })
@@ -417,7 +417,7 @@ RSpec.describe 'Authentications API' do
 
     it 'requires that the type support update_in_provider_queue' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
-      auth = FactoryGirl.create(:authentication)
+      auth = FactoryBot.create(:authentication)
 
       post(api_authentication_url(nil, auth), :params => { :action => 'edit', :resource => params })
 
@@ -464,7 +464,7 @@ RSpec.describe 'Authentications API' do
 
   describe 'DELETE /api/authentications/:id' do
     it 'will delete an authentication' do
-      auth = FactoryGirl.create(:authentication)
+      auth = FactoryBot.create(:authentication)
       api_basic_authorize action_identifier(:authentications, :delete, :resource_actions, :delete)
 
       delete(api_authentication_url(nil, auth))
@@ -473,7 +473,7 @@ RSpec.describe 'Authentications API' do
     end
 
     it 'will not delete an authentication without an appropriate role' do
-      auth = FactoryGirl.create(:authentication)
+      auth = FactoryBot.create(:authentication)
       api_basic_authorize
 
       delete(api_authentication_url(nil, auth))

@@ -1,7 +1,7 @@
 RSpec.describe 'Configuration Script Payloads API' do
   describe 'GET /api/configuration_script_payloads' do
     it 'lists all the configuration script payloads with an appropriate role' do
-      script_payload = FactoryGirl.create(:configuration_script_payload)
+      script_payload = FactoryBot.create(:configuration_script_payload)
       api_basic_authorize collection_action_identifier(:configuration_script_payloads, :read, :get)
 
       get(api_configuration_script_payloads_url)
@@ -29,7 +29,7 @@ RSpec.describe 'Configuration Script Payloads API' do
 
   describe 'GET /api/configuration_script_payloads/:id' do
     it 'will show an ansible script_payload with an appropriate role' do
-      script_payload = FactoryGirl.create(:configuration_script_payload)
+      script_payload = FactoryBot.create(:configuration_script_payload)
       api_basic_authorize action_identifier(:configuration_script_payloads, :read, :resource_actions, :get)
 
       get(api_configuration_script_payload_url(nil, script_payload))
@@ -40,7 +40,7 @@ RSpec.describe 'Configuration Script Payloads API' do
     end
 
     it 'forbids access to an ansible script_payload without an appropriate role' do
-      script_payload = FactoryGirl.create(:configuration_script_payload)
+      script_payload = FactoryBot.create(:configuration_script_payload)
       api_basic_authorize
 
       get(api_configuration_script_payload_url(nil, script_payload))
@@ -51,8 +51,8 @@ RSpec.describe 'Configuration Script Payloads API' do
 
   describe 'GET /api/configuration_script_payloads/:id/authentications' do
     it 'returns the configuration script sources authentications' do
-      authentication = FactoryGirl.create(:authentication)
-      playbook = FactoryGirl.create(:configuration_script_payload, :authentications => [authentication])
+      authentication = FactoryBot.create(:authentication)
+      playbook = FactoryBot.create(:configuration_script_payload, :authentications => [authentication])
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :read, :get)
 
       get(api_configuration_script_payload_authentications_url(nil, playbook), :params => { :expand => 'resources' })
@@ -68,9 +68,9 @@ RSpec.describe 'Configuration Script Payloads API' do
   end
 
   describe 'POST /api/configuration_script_payloads/:id/authentications' do
-    let(:provider) { FactoryGirl.create(:provider_ansible_tower, :with_authentication) }
+    let(:provider) { FactoryBot.create(:provider_ansible_tower, :with_authentication) }
     let(:manager) { provider.managers.first }
-    let(:playbook) { FactoryGirl.create(:configuration_script_payload, :manager => manager) }
+    let(:playbook) { FactoryBot.create(:configuration_script_payload, :manager => manager) }
     let(:params) do
       {
         :action      => 'create',
@@ -145,8 +145,8 @@ RSpec.describe 'Configuration Script Payloads API' do
 
   describe 'GET /api/configuration_script_payloads/:id/authentications/:id' do
     it 'returns a specific authentication' do
-      authentication = FactoryGirl.create(:authentication)
-      playbook = FactoryGirl.create(:configuration_script_payload, :authentications => [authentication])
+      authentication = FactoryBot.create(:authentication)
+      playbook = FactoryBot.create(:configuration_script_payload, :authentications => [authentication])
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :read, :get)
 
       get(api_configuration_script_payload_authentication_url(nil, playbook, authentication))

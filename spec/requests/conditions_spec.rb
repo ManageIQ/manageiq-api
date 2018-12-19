@@ -11,7 +11,7 @@ describe "Conditions API" do
   let(:condition_guid_list) { Condition.pluck(:guid) }
 
   def create_conditions(count)
-    count.times { FactoryGirl.create(:condition) }
+    count.times { FactoryBot.create(:condition) }
   end
 
   def assign_conditions_to(resource)
@@ -27,9 +27,9 @@ describe "Conditions API" do
         :towhat      => "ExtManagementSystem"
       }
     end
-    let(:condition) { FactoryGirl.create(:condition) }
+    let(:condition) { FactoryBot.create(:condition) }
     let(:condition_url) { api_condition_url(nil, condition) }
-    let(:conditions) { FactoryGirl.create_list(:condition, 2) }
+    let(:conditions) { FactoryBot.create_list(:condition, 2) }
 
     it "forbids access to create condition without an appropriate role" do
       api_basic_authorize
@@ -179,7 +179,7 @@ describe "Conditions API" do
   end
 
   context "Condition subcollection" do
-    let(:policy)                { FactoryGirl.create(:miq_policy, :name => "Policy 1") }
+    let(:policy)                { FactoryBot.create(:miq_policy, :name => "Policy 1") }
 
     it "query conditions with no conditions defined" do
       api_basic_authorize

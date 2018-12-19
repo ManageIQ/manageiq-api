@@ -10,37 +10,37 @@ describe "Provision Requests API" do
     let!(:aws_dialog) do
       path = Rails.root.join("product", "dialogs", "miq_dialogs", "miq_provision_amazon_dialogs_template.yaml")
       content = YAML.load_file(path)[:content]
-      dialog = FactoryGirl.create(:miq_dialog, :name => "miq_provision_amazon_dialogs_template",
+      dialog = FactoryBot.create(:miq_dialog, :name => "miq_provision_amazon_dialogs_template",
                                   :dialog_type => "MiqProvisionWorkflow", :content => content)
       allow_any_instance_of(MiqRequestWorkflow).to receive(:dialog_name_from_automate).and_return(dialog.name)
     end
-    let(:ems) { FactoryGirl.create(:ems_amazon_with_authentication) }
+    let(:ems) { FactoryBot.create(:ems_amazon_with_authentication) }
     let(:template) do
-      FactoryGirl.create(:template_amazon, :name => "template1", :ext_management_system => ems)
+      FactoryBot.create(:template_amazon, :name => "template1", :ext_management_system => ems)
     end
     let(:flavor) do
-      FactoryGirl.create(:flavor_amazon, :ems_id => ems.id, :name => 't2.small', :cloud_subnet_required => true)
+      FactoryBot.create(:flavor_amazon, :ems_id => ems.id, :name => 't2.small', :cloud_subnet_required => true)
     end
-    let(:az)             { FactoryGirl.create(:availability_zone_amazon, :ems_id => ems.id) }
+    let(:az)             { FactoryBot.create(:availability_zone_amazon, :ems_id => ems.id) }
     let(:cloud_network1) do
-      FactoryGirl.create(:cloud_network_amazon,
+      FactoryBot.create(:cloud_network_amazon,
                          :ext_management_system => ems.network_manager,
                          :enabled               => true)
     end
     let(:cloud_subnet1) do
-      FactoryGirl.create(:cloud_subnet,
+      FactoryBot.create(:cloud_subnet,
                          :ext_management_system => ems.network_manager,
                          :cloud_network         => cloud_network1,
                          :availability_zone     => az)
     end
     let(:security_group1) do
-      FactoryGirl.create(:security_group_amazon,
+      FactoryBot.create(:security_group_amazon,
                          :name                  => "sgn_1",
                          :ext_management_system => ems.network_manager,
                          :cloud_network         => cloud_network1)
     end
     let(:floating_ip1) do
-      FactoryGirl.create(:floating_ip_amazon,
+      FactoryBot.create(:floating_ip_amazon,
                          :cloud_network_only    => true,
                          :ext_management_system => ems.network_manager,
                          :cloud_network         => cloud_network1)
@@ -166,15 +166,15 @@ describe "Provision Requests API" do
     end
   end
 
-  let(:zone)       { FactoryGirl.create(:zone, :name => "api_zone") }
-  let(:ems)        { FactoryGirl.create(:ems_vmware, :zone => zone) }
-  let(:host)       { FactoryGirl.create(:host, :ext_management_system => ems) }
-  let(:dialog)     { FactoryGirl.create(:miq_dialog_provision) }
+  let(:zone)       { FactoryBot.create(:zone, :name => "api_zone") }
+  let(:ems)        { FactoryBot.create(:ems_vmware, :zone => zone) }
+  let(:host)       { FactoryBot.create(:host, :ext_management_system => ems) }
+  let(:dialog)     { FactoryBot.create(:miq_dialog_provision) }
 
   describe "Provision Requests" do
-    let(:hardware) { FactoryGirl.create(:hardware, :memory_mb => 1024) }
+    let(:hardware) { FactoryBot.create(:hardware, :memory_mb => 1024) }
     let(:template) do
-      FactoryGirl.create(:template_vmware,
+      FactoryBot.create(:template_vmware,
                          :name                  => "template1",
                          :host                  => host,
                          :ext_management_system => ems,
@@ -203,9 +203,9 @@ describe "Provision Requests API" do
     end
 
     it "filters the list of provision requests by requester" do
-      other_user = FactoryGirl.create(:user)
-      _provision_request1 = FactoryGirl.create(:miq_provision_request, :requester => other_user)
-      provision_request2 = FactoryGirl.create(:miq_provision_request, :requester => @user)
+      other_user = FactoryBot.create(:user)
+      _provision_request1 = FactoryBot.create(:miq_provision_request, :requester => other_user)
+      provision_request2 = FactoryBot.create(:miq_provision_request, :requester => @user)
       api_basic_authorize collection_action_identifier(:provision_requests, :read, :get)
 
       get api_provision_requests_url
@@ -222,10 +222,10 @@ describe "Provision Requests API" do
     end
 
     it "lists all the provision requests if you are admin" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_approval))
-      other_user = FactoryGirl.create(:user)
-      provision_request1 = FactoryGirl.create(:miq_provision_request, :requester => other_user)
-      provision_request2 = FactoryGirl.create(:miq_provision_request, :requester => @user)
+      @group.miq_user_role = @role = FactoryBot.create(:miq_user_role, :features => %w(miq_request_approval))
+      other_user = FactoryBot.create(:user)
+      provision_request1 = FactoryBot.create(:miq_provision_request, :requester => other_user)
+      provision_request2 = FactoryBot.create(:miq_provision_request, :requester => @user)
       api_basic_authorize collection_action_identifier(:provision_requests, :read, :get)
 
       get api_provision_requests_url
@@ -243,8 +243,8 @@ describe "Provision Requests API" do
     end
 
     it "restricts access to provision requests to requester" do
-      other_user = FactoryGirl.create(:user)
-      provision_request = FactoryGirl.create(:miq_provision_request, :requester => other_user)
+      other_user = FactoryBot.create(:user)
+      provision_request = FactoryBot.create(:miq_provision_request, :requester => other_user)
       api_basic_authorize action_identifier(:provision_requests, :read, :resource_actions, :get)
 
       get api_provision_request_url(nil, provision_request)
@@ -253,9 +253,9 @@ describe "Provision Requests API" do
     end
 
     it "an admin can see another user's request" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_approval))
-      other_user = FactoryGirl.create(:user)
-      provision_request = FactoryGirl.create(:miq_provision_request, :requester => other_user)
+      @group.miq_user_role = @role = FactoryBot.create(:miq_user_role, :features => %w(miq_request_approval))
+      other_user = FactoryBot.create(:user)
+      provision_request = FactoryBot.create(:miq_provision_request, :requester => other_user)
       api_basic_authorize action_identifier(:provision_requests, :read, :resource_actions, :get)
 
       get api_provision_request_url(nil, provision_request)
@@ -321,7 +321,7 @@ describe "Provision Requests API" do
 
     describe "provision request update" do
       it 'forbids provision request update without an appropriate role' do
-        provision_request = FactoryGirl.create(:miq_provision_request, :requester => @user, :options => {:foo => "bar"})
+        provision_request = FactoryBot.create(:miq_provision_request, :requester => @user, :options => {:foo => "bar"})
         api_basic_authorize
 
         post(api_provision_request_url(nil, provision_request), :params => { :action => "edit", :options => {:baz => "qux"} })
@@ -330,7 +330,7 @@ describe "Provision Requests API" do
       end
 
       it 'updates a single provision request' do
-        provision_request = FactoryGirl.create(:miq_provision_request, :requester => @user, :options => {:foo => "bar"})
+        provision_request = FactoryBot.create(:miq_provision_request, :requester => @user, :options => {:foo => "bar"})
         api_basic_authorize(action_identifier(:provision_requests, :edit))
 
         post(api_provision_request_url(nil, provision_request), :params => { :action => "edit", :options => {:baz => "qux"} })
@@ -344,7 +344,7 @@ describe "Provision Requests API" do
       end
 
       it 'updates multiple provision requests' do
-        provision_request, provision_request2 = FactoryGirl.create_list(:miq_provision_request,
+        provision_request, provision_request2 = FactoryBot.create_list(:miq_provision_request,
                                                                         2,
                                                                         :requester => @user,
                                                                         :options   => {:foo => "bar"})
@@ -374,16 +374,16 @@ describe "Provision Requests API" do
   end
 
   context "Provision requests approval" do
-    let(:user)          { FactoryGirl.create(:user) }
-    let(:template)      { FactoryGirl.create(:template_cloud) }
+    let(:user)          { FactoryBot.create(:user) }
+    let(:template)      { FactoryBot.create(:template_cloud) }
     let(:provreqbody)   { {:requester => user, :source_type => 'VmOrTemplate', :source_id => template.id} }
-    let(:provreq1)      { FactoryGirl.create(:miq_provision_request, provreqbody) }
-    let(:provreq2)      { FactoryGirl.create(:miq_provision_request, provreqbody) }
+    let(:provreq1)      { FactoryBot.create(:miq_provision_request, provreqbody) }
+    let(:provreq2)      { FactoryBot.create(:miq_provision_request, provreqbody) }
     let(:provreq1_url)  { api_provision_request_url(nil, provreq1) }
     let(:provreq2_url)  { api_provision_request_url(nil, provreq2) }
 
     before do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_approval))
+      @group.miq_user_role = @role = FactoryBot.create(:miq_user_role, :features => %w(miq_request_approval))
     end
 
     it "supports approving a request" do
@@ -452,8 +452,8 @@ describe "Provision Requests API" do
   end
 
   context 'Tasks subcollection' do
-    let(:provision_request) { FactoryGirl.create(:miq_provision_request, :requester => @user) }
-    let(:task) { FactoryGirl.create(:miq_request_task, :miq_request => provision_request) }
+    let(:provision_request) { FactoryBot.create(:miq_provision_request, :requester => @user) }
+    let(:task) { FactoryBot.create(:miq_request_task, :miq_request => provision_request) }
     let(:options) { { 'a' => '1' } }
     let(:params) { gen_request(:edit, :options => options) }
 

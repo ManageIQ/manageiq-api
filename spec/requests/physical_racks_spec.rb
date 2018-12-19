@@ -1,7 +1,7 @@
 describe "Physical Racks API" do
   context "GET /api/physical_racks" do
     it "returns all Physical Racks" do
-      physical_rack = FactoryGirl.create(:physical_rack)
+      physical_rack = FactoryBot.create(:physical_rack)
       api_basic_authorize('physical_rack_show_list')
 
       get(api_physical_racks_url)
@@ -17,7 +17,7 @@ describe "Physical Racks API" do
 
   context "GET /api/physical_racks/:id" do
     it "returns a single Physical Rack" do
-      physical_rack = FactoryGirl.create(:physical_rack)
+      physical_rack = FactoryBot.create(:physical_rack)
       api_basic_authorize('physical_rack_show')
 
       get(api_physical_rack_url(nil, physical_rack))
@@ -44,7 +44,7 @@ describe "Physical Racks API" do
 
     context "without an appropriate role" do
       it "it responds with 403 Forbidden" do
-        physical_rack = FactoryGirl.create(:physical_rack)
+        physical_rack = FactoryBot.create(:physical_rack)
         api_basic_authorize
 
         post(api_physical_rack_url(nil, physical_rack), :params => gen_request(:refresh))
@@ -63,7 +63,7 @@ describe "Physical Racks API" do
       end
 
       it "refresh of a single Physical Rack" do
-        physical_rack = FactoryGirl.create(:physical_rack)
+        physical_rack = FactoryBot.create(:physical_rack)
         api_basic_authorize('physical_rack_refresh')
 
         post(api_physical_rack_url(nil, physical_rack), :params => gen_request(:refresh))
@@ -72,8 +72,8 @@ describe "Physical Racks API" do
       end
 
       it "refresh of multiple Physical Racks" do
-        first_physical_rack = FactoryGirl.create(:physical_rack)
-        second_physical_rack = FactoryGirl.create(:physical_rack)
+        first_physical_rack = FactoryBot.create(:physical_rack)
+        second_physical_rack = FactoryBot.create(:physical_rack)
         api_basic_authorize('physical_rack_refresh')
 
         post(api_physical_racks_url, :params => gen_request(:refresh, [{"href" => api_physical_rack_url(nil, first_physical_rack)}, {"href" => api_physical_rack_url(nil, second_physical_rack)}]))

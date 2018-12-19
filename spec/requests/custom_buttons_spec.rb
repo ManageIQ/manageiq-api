@@ -1,6 +1,6 @@
 RSpec.describe 'CustomButtons API' do
-  let(:object_def) { FactoryGirl.create(:generic_object_definition, :name => 'foo') }
-  let(:cb) { FactoryGirl.create(:custom_button, :name => 'custom_button', :applies_to_class => 'GenericObjectDefinition', :applies_to_id => object_def.id) }
+  let(:object_def) { FactoryBot.create(:generic_object_definition, :name => 'foo') }
+  let(:cb) { FactoryBot.create(:custom_button, :name => 'custom_button', :applies_to_class => 'GenericObjectDefinition', :applies_to_id => object_def.id) }
 
   describe 'GET /api/custom_buttons' do
     before { cb }
@@ -80,7 +80,7 @@ RSpec.describe 'CustomButtons API' do
 
       context "with an object derived from a virtual attribute" do
         before do
-          cb.resource_action = FactoryGirl.create(:resource_action)
+          cb.resource_action = FactoryBot.create(:resource_action)
         end
 
         it 'does not include an href for that object, as it is not a valid collection' do

@@ -1,7 +1,7 @@
 describe 'Notifications API' do
-  let(:foreign_user) { FactoryGirl.create(:user) }
-  let(:notification) { FactoryGirl.create(:notification, :initiator => @user) }
-  let(:foreign_notification) { FactoryGirl.create(:notification, :initiator => foreign_user) }
+  let(:foreign_user) { FactoryBot.create(:user) }
+  let(:notification) { FactoryBot.create(:notification, :initiator => @user) }
+  let(:foreign_notification) { FactoryBot.create(:notification, :initiator => foreign_user) }
   let(:notification_recipient) { notification.notification_recipients.first }
   let(:notification_url) { api_notification_url(nil, notification_recipient) }
   let(:foreign_notification_url) { api_notification_url(nil, foreign_notification.notification_recipient_ids.first) }
@@ -79,7 +79,7 @@ describe 'Notifications API' do
         expect { notification_recipient.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
-      let(:notification2) { FactoryGirl.create(:notification, :initiator => @user) }
+      let(:notification2) { FactoryBot.create(:notification, :initiator => @user) }
       let(:notification2_recipient) { notification2.notification_recipients.first }
       let(:notification2_url) { api_notification_url(nil, notification2_recipient) }
 

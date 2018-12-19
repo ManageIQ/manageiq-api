@@ -1,9 +1,9 @@
 # rubocop:disable Style/WordArray
 RSpec.describe 'GenericObjectDefinitions API' do
-  let(:object_def) { FactoryGirl.create(:generic_object_definition, :name => 'foo') }
-  let(:object_def2) { FactoryGirl.create(:generic_object_definition, :name => 'foo 2') }
-  let(:object_def3) { FactoryGirl.create(:generic_object_definition, :name => 'foo 3') }
-  let(:picture) { FactoryGirl.create(:picture, :extension => 'png') }
+  let(:object_def) { FactoryBot.create(:generic_object_definition, :name => 'foo') }
+  let(:object_def2) { FactoryBot.create(:generic_object_definition, :name => 'foo 2') }
+  let(:object_def3) { FactoryBot.create(:generic_object_definition, :name => 'foo 3') }
+  let(:picture) { FactoryBot.create(:picture, :extension => 'png') }
   let(:content) do
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGP"\
       "C/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3Cc"\
@@ -93,7 +93,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
 
   describe 'GET /api/generic_object_definitions/:id/generic_objects' do
     it 'can return the generic objects of a definition with appropriate role' do
-      object = FactoryGirl.create(:generic_object, :name => 'bar', :generic_object_definition => object_def)
+      object = FactoryBot.create(:generic_object, :name => 'bar', :generic_object_definition => object_def)
       api_basic_authorize subcollection_action_identifier(:generic_object_definitions, :generic_objects, :read, :get)
 
       get(api_generic_object_definition_generic_objects_url(nil, object_def))
@@ -120,8 +120,8 @@ RSpec.describe 'GenericObjectDefinitions API' do
   end
 
   describe 'GET /api/generic_object_definitions/:id/generic_objects/:id' do
-    let(:object) { FactoryGirl.create(:generic_object, :name => 'bar', :generic_object_definition => object_def) }
-    let(:vm) { FactoryGirl.create(:vm_amazon) }
+    let(:object) { FactoryBot.create(:generic_object, :name => 'bar', :generic_object_definition => object_def) }
+    let(:vm) { FactoryBot.create(:vm_amazon) }
 
     before do
       object_def.add_property_attribute('is_something', 'boolean')
@@ -254,7 +254,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
 
     it 'can edit generic_object_definitions by id, name, or href and with picture resources specified' do
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :edit)
-      picture2 = FactoryGirl.create(:picture, :extension => 'jpg')
+      picture2 = FactoryBot.create(:picture, :extension => 'jpg')
 
       request = {
         'action'    => 'edit',
@@ -844,7 +844,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
     end
 
     it 'can create a generic object with an appropriate role' do
-      vm = FactoryGirl.create(:vm_amazon)
+      vm = FactoryBot.create(:vm_amazon)
       api_basic_authorize subcollection_action_identifier(:generic_object_definitions, :generic_objects, :create, :post)
 
       generic_object = {

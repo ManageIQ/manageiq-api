@@ -1,8 +1,8 @@
 RSpec.describe "Custom Attributes API" do
   describe "GET /api/<collection>/:cid/custom_attributes/:sid" do
     it "renders the actions available on custom attribute members" do
-      vm = FactoryGirl.create(:vm_vmware)
-      custom_attribute = FactoryGirl.create(:custom_attribute, :resource => vm)
+      vm = FactoryBot.create(:vm_vmware)
+      custom_attribute = FactoryBot.create(:custom_attribute, :resource => vm)
       api_basic_authorize
 
       get(api_vm_custom_attribute_url(nil, vm, custom_attribute))
@@ -20,8 +20,8 @@ RSpec.describe "Custom Attributes API" do
 
   describe "POST /api/<collection>/:cid/custom_attributes/:sid" do
     it "does not duplicate a custom attribute" do
-      ems = FactoryGirl.create(:ext_management_system)
-      custom_attribute = FactoryGirl.create(:custom_attribute, :name => "foo", :value => "bar", :section => "metadata", :resource => ems)
+      ems = FactoryBot.create(:ext_management_system)
+      custom_attribute = FactoryBot.create(:custom_attribute, :name => "foo", :value => "bar", :section => "metadata", :resource => ems)
       api_basic_authorize(subcollection_action_identifier(:providers, :custom_attributes, :add, :post))
 
       post(api_provider_custom_attributes_url(nil, ems), :params => {
@@ -39,8 +39,8 @@ RSpec.describe "Custom Attributes API" do
   end
 
   it "can delete a custom attribute through its nested URI" do
-    vm = FactoryGirl.create(:vm_vmware)
-    custom_attribute = FactoryGirl.create(:custom_attribute, :resource => vm)
+    vm = FactoryBot.create(:vm_vmware)
+    custom_attribute = FactoryBot.create(:custom_attribute, :resource => vm)
     api_basic_authorize
 
     expect do
@@ -51,8 +51,8 @@ RSpec.describe "Custom Attributes API" do
   end
 
   it 'returns the correct href' do
-    provider = FactoryGirl.create(:ext_management_system)
-    custom_attribute = FactoryGirl.create(:custom_attribute, :resource => provider, :name => 'foo', :value => 'bar')
+    provider = FactoryBot.create(:ext_management_system)
+    custom_attribute = FactoryBot.create(:custom_attribute, :resource => provider, :name => 'foo', :value => 'bar')
     api_basic_authorize subcollection_action_identifier(:providers, :custom_attributes, :edit, :post)
 
     post(api_provider_custom_attribute_url(nil, provider, custom_attribute), :params => { :action => :edit, :name => 'name1' })
@@ -62,7 +62,7 @@ RSpec.describe "Custom Attributes API" do
   end
 
   it 'returns a bad_request for invalid values of section' do
-    vm = FactoryGirl.create(:vm_vmware)
+    vm = FactoryBot.create(:vm_vmware)
     api_basic_authorize subcollection_action_identifier(:vms, :custom_attributes, :add, :post)
 
     post(api_vm_custom_attributes_url(nil, vm), :params => { :action => :add, :resources => [{:section => "bad_section", :name => "test01", :value => "val01"}] })
@@ -78,8 +78,8 @@ RSpec.describe "Custom Attributes API" do
   end
 
   it 'does not allow editing of custom attributes with incorrect values' do
-    vm = FactoryGirl.create(:vm_vmware)
-    custom_attribute = FactoryGirl.create(:custom_attribute, :resource => vm, :name => 'foo', :value => 'bar')
+    vm = FactoryBot.create(:vm_vmware)
+    custom_attribute = FactoryBot.create(:custom_attribute, :resource => vm, :name => 'foo', :value => 'bar')
     api_basic_authorize subcollection_action_identifier(:vms, :custom_attributes, :edit, :post)
 
     post(api_vm_custom_attribute_url(nil, vm, custom_attribute), :params => { :action => :edit, :section => "bad_section", :name => "foo", :value => "bar" })

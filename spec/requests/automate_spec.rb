@@ -5,10 +5,10 @@ describe "Automate API" do
   context "Automate Queries" do
     before(:each) do
       MiqAeDatastore.reset
-      FactoryGirl.create(:miq_ae_domain, :name => "ManageIQ", :tenant_id => @group.tenant.id)
-      FactoryGirl.create(:miq_ae_domain, :name => "Custom",   :tenant_id => @group.tenant.id)
-      system_class = FactoryGirl.create(:miq_ae_class, :name => "System", :namespace => "Custom")
-      FactoryGirl.create(:miq_ae_field, :name    => "on_entry", :class_id => system_class.id,
+      FactoryBot.create(:miq_ae_domain, :name => "ManageIQ", :tenant_id => @group.tenant.id)
+      FactoryBot.create(:miq_ae_domain, :name => "Custom",   :tenant_id => @group.tenant.id)
+      system_class = FactoryBot.create(:miq_ae_class, :name => "System", :namespace => "Custom")
+      FactoryBot.create(:miq_ae_field, :name    => "on_entry", :class_id => system_class.id,
                                         :aetype  => "state",    :datatype => "string")
     end
 
