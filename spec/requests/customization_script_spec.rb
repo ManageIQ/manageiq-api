@@ -2,7 +2,7 @@ RSpec.describe "Customization Scripts" do
   describe "display a config pattern's details" do
     context "without an appropriate role" do
       it "forbids access to read config pattern" do
-        config_pattern = FactoryGirl.create(:customization_script)
+        config_pattern = FactoryBot.create(:customization_script)
 
         api_basic_authorize
         get api_customization_script_url(nil, config_pattern)
@@ -14,7 +14,7 @@ RSpec.describe "Customization Scripts" do
 
     context "with valid id" do
       it "shows all of its properties" do
-        config_pattern = FactoryGirl.create(:customization_script)
+        config_pattern = FactoryBot.create(:customization_script)
 
         api_basic_authorize action_identifier(:customization_scripts, :read, :resource_actions, :get)
         get api_customization_script_url(nil, config_pattern)

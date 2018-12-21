@@ -1,5 +1,5 @@
 RSpec.describe "Zones" do
-  let(:zone) { FactoryGirl.create(:zone) }
+  let(:zone) { FactoryBot.create(:zone) }
 
   describe "/api/zones/:id?expand=settings" do
     it "expands the settings subcollection" do
@@ -22,7 +22,7 @@ RSpec.describe "Zones" do
 
   describe "/api/zones/:id/settings" do
     let(:original_timeout) { zone.settings_for_resource[:api][:authentication_timeout] }
-    let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
 
     it "shows the settings to an authenticated user with the proper role" do
       api_basic_authorize(:ops_settings)

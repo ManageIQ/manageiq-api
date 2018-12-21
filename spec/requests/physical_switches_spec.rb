@@ -1,5 +1,5 @@
 describe "Physical Switches API" do
-  let(:physical_switch) { FactoryGirl.create(:physical_switch) }
+  let(:physical_switch) { FactoryBot.create(:physical_switch) }
 
   context "GET /api/physical_switches" do
     it "returns all Physical Switches" do
@@ -72,8 +72,8 @@ describe "Physical Switches API" do
       end
 
       it "refresh of multiple Physical Switches" do
-        first_physical_switch = FactoryGirl.create(:physical_switch)
-        second_physical_switch = FactoryGirl.create(:physical_switch)
+        first_physical_switch = FactoryBot.create(:physical_switch)
+        second_physical_switch = FactoryBot.create(:physical_switch)
         api_basic_authorize('physical_switch_refresh')
 
         post(api_physical_switches_url, :params => gen_request(:refresh, [{"href" => api_physical_switch_url(nil, first_physical_switch)}, {"href" => api_physical_switch_url(nil, second_physical_switch)}]))
@@ -174,8 +174,8 @@ describe "Physical Switches API" do
   end
 
   describe "Subcollections" do
-    let(:physical_switch) { FactoryGirl.create(:physical_switch) }
-    let(:event_stream) { FactoryGirl.create(:event_stream, :physical_switch_id => physical_switch.id, :event_type => "Some Event") }
+    let(:physical_switch) { FactoryBot.create(:physical_switch) }
+    let(:event_stream) { FactoryBot.create(:event_stream, :physical_switch_id => physical_switch.id, :event_type => "Some Event") }
 
     context 'Events subcollection' do
       context 'GET /api/physical_switches/:id/event_streams' do

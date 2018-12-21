@@ -1,6 +1,6 @@
 RSpec.describe 'CustomButtonSets API' do
-  let(:cb_set) { FactoryGirl.create(:custom_button_set, :name => 'custom_button_set') }
-  let(:cb_set2) { FactoryGirl.create(:custom_button_set, :name => 'custom_button_set2') }
+  let(:cb_set) { FactoryBot.create(:custom_button_set, :name => 'custom_button_set') }
+  let(:cb_set2) { FactoryBot.create(:custom_button_set, :name => 'custom_button_set2') }
 
   describe 'GET /api/custom_button_sets' do
     it 'does not list custom button sets without an appropriate role' do

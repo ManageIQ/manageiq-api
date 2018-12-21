@@ -9,7 +9,7 @@ describe "Switches API" do
     end
 
     it 'returns switches with an appropriate role' do
-      switch = FactoryGirl.create(:switch)
+      switch = FactoryBot.create(:switch)
       api_basic_authorize(collection_action_identifier(:switches, :read, :get))
 
       get(api_switches_url)
@@ -23,7 +23,7 @@ describe "Switches API" do
   end
 
   context 'GET /api/switches' do
-    let(:switch) { FactoryGirl.create(:switch) }
+    let(:switch) { FactoryBot.create(:switch) }
 
     it 'forbids access to a switch without an appropriate role' do
       api_basic_authorize

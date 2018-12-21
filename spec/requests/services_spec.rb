@@ -23,12 +23,12 @@
 #   virtual attribute:          /api/services/:id?expand=vms&attributes=vms.cpu_total_cores
 #
 describe "Services API" do
-  let(:svc)  { FactoryGirl.create(:service, :name => "svc",  :description => "svc description")  }
-  let(:svc1) { FactoryGirl.create(:service, :name => "svc1", :description => "svc1 description") }
-  let(:svc2) { FactoryGirl.create(:service, :name => "svc2", :description => "svc2 description") }
-  let(:svc_orchestration) { FactoryGirl.create(:service_orchestration) }
-  let(:orchestration_template) { FactoryGirl.create(:orchestration_template) }
-  let(:ems) { FactoryGirl.create(:ext_management_system) }
+  let(:svc)  { FactoryBot.create(:service, :name => "svc",  :description => "svc description")  }
+  let(:svc1) { FactoryBot.create(:service, :name => "svc1", :description => "svc1 description") }
+  let(:svc2) { FactoryBot.create(:service, :name => "svc2", :description => "svc2 description") }
+  let(:svc_orchestration) { FactoryBot.create(:service_orchestration) }
+  let(:orchestration_template) { FactoryBot.create(:orchestration_template) }
+  let(:ems) { FactoryBot.create(:ext_management_system) }
 
   describe "Services create" do
     it "rejects requests without appropriate role" do
@@ -256,7 +256,7 @@ describe "Services API" do
     end
 
     it "can be deleted via POST with an appropriate role" do
-      service = FactoryGirl.create(:service)
+      service = FactoryBot.create(:service)
       api_basic_authorize(action_identifier(:services, :delete))
 
       expect do
@@ -273,7 +273,7 @@ describe "Services API" do
     end
 
     it "won't delete a service via POST without an appropriate role" do
-      service = FactoryGirl.create(:service)
+      service = FactoryBot.create(:service)
       api_basic_authorize
 
       expect do
@@ -450,10 +450,10 @@ describe "Services API" do
   end
 
   describe "Service reconfiguration" do
-    let(:dialog1) { FactoryGirl.create(:dialog_with_tab_and_group_and_field) }
-    let(:st1)     { FactoryGirl.create(:service_template, :name => "template1") }
+    let(:dialog1) { FactoryBot.create(:dialog_with_tab_and_group_and_field) }
+    let(:st1)     { FactoryBot.create(:service_template, :name => "template1") }
     let(:ra1) do
-      FactoryGirl.create(:resource_action, :action => "Reconfigure", :dialog => dialog1,
+      FactoryBot.create(:resource_action, :action => "Reconfigure", :dialog => dialog1,
                          :ae_namespace => "namespace", :ae_class => "class", :ae_instance => "instance")
     end
 
@@ -505,15 +505,15 @@ describe "Services API" do
   end
 
   describe "Services" do
-    let(:hw1) { FactoryGirl.build(:hardware, :cpu_total_cores => 2) }
-    let(:vm1) { FactoryGirl.create(:vm_vmware, :hardware => hw1, :evm_owner_id => @user.id) }
+    let(:hw1) { FactoryBot.build(:hardware, :cpu_total_cores => 2) }
+    let(:vm1) { FactoryBot.create(:vm_vmware, :hardware => hw1, :evm_owner_id => @user.id) }
 
-    let(:hw2) { FactoryGirl.build(:hardware, :cpu_total_cores => 4) }
-    let(:vm2) { FactoryGirl.create(:vm_vmware, :hardware => hw2, :evm_owner_id => @user.id) }
+    let(:hw2) { FactoryBot.build(:hardware, :cpu_total_cores => 4) }
+    let(:vm2) { FactoryBot.create(:vm_vmware, :hardware => hw2, :evm_owner_id => @user.id) }
 
-    let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'admin', :password => 'adminpassword') }
-    let(:hw3) { FactoryGirl.build(:hardware, :cpu_total_cores => 6) }
-    let(:vm3) { FactoryGirl.create(:vm_vmware, :hardware => hw3, :evm_owner_id => super_admin.id) }
+    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'admin', :password => 'adminpassword') }
+    let(:hw3) { FactoryBot.build(:hardware, :cpu_total_cores => 6) }
+    let(:vm3) { FactoryBot.create(:vm_vmware, :hardware => hw3, :evm_owner_id => super_admin.id) }
 
     before do
       @user.current_group.miq_user_role.update_attributes(:settings => {:restrictions => {:vms => :user_or_group}})
@@ -585,7 +585,7 @@ describe "Services API" do
   describe "Power Operations" do
     describe "start" do
       it "will start a service for a user with appropriate role" do
-        service = FactoryGirl.create(:service)
+        service = FactoryBot.create(:service)
         api_basic_authorize(action_identifier(:services, :start))
 
         post(api_service_url(nil, service), :params => { :action => "start" })
@@ -600,7 +600,7 @@ describe "Services API" do
       end
 
       it "can start multiple services for a user with appropriate role" do
-        service_1, service_2 = FactoryGirl.create_list(:service, 2)
+        service_1, service_2 = FactoryBot.create_list(:service, 2)
         api_basic_authorize(collection_action_identifier(:services, :start))
 
         post(api_services_url, :params => { :action => "start", :resources => [{:id => service_1.id}, {:id => service_2.id}] })
@@ -624,7 +624,7 @@ describe "Services API" do
       end
 
       it "will not start a service for a user without an appropriate role" do
-        service = FactoryGirl.create(:service)
+        service = FactoryBot.create(:service)
         api_basic_authorize
 
         post(api_service_url(nil, service), :params => { :action => "start" })
@@ -635,7 +635,7 @@ describe "Services API" do
 
     describe "stop" do
       it "will stop a service for a user with appropriate role" do
-        service = FactoryGirl.create(:service)
+        service = FactoryBot.create(:service)
         api_basic_authorize(action_identifier(:services, :stop))
 
         post(api_service_url(nil, service), :params => { :action => "stop" })
@@ -650,7 +650,7 @@ describe "Services API" do
       end
 
       it "can stop multiple services for a user with appropriate role" do
-        service_1, service_2 = FactoryGirl.create_list(:service, 2)
+        service_1, service_2 = FactoryBot.create_list(:service, 2)
         api_basic_authorize(collection_action_identifier(:services, :stop))
 
         post(api_services_url, :params => { :action => "stop", :resources => [{:id => service_1.id}, {:id => service_2.id}] })
@@ -674,7 +674,7 @@ describe "Services API" do
       end
 
       it "will not stop a service for a user without an appropriate role" do
-        service = FactoryGirl.create(:service)
+        service = FactoryBot.create(:service)
         api_basic_authorize
 
         post(api_service_url(nil, service), :params => { :action => "stop" })
@@ -685,7 +685,7 @@ describe "Services API" do
 
     describe "suspend" do
       it "will suspend a service for a user with appropriate role" do
-        service = FactoryGirl.create(:service)
+        service = FactoryBot.create(:service)
         api_basic_authorize(action_identifier(:services, :suspend))
 
         post(api_service_url(nil, service), :params => { :action => "suspend" })
@@ -700,7 +700,7 @@ describe "Services API" do
       end
 
       it "can suspend multiple services for a user with appropriate role" do
-        service_1, service_2 = FactoryGirl.create_list(:service, 2)
+        service_1, service_2 = FactoryBot.create_list(:service, 2)
         api_basic_authorize(collection_action_identifier(:services, :suspend))
 
         post(api_services_url, :params => { :action => "suspend", :resources => [{:id => service_1.id}, {:id => service_2.id}] })
@@ -724,7 +724,7 @@ describe "Services API" do
       end
 
       it "will not suspend a service for a user without an appropriate role" do
-        service = FactoryGirl.create(:service)
+        service = FactoryBot.create(:service)
         api_basic_authorize
 
         post(api_service_url(nil, service), :params => { :action => "suspend" })
@@ -735,7 +735,7 @@ describe "Services API" do
   end
 
   describe 'Orchestration Stack subcollection' do
-    let(:os) { FactoryGirl.create(:orchestration_stack) }
+    let(:os) { FactoryBot.create(:orchestration_stack) }
 
     before do
       svc.add_resource!(os, :name => ResourceAction::PROVISION)
@@ -803,8 +803,8 @@ describe "Services API" do
   end
 
   describe 'add_resource' do
-    let(:vm1) { FactoryGirl.create(:vm_vmware) }
-    let(:vm2) { FactoryGirl.create(:vm_vmware) }
+    let(:vm1) { FactoryBot.create(:vm_vmware) }
+    let(:vm2) { FactoryBot.create(:vm_vmware) }
 
     it 'can add vm to services by href with an appropriate role' do
       api_basic_authorize(collection_action_identifier(:services, :add_resource))
@@ -832,7 +832,7 @@ describe "Services API" do
     end
 
     it 'returns individual success and failures' do
-      user = FactoryGirl.create(:user)
+      user = FactoryBot.create(:user)
       user.miq_groups << @user.current_group
       api_basic_authorize(collection_action_identifier(:services, :add_resource))
       request = {
@@ -873,7 +873,7 @@ describe "Services API" do
     end
 
     it 'requires the resource to respond to add_to_service' do
-      user = FactoryGirl.create(:user)
+      user = FactoryBot.create(:user)
       user.miq_groups << @user.current_group
       api_basic_authorize(collection_action_identifier(:services, :add_resource))
       request = {
@@ -930,8 +930,8 @@ describe "Services API" do
   end
 
   describe 'remove_resource' do
-    let(:vm1) { FactoryGirl.create(:vm_vmware) }
-    let(:vm2) { FactoryGirl.create(:vm_vmware) }
+    let(:vm1) { FactoryBot.create(:vm_vmware) }
+    let(:vm2) { FactoryBot.create(:vm_vmware) }
 
     before do
       svc.add_resource(vm1)
@@ -1038,9 +1038,9 @@ describe "Services API" do
   end
 
   describe 'remove_all_resources' do
-    let(:vm1) { FactoryGirl.create(:vm_vmware) }
-    let(:vm2) { FactoryGirl.create(:vm_vmware) }
-    let(:vm3) { FactoryGirl.create(:vm_vmware) }
+    let(:vm1) { FactoryBot.create(:vm_vmware) }
+    let(:vm2) { FactoryBot.create(:vm_vmware) }
+    let(:vm3) { FactoryBot.create(:vm_vmware) }
 
     before do
       svc.add_resource(vm1)
@@ -1107,9 +1107,9 @@ describe "Services API" do
     let(:url) { api_service_metric_rollups_url(nil, svc) }
 
     before do
-      FactoryGirl.create_list(:metric_rollup_vm_hr, 3, :resource => svc)
-      FactoryGirl.create_list(:metric_rollup_vm_daily, 1, :resource => svc)
-      FactoryGirl.create_list(:metric_rollup_vm_hr, 1, :resource => svc1)
+      FactoryBot.create_list(:metric_rollup_vm_hr, 3, :resource => svc)
+      FactoryBot.create_list(:metric_rollup_vm_daily, 1, :resource => svc)
+      FactoryBot.create_list(:metric_rollup_vm_hr, 1, :resource => svc1)
     end
 
     it 'returns the metric rollups for the service' do
@@ -1242,9 +1242,9 @@ describe "Services API" do
       "REY+CjwveDp4bXBtZXRhPgpMwidZAAAADUlEQVQIHWNgYGCwBQAAQgA+3N0+"\
       "xQAAAABJRU5ErkJggg=="
     end
-    let(:picture) { FactoryGirl.create(:picture, :content => content) }
-    let(:generic_object_definition) { FactoryGirl.create(:generic_object_definition, :picture => picture) }
-    let(:generic_object) { FactoryGirl.create(:generic_object, :generic_object_definition => generic_object_definition) }
+    let(:picture) { FactoryBot.create(:picture, :content => content) }
+    let(:generic_object_definition) { FactoryBot.create(:generic_object_definition, :picture => picture) }
+    let(:generic_object) { FactoryBot.create(:generic_object, :generic_object_definition => generic_object_definition) }
 
     before do
       svc.add_resource(generic_object)
@@ -1313,8 +1313,8 @@ describe "Services API" do
 
   context "service custom_attributes" do
     let(:service_url) { api_service_url(nil, svc) }
-    let(:ca1) { FactoryGirl.create(:custom_attribute, :name => "name1", :value => "value1") }
-    let(:ca2) { FactoryGirl.create(:custom_attribute, :name => "name2", :value => "value2") }
+    let(:ca1) { FactoryBot.create(:custom_attribute, :name => "name1", :value => "value1") }
+    let(:ca2) { FactoryBot.create(:custom_attribute, :name => "name2", :value => "value2") }
     let(:ca1_url)        { api_service_custom_attribute_url(nil, svc, ca1) }
     let(:ca2_url)        { api_service_custom_attribute_url(nil, svc, ca2) }
 

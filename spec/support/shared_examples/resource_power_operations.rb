@@ -1,10 +1,10 @@
 shared_examples "resource power operations" do |factory, operation|
-  let!(:resource)             { FactoryGirl.create(factory, :id => ApplicationRecord.id_in_region(1, region_remote.region)) }
+  let!(:resource)             { FactoryBot.create(factory, :id => ApplicationRecord.id_in_region(1, region_remote.region)) }
   let(:api_client_collection) { double("/api/#{resource_type.pluralize}") }
   let(:api_client_connection) { double("ApiClient", :instances => api_client_collection) }
   let(:api_resource)          { double(resource_type) }
   let(:operation)             { operation }
-  let(:region_remote)         { FactoryGirl.create(:miq_region) }
+  let(:region_remote)         { FactoryBot.create(:miq_region) }
   let(:url)                   { send("api_#{resource_type}_url", nil, resource) }
 
   it operation.to_s do

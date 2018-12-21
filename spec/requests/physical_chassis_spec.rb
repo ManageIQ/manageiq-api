@@ -1,7 +1,7 @@
 describe "Physical Chassis API" do
   context "GET /api/physical_chassis" do
     it "returns all physical_chassis" do
-      physical_chassis = FactoryGirl.create(:physical_chassis)
+      physical_chassis = FactoryBot.create(:physical_chassis)
       api_basic_authorize('physical_chassis_show_list')
 
       get(api_physical_chassis_url)
@@ -17,7 +17,7 @@ describe "Physical Chassis API" do
 
   context "GET /api/physical_chassis/:id" do
     it "returns one physical_chassis" do
-      physical_chassis = FactoryGirl.create(:physical_chassis)
+      physical_chassis = FactoryBot.create(:physical_chassis)
       api_basic_authorize('physical_chassis_show')
 
       get(api_one_physical_chassis_url(nil, physical_chassis))
@@ -44,7 +44,7 @@ describe "Physical Chassis API" do
 
     context "without an appropriate role" do
       it "it responds with 403 Forbidden" do
-        physical_chassis = FactoryGirl.create(:physical_chassis)
+        physical_chassis = FactoryBot.create(:physical_chassis)
         api_basic_authorize
 
         post(api_one_physical_chassis_url(nil, physical_chassis), :params => gen_request(:refresh))
@@ -63,7 +63,7 @@ describe "Physical Chassis API" do
       end
 
       it "refresh of a single Physical Chassis" do
-        physical_chassis = FactoryGirl.create(:physical_chassis)
+        physical_chassis = FactoryBot.create(:physical_chassis)
         api_basic_authorize('physical_chassis_refresh')
 
         post(api_one_physical_chassis_url(nil, physical_chassis), :params => gen_request(:refresh))
@@ -72,8 +72,8 @@ describe "Physical Chassis API" do
       end
 
       it "refresh of multiple Physical Chassis" do
-        physical_chassis = FactoryGirl.create(:physical_chassis)
-        physical_chassis_two = FactoryGirl.create(:physical_chassis)
+        physical_chassis = FactoryBot.create(:physical_chassis)
+        physical_chassis_two = FactoryBot.create(:physical_chassis)
         api_basic_authorize('physical_chassis_refresh')
 
         post(api_physical_chassis_url, :params => gen_request(:refresh, [{"href" => api_one_physical_chassis_url(nil, physical_chassis)}, {"href" => api_one_physical_chassis_url(nil, physical_chassis_two)}]))
@@ -99,8 +99,8 @@ describe "Physical Chassis API" do
   end
 
   describe "Subcollections" do
-    let(:physical_chassis) { FactoryGirl.create(:physical_chassis) }
-    let(:event_stream) { FactoryGirl.create(:event_stream, :physical_chassis_id => physical_chassis.id, :event_type => "Some Event") }
+    let(:physical_chassis) { FactoryBot.create(:physical_chassis) }
+    let(:event_stream) { FactoryBot.create(:event_stream, :physical_chassis_id => physical_chassis.id, :event_type => "Some Event") }
 
     context 'Events subcollection' do
       context 'GET /api/physical_chassis/:id/event_streams' do
@@ -148,7 +148,7 @@ describe "Physical Chassis API" do
   end
 
   describe "turn on/off a physical chassis's location LED" do
-    let(:physical_chassis) { FactoryGirl.create(:physical_chassis) }
+    let(:physical_chassis) { FactoryBot.create(:physical_chassis) }
     let(:actions) { %i(blink_loc_led turn_on_loc_led turn_off_loc_led) }
 
     context "with valid action names" do

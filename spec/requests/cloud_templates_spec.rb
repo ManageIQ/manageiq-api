@@ -2,8 +2,8 @@ RSpec.describe "Cloud Templates API" do
   describe "as a subcollection of providers" do
     it "can list images of a provider" do
       api_basic_authorize(action_identifier(:cloud_templates, :read, :subcollection_actions, :get))
-      ems = FactoryGirl.create(:ems_openstack)
-      image = FactoryGirl.create(:template_cloud, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_openstack)
+      image = FactoryBot.create(:template_cloud, :ext_management_system => ems)
 
       get(api_provider_cloud_templates_url(nil, ems))
 
@@ -20,8 +20,8 @@ RSpec.describe "Cloud Templates API" do
 
     it "will not list images unless authorized" do
       api_basic_authorize
-      ems = FactoryGirl.create(:ems_openstack)
-      FactoryGirl.create(:template_cloud, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_openstack)
+      FactoryBot.create(:template_cloud, :ext_management_system => ems)
 
       get(api_provider_cloud_templates_url(nil, ems))
 
@@ -32,8 +32,8 @@ RSpec.describe "Cloud Templates API" do
   describe "GET /api/providers/:c_id/cloud_templates/:id" do
     it "can show a provider's image" do
       api_basic_authorize(action_identifier(:cloud_templates, :read, :subresource_actions, :get))
-      ems = FactoryGirl.create(:ems_openstack)
-      image = FactoryGirl.create(:template_cloud, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_openstack)
+      image = FactoryBot.create(:template_cloud, :ext_management_system => ems)
 
       get(api_provider_cloud_template_url(nil, ems, image))
 
@@ -47,8 +47,8 @@ RSpec.describe "Cloud Templates API" do
 
     it "will not show an image unless authorized" do
       api_basic_authorize
-      ems = FactoryGirl.create(:ems_openstack)
-      image = FactoryGirl.create(:template_cloud, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_openstack)
+      image = FactoryBot.create(:template_cloud, :ext_management_system => ems)
 
       get(api_provider_cloud_template_url(nil, ems, image))
 
@@ -59,7 +59,7 @@ RSpec.describe "Cloud Templates API" do
   describe "POST /api/providers/:c_id/cloud_templates" do
     it "can queue the creation of an images" do
       api_basic_authorize(action_identifier(:cloud_templates, :create, :subcollection_actions))
-      ems = FactoryGirl.create(:ems_cloud)
+      ems = FactoryBot.create(:ems_cloud)
 
       post(api_provider_cloud_templates_url(nil, ems), :params => { :name => "test-image", :vendor => "test-cloud", :location => "test-location" })
 
@@ -79,7 +79,7 @@ RSpec.describe "Cloud Templates API" do
 
     it "will not create an image unless authorized" do
       api_basic_authorize
-      ems = FactoryGirl.create(:ems_cloud)
+      ems = FactoryBot.create(:ems_cloud)
 
       post(api_provider_cloud_templates_url(nil, ems), :params => { :name => "test-image" })
 
@@ -89,8 +89,8 @@ RSpec.describe "Cloud Templates API" do
 
   describe "POST /api/providers/:c_id/cloud_templates/:id" do
     it "can queue the updating of an image" do
-      ems = FactoryGirl.create(:ems_cloud)
-      image = FactoryGirl.create(:template_cloud, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_cloud)
+      image = FactoryBot.create(:template_cloud, :ext_management_system => ems)
 
       api_basic_authorize(action_identifier(:cloud_templates, :edit, :subresource_actions, :post))
       edited_name = "test-image"
@@ -106,8 +106,8 @@ RSpec.describe "Cloud Templates API" do
     end
 
     it "can't queue the updating of an image unless authorized" do
-      ems = FactoryGirl.create(:ems_cloud)
-      image = FactoryGirl.create(:template_cloud, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_cloud)
+      image = FactoryBot.create(:template_cloud, :ext_management_system => ems)
 
       api_basic_authorize
       edited_name = "test-image"
@@ -120,8 +120,8 @@ RSpec.describe "Cloud Templates API" do
   describe "DELETE /api/providers/:c_id/cloud_templates/:id" do
     it "can delete an image" do
       api_basic_authorize(action_identifier(:cloud_templates, :delete, :subresource_actions, :delete))
-      ems = FactoryGirl.create(:ems_openstack)
-      image = FactoryGirl.create(:template_cloud, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_openstack)
+      image = FactoryBot.create(:template_cloud, :ext_management_system => ems)
 
       delete(api_provider_cloud_template_url(nil, ems, image))
 
@@ -130,8 +130,8 @@ RSpec.describe "Cloud Templates API" do
 
     it "will not delete image unless authorized" do
       api_basic_authorize
-      ems = FactoryGirl.create(:ems_openstack)
-      image = FactoryGirl.create(:template_cloud, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_openstack)
+      image = FactoryBot.create(:template_cloud, :ext_management_system => ems)
 
       delete(api_provider_cloud_template_url(nil, ems, image))
 
@@ -141,8 +141,8 @@ RSpec.describe "Cloud Templates API" do
 
   describe "POST /api/providers/:c_id/cloud_templates/:id with delete action" do
     it "can delete an image" do
-      ems = FactoryGirl.create(:ems_openstack)
-      image = FactoryGirl.create(:template_openstack, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_openstack)
+      image = FactoryBot.create(:template_openstack, :ext_management_system => ems)
       api_basic_authorize(action_identifier(:cloud_templates, :delete, :subresource_actions, :delete))
 
       post(api_provider_cloud_template_url(nil, ems, image), :params => gen_request(:delete))
@@ -156,8 +156,8 @@ RSpec.describe "Cloud Templates API" do
     end
 
     it "will not delete an image unless authorized" do
-      ems = FactoryGirl.create(:ems_openstack)
-      image = FactoryGirl.create(:template_openstack, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_openstack)
+      image = FactoryBot.create(:template_openstack, :ext_management_system => ems)
       api_basic_authorize
 
       post(api_provider_cloud_template_url(nil, ems, image), :params => gen_request(:delete))
@@ -166,8 +166,8 @@ RSpec.describe "Cloud Templates API" do
     end
 
     it "can delete multiple images" do
-      ems = FactoryGirl.create(:ems_openstack)
-      image1, image2 = FactoryGirl.create_list(:template_openstack, 2, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_openstack)
+      image1, image2 = FactoryBot.create_list(:template_openstack, 2, :ext_management_system => ems)
       api_basic_authorize(action_identifier(:cloud_templates, :delete, :subresource_actions))
 
       post(
@@ -185,8 +185,8 @@ RSpec.describe "Cloud Templates API" do
     end
 
     it "will not delete multiple images unless authorized" do
-      ems = FactoryGirl.create(:ems_openstack)
-      image1, image2 = FactoryGirl.create_list(:template_openstack, 2, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_openstack)
+      image1, image2 = FactoryBot.create_list(:template_openstack, 2, :ext_management_system => ems)
       api_basic_authorize
 
       post(

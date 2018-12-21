@@ -1,7 +1,7 @@
 RSpec.describe 'Configuration Scripts API' do
   describe 'GET /api/configuration_scripts' do
     it 'lists all the configuration scripts with an appropriate role' do
-      script = FactoryGirl.create(:configuration_script)
+      script = FactoryBot.create(:configuration_script)
       api_basic_authorize collection_action_identifier(:configuration_scripts, :read, :get)
 
       get(api_configuration_scripts_url)
@@ -29,7 +29,7 @@ RSpec.describe 'Configuration Scripts API' do
 
   describe 'GET /api/configuration_scripts/:id' do
     it 'will show an ansible script with an appropriate role' do
-      script = FactoryGirl.create(:configuration_script)
+      script = FactoryBot.create(:configuration_script)
       api_basic_authorize action_identifier(:configuration_scripts, :read, :resource_actions, :get)
 
       get(api_configuration_script_url(nil, script))
@@ -40,7 +40,7 @@ RSpec.describe 'Configuration Scripts API' do
     end
 
     it 'forbids access to an ansible script without an appropriate role' do
-      script = FactoryGirl.create(:configuration_script)
+      script = FactoryBot.create(:configuration_script)
       api_basic_authorize
 
       get(api_configuration_script_url(nil, script))

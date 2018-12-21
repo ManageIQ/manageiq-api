@@ -9,7 +9,7 @@ RSpec.describe 'Container Nodes API' do
     end
 
     it 'lists all container nodes with an appropriate role' do
-      node1, node2 = FactoryGirl.create_list(:container_node, 2)
+      node1, node2 = FactoryBot.create_list(:container_node, 2)
       api_basic_authorize collection_action_identifier(:container_nodes, :read, :get)
 
       get(api_container_nodes_url)
@@ -29,7 +29,7 @@ RSpec.describe 'Container Nodes API' do
   describe 'GET /api/container_nodes/:id' do
     it 'will not show a container node without an appropriate role' do
       api_basic_authorize
-      node = FactoryGirl.create(:container_node)
+      node = FactoryBot.create(:container_node)
 
       get(api_container_node_url(nil, node))
 
@@ -37,7 +37,7 @@ RSpec.describe 'Container Nodes API' do
     end
 
     it 'will show a container node with an appropriate role' do
-      node = FactoryGirl.create(:container_node)
+      node = FactoryBot.create(:container_node)
       api_basic_authorize action_identifier(:container_nodes, :read, :resource_actions, :get)
 
       get(api_container_node_url(nil, node))

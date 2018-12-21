@@ -1,7 +1,7 @@
 RSpec.describe 'LoadBalancers API' do
   describe 'GET /api/load_balancers' do
     it 'lists all load balancers with an appropriate role' do
-      load_balancer = FactoryGirl.create(:load_balancer)
+      load_balancer = FactoryBot.create(:load_balancer)
       api_basic_authorize collection_action_identifier(:load_balancers, :read, :get)
 
       expected = {
@@ -29,7 +29,7 @@ RSpec.describe 'LoadBalancers API' do
 
   describe 'GET /api/load_balancers/:id' do
     it 'will show a load balancer with an appropriate role' do
-      load_balancer = FactoryGirl.create(:load_balancer)
+      load_balancer = FactoryBot.create(:load_balancer)
       api_basic_authorize action_identifier(:load_balancers, :read, :resource_actions, :get)
 
       get(api_load_balancer_url(nil, load_balancer))
@@ -39,7 +39,7 @@ RSpec.describe 'LoadBalancers API' do
     end
 
     it 'forbids access to a load balancer without an appropriate role' do
-      load_balancer = FactoryGirl.create(:load_balancer)
+      load_balancer = FactoryBot.create(:load_balancer)
       api_basic_authorize
 
       get(api_load_balancer_url(nil, load_balancer))

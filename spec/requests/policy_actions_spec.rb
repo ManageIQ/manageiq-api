@@ -12,7 +12,7 @@ describe "Policy Actions API" do
 
   def create_actions(count)
     1.upto(count) do |i|
-      FactoryGirl.create(:miq_action, :name => "custom_action_#{i}", :description => "Custom Action #{i}")
+      FactoryBot.create(:miq_action, :name => "custom_action_#{i}", :description => "Custom Action #{i}")
     end
   end
 
@@ -57,7 +57,7 @@ describe "Policy Actions API" do
     end
 
     it "returns the correct href_slug" do
-      policy = FactoryGirl.create(:miq_action, :name => "action_policy_1")
+      policy = FactoryBot.create(:miq_action, :name => "action_policy_1")
       api_basic_authorize collection_action_identifier(:policy_actions, :read, :get)
 
       get(api_policy_actions_url, :params => { :expand => "resources", :attributes => 'href_slug' })
@@ -73,7 +73,7 @@ describe "Policy Actions API" do
   end
 
   context "Policy Action subcollection" do
-    let(:policy)             { FactoryGirl.create(:miq_policy, :name => "Policy 1") }
+    let(:policy)             { FactoryBot.create(:miq_policy, :name => "Policy 1") }
 
     def relate_actions_to(policy)
       MiqAction.all.collect(&:id).each do |action_id|

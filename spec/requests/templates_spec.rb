@@ -2,7 +2,7 @@ RSpec.describe "Templates API" do
   describe "POST /api/templates/:c_id with DELETE action" do
     it "deletes a template with an appropriate role" do
       api_basic_authorize(action_identifier(:templates, :delete))
-      template = FactoryGirl.create(:template)
+      template = FactoryBot.create(:template)
 
       expect do
         post(api_template_url(nil, template), :params => { :action => "delete" })
@@ -19,7 +19,7 @@ RSpec.describe "Templates API" do
 
     it "won't delete a template without an appropriate role" do
       api_basic_authorize
-      template = FactoryGirl.create(:template)
+      template = FactoryBot.create(:template)
 
       expect do
         post(api_template_url(nil, template), :params => { :action => "delete" })
@@ -30,7 +30,7 @@ RSpec.describe "Templates API" do
   end
 
   context "editing a template" do
-    let!(:template) { FactoryGirl.create(:template, :name => 'foo', :description => 'bar') }
+    let!(:template) { FactoryBot.create(:template, :name => 'foo', :description => 'bar') }
     before { api_basic_authorize(action_identifier(:templates, :edit)) }
     subject { send(req, api_template_url(nil, template), :params => params) }
 
@@ -57,8 +57,8 @@ RSpec.describe "Templates API" do
 
   describe "tags subcollection" do
     it "can list a template's tags" do
-      template = FactoryGirl.create(:template)
-      FactoryGirl.create(:classification_department_with_tags)
+      template = FactoryBot.create(:template)
+      FactoryBot.create(:classification_department_with_tags)
       Classification.classify(template, "department", "finance")
       api_basic_authorize
 
@@ -69,8 +69,8 @@ RSpec.describe "Templates API" do
     end
 
     it "can assign a tag to a template" do
-      template = FactoryGirl.create(:template)
-      FactoryGirl.create(:classification_department_with_tags)
+      template = FactoryBot.create(:template)
+      FactoryBot.create(:classification_department_with_tags)
       api_basic_authorize(subcollection_action_identifier(:templates, :tags, :assign))
 
       post(api_template_tags_url(nil, template), :params => { :action => "assign", :category => "department", :name => "finance" })
@@ -90,8 +90,8 @@ RSpec.describe "Templates API" do
     end
 
     it "can unassign a tag from a template" do
-      template = FactoryGirl.create(:template)
-      FactoryGirl.create(:classification_department_with_tags)
+      template = FactoryBot.create(:template)
+      FactoryBot.create(:classification_department_with_tags)
       Classification.classify(template, "department", "finance")
       api_basic_authorize(subcollection_action_identifier(:templates, :tags, :unassign))
 

@@ -4,7 +4,7 @@
 describe "Automate Domains API" do
   describe 'GET /api/automate_domains' do
     it 'returns the correct href_slug' do
-      git_domain = FactoryGirl.create(:miq_ae_git_domain)
+      git_domain = FactoryBot.create(:miq_ae_git_domain)
       api_basic_authorize collection_action_identifier(:automate_domains, :read, :get)
 
       get(api_automate_domains_url, :params => { :expand => 'resources', :attributes => 'href_slug' })
@@ -20,7 +20,7 @@ describe "Automate Domains API" do
   end
 
   describe 'refresh_from_source action' do
-    let(:git_domain) { FactoryGirl.create(:miq_ae_git_domain) }
+    let(:git_domain) { FactoryBot.create(:miq_ae_git_domain) }
     it 'forbids access for users without proper permissions' do
       api_basic_authorize
 
@@ -39,7 +39,7 @@ describe "Automate Domains API" do
     end
 
     context 'with proper git_owner role' do
-      let(:non_git_domain) { FactoryGirl.create(:miq_ae_domain) }
+      let(:non_git_domain) { FactoryBot.create(:miq_ae_domain) }
       before do
         expect(GitBasedDomainImportService).to receive(:available?).and_return(true)
       end

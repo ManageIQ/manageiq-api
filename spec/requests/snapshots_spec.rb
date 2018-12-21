@@ -3,9 +3,9 @@ RSpec.describe "Snapshots API" do
     describe "GET /api/vms/:c_id/snapshots" do
       it "can list the snapshots of a VM" do
         api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :read, :get))
-        vm = FactoryGirl.create(:vm_vmware)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
-        _other_snapshot = FactoryGirl.create(:snapshot)
+        vm = FactoryBot.create(:vm_vmware)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
+        _other_snapshot = FactoryBot.create(:snapshot)
 
         get(api_vm_snapshots_url(nil, vm))
 
@@ -23,8 +23,8 @@ RSpec.describe "Snapshots API" do
 
       it "will not list snapshots unless authorized" do
         api_basic_authorize
-        vm = FactoryGirl.create(:vm_vmware)
-        FactoryGirl.create(:snapshot, :vm_or_template => vm)
+        vm = FactoryBot.create(:vm_vmware)
+        FactoryBot.create(:snapshot, :vm_or_template => vm)
 
         get(api_vm_snapshots_url(nil, vm))
 
@@ -35,9 +35,9 @@ RSpec.describe "Snapshots API" do
     describe "GET /api/vms/:c_id/snapshots/:s_id" do
       it "can show a VM's snapshot" do
         api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :read, :get))
-        vm = FactoryGirl.create(:vm_vmware)
+        vm = FactoryBot.create(:vm_vmware)
         create_time = Time.zone.parse("2017-01-11T00:00:00Z")
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm, :create_time => create_time)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm, :create_time => create_time)
 
         get(api_vm_snapshot_url(nil, vm, snapshot))
 
@@ -53,8 +53,8 @@ RSpec.describe "Snapshots API" do
 
       it "will not show a snapshot unless authorized" do
         api_basic_authorize
-        vm = FactoryGirl.create(:vm_vmware)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
+        vm = FactoryBot.create(:vm_vmware)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
         get(api_vm_snapshot_url(nil, vm, snapshot))
 
@@ -65,9 +65,9 @@ RSpec.describe "Snapshots API" do
     describe "POST /api/vms/:c_id/snapshots" do
       it "can queue the creation of a snapshot" do
         api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :create))
-        ems = FactoryGirl.create(:ext_management_system)
-        host = FactoryGirl.create(:host, :ext_management_system => ems)
-        vm = FactoryGirl.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
+        ems = FactoryBot.create(:ext_management_system)
+        host = FactoryBot.create(:host, :ext_management_system => ems)
+        vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
 
         post(api_vm_snapshots_url(nil, vm), :params => { :name => "Alice's snapshot" })
 
@@ -87,7 +87,7 @@ RSpec.describe "Snapshots API" do
 
       it "renders a failed action response if snapshotting is not supported" do
         api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :create))
-        vm = FactoryGirl.create(:vm_vmware)
+        vm = FactoryBot.create(:vm_vmware)
 
         post(api_vm_snapshots_url(nil, vm), :params => { :name => "Alice's snapsnot" })
 
@@ -105,9 +105,9 @@ RSpec.describe "Snapshots API" do
 
       it "renders a failed action response if a name is not provided" do
         api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :create))
-        ems = FactoryGirl.create(:ext_management_system)
-        host = FactoryGirl.create(:host, :ext_management_system => ems)
-        vm = FactoryGirl.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
+        ems = FactoryBot.create(:ext_management_system)
+        host = FactoryBot.create(:host, :ext_management_system => ems)
+        vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
 
         post(api_vm_snapshots_url(nil, vm), :params => { :description => "Alice's snapshot" })
 
@@ -125,7 +125,7 @@ RSpec.describe "Snapshots API" do
 
       it "will not create a snapshot unless authorized" do
         api_basic_authorize
-        vm = FactoryGirl.create(:vm_vmware)
+        vm = FactoryBot.create(:vm_vmware)
 
         post(api_vm_snapshots_url(nil, vm), :params => { :description => "Alice's snapshot" })
 
@@ -136,10 +136,10 @@ RSpec.describe "Snapshots API" do
     describe "POST /api/vms/:c_id/snapshots/:s_id with revert action" do
       it "can queue a VM for reverting to a snapshot" do
         api_basic_authorize(action_identifier(:vms, :revert, :snapshots_subresource_actions))
-        ems = FactoryGirl.create(:ext_management_system)
-        host = FactoryGirl.create(:host, :ext_management_system => ems)
-        vm = FactoryGirl.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
-        snapshot = FactoryGirl.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
+        ems = FactoryBot.create(:ext_management_system)
+        host = FactoryBot.create(:host, :ext_management_system => ems)
+        vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
+        snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
 
         post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "revert" })
 
@@ -155,8 +155,8 @@ RSpec.describe "Snapshots API" do
 
       it "renders a failed action response if reverting is not supported" do
         api_basic_authorize(action_identifier(:vms, :revert, :snapshots_subresource_actions))
-        vm = FactoryGirl.create(:vm_vmware)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
+        vm = FactoryBot.create(:vm_vmware)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
         post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "revert" })
 
@@ -170,8 +170,8 @@ RSpec.describe "Snapshots API" do
 
       it "will not revert to a snapshot unless authorized" do
         api_basic_authorize
-        vm = FactoryGirl.create(:vm_vmware)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
+        vm = FactoryBot.create(:vm_vmware)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
         post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "revert" })
 
@@ -182,10 +182,10 @@ RSpec.describe "Snapshots API" do
     describe "POST /api/vms/:c_id/snapshots/:s_id with delete action" do
       it "can queue a snapshot for deletion" do
         api_basic_authorize(action_identifier(:vms, :delete, :snapshots_subresource_actions, :delete))
-        ems = FactoryGirl.create(:ext_management_system)
-        host = FactoryGirl.create(:host, :ext_management_system => ems)
-        vm = FactoryGirl.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
-        snapshot = FactoryGirl.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
+        ems = FactoryBot.create(:ext_management_system)
+        host = FactoryBot.create(:host, :ext_management_system => ems)
+        vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
+        snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
 
         post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "delete" })
 
@@ -201,8 +201,8 @@ RSpec.describe "Snapshots API" do
 
       it "renders a failed action response if deleting is not supported" do
         api_basic_authorize(action_identifier(:vms, :delete, :snapshots_subresource_actions, :post))
-        vm = FactoryGirl.create(:vm_vmware)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
+        vm = FactoryBot.create(:vm_vmware)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
         post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "delete" })
 
@@ -216,8 +216,8 @@ RSpec.describe "Snapshots API" do
 
       it "will not delete a snapshot unless authorized" do
         api_basic_authorize
-        vm = FactoryGirl.create(:vm_vmware)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
+        vm = FactoryBot.create(:vm_vmware)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
         post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "delete" })
 
@@ -226,7 +226,7 @@ RSpec.describe "Snapshots API" do
 
       it "raises a 404 with proper message if the resource isn't found" do
         api_basic_authorize(action_identifier(:vms, :delete, :snapshots_subresource_actions, :post))
-        vm = FactoryGirl.create(:vm_vmware)
+        vm = FactoryBot.create(:vm_vmware)
 
         post(api_vm_snapshot_url(nil, vm, 0), :params => { :action => "delete" })
 
@@ -245,11 +245,11 @@ RSpec.describe "Snapshots API" do
     describe "POST /api/vms/:c_id/snapshots with delete action" do
       it "can queue multiple snapshots for deletion" do
         api_basic_authorize(action_identifier(:vms, :delete, :snapshots_subcollection_actions, :post))
-        ems = FactoryGirl.create(:ext_management_system)
-        host = FactoryGirl.create(:host, :ext_management_system => ems)
-        vm = FactoryGirl.create(:vm_vmware, :name => "Alice and Bob's VM", :host => host, :ext_management_system => ems)
-        snapshot1 = FactoryGirl.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
-        snapshot2 = FactoryGirl.create(:snapshot, :name => "Bob's snapshot", :vm_or_template => vm)
+        ems = FactoryBot.create(:ext_management_system)
+        host = FactoryBot.create(:host, :ext_management_system => ems)
+        vm = FactoryBot.create(:vm_vmware, :name => "Alice and Bob's VM", :host => host, :ext_management_system => ems)
+        snapshot1 = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
+        snapshot2 = FactoryBot.create(:snapshot, :name => "Bob's snapshot", :vm_or_template => vm)
 
         post(
           api_vm_snapshots_url(nil, vm),
@@ -284,7 +284,7 @@ RSpec.describe "Snapshots API" do
 
       it "raises a 404 with proper message if a resource isn't found" do
         api_basic_authorize(action_identifier(:vms, :delete, :snapshots_subcollection_actions, :post))
-        vm = FactoryGirl.create(:vm_vmware)
+        vm = FactoryBot.create(:vm_vmware)
 
         post(
           api_vm_snapshots_url(nil, vm),
@@ -309,8 +309,8 @@ RSpec.describe "Snapshots API" do
     describe "DELETE /api/vms/:c_id/snapshots/:s_id" do
       it "can delete a snapshot" do
         api_basic_authorize(action_identifier(:vms, :delete, :snapshots_subresource_actions, :delete))
-        vm = FactoryGirl.create(:vm_vmware)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
+        vm = FactoryBot.create(:vm_vmware)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
         delete(api_vm_snapshot_url(nil, vm, snapshot))
 
@@ -319,8 +319,8 @@ RSpec.describe "Snapshots API" do
 
       it "will not delete a snapshot unless authorized" do
         api_basic_authorize
-        vm = FactoryGirl.create(:vm_vmware)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
+        vm = FactoryBot.create(:vm_vmware)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
         delete(api_vm_snapshot_url(nil, vm, snapshot))
 
@@ -329,7 +329,7 @@ RSpec.describe "Snapshots API" do
 
       it "raises a 404 with proper message if the resource isn't found" do
         api_basic_authorize(action_identifier(:vms, :delete, :snapshots_subresource_actions, :delete))
-        vm = FactoryGirl.create(:vm_vmware)
+        vm = FactoryBot.create(:vm_vmware)
 
         delete(api_vm_snapshot_url(nil, vm, 0))
 
@@ -350,9 +350,9 @@ RSpec.describe "Snapshots API" do
     describe "GET /api/instances/:c_id/snapshots" do
       it "can list the snapshots of an Instance" do
         api_basic_authorize(subcollection_action_identifier(:instances, :snapshots, :read, :get))
-        instance = FactoryGirl.create(:vm_openstack)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => instance)
-        _other_snapshot = FactoryGirl.create(:snapshot)
+        instance = FactoryBot.create(:vm_openstack)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance)
+        _other_snapshot = FactoryBot.create(:snapshot)
 
         get(api_instance_snapshots_url(nil, instance))
 
@@ -370,8 +370,8 @@ RSpec.describe "Snapshots API" do
 
       it "will not list snapshots unless authorized" do
         api_basic_authorize
-        instance = FactoryGirl.create(:vm_openstack)
-        _snapshot = FactoryGirl.create(:snapshot, :vm_or_template => instance)
+        instance = FactoryBot.create(:vm_openstack)
+        _snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance)
 
         get(api_instance_snapshots_url(nil, instance))
 
@@ -382,9 +382,9 @@ RSpec.describe "Snapshots API" do
     describe "GET /api/instances/:c_id/snapshots/:s_id" do
       it "can show an Instance's snapshot" do
         api_basic_authorize(subresource_action_identifier(:instances, :snapshots, :read, :get))
-        instance = FactoryGirl.create(:vm_openstack)
+        instance = FactoryBot.create(:vm_openstack)
         create_time = Time.zone.parse("2017-01-11T00:00:00Z")
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => instance, :create_time => create_time)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance, :create_time => create_time)
 
         get(api_instance_snapshot_url(nil, instance, snapshot))
 
@@ -400,8 +400,8 @@ RSpec.describe "Snapshots API" do
 
       it "will not show a snapshot unless authorized" do
         api_basic_authorize
-        instance = FactoryGirl.create(:vm_openstack)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => instance)
+        instance = FactoryBot.create(:vm_openstack)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance)
 
         get(api_instance_snapshot_url(nil, instance, snapshot))
 
@@ -412,9 +412,9 @@ RSpec.describe "Snapshots API" do
     describe "POST /api/instances/:c_id/snapshots" do
       it "can queue the creation of a snapshot" do
         api_basic_authorize(subcollection_action_identifier(:instances, :snapshots, :create))
-        ems = FactoryGirl.create(:ems_openstack_infra)
-        host = FactoryGirl.create(:host_openstack_infra, :ext_management_system => ems)
-        instance = FactoryGirl.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
+        ems = FactoryBot.create(:ems_openstack_infra)
+        host = FactoryBot.create(:host_openstack_infra, :ext_management_system => ems)
+        instance = FactoryBot.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
 
         post(api_instance_snapshots_url(nil, instance), :params => { :name => "Alice's snapshot" })
 
@@ -434,7 +434,7 @@ RSpec.describe "Snapshots API" do
 
       it "renders a failed action response if snapshotting is not supported" do
         api_basic_authorize(subcollection_action_identifier(:instances, :snapshots, :create))
-        instance = FactoryGirl.create(:vm_openstack)
+        instance = FactoryBot.create(:vm_openstack)
 
         post(api_instance_snapshots_url(nil, instance), :params => { :name => "Alice's snapsnot" })
 
@@ -452,9 +452,9 @@ RSpec.describe "Snapshots API" do
 
       it "renders a failed action response if a name is not provided" do
         api_basic_authorize(subcollection_action_identifier(:instances, :snapshots, :create))
-        ems = FactoryGirl.create(:ems_openstack_infra)
-        host = FactoryGirl.create(:host_openstack_infra, :ext_management_system => ems)
-        instance = FactoryGirl.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
+        ems = FactoryBot.create(:ems_openstack_infra)
+        host = FactoryBot.create(:host_openstack_infra, :ext_management_system => ems)
+        instance = FactoryBot.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
 
         post(api_instance_snapshots_url(nil, instance), :params => { :description => "Alice's snapshot" })
 
@@ -472,7 +472,7 @@ RSpec.describe "Snapshots API" do
 
       it "will not create a snapshot unless authorized" do
         api_basic_authorize
-        instance = FactoryGirl.create(:vm_openstack)
+        instance = FactoryBot.create(:vm_openstack)
 
         post(api_instance_snapshots_url(nil, instance), :params => { :description => "Alice's snapshot" })
 
@@ -484,10 +484,10 @@ RSpec.describe "Snapshots API" do
       it "can queue a snapshot for deletion" do
         api_basic_authorize(action_identifier(:instances, :delete, :snapshots_subresource_actions, :delete))
 
-        ems = FactoryGirl.create(:ems_openstack_infra)
-        host = FactoryGirl.create(:host_openstack_infra, :ext_management_system => ems)
-        instance = FactoryGirl.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
-        snapshot = FactoryGirl.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => instance)
+        ems = FactoryBot.create(:ems_openstack_infra)
+        host = FactoryBot.create(:host_openstack_infra, :ext_management_system => ems)
+        instance = FactoryBot.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
+        snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => instance)
 
         post(api_instance_snapshot_url(nil, instance, snapshot), :params => { :action => "delete" })
 
@@ -503,8 +503,8 @@ RSpec.describe "Snapshots API" do
 
       it "renders a failed action response if deleting is not supported" do
         api_basic_authorize(action_identifier(:instances, :delete, :snapshots_subresource_actions, :post))
-        instance = FactoryGirl.create(:vm_openstack)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => instance)
+        instance = FactoryBot.create(:vm_openstack)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance)
 
         post(api_instance_snapshot_url(nil, instance, snapshot), :params => { :action => "delete" })
 
@@ -518,8 +518,8 @@ RSpec.describe "Snapshots API" do
 
       it "will not delete a snapshot unless authorized" do
         api_basic_authorize
-        instance = FactoryGirl.create(:vm_openstack)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => instance)
+        instance = FactoryBot.create(:vm_openstack)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance)
 
         post(api_instance_snapshot_url(nil, instance, snapshot), :params => { :action => "delete" })
 
@@ -531,11 +531,11 @@ RSpec.describe "Snapshots API" do
       it "can queue multiple snapshots for deletion" do
         api_basic_authorize(action_identifier(:instances, :delete, :snapshots_subresource_actions, :delete))
 
-        ems = FactoryGirl.create(:ems_openstack_infra)
-        host = FactoryGirl.create(:host_openstack_infra, :ext_management_system => ems)
-        instance = FactoryGirl.create(:vm_openstack, :name => "Alice and Bob's Instance", :ext_management_system => ems, :host => host)
-        snapshot1 = FactoryGirl.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => instance)
-        snapshot2 = FactoryGirl.create(:snapshot, :name => "Bob's snapshot", :vm_or_template => instance)
+        ems = FactoryBot.create(:ems_openstack_infra)
+        host = FactoryBot.create(:host_openstack_infra, :ext_management_system => ems)
+        instance = FactoryBot.create(:vm_openstack, :name => "Alice and Bob's Instance", :ext_management_system => ems, :host => host)
+        snapshot1 = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => instance)
+        snapshot2 = FactoryBot.create(:snapshot, :name => "Bob's snapshot", :vm_or_template => instance)
 
         post(
           api_instance_snapshots_url(nil, instance),
@@ -572,8 +572,8 @@ RSpec.describe "Snapshots API" do
     describe "DELETE /api/instances/:c_id/snapshots/:s_id" do
       it "can delete a snapshot" do
         api_basic_authorize(action_identifier(:instances, :delete, :snapshots_subresource_actions, :delete))
-        instance = FactoryGirl.create(:vm_openstack)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => instance)
+        instance = FactoryBot.create(:vm_openstack)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance)
 
         delete(api_instance_snapshot_url(nil, instance, snapshot))
 
@@ -582,8 +582,8 @@ RSpec.describe "Snapshots API" do
 
       it "will not delete a snapshot unless authorized" do
         api_basic_authorize
-        instance = FactoryGirl.create(:vm_openstack)
-        snapshot = FactoryGirl.create(:snapshot, :vm_or_template => instance)
+        instance = FactoryBot.create(:vm_openstack)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance)
 
         delete(api_instance_snapshot_url(nil, instance, snapshot))
 

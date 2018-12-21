@@ -1,4 +1,4 @@
-FactoryGirl.modify do
+FactoryBot.modify do
   factory :miq_request do
     trait :with_api_user do
       requester { User.find_by(:name=>"API User") }

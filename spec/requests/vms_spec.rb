@@ -2,20 +2,20 @@
 # REST API Request Tests - /api/vms
 #
 describe "Vms API" do
-  let(:zone)       { FactoryGirl.create(:zone, :name => "api_zone") }
-  let(:ems)        { FactoryGirl.create(:ems_vmware, :zone => zone) }
-  let(:host)       { FactoryGirl.create(:host) }
+  let(:zone)       { FactoryBot.create(:zone, :name => "api_zone") }
+  let(:ems)        { FactoryBot.create(:ems_vmware, :zone => zone) }
+  let(:host)       { FactoryBot.create(:host) }
 
-  let(:vm)                 { FactoryGirl.create(:vm_vmware,    :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
-  let(:vm_openstack)       { FactoryGirl.create(:vm_openstack, :host => host, :ems_id => ems.id, :raw_power_state => "ACTIVE") }
-  let(:vm_openstack1)      { FactoryGirl.create(:vm_openstack, :host => host, :ems_id => ems.id, :raw_power_state => "ACTIVE") }
-  let(:vm_openstack2)      { FactoryGirl.create(:vm_openstack, :host => host, :ems_id => ems.id, :raw_power_state => "ACTIVE") }
+  let(:vm)                 { FactoryBot.create(:vm_vmware,    :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
+  let(:vm_openstack)       { FactoryBot.create(:vm_openstack, :host => host, :ems_id => ems.id, :raw_power_state => "ACTIVE") }
+  let(:vm_openstack1)      { FactoryBot.create(:vm_openstack, :host => host, :ems_id => ems.id, :raw_power_state => "ACTIVE") }
+  let(:vm_openstack2)      { FactoryBot.create(:vm_openstack, :host => host, :ems_id => ems.id, :raw_power_state => "ACTIVE") }
   let(:vm_openstack_url)   { api_vm_url(nil, vm_openstack) }
   let(:vm_openstack1_url)  { api_vm_url(nil, vm_openstack1) }
   let(:vm_openstack2_url)  { api_vm_url(nil, vm_openstack2) }
   let(:vms_openstack_list) { [vm_openstack1_url, vm_openstack2_url] }
-  let(:vm1)                { FactoryGirl.create(:vm_vmware,    :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
-  let(:vm2)                { FactoryGirl.create(:vm_vmware,    :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
+  let(:vm1)                { FactoryBot.create(:vm_vmware,    :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
+  let(:vm2)                { FactoryBot.create(:vm_vmware,    :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
   let(:vm1_url)            { api_vm_url(nil, vm1) }
   let(:vm2_url)            { api_vm_url(nil, vm2) }
   let(:vms_list)           { [vm1_url, vm2_url] }
@@ -30,7 +30,7 @@ describe "Vms API" do
 
   context 'href_slug' do
     it 'returns the correct value for cloud instances' do
-      vm_cloud = FactoryGirl.create(:vm_amazon)
+      vm_cloud = FactoryBot.create(:vm_amazon)
       api_basic_authorize(action_identifier(:vms, :read, :resource_actions, :get))
 
       get(api_vm_url(nil, vm_cloud), :params => { :attributes => 'href_slug'})
@@ -40,7 +40,7 @@ describe "Vms API" do
   end
 
   context 'Vm edit' do
-    let(:new_vms) { FactoryGirl.create_list(:vm_openstack, 2) }
+    let(:new_vms) { FactoryBot.create_list(:vm_openstack, 2) }
 
     before do
       vm.set_child(vm_openstack)
@@ -131,8 +131,8 @@ describe "Vms API" do
   end
 
   context "Vm accounts subcollection" do
-    let(:acct1) { FactoryGirl.create(:account, :vm_or_template_id => vm.id, :name => "John") }
-    let(:acct2) { FactoryGirl.create(:account, :vm_or_template_id => vm.id, :name => "Jane") }
+    let(:acct1) { FactoryBot.create(:account, :vm_or_template_id => vm.id, :name => "John") }
+    let(:acct2) { FactoryBot.create(:account, :vm_or_template_id => vm.id, :name => "Jane") }
     let(:acct1_url)            { api_vm_account_url(nil, vm, acct1) }
     let(:acct2_url)            { api_vm_account_url(nil, vm, acct2) }
 
@@ -190,8 +190,8 @@ describe "Vms API" do
   end
 
   context "Vm software subcollection" do
-    let(:sw1) { FactoryGirl.create(:guest_application, :vm_or_template_id => vm.id, :name => "Word")  }
-    let(:sw2) { FactoryGirl.create(:guest_application, :vm_or_template_id => vm.id, :name => "Excel") }
+    let(:sw1) { FactoryBot.create(:guest_application, :vm_or_template_id => vm.id, :name => "Word")  }
+    let(:sw2) { FactoryBot.create(:guest_application, :vm_or_template_id => vm.id, :name => "Excel") }
     let(:sw1_url)              { api_vm_software_url(nil, vm, sw1) }
     let(:sw2_url)              { api_vm_software_url(nil, vm, sw2) }
 
@@ -781,8 +781,8 @@ describe "Vms API" do
   end
 
   context "Vm custom_attributes" do
-    let(:ca1) { FactoryGirl.create(:custom_attribute, :name => "name1", :value => "value1") }
-    let(:ca2) { FactoryGirl.create(:custom_attribute, :name => "name2", :value => "value2") }
+    let(:ca1) { FactoryBot.create(:custom_attribute, :name => "name1", :value => "value1") }
+    let(:ca2) { FactoryBot.create(:custom_attribute, :name => "name2", :value => "value2") }
     let(:ca1_url)        { api_vm_custom_attribute_url(nil, vm, ca1) }
     let(:ca2_url)        { api_vm_custom_attribute_url(nil, vm, ca2) }
 
@@ -1390,9 +1390,9 @@ describe "Vms API" do
     end
 
     it "to a single Vm" do
-      auth = FactoryGirl.create(:authentication, :authtype => "console")
-      ems = FactoryGirl.create(:ems_vmware, :authentications => [auth])
-      vm = FactoryGirl.create(:vm_vmware, :ext_management_system => ems)
+      auth = FactoryBot.create(:authentication, :authtype => "console")
+      ems = FactoryBot.create(:ems_vmware, :authentications => [auth])
+      vm = FactoryBot.create(:vm_vmware, :ext_management_system => ems)
       api_basic_authorize action_identifier(:vms, :request_console)
 
       post(api_vm_url(nil, vm), :params => gen_request(:request_console))
@@ -1405,17 +1405,17 @@ describe "Vms API" do
     let(:tag1)         { {:category => "department", :name => "finance", :path => "/managed/department/finance"} }
     let(:tag2)         { {:category => "cc",         :name => "001",     :path => "/managed/cc/001"} }
 
-    let(:vm1) { FactoryGirl.create(:vm_vmware, :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
+    let(:vm1) { FactoryBot.create(:vm_vmware, :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
     let(:vm1_url) { api_vm_url(nil, vm1) }
 
-    let(:vm2) { FactoryGirl.create(:vm_vmware, :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
+    let(:vm2) { FactoryBot.create(:vm_vmware, :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
     let(:vm2_url) { api_vm_url(nil, vm2) }
 
     let(:invalid_tag_url) { api_tag_url(nil, 999_999) }
 
     before do
-      FactoryGirl.create(:classification_department_with_tags)
-      FactoryGirl.create(:classification_cost_center_with_tags)
+      FactoryBot.create(:classification_department_with_tags)
+      FactoryBot.create(:classification_cost_center_with_tags)
       Classification.classify(vm2, tag1[:category], tag1[:name])
       Classification.classify(vm2, tag2[:category], tag2[:name])
     end
@@ -1572,10 +1572,10 @@ describe "Vms API" do
 
   describe "custom actions" do
     it "renders custom actions" do
-      vm = FactoryGirl.create(:vm_vmware)
-      FactoryGirl.create(
+      vm = FactoryBot.create(:vm_vmware)
+      FactoryBot.create(
         :custom_button_set,
-        :members => [FactoryGirl.create(:custom_button, :name => "test button", :applies_to_class => "Vm")],
+        :members => [FactoryBot.create(:custom_button, :name => "test button", :applies_to_class => "Vm")],
       )
       api_basic_authorize(action_identifier(:vms, :read, :resource_actions, :get))
 
@@ -1590,11 +1590,11 @@ describe "Vms API" do
     end
 
     it "renders the custom actions when requested" do
-      vm = FactoryGirl.create(:vm_vmware)
-      FactoryGirl.create(
+      vm = FactoryBot.create(:vm_vmware)
+      FactoryBot.create(
         :custom_button_set,
         :name    => "test button group",
-        :members => [FactoryGirl.create(:custom_button, :name => "test button", :applies_to_class => "Vm")]
+        :members => [FactoryBot.create(:custom_button, :name => "test button", :applies_to_class => "Vm")]
       )
       api_basic_authorize(action_identifier(:vms, :read, :resource_actions, :get))
 
@@ -1616,10 +1616,10 @@ describe "Vms API" do
     end
 
     it "renders the custom action buttons when requested" do
-      vm = FactoryGirl.create(:vm_vmware)
-      FactoryGirl.create(
+      vm = FactoryBot.create(:vm_vmware)
+      FactoryBot.create(
         :custom_button_set,
-        :members => [FactoryGirl.create(:custom_button, :name => "test button", :applies_to_class => "Vm")]
+        :members => [FactoryBot.create(:custom_button, :name => "test button", :applies_to_class => "Vm")]
       )
       api_basic_authorize(action_identifier(:vms, :read, :resource_actions, :get))
 
@@ -1634,15 +1634,15 @@ describe "Vms API" do
     end
 
     it "can execute a custom action" do
-      vm = FactoryGirl.create(:vm_vmware)
-      FactoryGirl.create(
+      vm = FactoryBot.create(:vm_vmware)
+      FactoryBot.create(
         :custom_button_set,
         :members => [
-          FactoryGirl.create(
+          FactoryBot.create(
             :custom_button,
             :name             => "test button",
             :applies_to_class => "Vm",
-            :resource_action  => FactoryGirl.create(:resource_action)
+            :resource_action  => FactoryBot.create(:resource_action)
           )
         ]
       )
@@ -1660,8 +1660,8 @@ describe "Vms API" do
   end
 
   describe "set_miq_server action" do
-    let(:server) { FactoryGirl.create(:miq_server) }
-    let(:server2) { FactoryGirl.create(:miq_server) }
+    let(:server) { FactoryBot.create(:miq_server) }
+    let(:server2) { FactoryBot.create(:miq_server) }
 
     it "does not allow setting an miq_server without an appropriate role" do
       api_basic_authorize
@@ -1741,9 +1741,9 @@ describe "Vms API" do
     let(:url) { api_vm_metric_rollups_url(nil, vm) }
 
     before do
-      FactoryGirl.create_list(:metric_rollup_vm_hr, 3, :resource => vm)
-      FactoryGirl.create_list(:metric_rollup_vm_daily, 1, :resource => vm)
-      FactoryGirl.create_list(:metric_rollup_vm_hr, 1, :resource => vm1)
+      FactoryBot.create_list(:metric_rollup_vm_hr, 3, :resource => vm)
+      FactoryBot.create_list(:metric_rollup_vm_daily, 1, :resource => vm)
+      FactoryBot.create_list(:metric_rollup_vm_hr, 1, :resource => vm1)
     end
 
     it 'returns the metric rollups for the vm' do
@@ -1772,9 +1772,9 @@ describe "Vms API" do
 
   context 'security groups subcollection' do
     before do
-      @network_port = FactoryGirl.create(:network_port, :device => vm_openstack)
-      @security_group = FactoryGirl.create(:security_group, :cloud_tenant => @cloud_tenant)
-      @network_port_security_group = FactoryGirl.create(:network_port_security_group,
+      @network_port = FactoryBot.create(:network_port, :device => vm_openstack)
+      @security_group = FactoryBot.create(:security_group, :cloud_tenant => @cloud_tenant)
+      @network_port_security_group = FactoryBot.create(:network_port_security_group,
                                                         :network_port   => @network_port,
                                                         :security_group => @security_group)
     end

@@ -8,22 +8,22 @@
 #     GET /api/services/:id?attributes=provision_dialog
 #
 describe "Service Requests API" do
-  let(:provision_dialog1)    { FactoryGirl.create(:dialog, :label => "ProvisionDialog1") }
-  let(:retirement_dialog2)   { FactoryGirl.create(:dialog, :label => "RetirementDialog2") }
+  let(:provision_dialog1)    { FactoryBot.create(:dialog, :label => "ProvisionDialog1") }
+  let(:retirement_dialog2)   { FactoryBot.create(:dialog, :label => "RetirementDialog2") }
 
-  let(:provision_ra) { FactoryGirl.create(:resource_action, :action => "Provision",  :dialog => provision_dialog1) }
-  let(:retire_ra)    { FactoryGirl.create(:resource_action, :action => "Retirement", :dialog => retirement_dialog2) }
-  let(:template)     { FactoryGirl.create(:service_template, :name => "ServiceTemplate") }
+  let(:provision_ra) { FactoryBot.create(:resource_action, :action => "Provision",  :dialog => provision_dialog1) }
+  let(:retire_ra)    { FactoryBot.create(:resource_action, :action => "Retirement", :dialog => retirement_dialog2) }
+  let(:template)     { FactoryBot.create(:service_template, :name => "ServiceTemplate") }
 
   let(:service_request) do
-    FactoryGirl.create(:service_template_provision_request,
+    FactoryBot.create(:service_template_provision_request,
                        :requester   => @user,
                        :source_id   => template.id,
                        :source_type => template.class.name)
   end
 
-  let(:request_task) { FactoryGirl.create(:miq_request_task, :miq_request => service_request) }
-  let(:service) { FactoryGirl.create(:service, :name => "Service", :miq_request_task => request_task) }
+  let(:request_task) { FactoryBot.create(:miq_request_task, :miq_request => service_request) }
+  let(:service) { FactoryBot.create(:service, :name => "Service", :miq_request_task => request_task) }
 
   def expect_result_to_have_provision_dialog
     expect_result_to_have_keys(%w(id href provision_dialog))
@@ -82,13 +82,13 @@ describe "Service Requests API" do
 
   context "Service requests approval" do
     let(:svcreq1) do
-      FactoryGirl.create(:service_template_provision_request,
+      FactoryBot.create(:service_template_provision_request,
                          :requester   => @user,
                          :source_id   => template.id,
                          :source_type => template.class.name)
     end
     let(:svcreq2) do
-      FactoryGirl.create(:service_template_provision_request,
+      FactoryBot.create(:service_template_provision_request,
                          :requester   => @user,
                          :source_id   => template.id,
                          :source_type => template.class.name)
@@ -173,8 +173,8 @@ describe "Service Requests API" do
     end
 
     it "does not list another user's requests" do
-      other_user = FactoryGirl.create(:user)
-      FactoryGirl.create(:service_template_provision_request,
+      other_user = FactoryBot.create(:user)
+      FactoryBot.create(:service_template_provision_request,
                          :requester   => other_user,
                          :source_id   => template.id,
                          :source_type => template.class.name)
@@ -187,8 +187,8 @@ describe "Service Requests API" do
     end
 
     it "does not show another user's request" do
-      other_user = FactoryGirl.create(:user)
-      service_request = FactoryGirl.create(:service_template_provision_request,
+      other_user = FactoryBot.create(:user)
+      service_request = FactoryBot.create(:service_template_provision_request,
                                            :requester   => other_user,
                                            :source_id   => template.id,
                                            :source_type => template.class.name)
@@ -206,7 +206,7 @@ describe "Service Requests API" do
     end
 
     it "a user can list their own requests" do
-      _service_request = FactoryGirl.create(:service_template_provision_request,
+      _service_request = FactoryBot.create(:service_template_provision_request,
                                             :requester   => @user,
                                             :source_id   => template.id,
                                             :source_type => template.class.name)
@@ -219,7 +219,7 @@ describe "Service Requests API" do
     end
 
     it "a user can show their own request" do
-      service_request = FactoryGirl.create(:service_template_provision_request,
+      service_request = FactoryBot.create(:service_template_provision_request,
                                            :requester   => @user,
                                            :source_id   => template.id,
                                            :source_type => template.class.name)
@@ -233,13 +233,13 @@ describe "Service Requests API" do
     end
 
     it "lists all the service requests if you are admin" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_approval))
-      other_user = FactoryGirl.create(:user)
-      service_request_1 = FactoryGirl.create(:service_template_provision_request,
+      @group.miq_user_role = @role = FactoryBot.create(:miq_user_role, :features => %w(miq_request_approval))
+      other_user = FactoryBot.create(:user)
+      service_request_1 = FactoryBot.create(:service_template_provision_request,
                                              :requester   => other_user,
                                              :source_id   => template.id,
                                              :source_type => template.class.name)
-      service_request_2 = FactoryGirl.create(:service_template_provision_request,
+      service_request_2 = FactoryBot.create(:service_template_provision_request,
                                              :requester   => @user,
                                              :source_id   => template.id,
                                              :source_type => template.class.name)
@@ -260,9 +260,9 @@ describe "Service Requests API" do
     end
 
     it "an admin can see another user's request" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_approval))
-      other_user = FactoryGirl.create(:user)
-      service_request = FactoryGirl.create(:service_template_provision_request,
+      @group.miq_user_role = @role = FactoryBot.create(:miq_user_role, :features => %w(miq_request_approval))
+      other_user = FactoryBot.create(:user)
+      service_request = FactoryBot.create(:service_template_provision_request,
                                            :requester   => other_user,
                                            :source_id   => template.id,
                                            :source_type => template.class.name)
@@ -303,7 +303,7 @@ describe "Service Requests API" do
     end
 
     it 'can delete multiple service requests' do
-      service_request_2 = FactoryGirl.create(:service_template_provision_request,
+      service_request_2 = FactoryBot.create(:service_template_provision_request,
                                              :requester   => @user,
                                              :source_id   => template.id,
                                              :source_type => template.class.name)
@@ -352,8 +352,8 @@ describe "Service Requests API" do
 
   context 'Add Approver' do
     it 'can add a single approver' do
-      service_request.miq_approvals << FactoryGirl.create(:miq_approval)
-      user = FactoryGirl.create(:user)
+      service_request.miq_approvals << FactoryBot.create(:miq_approval)
+      user = FactoryBot.create(:user)
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expect do
@@ -364,13 +364,13 @@ describe "Service Requests API" do
     end
 
     it 'can add approvers to multiple service requests' do
-      service_request.miq_approvals << FactoryGirl.create(:miq_approval)
-      user = FactoryGirl.create(:user)
-      service_request_2 = FactoryGirl.create(:service_template_provision_request,
+      service_request.miq_approvals << FactoryBot.create(:miq_approval)
+      user = FactoryBot.create(:user)
+      service_request_2 = FactoryBot.create(:service_template_provision_request,
                                              :requester   => @user,
                                              :source_id   => template.id,
                                              :source_type => template.class.name)
-      service_request_2.miq_approvals << FactoryGirl.create(:miq_approval)
+      service_request_2.miq_approvals << FactoryBot.create(:miq_approval)
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expected = {
@@ -404,8 +404,8 @@ describe "Service Requests API" do
     end
 
     it 'supports user reference hash with id' do
-      service_request.miq_approvals << FactoryGirl.create(:miq_approval)
-      user = FactoryGirl.create(:user)
+      service_request.miq_approvals << FactoryBot.create(:miq_approval)
+      user = FactoryBot.create(:user)
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expect do
@@ -416,8 +416,8 @@ describe "Service Requests API" do
     end
 
     it 'supports user reference hash with href' do
-      service_request.miq_approvals << FactoryGirl.create(:miq_approval)
-      user = FactoryGirl.create(:user)
+      service_request.miq_approvals << FactoryBot.create(:miq_approval)
+      user = FactoryBot.create(:user)
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expect do
@@ -450,8 +450,8 @@ describe "Service Requests API" do
 
   context 'Remove Approver' do
     it 'can remove a single approver' do
-      user = FactoryGirl.create(:user)
-      service_request.miq_approvals << FactoryGirl.create(:miq_approval, :approver => user)
+      user = FactoryBot.create(:user)
+      service_request.miq_approvals << FactoryBot.create(:miq_approval, :approver => user)
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expect do
@@ -462,13 +462,13 @@ describe "Service Requests API" do
     end
 
     it 'can remove approvers to multiple service requests' do
-      user = FactoryGirl.create(:user)
-      service_request2 = FactoryGirl.create(:service_template_provision_request,
+      user = FactoryBot.create(:user)
+      service_request2 = FactoryBot.create(:service_template_provision_request,
                                             :requester   => @user,
                                             :source_id   => template.id,
                                             :source_type => template.class.name)
-      service_request.miq_approvals << FactoryGirl.create(:miq_approval, :approver => user)
-      service_request2.miq_approvals << FactoryGirl.create(:miq_approval, :approver => user)
+      service_request.miq_approvals << FactoryBot.create(:miq_approval, :approver => user)
+      service_request2.miq_approvals << FactoryBot.create(:miq_approval, :approver => user)
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expected = {
@@ -502,8 +502,8 @@ describe "Service Requests API" do
     end
 
     it 'supports user reference hash with href' do
-      user = FactoryGirl.create(:user)
-      service_request.miq_approvals << FactoryGirl.create(:miq_approval, :approver => user)
+      user = FactoryBot.create(:user)
+      service_request.miq_approvals << FactoryBot.create(:miq_approval, :approver => user)
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       expect do
@@ -534,8 +534,8 @@ describe "Service Requests API" do
     end
 
     it 'does not raise error if incorrect user is supplied' do
-      user = FactoryGirl.create(:user)
-      service_request.miq_approvals << FactoryGirl.create(:miq_approval)
+      user = FactoryBot.create(:user)
+      service_request.miq_approvals << FactoryBot.create(:miq_approval)
       api_basic_authorize collection_action_identifier(:service_requests, :add_approver)
 
       post(api_service_request_url(nil, service_request), :params => { :action => 'remove_approver', :user_id => user.id })
@@ -546,7 +546,7 @@ describe "Service Requests API" do
 
   context 'service request update' do
     it 'forbids service request update without an appropriate role' do
-      service_request = FactoryGirl.create(:service_template_provision_request,
+      service_request = FactoryBot.create(:service_template_provision_request,
                                            :requester => @user,
                                            :options   => {:foo => "bar"})
       api_basic_authorize
@@ -557,7 +557,7 @@ describe "Service Requests API" do
     end
 
     it 'updates a single service request' do
-      service_request = FactoryGirl.create(:service_template_provision_request,
+      service_request = FactoryBot.create(:service_template_provision_request,
                                            :requester => @user,
                                            :options   => {:foo => "bar"})
       api_basic_authorize(action_identifier(:service_requests, :edit))
@@ -573,7 +573,7 @@ describe "Service Requests API" do
     end
 
     it 'updates multiple service requests' do
-      service_request, service_request2 = FactoryGirl.create_list(:service_template_provision_request,
+      service_request, service_request2 = FactoryBot.create_list(:service_template_provision_request,
                                                                   2,
                                                                   :requester => @user,
                                                                   :options   => {:foo => "bar"})
@@ -602,7 +602,7 @@ describe "Service Requests API" do
   end
 
   context 'Tasks subcollection' do
-    let(:task) { FactoryGirl.create(:miq_request_task, :miq_request => service_request) }
+    let(:task) { FactoryBot.create(:miq_request_task, :miq_request => service_request) }
     let(:options) { { "a" => 1 } }
     let(:params) { gen_request(:edit, :options => options) }
 

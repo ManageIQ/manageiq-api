@@ -1,9 +1,9 @@
 RSpec.describe 'GenericObjects API' do
-  let(:object_definition) { FactoryGirl.create(:generic_object_definition, :name => 'object def') }
-  let(:vm) { FactoryGirl.create(:vm_amazon) }
-  let(:vm2) { FactoryGirl.create(:vm_amazon) }
-  let(:service) { FactoryGirl.create(:service) }
-  let(:object) { FactoryGirl.create(:generic_object, :name => 'object 1', :generic_object_definition => object_definition) }
+  let(:object_definition) { FactoryBot.create(:generic_object_definition, :name => 'object def') }
+  let(:vm) { FactoryBot.create(:vm_amazon) }
+  let(:vm2) { FactoryBot.create(:vm_amazon) }
+  let(:service) { FactoryBot.create(:service) }
+  let(:object) { FactoryBot.create(:generic_object, :name => 'object 1', :generic_object_definition => object_definition) }
 
   before do
     object_definition.add_property_attribute('widget', 'string')
@@ -18,7 +18,7 @@ RSpec.describe 'GenericObjects API' do
 
   describe 'GET /api/generic_objects' do
     it 'will return all generic objects' do
-      object = FactoryGirl.create(:generic_object, :generic_object_definition => object_definition)
+      object = FactoryBot.create(:generic_object, :generic_object_definition => object_definition)
       api_basic_authorize collection_action_identifier(:generic_objects, :read, :get)
 
       get(api_generic_objects_url)
@@ -36,7 +36,7 @@ RSpec.describe 'GenericObjects API' do
     end
 
     it 'allows specifying attributes' do
-      object = FactoryGirl.create(:generic_object, :generic_object_definition => object_definition)
+      object = FactoryBot.create(:generic_object, :generic_object_definition => object_definition)
       object.add_to_property_association('vms', [vm, vm2])
       object.add_to_property_association('services', service)
       api_basic_authorize collection_action_identifier(:generic_objects, :read, :get)
@@ -106,23 +106,23 @@ RSpec.describe 'GenericObjects API' do
     end
 
     it "includes the hrefs for custom buttons and button groups" do
-      generic_no_group = FactoryGirl.create(:custom_button, :name => "generic_no_group", :applies_to_class => "GenericObject")
-      generic_group = FactoryGirl.create(:custom_button, :name => "generic_group", :applies_to_class => "GenericObject")
-      generic_group_set = FactoryGirl.create(:custom_button_set, :name => "generic_group_set")
+      generic_no_group = FactoryBot.create(:custom_button, :name => "generic_no_group", :applies_to_class => "GenericObject")
+      generic_group = FactoryBot.create(:custom_button, :name => "generic_group", :applies_to_class => "GenericObject")
+      generic_group_set = FactoryBot.create(:custom_button_set, :name => "generic_group_set")
       generic_group_set.add_member(generic_group)
-      assigned_no_group = FactoryGirl.create(
+      assigned_no_group = FactoryBot.create(
         :custom_button,
         :name             => "assigned_no_group",
         :applies_to_class => "GenericObjectDefinition",
         :applies_to_id    => object_definition.id
       )
-      assigned_group = FactoryGirl.create(
+      assigned_group = FactoryBot.create(
         :custom_button,
         :name             => "assigned_group",
         :applies_to_class => "GenericObjectDefinition",
         :applies_to_id    => object_definition.id
       )
-      assigned_group_set = FactoryGirl.create(:custom_button_set, :name => "assigned_group_set")
+      assigned_group_set = FactoryBot.create(:custom_button_set, :name => "assigned_group_set")
       assigned_group_set.add_member(assigned_group)
       object_definition.update(:custom_button_sets => [assigned_group_set])
       api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get)
@@ -296,7 +296,7 @@ RSpec.describe 'GenericObjects API' do
 
   describe 'POST /api/generic_objects/:id' do
     it 'edits a generic object' do
-      vm3 = FactoryGirl.create(:vm_amazon)
+      vm3 = FactoryBot.create(:vm_amazon)
       api_basic_authorize action_identifier(:generic_objects, :edit)
 
       request = {

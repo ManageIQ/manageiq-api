@@ -1,7 +1,7 @@
 RSpec.describe "reports API" do
   it "can fetch all the reports" do
-    report_1 = FactoryGirl.create(:miq_report_with_results)
-    report_2 = FactoryGirl.create(:miq_report_with_results)
+    report_1 = FactoryBot.create(:miq_report_with_results)
+    report_2 = FactoryBot.create(:miq_report_with_results)
 
     api_basic_authorize collection_action_identifier(:reports, :read, :get)
     get api_reports_url
@@ -18,7 +18,7 @@ RSpec.describe "reports API" do
   end
 
   it 'returns only the requested attributes' do
-    FactoryGirl.create(:miq_report_with_results)
+    FactoryBot.create(:miq_report_with_results)
     api_basic_authorize collection_action_identifier(:reports, :read, :get)
 
     get api_reports_url, :params => { :expand => 'resources', :attributes => 'template_type' }
@@ -28,7 +28,7 @@ RSpec.describe "reports API" do
   end
 
   it "can fetch a report" do
-    report = FactoryGirl.create(:miq_report_with_results)
+    report = FactoryBot.create(:miq_report_with_results)
 
     api_basic_authorize action_identifier(:reports, :read, :resource_actions, :get)
     get api_report_url(nil, report)
@@ -44,12 +44,12 @@ RSpec.describe "reports API" do
   end
 
   context 'authorized to see its own report results' do
-    let(:group) { FactoryGirl.create(:miq_group) }
+    let(:group) { FactoryBot.create(:miq_group) }
     let(:user) do
       @user.current_group ||= group
       @user
     end
-    let(:report) { FactoryGirl.create(:miq_report_with_results, :miq_group => user.current_group) }
+    let(:report) { FactoryBot.create(:miq_report_with_results, :miq_group => user.current_group) }
 
     it "can fetch a report's results" do
       report_result = report.miq_report_results.first
@@ -125,7 +125,7 @@ RSpec.describe "reports API" do
     end
 
     it "returns an empty result set if none has been run" do
-      report = FactoryGirl.create(:miq_report_with_results, :miq_group => user.current_group)
+      report = FactoryBot.create(:miq_report_with_results, :miq_group => user.current_group)
       report_result = report.miq_report_results.first
 
       api_basic_authorize
@@ -137,14 +137,14 @@ RSpec.describe "reports API" do
   end
 
   it "can fetch all the schedule" do
-    report = FactoryGirl.create(:miq_report)
+    report = FactoryBot.create(:miq_report)
 
     exp = {}
     exp["="] = {"field" => "MiqReport-id", "value" => report.id}
     exp = MiqExpression.new(exp)
 
-    schedule_1 = FactoryGirl.create(:miq_schedule, :filter => exp)
-    schedule_2 = FactoryGirl.create(:miq_schedule, :filter => exp)
+    schedule_1 = FactoryBot.create(:miq_schedule, :filter => exp)
+    schedule_2 = FactoryBot.create(:miq_schedule, :filter => exp)
 
     api_basic_authorize subcollection_action_identifier(:reports, :schedules, :read, :get)
     get api_report_schedules_url(nil, report)
@@ -160,9 +160,9 @@ RSpec.describe "reports API" do
   end
 
   it "will not show the schedules without the appropriate role" do
-    report = FactoryGirl.create(:miq_report)
+    report = FactoryBot.create(:miq_report)
     exp = MiqExpression.new("=" => {"field" => "MiqReport-id", "value" => report.id})
-    FactoryGirl.create(:miq_schedule, :filter => exp)
+    FactoryBot.create(:miq_schedule, :filter => exp)
     api_basic_authorize
 
     get(api_report_schedules_url(nil, report))
@@ -171,13 +171,13 @@ RSpec.describe "reports API" do
   end
 
   it "can show a single schedule" do
-    report = FactoryGirl.create(:miq_report)
+    report = FactoryBot.create(:miq_report)
 
     exp = {}
     exp["="] = {"field" => "MiqReport-id", "value" => report.id}
     exp = MiqExpression.new(exp)
 
-    schedule = FactoryGirl.create(:miq_schedule, :name => 'unit_test', :filter => exp)
+    schedule = FactoryBot.create(:miq_schedule, :name => 'unit_test', :filter => exp)
 
     api_basic_authorize subcollection_action_identifier(:reports, :schedules, :read, :get)
     get(api_report_schedule_url(nil, report, schedule))
@@ -192,9 +192,9 @@ RSpec.describe "reports API" do
   end
 
   it "will not show a schedule without the appropriate role" do
-    report = FactoryGirl.create(:miq_report)
+    report = FactoryBot.create(:miq_report)
     exp = MiqExpression.new("=" => {"field" => "MiqReport-id", "value" => report.id})
-    schedule = FactoryGirl.create(:miq_schedule, :filter => exp)
+    schedule = FactoryBot.create(:miq_schedule, :filter => exp)
     api_basic_authorize
 
     get(api_report_schedule_url(nil, report, schedule))
@@ -208,8 +208,8 @@ RSpec.describe "reports API" do
     #   https://bugzilla.redhat.com/show_bug.cgi?id=1650531
     #
     it "can fetch all the reports" do
-      report_1 = FactoryGirl.create(:miq_report_with_results)
-      report_2 = FactoryGirl.create(:miq_report_with_results)
+      report_1 = FactoryBot.create(:miq_report_with_results)
+      report_2 = FactoryBot.create(:miq_report_with_results)
 
       # Includes roles "API" and "Cloud Intel"
       MiqProductFeature.seed
@@ -228,7 +228,7 @@ RSpec.describe "reports API" do
     end
 
     it "can run a report" do
-      report = FactoryGirl.create(:miq_report)
+      report = FactoryBot.create(:miq_report)
 
       expect do
         api_basic_authorize action_identifier(:reports, :run)
@@ -244,7 +244,7 @@ RSpec.describe "reports API" do
     end
 
     it "can schedule a run" do
-      report = FactoryGirl.create(:miq_report)
+      report = FactoryBot.create(:miq_report)
 
       expect do
         api_basic_authorize action_identifier(:reports, :schedule)
@@ -341,7 +341,7 @@ RSpec.describe "reports API" do
 
   context "without an appropriate role" do
     it "cannot run a report" do
-      report = FactoryGirl.create(:miq_report)
+      report = FactoryBot.create(:miq_report)
 
       expect do
         api_basic_authorize

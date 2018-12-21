@@ -12,7 +12,7 @@
 #
 describe "Automation Requests API" do
   describe "Automation Requests" do
-    let(:approver) { FactoryGirl.create(:user_miq_request_approver) }
+    let(:approver) { FactoryBot.create(:user_miq_request_approver) }
     let(:single_automation_request) do
       {
         "uri_parts"  => {"
@@ -27,9 +27,9 @@ describe "Automation Requests API" do
     end
 
     it "filters the list of automation requests by requester" do
-      other_user = FactoryGirl.create(:user)
-      _automation_request1 = FactoryGirl.create(:automation_request, :requester => other_user)
-      automation_request2 = FactoryGirl.create(:automation_request, :requester => @user)
+      other_user = FactoryBot.create(:user)
+      _automation_request1 = FactoryBot.create(:automation_request, :requester => other_user)
+      automation_request2 = FactoryBot.create(:automation_request, :requester => @user)
       api_basic_authorize collection_action_identifier(:automation_requests, :read, :get)
 
       get api_automation_requests_url
@@ -46,10 +46,10 @@ describe "Automation Requests API" do
     end
 
     it "lists all the automation requests if you are admin" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_approval))
-      other_user = FactoryGirl.create(:user)
-      automation_request1 = FactoryGirl.create(:automation_request, :requester => other_user)
-      automation_request2 = FactoryGirl.create(:automation_request, :requester => @user)
+      @group.miq_user_role = @role = FactoryBot.create(:miq_user_role, :features => %w(miq_request_approval))
+      other_user = FactoryBot.create(:user)
+      automation_request1 = FactoryBot.create(:automation_request, :requester => other_user)
+      automation_request2 = FactoryBot.create(:automation_request, :requester => @user)
       api_basic_authorize collection_action_identifier(:automation_requests, :read, :get)
 
       get api_automation_requests_url
@@ -67,8 +67,8 @@ describe "Automation Requests API" do
     end
 
     it "restricts access to automation requests to requester" do
-      other_user = FactoryGirl.create(:user)
-      automation_request = FactoryGirl.create(:automation_request, :requester => other_user)
+      other_user = FactoryBot.create(:user)
+      automation_request = FactoryBot.create(:automation_request, :requester => other_user)
       api_basic_authorize action_identifier(:automation_requests, :read, :resource_actions, :get)
 
       get api_automation_request_url(nil, automation_request)
@@ -77,9 +77,9 @@ describe "Automation Requests API" do
     end
 
     it "an admin can see another user's request" do
-      @group.miq_user_role = @role = FactoryGirl.create(:miq_user_role, :features => %w(miq_request_approval))
-      other_user = FactoryGirl.create(:user)
-      automation_request = FactoryGirl.create(:automation_request, :requester => other_user)
+      @group.miq_user_role = @role = FactoryBot.create(:miq_user_role, :features => %w(miq_request_approval))
+      other_user = FactoryBot.create(:user)
+      automation_request = FactoryBot.create(:automation_request, :requester => other_user)
       api_basic_authorize action_identifier(:automation_requests, :read, :resource_actions, :get)
 
       get api_automation_request_url(nil, automation_request)
@@ -135,7 +135,7 @@ describe "Automation Requests API" do
 
   describe "automation request update" do
     it 'forbids provision request update without an appropriate role' do
-      automation_request = FactoryGirl.create(:automation_request, :requester => @user, :options => {:foo => "bar"})
+      automation_request = FactoryBot.create(:automation_request, :requester => @user, :options => {:foo => "bar"})
       api_basic_authorize
 
       post(api_automation_request_url(nil, automation_request), :params => { :action => "edit", :options => {:baz => "qux"} })
@@ -144,7 +144,7 @@ describe "Automation Requests API" do
     end
 
     it 'updates a single provision request' do
-      automation_request = FactoryGirl.create(:automation_request, :requester => @user, :options => {:foo => "bar"})
+      automation_request = FactoryBot.create(:automation_request, :requester => @user, :options => {:foo => "bar"})
       api_basic_authorize(action_identifier(:automation_requests, :edit))
 
       post(api_automation_request_url(nil, automation_request), :params => { :action => "edit", :options => {:baz => "qux"} })
@@ -158,7 +158,7 @@ describe "Automation Requests API" do
     end
 
     it 'updates multiple provision requests' do
-      automation_request, automation_request2 = FactoryGirl.create_list(:automation_request,
+      automation_request, automation_request2 = FactoryBot.create_list(:automation_request,
                                                                         2,
                                                                         :requester => @user,
                                                                         :options   => {:foo => "bar"})
@@ -187,11 +187,11 @@ describe "Automation Requests API" do
   end
 
   context "Automation requests approval" do
-    let(:template)      { FactoryGirl.create(:template_amazon) }
+    let(:template)      { FactoryBot.create(:template_amazon) }
     let(:request_body)  { {:requester => @user, :source_type => 'VmOrTemplate', :source_id => template.id} }
-    let(:request1)      { FactoryGirl.create(:automation_request, request_body) }
+    let(:request1)      { FactoryBot.create(:automation_request, request_body) }
     let(:request1_url)  { api_automation_request_url(nil, request1) }
-    let(:request2)      { FactoryGirl.create(:automation_request, request_body) }
+    let(:request2)      { FactoryBot.create(:automation_request, request_body) }
     let(:request2_url)  { api_automation_request_url(nil, request2) }
 
     it "supports approving a request" do
@@ -262,8 +262,8 @@ describe "Automation Requests API" do
   end
 
   context 'Tasks subcollection' do
-    let(:automation_request) { FactoryGirl.create(:automation_request, :requester => @user) }
-    let(:task) { FactoryGirl.create(:miq_request_task, :miq_request => automation_request) }
+    let(:automation_request) { FactoryBot.create(:automation_request, :requester => @user) }
+    let(:task) { FactoryBot.create(:miq_request_task, :miq_request => automation_request) }
     let(:options) { { 'a' => 1 } }
     let(:params) { gen_request(:edit, :options => options) }
 

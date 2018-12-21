@@ -1,7 +1,7 @@
 describe "Actions API" do
   context "Actions CRUD" do
-    let(:action) { FactoryGirl.create(:miq_action) }
-    let(:actions) { FactoryGirl.create_list(:miq_action, 2) }
+    let(:action) { FactoryBot.create(:miq_action) }
+    let(:actions) { FactoryBot.create_list(:miq_action, 2) }
     let(:sample_action) do
       {
         :name        => "sample_action",
@@ -43,7 +43,7 @@ describe "Actions API" do
 
     it "reads all actions" do
       api_basic_authorize collection_action_identifier(:actions, :read, :get)
-      FactoryGirl.create(:miq_action)
+      FactoryBot.create(:miq_action)
       get(api_actions_url)
       expect(response).to have_http_status(:ok)
 

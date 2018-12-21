@@ -15,12 +15,12 @@ describe "Groups API" do
 
   let(:sample_group1) { {:description => "sample_group_1"} }
   let(:sample_group2) { {:description => "sample_group_2"} }
-  let(:group) { FactoryGirl.create(:miq_group) }
-  let(:group1) { FactoryGirl.create(:miq_group, sample_group1) }
-  let(:group2) { FactoryGirl.create(:miq_group, sample_group2) }
+  let(:group) { FactoryBot.create(:miq_group) }
+  let(:group1) { FactoryBot.create(:miq_group, sample_group1) }
+  let(:group2) { FactoryBot.create(:miq_group, sample_group2) }
 
-  let(:role3)    { FactoryGirl.create(:miq_user_role) }
-  let(:tenant3)  { FactoryGirl.create(:tenant, :name => "Tenant3") }
+  let(:role3)    { FactoryBot.create(:miq_user_role) }
+  let(:tenant3)  { FactoryBot.create(:tenant, :name => "Tenant3") }
 
   before do
     @user.miq_groups << group
@@ -273,7 +273,7 @@ describe "Groups API" do
 
   describe "tags subcollection" do
     it "can list a group's tags" do
-      FactoryGirl.create(:classification_department_with_tags)
+      FactoryBot.create(:classification_department_with_tags)
       Classification.classify(group, "department", "finance")
       api_basic_authorize
 
@@ -284,7 +284,7 @@ describe "Groups API" do
     end
 
     it "can assign a tag to a group" do
-      FactoryGirl.create(:classification_department_with_tags)
+      FactoryBot.create(:classification_department_with_tags)
       api_basic_authorize(subcollection_action_identifier(:groups, :tags, :assign))
 
       post(api_group_tags_url(nil, group), :params => { :action => "assign", :category => "department", :name => "finance" })
@@ -304,7 +304,7 @@ describe "Groups API" do
     end
 
     it "can unassign a tag from a group" do
-      FactoryGirl.create(:classification_department_with_tags)
+      FactoryBot.create(:classification_department_with_tags)
       Classification.classify(group, "department", "finance")
       api_basic_authorize(subcollection_action_identifier(:groups, :tags, :unassign))
 
@@ -326,8 +326,8 @@ describe "Groups API" do
   end
 
   describe 'GET /groups/:id/custom_button_events' do
-    let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
-    let!(:custom_button_event) { FactoryGirl.create(:custom_button_event, :target => group) }
+    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+    let!(:custom_button_event) { FactoryBot.create(:custom_button_event, :target => group) }
 
     it 'returns with the custom button events for the given user' do
       api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)

@@ -9,7 +9,7 @@ describe "Container Groups API" do
     end
 
     it 'returns container groups with an appropriate role' do
-      container_groups = FactoryGirl.create(:container_group)
+      container_groups = FactoryBot.create(:container_group)
       api_basic_authorize(collection_action_identifier(:container_groups, :read, :get))
 
       get(api_container_groups_url)
@@ -23,7 +23,7 @@ describe "Container Groups API" do
   end
 
   context 'GET /api/container_groups' do
-    let(:container_group) { FactoryGirl.create(:container_group) }
+    let(:container_group) { FactoryBot.create(:container_group) }
 
     it 'forbids access to a container group without an appropriate role' do
       api_basic_authorize

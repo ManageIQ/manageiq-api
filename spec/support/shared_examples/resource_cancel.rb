@@ -2,8 +2,8 @@ RSpec.shared_context "Resource#cancel" do |ns, factory|
   let(:collection_identifier) { namespace.pluralize.to_sym }
   let(:collection_url)        { send("api_#{collection_identifier}_url") }
   let(:namespace)             { ns } # ns is not available from #instance_url method, but namespace is.
-  let(:resource_1)            { FactoryGirl.create(factory, :with_api_user) }
-  let(:resource_2)            { FactoryGirl.create(factory, :with_api_user) }
+  let(:resource_1)            { FactoryBot.create(factory, :with_api_user) }
+  let(:resource_2)            { FactoryBot.create(factory, :with_api_user) }
 
   def instance_url(instance)
     send("api_#{namespace}_url", nil, instance)

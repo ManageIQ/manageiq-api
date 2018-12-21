@@ -3,8 +3,8 @@ RSpec.describe "tenants API" do
 
   it "can list all the tenants" do
     api_basic_authorize action_identifier(:tenants, :read, :collection_actions, :get)
-    tenant_1 = FactoryGirl.create(:tenant, :parent => root_tenant)
-    tenant_2 = FactoryGirl.create(:tenant, :parent => root_tenant)
+    tenant_1 = FactoryBot.create(:tenant, :parent => root_tenant)
+    tenant_2 = FactoryBot.create(:tenant, :parent => root_tenant)
 
     get api_tenants_url
 
@@ -22,7 +22,7 @@ RSpec.describe "tenants API" do
 
   it "can show a single tenant" do
     api_basic_authorize action_identifier(:tenants, :read, :resource_actions, :get)
-    tenant = FactoryGirl.create(
+    tenant = FactoryBot.create(
       :tenant,
       :parent      => root_tenant,
       :name        => "Test Tenant",
@@ -54,7 +54,7 @@ RSpec.describe "tenants API" do
 
     it "will not create a tenant with an invalid parent" do
       api_basic_authorize collection_action_identifier(:tenants, :create)
-      invalid_tenant = FactoryGirl.create(:tenant, :parent => root_tenant).destroy
+      invalid_tenant = FactoryBot.create(:tenant, :parent => root_tenant).destroy
 
       expect do
         post api_tenants_url, :params => { :parent => {:id => invalid_tenant.id} }
@@ -65,7 +65,7 @@ RSpec.describe "tenants API" do
 
     it "can update a tenant with POST" do
       api_basic_authorize action_identifier(:tenants, :edit)
-      tenant = FactoryGirl.create(
+      tenant = FactoryBot.create(
         :tenant,
         :parent      => root_tenant,
         :name        => "Test Tenant",
@@ -83,7 +83,7 @@ RSpec.describe "tenants API" do
 
     it "can update a tenant with PUT" do
       api_basic_authorize action_identifier(:tenants, :edit)
-      tenant = FactoryGirl.create(
+      tenant = FactoryBot.create(
         :tenant,
         :parent      => root_tenant,
         :name        => "Test Tenant",
@@ -121,12 +121,12 @@ RSpec.describe "tenants API" do
 
     it "can update multiple tenants with POST" do
       api_basic_authorize action_identifier(:tenants, :edit)
-      tenant_1 = FactoryGirl.create(
+      tenant_1 = FactoryBot.create(
         :tenant,
         :parent => root_tenant,
         :name   => "Test Tenant 1"
       )
-      tenant_2 = FactoryGirl.create(
+      tenant_2 = FactoryBot.create(
         :tenant,
         :parent => root_tenant,
         :name   => "Test Tenant 2"
@@ -150,7 +150,7 @@ RSpec.describe "tenants API" do
 
     it "can delete a tenant with POST" do
       api_basic_authorize action_identifier(:tenants, :delete)
-      tenant = FactoryGirl.create(:tenant, :parent => root_tenant)
+      tenant = FactoryBot.create(:tenant, :parent => root_tenant)
 
       expect { post api_tenant_url(nil, tenant), :params => gen_request(:delete) }.to change(Tenant, :count).by(-1)
       expect(response).to have_http_status(:ok)
@@ -158,7 +158,7 @@ RSpec.describe "tenants API" do
 
     it "can delete a tenant with DELETE" do
       api_basic_authorize action_identifier(:tenants, :delete)
-      tenant = FactoryGirl.create(:tenant, :parent => root_tenant)
+      tenant = FactoryBot.create(:tenant, :parent => root_tenant)
 
       expect { delete api_tenant_url(nil, tenant) }.to change(Tenant, :count).by(-1)
       expect(response).to have_http_status(:no_content)
@@ -166,8 +166,8 @@ RSpec.describe "tenants API" do
 
     it "can delete multiple tenants with POST" do
       api_basic_authorize action_identifier(:tenants, :delete)
-      tenant_1 = FactoryGirl.create(:tenant, :parent => root_tenant)
-      tenant_2 = FactoryGirl.create(:tenant, :parent => root_tenant)
+      tenant_1 = FactoryBot.create(:tenant, :parent => root_tenant)
+      tenant_2 = FactoryBot.create(:tenant, :parent => root_tenant)
       options = [
         {"href" => api_tenant_url(nil, tenant_1)},
         {"href" => api_tenant_url(nil, tenant_2)}
@@ -193,7 +193,7 @@ RSpec.describe "tenants API" do
 
     it "will not update a tenant with POST" do
       api_basic_authorize
-      tenant = FactoryGirl.create(
+      tenant = FactoryBot.create(
         :tenant,
         :parent      => root_tenant,
         :name        => "Test Tenant",
@@ -211,7 +211,7 @@ RSpec.describe "tenants API" do
 
     it "will not update a tenant with PUT" do
       api_basic_authorize
-      tenant = FactoryGirl.create(
+      tenant = FactoryBot.create(
         :tenant,
         :parent      => root_tenant,
         :name        => "Test Tenant",
@@ -229,12 +229,12 @@ RSpec.describe "tenants API" do
 
     it "will not update multiple tenants with POST" do
       api_basic_authorize
-      tenant_1 = FactoryGirl.create(
+      tenant_1 = FactoryBot.create(
         :tenant,
         :parent => root_tenant,
         :name   => "Test Tenant 1"
       )
-      tenant_2 = FactoryGirl.create(
+      tenant_2 = FactoryBot.create(
         :tenant,
         :parent => root_tenant,
         :name   => "Test Tenant 2"
@@ -253,7 +253,7 @@ RSpec.describe "tenants API" do
 
     it "will not delete a tenant with POST" do
       api_basic_authorize
-      tenant = FactoryGirl.create(:tenant, :parent => root_tenant)
+      tenant = FactoryBot.create(:tenant, :parent => root_tenant)
 
       expect { post api_tenant_url(nil, tenant), :params => gen_request(:delete) }.not_to change(Tenant, :count)
       expect(response).to have_http_status(:forbidden)
@@ -261,7 +261,7 @@ RSpec.describe "tenants API" do
 
     it "will not delete a tenant with DELETE" do
       api_basic_authorize
-      tenant = FactoryGirl.create(:tenant, :parent => root_tenant)
+      tenant = FactoryBot.create(:tenant, :parent => root_tenant)
 
       expect { delete api_tenant_url(nil, tenant) }.not_to change(Tenant, :count)
       expect(response).to have_http_status(:forbidden)
@@ -269,8 +269,8 @@ RSpec.describe "tenants API" do
 
     it "will not update multiple tenants with POST" do
       api_basic_authorize
-      tenant_1 = FactoryGirl.create(:tenant, :parent => root_tenant)
-      tenant_2 = FactoryGirl.create(:tenant, :parent => root_tenant)
+      tenant_1 = FactoryBot.create(:tenant, :parent => root_tenant)
+      tenant_2 = FactoryBot.create(:tenant, :parent => root_tenant)
       options = [
         {"href" => api_tenant_url(nil, tenant_1)},
         {"href" => api_tenant_url(nil, tenant_2)}
@@ -284,9 +284,9 @@ RSpec.describe "tenants API" do
   end
 
   describe 'GET /tenants/:id/custom_button_events' do
-    let(:tenant) { FactoryGirl.create(:tenant, :parent => root_tenant) }
-    let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
-    let!(:custom_button_event) { FactoryGirl.create(:custom_button_event, :target => tenant) }
+    let(:tenant) { FactoryBot.create(:tenant, :parent => root_tenant) }
+    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+    let!(:custom_button_event) { FactoryBot.create(:custom_button_event, :target => tenant) }
 
     it 'returns with the custom button events for the given user' do
       api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)

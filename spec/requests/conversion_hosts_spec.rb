@@ -1,7 +1,7 @@
 describe "ConversionHosts API" do
   context "collections" do
     it 'lists all conversion hosts with an appropriate role' do
-      conversion_host = FactoryGirl.create(:conversion_host, :resource => FactoryGirl.create(:vm))
+      conversion_host = FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm))
       api_basic_authorize(collection_action_identifier(:conversion_hosts, :read, :get))
       get(api_conversion_hosts_url)
 
@@ -19,7 +19,7 @@ describe "ConversionHosts API" do
 
   context "resources" do
     it 'will show a conversion host with an appropriate role' do
-      conversion_host = FactoryGirl.create(:conversion_host, :resource => FactoryGirl.create(:vm))
+      conversion_host = FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm))
       api_basic_authorize(action_identifier(:conversion_hosts, :read, :resource_actions, :get))
 
       get(api_conversion_host_url(nil, conversion_host))
@@ -39,7 +39,7 @@ describe "ConversionHosts API" do
 
     it "forbids access to a conversion host resource without an appropriate role" do
       api_basic_authorize
-      conversion_host = FactoryGirl.create(:conversion_host, :resource => FactoryGirl.create(:vm))
+      conversion_host = FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm))
       get(api_conversion_host_url(nil, conversion_host))
 
       expect(response).to have_http_status(:forbidden)
@@ -47,8 +47,8 @@ describe "ConversionHosts API" do
   end
 
   context "create" do
-    let(:vm) { FactoryGirl.create(:vm) }
-    let(:host) { FactoryGirl.create(:host) }
+    let(:vm) { FactoryBot.create(:vm) }
+    let(:host) { FactoryBot.create(:host) }
 
     let(:sample_conversion_host_from_vm) do
       {
@@ -113,7 +113,7 @@ describe "ConversionHosts API" do
   end
 
   context "delete" do
-    let(:conversion_host)             { FactoryGirl.create(:conversion_host, :resource => FactoryGirl.create(:vm)) }
+    let(:conversion_host)             { FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm)) }
     let(:conversion_host_url)         { api_conversion_host_url(nil, conversion_host) }
     let(:invalid_conversion_host_url) { api_conversion_host_url(nil, 999_999) }
 
@@ -143,7 +143,7 @@ describe "ConversionHosts API" do
 
     it "can delete multiple conversion hosts" do
       api_basic_authorize(collection_action_identifier(:conversion_hosts, :delete))
-      chost1, chost2 = FactoryGirl.create_list(:conversion_host, 2, :resource => FactoryGirl.create(:vm))
+      chost1, chost2 = FactoryBot.create_list(:conversion_host, 2, :resource => FactoryBot.create(:vm))
 
       chost1_id, chost2_id = chost1.id, chost2.id
       chost1_url = api_conversion_host_url(nil, chost1_id)
@@ -168,11 +168,11 @@ describe "ConversionHosts API" do
 
     let(:invalid_tag_url) { api_tag_url(nil, 999_999) }
 
-    let(:conversion_host) { FactoryGirl.create(:conversion_host, :resource => FactoryGirl.create(:vm), :name => 'conversion_host_with_tags') }
+    let(:conversion_host) { FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm), :name => 'conversion_host_with_tags') }
 
     before do
-      FactoryGirl.create(:classification_department_with_tags)
-      FactoryGirl.create(:classification_cost_center_with_tags)
+      FactoryBot.create(:classification_department_with_tags)
+      FactoryBot.create(:classification_cost_center_with_tags)
     end
 
     it "can list the tags for a conversion host" do

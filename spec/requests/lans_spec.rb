@@ -1,7 +1,7 @@
 RSpec.describe 'Lans API' do
   describe 'GET /api/lans' do
     it 'returns all lans with an appropriate role' do
-      lan = FactoryGirl.create(:lan)
+      lan = FactoryBot.create(:lan)
       api_basic_authorize collection_action_identifier(:lans, :read, :get)
 
       expected = {
@@ -28,7 +28,7 @@ RSpec.describe 'Lans API' do
   end
 
   describe 'GET /api/lans/:id' do
-    let(:lan) { FactoryGirl.create(:lan) }
+    let(:lan) { FactoryBot.create(:lan) }
 
     it 'will show a lan with an appropriate role' do
       api_basic_authorize action_identifier(:lans, :read, :resource_actions, :get)

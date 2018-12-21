@@ -3,17 +3,17 @@ RSpec.describe "Instances API" do
     instances.each { |instance| instance.update_attributes!(:raw_power_state => state) }
   end
 
-  let(:zone) { FactoryGirl.create(:zone, :name => "api_zone") }
-  let(:ems) { FactoryGirl.create(:ems_openstack_infra, :zone => zone) }
-  let(:ems_vmware) { FactoryGirl.create(:ems_vmware, :zone => zone) }
-  let(:host) { FactoryGirl.create(:host_openstack_infra) }
-  let(:host_vmware) { FactoryGirl.create(:host_vmware) }
-  let(:host_vmware) { FactoryGirl.create(:host_vmware) }
-  let(:cloud_tenant) { FactoryGirl.create(:cloud_tenant_openstack) }
-  let(:instance) { FactoryGirl.create(:vm_openstack, :ems_id => ems.id, :host => host, :cloud_tenant => cloud_tenant) }
-  let(:instance1) { FactoryGirl.create(:vm_openstack, :ems_id => ems.id, :host => host) }
-  let(:instance2) { FactoryGirl.create(:vm_openstack, :ems_id => ems.id, :host => host) }
-  let(:instance_vmware) { FactoryGirl.create(:vm_vmware_cloud, :ems_id => ems_vmware.id, :host => host_vmware) }
+  let(:zone) { FactoryBot.create(:zone, :name => "api_zone") }
+  let(:ems) { FactoryBot.create(:ems_openstack_infra, :zone => zone) }
+  let(:ems_vmware) { FactoryBot.create(:ems_vmware, :zone => zone) }
+  let(:host) { FactoryBot.create(:host_openstack_infra) }
+  let(:host_vmware) { FactoryBot.create(:host_vmware) }
+  let(:host_vmware) { FactoryBot.create(:host_vmware) }
+  let(:cloud_tenant) { FactoryBot.create(:cloud_tenant_openstack) }
+  let(:instance) { FactoryBot.create(:vm_openstack, :ems_id => ems.id, :host => host, :cloud_tenant => cloud_tenant) }
+  let(:instance1) { FactoryBot.create(:vm_openstack, :ems_id => ems.id, :host => host) }
+  let(:instance2) { FactoryBot.create(:vm_openstack, :ems_id => ems.id, :host => host) }
+  let(:instance_vmware) { FactoryBot.create(:vm_vmware_cloud, :ems_id => ems_vmware.id, :host => host_vmware) }
   let(:instance_url) { api_instance_url(nil, instance) }
   let(:instance1_url) { api_instance_url(nil, instance1) }
   let(:instance2_url) { api_instance_url(nil, instance2) }
@@ -24,8 +24,8 @@ RSpec.describe "Instances API" do
   context "Instance index" do
     it "lists only the cloud instances (no infrastructure vms)" do
       api_basic_authorize collection_action_identifier(:instances, :read, :get)
-      instance = FactoryGirl.create(:vm_openstack)
-      _vm = FactoryGirl.create(:vm_vmware)
+      instance = FactoryBot.create(:vm_openstack)
+      _vm = FactoryBot.create(:vm_vmware)
 
       get(api_instances_url)
 
@@ -482,11 +482,11 @@ RSpec.describe "Instances API" do
 
   context 'load balancers subcollection' do
     before do
-      @vm = FactoryGirl.create(:vm_amazon)
-      @load_balancer = FactoryGirl.create(:load_balancer_amazon)
-      load_balancer_listener = FactoryGirl.create(:load_balancer_listener_amazon)
-      load_balancer_pool = FactoryGirl.create(:load_balancer_pool_amazon)
-      load_balancer_pool_member = FactoryGirl.create(:load_balancer_pool_member_amazon)
+      @vm = FactoryBot.create(:vm_amazon)
+      @load_balancer = FactoryBot.create(:load_balancer_amazon)
+      load_balancer_listener = FactoryBot.create(:load_balancer_listener_amazon)
+      load_balancer_pool = FactoryBot.create(:load_balancer_pool_amazon)
+      load_balancer_pool_member = FactoryBot.create(:load_balancer_pool_member_amazon)
       @load_balancer.load_balancer_listeners << load_balancer_listener
       load_balancer_listener.load_balancer_pools << load_balancer_pool
       load_balancer_pool.load_balancer_pool_members << load_balancer_pool_member
@@ -533,8 +533,8 @@ RSpec.describe "Instances API" do
   end
 
   context "instance custom_attributes" do
-    let(:ca1) { FactoryGirl.create(:custom_attribute, :name => "name1", :value => "value1") }
-    let(:ca2) { FactoryGirl.create(:custom_attribute, :name => "name2", :value => "value2") }
+    let(:ca1) { FactoryBot.create(:custom_attribute, :name => "name1", :value => "value1") }
+    let(:ca2) { FactoryBot.create(:custom_attribute, :name => "name2", :value => "value2") }
     let(:ca1_url)        { api_instance_custom_attribute_url(nil, instance, ca1) }
     let(:ca2_url)        { api_instance_custom_attribute_url(nil, instance, ca2) }
 
@@ -656,10 +656,10 @@ RSpec.describe "Instances API" do
 
   context 'security groups subcollection' do
     before do
-      @network_port = FactoryGirl.create(:network_port, :device => instance)
-      @security_group = FactoryGirl.create(:security_group, :cloud_tenant => cloud_tenant)
-      @security_group_new = FactoryGirl.create(:security_group, :cloud_tenant => cloud_tenant)
-      @network_port_security_group = FactoryGirl.create(:network_port_security_group,
+      @network_port = FactoryBot.create(:network_port, :device => instance)
+      @security_group = FactoryBot.create(:security_group, :cloud_tenant => cloud_tenant)
+      @security_group_new = FactoryBot.create(:security_group, :cloud_tenant => cloud_tenant)
+      @network_port_security_group = FactoryBot.create(:network_port_security_group,
                                                         :network_port   => @network_port,
                                                         :security_group => @security_group)
     end

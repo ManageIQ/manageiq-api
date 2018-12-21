@@ -12,7 +12,7 @@
 
 describe "Data Stores API" do
   it "rejects delete request without appropriate role" do
-    ds = FactoryGirl.create(:storage_nfs)
+    ds = FactoryBot.create(:storage_nfs)
 
     api_basic_authorize
 
@@ -22,7 +22,7 @@ describe "Data Stores API" do
   end
 
   it "can delete a data store" do
-    ds = FactoryGirl.create(:storage_nfs)
+    ds = FactoryBot.create(:storage_nfs)
 
     api_basic_authorize action_identifier(:data_stores, :delete, :resource_actions, :post)
 
@@ -39,7 +39,7 @@ describe "Data Stores API" do
   end
 
   it "can delete a data store with DELETE as a resource action" do
-    ds = FactoryGirl.create(:storage_nfs)
+    ds = FactoryBot.create(:storage_nfs)
 
     api_basic_authorize action_identifier(:data_stores, :delete, :resource_actions, :delete)
 
@@ -49,7 +49,7 @@ describe "Data Stores API" do
   end
 
   it "rejects delete request with DELETE as a resource action without appropriate role" do
-    ds = FactoryGirl.create(:storage_nfs)
+    ds = FactoryBot.create(:storage_nfs)
 
     api_basic_authorize
 
@@ -67,8 +67,8 @@ describe "Data Stores API" do
   end
 
   it 'can delete data stores through POST' do
-    ds1 = FactoryGirl.create(:storage_vmware)
-    ds2 = FactoryGirl.create(:storage_nfs)
+    ds1 = FactoryBot.create(:storage_vmware)
+    ds2 = FactoryBot.create(:storage_nfs)
 
     api_basic_authorize collection_action_identifier(:data_stores, :delete, :post)
 

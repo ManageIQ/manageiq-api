@@ -1,9 +1,9 @@
 RSpec.describe 'CloudSubnets API' do
-  let(:ems) { FactoryGirl.create(:ems_network) }
+  let(:ems) { FactoryBot.create(:ems_network) }
 
   describe 'GET /api/cloud_subnets' do
     it 'lists all cloud subnets with an appropriate role' do
-      cloud_subnet = FactoryGirl.create(:cloud_subnet)
+      cloud_subnet = FactoryBot.create(:cloud_subnet)
       api_basic_authorize collection_action_identifier(:cloud_subnets, :read, :get)
       get(api_cloud_subnets_url)
 
@@ -30,7 +30,7 @@ RSpec.describe 'CloudSubnets API' do
 
   describe 'GET /api/cloud_subnets/:id' do
     it 'will show a cloud subnet with an appropriate role' do
-      cloud_subnet = FactoryGirl.create(:cloud_subnet)
+      cloud_subnet = FactoryBot.create(:cloud_subnet)
       api_basic_authorize action_identifier(:cloud_subnets, :read, :resource_actions, :get)
 
       get(api_cloud_subnet_url(nil, cloud_subnet))
@@ -40,7 +40,7 @@ RSpec.describe 'CloudSubnets API' do
     end
 
     it 'forbids access to a cloud tenant without an appropriate role' do
-      cloud_subnet = FactoryGirl.create(:cloud_subnet)
+      cloud_subnet = FactoryBot.create(:cloud_subnet)
       api_basic_authorize
 
       get(api_cloud_subnet_url(nil, cloud_subnet))

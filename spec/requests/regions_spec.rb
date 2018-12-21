@@ -20,7 +20,7 @@ describe "Regions API" do
   it "forbids access to a region resource without an appropriate role" do
     api_basic_authorize
 
-    region = FactoryGirl.create(:miq_region, :region => "2")
+    region = FactoryBot.create(:miq_region, :region => "2")
 
     get(api_region_url(nil, region))
 
@@ -30,7 +30,7 @@ describe "Regions API" do
   it "allows GETs of a region" do
     api_basic_authorize action_identifier(:regions, :read, :resource_actions, :get)
 
-    region = FactoryGirl.create(:miq_region, :region => "2")
+    region = FactoryBot.create(:miq_region, :region => "2")
 
     get(api_region_url(nil, region))
 
@@ -44,7 +44,7 @@ describe "Regions API" do
   describe "Settings" do
     let(:region_number) { ApplicationRecord.my_region_number + 1 }
     let(:id) { ApplicationRecord.id_in_region(1, region_number) }
-    let(:region) { FactoryGirl.create(:miq_region, :id => id, :region => region_number) }
+    let(:region) { FactoryBot.create(:miq_region, :id => id, :region => region_number) }
 
     context "/api/regions/:id?expand=settings" do
       it "expands the settings subcollection" do
@@ -69,10 +69,10 @@ describe "Regions API" do
     end
 
     context "/api/regions/:id/settings" do
-      let(:zone) { FactoryGirl.create(:zone, :id => id) }
+      let(:zone) { FactoryBot.create(:zone, :id => id) }
       let!(:server) { EvmSpecHelper.remote_miq_server(:id => id, :zone => zone) }
       let(:original_timeout) { region.settings_for_resource[:api][:authentication_timeout] }
-      let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+      let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
 
       it "shows the settings to an authenticated user with the proper role" do
         api_basic_authorize(:ops_settings)

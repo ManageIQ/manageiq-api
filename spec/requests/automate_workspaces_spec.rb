@@ -2,9 +2,9 @@
 # REST API Request Tests - /api/automate_workspaces
 #
 describe "Automate Workspaces API" do
-  let(:user) { FactoryGirl.create(:user_with_group, :userid => "admin") }
+  let(:user) { FactoryBot.create(:user_with_group, :userid => "admin") }
   let(:aw) do
-    FactoryGirl.create(:automate_workspace, :user   => user,
+    FactoryBot.create(:automate_workspace, :user   => user,
                                             :tenant => user.current_tenant,
                                             :input  => input)
   end

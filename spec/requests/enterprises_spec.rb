@@ -17,7 +17,7 @@ describe "Enterprises API" do
 
   context "GET /api/enterprises/:id" do
     it "returns the enterprise" do
-      enterprise = FactoryGirl.create(:miq_enterprise)
+      enterprise = FactoryBot.create(:miq_enterprise)
       api_basic_authorize
 
       get(api_enterprise_url(nil, enterprise))

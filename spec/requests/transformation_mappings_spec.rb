@@ -1,15 +1,15 @@
 describe "Transformation Mappings" do
-  let(:source_cluster) { FactoryGirl.create(:ems_cluster) }
-  let(:destination_cluster) { FactoryGirl.create(:ems_cluster) }
+  let(:source_cluster) { FactoryBot.create(:ems_cluster) }
+  let(:destination_cluster) { FactoryBot.create(:ems_cluster) }
 
-  let(:source_storage) { FactoryGirl.create(:storage) }
-  let(:destination_storage) { FactoryGirl.create(:storage) }
+  let(:source_storage) { FactoryBot.create(:storage) }
+  let(:destination_storage) { FactoryBot.create(:storage) }
 
-  let(:source_lan) { FactoryGirl.create(:lan) }
-  let(:destination_lan) { FactoryGirl.create(:lan) }
+  let(:source_lan) { FactoryBot.create(:lan) }
+  let(:destination_lan) { FactoryBot.create(:lan) }
 
   let(:transformation_mapping) do
-    FactoryGirl.create(
+    FactoryBot.create(
       :transformation_mapping,
       :transformation_mapping_items => [
         TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster),
@@ -19,14 +19,14 @@ describe "Transformation Mappings" do
     )
   end
 
-  let(:source_cluster2) { FactoryGirl.create(:ems_cluster) }
-  let(:destination_cluster2) { FactoryGirl.create(:ems_cluster) }
+  let(:source_cluster2) { FactoryBot.create(:ems_cluster) }
+  let(:destination_cluster2) { FactoryBot.create(:ems_cluster) }
 
-  let(:source_storage2) { FactoryGirl.create(:storage) }
-  let(:destination_storage2) { FactoryGirl.create(:storage) }
+  let(:source_storage2) { FactoryBot.create(:storage) }
+  let(:destination_storage2) { FactoryBot.create(:storage) }
 
-  let(:source_lan2) { FactoryGirl.create(:lan) }
-  let(:destination_lan2) { FactoryGirl.create(:lan) }
+  let(:source_lan2) { FactoryBot.create(:lan) }
+  let(:destination_lan2) { FactoryBot.create(:lan) }
 
   describe "GET /api/transformation_mappings" do
     context "with an appropriate role" do
@@ -80,13 +80,13 @@ describe "Transformation Mappings" do
       end
 
       it "can map vms to openstack flavors" do
-        openstack = FactoryGirl.create(:ems_openstack)
+        openstack = FactoryBot.create(:ems_openstack)
         _flavor1  = openstack.flavors.create!(:cpus => 1, :memory => 1.gigabytes)
         flavor2   = openstack.flavors.create!(:cpus => 2, :memory => 2.gigabytes)
         flavor3   = openstack.flavors.create!(:cpus => 4, :memory => 4.gigabytes)
-        vm1       = FactoryGirl.create(:vm_vmware, :hardware => FactoryGirl.create(:hardware, :cpu1x2, :ram1GB))
-        vm2       = FactoryGirl.create(:vm_vmware, :hardware => FactoryGirl.create(:hardware, :cpu2x2, :ram1GB))
-        vm3       = FactoryGirl.create(:vm_vmware, :hardware => FactoryGirl.create(:hardware, :cpu4x2, :ram1GB))
+        vm1       = FactoryBot.create(:vm_vmware, :hardware => FactoryBot.create(:hardware, :cpu1x2, :ram1GB))
+        vm2       = FactoryBot.create(:vm_vmware, :hardware => FactoryBot.create(:hardware, :cpu2x2, :ram1GB))
+        vm3       = FactoryBot.create(:vm_vmware, :hardware => FactoryBot.create(:hardware, :cpu4x2, :ram1GB))
 
         api_basic_authorize(action_identifier(:transformation_mappings, :vm_flavor_fit, :collection_actions))
 
@@ -114,8 +114,8 @@ describe "Transformation Mappings" do
   end
 
   describe "POST /api/transformation_mappings" do
-    let(:cluster) { FactoryGirl.create(:ems_cluster) }
-    let(:cluster2) { FactoryGirl.create(:ems_cluster) }
+    let(:cluster) { FactoryBot.create(:ems_cluster) }
+    let(:cluster2) { FactoryBot.create(:ems_cluster) }
 
     context "with an appropriate role" do
       it "can create a new transformation mapping" do
@@ -242,13 +242,13 @@ describe "Transformation Mappings" do
       context "with an appropriate role" do
         it "can validate vms with csv data specified" do
           api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
-          ems = FactoryGirl.create(:ext_management_system)
-          source_ems = FactoryGirl.create(:ems_cluster)
-          destination_ems = FactoryGirl.create(:ems_cluster)
+          ems = FactoryBot.create(:ext_management_system)
+          source_ems = FactoryBot.create(:ems_cluster)
+          destination_ems = FactoryBot.create(:ems_cluster)
           transformation_mapping =
-            FactoryGirl.create(:transformation_mapping,
+            FactoryBot.create(:transformation_mapping,
                                :transformation_mapping_items => [TransformationMappingItem.new(:source => source_ems, :destination => destination_ems)])
-          vm = FactoryGirl.create(:vm_openstack, :name => "foo", :ems_cluster => source_ems, :ext_management_system => ems)
+          vm = FactoryBot.create(:vm_openstack, :name => "foo", :ems_cluster => source_ems, :ext_management_system => ems)
 
           request = {
             "action" => "validate_vms",
@@ -309,17 +309,17 @@ describe "Transformation Mappings" do
         context "can validate vms with csv data and service_template_id are specified" do
           it "vm belongs to the service_template record" do
             api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
-            ems_source = FactoryGirl.create(:ext_management_system)
-            ems_destination = FactoryGirl.create(:ext_management_system)
-            source_cluster = FactoryGirl.create(:ems_cluster, :ext_management_system => ems_source)
-            destination_cluster = FactoryGirl.create(:ems_cluster, :ext_management_system => ems_destination)
+            ems_source = FactoryBot.create(:ext_management_system)
+            ems_destination = FactoryBot.create(:ext_management_system)
+            source_cluster = FactoryBot.create(:ems_cluster, :ext_management_system => ems_source)
+            destination_cluster = FactoryBot.create(:ems_cluster, :ext_management_system => ems_destination)
             transformation_mapping =
-              FactoryGirl.create(:transformation_mapping,
+              FactoryBot.create(:transformation_mapping,
                                  :transformation_mapping_items => [TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster)])
-            vm = FactoryGirl.create(:vm_vmware, :ems_cluster => source_cluster, :ext_management_system => ems_source)
-            service_template = FactoryGirl.create(:service_template_transformation_plan)
+            vm = FactoryBot.create(:vm_vmware, :ems_cluster => source_cluster, :ext_management_system => ems_source)
+            service_template = FactoryBot.create(:service_template_transformation_plan)
 
-            FactoryGirl.create(
+            FactoryBot.create(
               :service_resource,
               :resource         => vm,
               :service_template => service_template,
@@ -346,18 +346,18 @@ describe "Transformation Mappings" do
 
           it "vm does not belong to the service_template record" do
             api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
-            source_ems = FactoryGirl.create(:ext_management_system)
-            source_cluster = FactoryGirl.create(:ems_cluster, :ext_management_system => source_ems)
-            destination_ems = FactoryGirl.create(:ext_management_system)
-            destination_cluster = FactoryGirl.create(:ems_cluster, :ext_management_system => destination_ems)
+            source_ems = FactoryBot.create(:ext_management_system)
+            source_cluster = FactoryBot.create(:ems_cluster, :ext_management_system => source_ems)
+            destination_ems = FactoryBot.create(:ext_management_system)
+            destination_cluster = FactoryBot.create(:ems_cluster, :ext_management_system => destination_ems)
             transformation_mapping =
-              FactoryGirl.create(:transformation_mapping,
+              FactoryBot.create(:transformation_mapping,
                                  :transformation_mapping_items => [TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster)])
-            vm = FactoryGirl.create(:vm_vmware, :ems_cluster => source_cluster, :ext_management_system => source_ems)
-            service_template = FactoryGirl.create(:service_template_transformation_plan)
-            service_template2 = FactoryGirl.create(:service_template_transformation_plan)
+            vm = FactoryBot.create(:vm_vmware, :ems_cluster => source_cluster, :ext_management_system => source_ems)
+            service_template = FactoryBot.create(:service_template_transformation_plan)
+            service_template2 = FactoryBot.create(:service_template_transformation_plan)
 
-            FactoryGirl.create(
+            FactoryBot.create(
               :service_resource,
               :resource         => vm,
               :service_template => service_template,

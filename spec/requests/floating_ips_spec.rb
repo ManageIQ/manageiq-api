@@ -1,7 +1,7 @@
 RSpec.describe 'FloatingIp API' do
   describe 'GET /api/floating_ips' do
     it 'lists all cloud subnets with an appropriate role' do
-      floating_ip = FactoryGirl.create(:floating_ip)
+      floating_ip = FactoryBot.create(:floating_ip)
       api_basic_authorize collection_action_identifier(:floating_ips, :read, :get)
       get(api_floating_ips_url)
 
@@ -28,7 +28,7 @@ RSpec.describe 'FloatingIp API' do
 
   describe 'GET /api/floating_ips/:id' do
     it 'will show a cloud subnet with an appropriate role' do
-      floating_ip = FactoryGirl.create(:floating_ip)
+      floating_ip = FactoryBot.create(:floating_ip)
       api_basic_authorize action_identifier(:floating_ips, :read, :resource_actions, :get)
 
       get(api_floating_ip_url(nil, floating_ip))
@@ -38,7 +38,7 @@ RSpec.describe 'FloatingIp API' do
     end
 
     it 'forbids access to a cloud tenant without an appropriate role' do
-      floating_ip = FactoryGirl.create(:floating_ip)
+      floating_ip = FactoryBot.create(:floating_ip)
       api_basic_authorize
 
       get(api_floating_ip_url(nil, floating_ip))

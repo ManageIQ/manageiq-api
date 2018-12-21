@@ -9,7 +9,7 @@ RSpec.describe 'Cloud Networks API' do
     end
 
     it 'can list cloud networks' do
-      FactoryGirl.create_list(:cloud_network, 2)
+      FactoryBot.create_list(:cloud_network, 2)
       api_basic_authorize collection_action_identifier(:cloud_networks, :read, :get)
 
       get api_cloud_networks_url
@@ -20,7 +20,7 @@ RSpec.describe 'Cloud Networks API' do
   end
 
   context 'Providers cloud_networks subcollection' do
-    let(:provider) { FactoryGirl.create(:ems_amazon_with_cloud_networks) }
+    let(:provider) { FactoryBot.create(:ems_amazon_with_cloud_networks) }
 
     it 'queries Providers cloud_networks' do
       cloud_network_ids = provider.cloud_networks.pluck(:id)
@@ -59,8 +59,8 @@ RSpec.describe 'Cloud Networks API' do
     end
 
     it 'successfully returns providers on query when providers do not have cloud_networks attribute' do
-      FactoryGirl.create(:ems_openshift) # Openshift does not respond to #cloud_networks
-      FactoryGirl.create(:ems_amazon_with_cloud_networks) # Provider with cloud networks
+      FactoryBot.create(:ems_openshift) # Openshift does not respond to #cloud_networks
+      FactoryBot.create(:ems_amazon_with_cloud_networks) # Provider with cloud networks
       api_basic_authorize collection_action_identifier(:providers, :read, :get)
 
       get api_providers_url, :params => { :expand => 'resources,cloud_networks' }
@@ -81,7 +81,7 @@ RSpec.describe 'Cloud Networks API' do
     end
 
     it 'returns empty resources array when querying on a provider with no cloud_networks attribute' do
-      openshift = FactoryGirl.create(:ems_openshift)
+      openshift = FactoryBot.create(:ems_openshift)
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
 
       get(api_provider_cloud_networks_url(nil, openshift), :params => { :expand => 'resources' })

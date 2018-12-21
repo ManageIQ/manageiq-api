@@ -1,5 +1,5 @@
 RSpec.describe "Servers" do
-  let(:server) { FactoryGirl.create(:miq_server) }
+  let(:server) { FactoryBot.create(:miq_server) }
 
   describe "/api/servers/:id?expand=settings" do
     it "expands the settings subcollection" do
@@ -22,7 +22,7 @@ RSpec.describe "Servers" do
 
   describe "/api/servers/:id/settings" do
     let(:original_timeout) { server.settings_for_resource[:api][:authentication_timeout] }
-    let(:super_admin) { FactoryGirl.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
 
 
     it "shows the settings to an authenticated user with the proper role" do

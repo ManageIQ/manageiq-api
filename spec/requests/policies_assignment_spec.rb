@@ -16,24 +16,24 @@
 #   /api/:collection/:id/policy_profiles
 #
 describe "Policies Assignment API" do
-  let(:zone)       { FactoryGirl.create(:zone, :name => "api_zone") }
-  let(:provider)   { FactoryGirl.create(:ems_vmware, :zone => zone) }
-  let(:host)       { FactoryGirl.create(:host) }
+  let(:zone)       { FactoryBot.create(:zone, :name => "api_zone") }
+  let(:provider)   { FactoryBot.create(:ems_vmware, :zone => zone) }
+  let(:host)       { FactoryBot.create(:host) }
   let(:cluster)    do
-    FactoryGirl.create(:ems_cluster, :ext_management_system => provider, :hosts => [host], :vms => [])
+    FactoryBot.create(:ems_cluster, :ext_management_system => provider, :hosts => [host], :vms => [])
   end
-  let(:rp)         { FactoryGirl.create(:resource_pool, :name => "Resource Pool 1") }
-  let(:vm)         { FactoryGirl.create(:vm) }
+  let(:rp)         { FactoryBot.create(:resource_pool, :name => "Resource Pool 1") }
+  let(:vm)         { FactoryBot.create(:vm) }
   let(:template)   do
-    FactoryGirl.create(:miq_template, :name => "Tmpl 1", :vendor => "vmware", :location => "tmpl_1.vmtx")
+    FactoryBot.create(:miq_template, :name => "Tmpl 1", :vendor => "vmware", :location => "tmpl_1.vmtx")
   end
 
-  let(:p1)  { FactoryGirl.create(:miq_policy, :description => "Policy 1") }
-  let(:p2)  { FactoryGirl.create(:miq_policy, :description => "Policy 2") }
-  let(:p3)  { FactoryGirl.create(:miq_policy, :description => "Policy 3") }
+  let(:p1)  { FactoryBot.create(:miq_policy, :description => "Policy 1") }
+  let(:p2)  { FactoryBot.create(:miq_policy, :description => "Policy 2") }
+  let(:p3)  { FactoryBot.create(:miq_policy, :description => "Policy 3") }
 
-  let(:ps1) { FactoryGirl.create(:miq_policy_set, :description => "Policy Set 1") }
-  let(:ps2) { FactoryGirl.create(:miq_policy_set, :description => "Policy Set 2") }
+  let(:ps1) { FactoryBot.create(:miq_policy_set, :description => "Policy Set 1") }
+  let(:ps2) { FactoryBot.create(:miq_policy_set, :description => "Policy Set 2") }
 
   before do
     # Creating:  policy_set_1 = [policy_1, policy_2]  and  policy_set_2 = [policy_3]

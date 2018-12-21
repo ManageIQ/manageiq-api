@@ -2,7 +2,7 @@ RSpec.describe "guest devices API" do
   describe "display guest device details" do
     context "with the user authorized" do
       it "responds with device properties" do
-        device = FactoryGirl.create(:guest_device,
+        device = FactoryBot.create(:guest_device,
                                     :device_name => "Broadcom 2-port 1GbE NIC Card",
                                     :device_type => "ethernet",
                                     :location    => "Bay 7")
@@ -19,7 +19,7 @@ RSpec.describe "guest devices API" do
 
     context "with the user unauthorized" do
       it "responds with a forbidden status" do
-        device = FactoryGirl.create(:guest_device)
+        device = FactoryBot.create(:guest_device)
 
         api_basic_authorize
 

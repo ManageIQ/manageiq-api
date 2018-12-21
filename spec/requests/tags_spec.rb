@@ -7,8 +7,8 @@ describe "Tags API" do
   let(:invalid_tag_url) { api_tag_url(nil, 999_999) }
 
   before(:each) do
-    FactoryGirl.create(:classification_department_with_tags)
-    FactoryGirl.create(:classification_cost_center_with_tags)
+    FactoryBot.create(:classification_department_with_tags)
+    FactoryBot.create(:classification_cost_center_with_tags)
   end
 
   context "Tag collection" do
@@ -23,7 +23,7 @@ describe "Tags API" do
     context "with an appropriate role" do
       it "can create a tag with category by href" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryGirl.create(:category)
+        category = FactoryBot.create(:category)
         options = {:name => "test_tag", :description => "Test Tag", :category => {:href => api_category_url(nil, category)}}
 
         expect { post api_tags_url, :params => options }.to change(Tag, :count).by(1)
@@ -38,7 +38,7 @@ describe "Tags API" do
 
       it "can create a tag with a category by id" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryGirl.create(:category)
+        category = FactoryBot.create(:category)
 
         expect do
           post api_tags_url, :params => { :name => "test_tag", :description => "Test Tag", :category => {:id => category.id} }
@@ -53,7 +53,7 @@ describe "Tags API" do
 
       it "can create a tag with a category by name" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryGirl.create(:category)
+        category = FactoryBot.create(:category)
 
         expect do
           post api_tags_url, :params => { :name => "test_tag", :description => "Test Tag", :category => {:name => category.name} }
@@ -68,7 +68,7 @@ describe "Tags API" do
 
       it "can create a tag as a subresource of a category" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryGirl.create(:category)
+        category = FactoryBot.create(:category)
 
         expect do
           post(api_category_tags_url(nil, category), :params => { :name => "test_tag", :description => "Test Tag" })
@@ -90,8 +90,8 @@ describe "Tags API" do
 
       it "can update a tag's name" do
         api_basic_authorize action_identifier(:tags, :edit)
-        classification = FactoryGirl.create(:classification_tag)
-        category = FactoryGirl.create(:category, :children => [classification])
+        classification = FactoryBot.create(:classification_tag)
+        category = FactoryBot.create(:category, :children => [classification])
         tag = classification.tag
 
         expect do
@@ -103,8 +103,8 @@ describe "Tags API" do
 
       it "can update a tag's description" do
         api_basic_authorize action_identifier(:tags, :edit)
-        classification = FactoryGirl.create(:classification_tag)
-        FactoryGirl.create(:category, :children => [classification])
+        classification = FactoryBot.create(:classification_tag)
+        FactoryBot.create(:category, :children => [classification])
         tag = classification.tag
 
         expect do
@@ -116,7 +116,7 @@ describe "Tags API" do
 
       it "can delete a tag through POST" do
         api_basic_authorize action_identifier(:tags, :delete)
-        classification = FactoryGirl.create(:classification_tag)
+        classification = FactoryBot.create(:classification_tag)
         tag = classification.tag
 
         expect { post api_tag_url(nil, tag), :params => { :action => :delete } }.to change(Tag, :count).by(-1)
@@ -126,7 +126,7 @@ describe "Tags API" do
 
       it "can delete a tag through DELETE" do
         api_basic_authorize action_identifier(:tags, :delete)
-        classification = FactoryGirl.create(:classification_tag)
+        classification = FactoryBot.create(:classification_tag)
         tag = classification.tag
 
         expect { delete api_tag_url(nil, tag) }.to change(Tag, :count).by(-1)
@@ -136,7 +136,7 @@ describe "Tags API" do
 
       it "will respond with 404 not found when deleting a non-existent tag through DELETE" do
         api_basic_authorize action_identifier(:tags, :delete)
-        classification = FactoryGirl.create(:classification_tag)
+        classification = FactoryBot.create(:classification_tag)
         tag_id = classification.tag.id
         classification.destroy!
 
@@ -147,7 +147,7 @@ describe "Tags API" do
 
       it "will respond with 404 not found when deleting a non-existent tag through POST" do
         api_basic_authorize action_identifier(:tags, :delete)
-        classification = FactoryGirl.create(:classification_tag)
+        classification = FactoryBot.create(:classification_tag)
         tag_id = classification.tag.id
         classification.destroy!
 
@@ -158,9 +158,9 @@ describe "Tags API" do
 
       it "can delete multiple tags within a category by id" do
         api_basic_authorize action_identifier(:tags, :delete)
-        classification1 = FactoryGirl.create(:classification_tag)
-        classification2 = FactoryGirl.create(:classification_tag)
-        category = FactoryGirl.create(:category, :children => [classification1, classification2])
+        classification1 = FactoryBot.create(:classification_tag)
+        classification2 = FactoryBot.create(:classification_tag)
+        category = FactoryBot.create(:category, :children => [classification1, classification2])
         tag1 = classification1.tag
         tag2 = classification2.tag
 
@@ -181,9 +181,9 @@ describe "Tags API" do
 
       it "can delete multiple tags within a category by name" do
         api_basic_authorize action_identifier(:tags, :delete)
-        classification1 = FactoryGirl.create(:classification_tag)
-        classification2 = FactoryGirl.create(:classification_tag)
-        category = FactoryGirl.create(:category, :children => [classification1, classification2])
+        classification1 = FactoryBot.create(:classification_tag)
+        classification2 = FactoryBot.create(:classification_tag)
+        category = FactoryBot.create(:category, :children => [classification1, classification2])
         tag1 = classification1.tag
         tag2 = classification2.tag
         body = gen_request(:delete, [{:name => tag1.name}, {:name => tag2.name}])

@@ -9,7 +9,7 @@ describe "Cloud Object Store Containers API" do
     end
 
     it 'returns cloud object store containers with an appropriate role' do
-      cloud_object_store_container = FactoryGirl.create(:cloud_object_store_container)
+      cloud_object_store_container = FactoryBot.create(:cloud_object_store_container)
       api_basic_authorize(collection_action_identifier(:cloud_object_store_containers, :read, :get))
 
       get(api_cloud_object_store_containers_url)
@@ -23,7 +23,7 @@ describe "Cloud Object Store Containers API" do
   end
 
   context 'GET /api/cloud_object_store_containers' do
-    let(:cloud_object_store_container) { FactoryGirl.create(:cloud_object_store_container) }
+    let(:cloud_object_store_container) { FactoryBot.create(:cloud_object_store_container) }
 
     it 'forbids access to a cloud object store container without an appropriate role' do
       api_basic_authorize

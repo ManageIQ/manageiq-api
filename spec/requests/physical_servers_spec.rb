@@ -2,7 +2,7 @@ RSpec.describe "physical_servers API" do
   describe "display a physical server's details" do
     context "with valid properties" do
       it "shows all of its properties" do
-        ps = FactoryGirl.create(:physical_server, :ems_ref => "A59D5B36821111E1A9F5E41F13ED4F6A")
+        ps = FactoryBot.create(:physical_server, :ems_ref => "A59D5B36821111E1A9F5E41F13ED4F6A")
 
         api_basic_authorize action_identifier(:physical_servers, :read, :resource_actions, :get)
         get api_physical_server_url(nil, ps)
@@ -13,7 +13,7 @@ RSpec.describe "physical_servers API" do
 
     context "without an appropriate role" do
       it "forbids access to read physical server" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         get api_physical_server_url(nil, ps)
@@ -26,7 +26,7 @@ RSpec.describe "physical_servers API" do
     context "with valid id" do
       it "returns both id and href" do
         api_basic_authorize(action_identifier(:physical_servers, :read, :resource_actions, :get))
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         get api_physical_server_url(nil, ps)
 
@@ -48,21 +48,21 @@ RSpec.describe "physical_servers API" do
       it "retrieve details" do
         api_basic_authorize(action_identifier(:physical_servers, :read, :resource_actions, :get))
 
-        vm = FactoryGirl.create(:vm)
-        host = FactoryGirl.create(:host, :vms => [vm])
+        vm = FactoryBot.create(:vm)
+        host = FactoryBot.create(:host, :vms => [vm])
 
-        asset_detail = FactoryGirl.create(:asset_detail)
+        asset_detail = FactoryBot.create(:asset_detail)
 
-        network = FactoryGirl.create(:network)
-        gd1 = FactoryGirl.create(:guest_device, :network => network, :device_type => "ethernet")
-        gd2 = FactoryGirl.create(:guest_device, :network => network, :device_type => 'storage')
+        network = FactoryBot.create(:network)
+        gd1 = FactoryBot.create(:guest_device, :network => network, :device_type => "ethernet")
+        gd2 = FactoryBot.create(:guest_device, :network => network, :device_type => 'storage')
 
-        firmware = FactoryGirl.create(:firmware)
-        hardware = FactoryGirl.create(:hardware, :firmwares => [firmware], :guest_devices => [gd1, gd2])
+        firmware = FactoryBot.create(:firmware)
+        hardware = FactoryBot.create(:hardware, :firmwares => [firmware], :guest_devices => [gd1, gd2])
         network.update_attributes!(:hardware_id => hardware.id.to_s)
 
-        comp_system = FactoryGirl.create(:computer_system, :hardware => hardware)
-        ps = FactoryGirl.create(:physical_server, :computer_system => comp_system, :asset_detail => asset_detail, :host => host)
+        comp_system = FactoryBot.create(:computer_system, :hardware => hardware)
+        ps = FactoryBot.create(:physical_server, :computer_system => comp_system, :asset_detail => asset_detail, :host => host)
 
         get api_physical_server_url(nil, ps), :params => {:attributes => "host,host.vms,asset_detail,hardware,hardware.firmwares,hardware.nics,hardware.ports"}
 
@@ -96,7 +96,7 @@ RSpec.describe "physical_servers API" do
   describe "power on/off a physical server" do
     context "with valid action names" do
       it "powers on a server successfully" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :power_on, :resource_actions, :post)
         post(api_physical_server_url(nil, ps), :params => gen_request(:power_on))
@@ -106,7 +106,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "powers off a server successfully" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :power_off, :resource_actions, :post)
         post(api_physical_server_url(nil, ps), :params => gen_request(:power_off))
@@ -116,7 +116,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "immediately powers off a server successfully" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :power_off_now, :resource_actions, :post)
         post(api_physical_server_url(nil, ps), :params => gen_request(:power_off_now))
@@ -126,7 +126,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "restarts a server successfully" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :restart, :resource_actions, :post)
         post(api_physical_server_url(nil, ps), :params => gen_request(:restart))
@@ -136,7 +136,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "immediately restarts a server successfully" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :restart_now, :resource_actions, :post)
         post(api_physical_server_url(nil, ps), :params => gen_request(:restart_now))
@@ -146,7 +146,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "restarts a server to the system setup successfully" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :restart_to_sys_setup, :resource_actions, :post)
         post(api_physical_server_url(nil, ps), :params => gen_request(:restart_to_sys_setup))
@@ -156,7 +156,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "restarts a server's management controller" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :restart_mgmt_controller, :resource_actions, :post)
         post(api_physical_server_url(nil, ps), :params => gen_request(:restart_mgmt_controller))
@@ -168,7 +168,7 @@ RSpec.describe "physical_servers API" do
 
     context "without an appropriate role" do
       it "fails to power on a server" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         post(api_physical_server_url(nil, ps), :params => gen_request(:power_on))
@@ -178,7 +178,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "fails to power off a server" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         post(api_physical_server_url(nil, ps), :params => gen_request(:power_off))
@@ -188,7 +188,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "fails to immediately power off a server" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         post(api_physical_server_url(nil, ps), :params => gen_request(:power_off_now))
@@ -198,7 +198,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "fails to restart a server" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         post(api_physical_server_url(nil, ps), :params => gen_request(:restart))
@@ -208,7 +208,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "fails to immediately restart a server" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         post(api_physical_server_url(nil, ps), :params => gen_request(:restart_now))
@@ -218,7 +218,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "fails to restart to system setup" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         post(api_physical_server_url(nil, ps), :params => gen_request(:restart_to_sys_setup))
@@ -228,7 +228,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "fails to restart a server's management controller" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         post(api_physical_server_url(nil, ps), :params => gen_request(:restart_mgmt_controller))
@@ -273,7 +273,7 @@ RSpec.describe "physical_servers API" do
 
       actions.each do |action|
         it "returns status 200 and a failure message for the non existent physical server" do
-          ps = FactoryGirl.create(:physical_server)
+          ps = FactoryBot.create(:physical_server)
           api_basic_authorize(action_identifier(:physical_servers, action, :resource_actions, :post))
 
           post(api_physical_servers_url, :params => gen_request(action, [{"href" => api_physical_server_url(nil, ps)}, {"href" => api_physical_server_url(nil, 999_999)}]))
@@ -302,7 +302,7 @@ RSpec.describe "physical_servers API" do
   describe "turn on/off a physical server's location LED" do
     context "with valid action names" do
       it "turns on a location LED successfully" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :turn_on_loc_led, :resource_actions, :post)
         post(api_physical_server_url(nil, ps), :params => gen_request(:turn_on_loc_led))
@@ -312,7 +312,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "turns off a location LED successfully" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :turn_off_loc_led, :resource_actions, :post)
         post(api_physical_server_url(nil, ps), :params => gen_request(:turn_off_loc_led))
@@ -322,7 +322,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "blinks a location LED successfully" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize action_identifier(:physical_servers, :blink_loc_led, :resource_actions, :post)
         post(api_physical_server_url(nil, ps), :params => gen_request(:blink_loc_led))
@@ -334,7 +334,7 @@ RSpec.describe "physical_servers API" do
 
     context "without an appropriate role" do
       it "fails to turn on a location LED" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         post(api_physical_server_url(nil, ps), :params => gen_request(:turn_on_loc_led))
@@ -344,7 +344,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "fails to turn off a location LED" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         post(api_physical_server_url(nil, ps), :params => gen_request(:turn_off_loc_led))
@@ -354,7 +354,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "fails to blink a location LED" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
 
         api_basic_authorize
         post(api_physical_server_url(nil, ps), :params => gen_request(:blink_loc_led))
@@ -391,7 +391,7 @@ RSpec.describe "physical_servers API" do
 
       actions.each do |action|
         it "for the action #{action} returns status 200 and a failure message for the non existent physical server" do
-          ps = FactoryGirl.create(:physical_server)
+          ps = FactoryBot.create(:physical_server)
           api_basic_authorize(action_identifier(:physical_servers, action, :resource_actions, :post))
 
           post(api_physical_servers_url, :params => gen_request(action, [{"href" => api_physical_server_url(nil, ps)}, {"href" => api_physical_server_url(nil, 999_999)}]))
@@ -430,7 +430,7 @@ RSpec.describe "physical_servers API" do
 
     context "without an appropriate role" do
       it "it responds with 403 Forbidden" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
         api_basic_authorize
 
         post(api_physical_server_url(nil, ps), :params => gen_request(:refresh))
@@ -449,7 +449,7 @@ RSpec.describe "physical_servers API" do
       end
 
       it "refresh of a single Physical Server" do
-        ps = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
         api_basic_authorize(action_identifier(:physical_servers, :refresh, :resource_actions, :post))
 
         post(api_physical_server_url(nil, ps), :params => gen_request(:refresh))
@@ -458,8 +458,8 @@ RSpec.describe "physical_servers API" do
       end
 
       it "refresh of multiple Physical Servers" do
-        ps = FactoryGirl.create(:physical_server)
-        ps2 = FactoryGirl.create(:physical_server)
+        ps = FactoryBot.create(:physical_server)
+        ps2 = FactoryBot.create(:physical_server)
         api_basic_authorize(action_identifier(:physical_servers, :refresh, :resource_actions, :post))
 
         post(api_physical_servers_url, :params => gen_request(:refresh, [{"href" => api_physical_server_url(nil, ps)}, {"href" => api_physical_server_url(nil, ps2)}]))
@@ -485,11 +485,11 @@ RSpec.describe "physical_servers API" do
   end
 
   describe "Apply config pattern action" do
-    let(:config_pattern) { FactoryGirl.create(:customization_script) }
-    let(:config_pattern2) { FactoryGirl.create(:customization_script) }
-    let(:ps) { FactoryGirl.create(:physical_server) }
+    let(:config_pattern) { FactoryBot.create(:customization_script) }
+    let(:config_pattern2) { FactoryBot.create(:customization_script) }
+    let(:ps) { FactoryBot.create(:physical_server) }
     let(:href_ps) { api_physical_server_url(nil, ps) }
-    let(:ps2) { FactoryGirl.create(:physical_server) }
+    let(:ps2) { FactoryBot.create(:physical_server) }
     let(:href_ps2) { api_physical_server_url(nil, ps2) }
 
     context "with an invalid physical server id and a valid config pattern id" do
@@ -576,8 +576,8 @@ RSpec.describe "physical_servers API" do
     end
   end
   describe "Subcollections" do
-    let(:physical_server) { FactoryGirl.create(:physical_server) }
-    let(:event_stream) { FactoryGirl.create(:event_stream, :physical_server_id => physical_server.id, :event_type => "Some Event") }
+    let(:physical_server) { FactoryBot.create(:physical_server) }
+    let(:event_stream) { FactoryBot.create(:event_stream, :physical_server_id => physical_server.id, :event_type => "Some Event") }
 
     context 'Events subcollection' do
       context 'GET /api/physical_servers/:id/event_streams' do

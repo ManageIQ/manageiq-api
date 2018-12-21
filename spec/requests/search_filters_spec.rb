@@ -1,5 +1,5 @@
 describe 'Search Filters' do
-  let(:filter) { FactoryGirl.create(:miq_search) }
+  let(:filter) { FactoryBot.create(:miq_search) }
 
   describe 'GET /api/search_filters/:id' do
     it 'cannot get a search filter without an appropriate role' do
@@ -30,7 +30,7 @@ describe 'Search Filters' do
     end
 
     it 'can delete a filter by description, id, or href with an appropriate role' do
-      filter2, filter3 = FactoryGirl.create_list(:miq_search, 2)
+      filter2, filter3 = FactoryBot.create_list(:miq_search, 2)
       api_basic_authorize(collection_action_identifier(:search_filters, :delete, :post))
 
       post(api_search_filters_url, :params => {

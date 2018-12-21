@@ -9,7 +9,7 @@ describe "Container Templates API" do
     end
 
     it 'returns container templates with an appropriate role' do
-      container_template = FactoryGirl.create(:container_template)
+      container_template = FactoryBot.create(:container_template)
       api_basic_authorize(collection_action_identifier(:container_templates, :read, :get))
 
       get(api_container_templates_url)
@@ -23,7 +23,7 @@ describe "Container Templates API" do
   end
 
   context 'GET /api/container_templates' do
-    let(:container_template) { FactoryGirl.create(:container_template) }
+    let(:container_template) { FactoryBot.create(:container_template) }
 
     it 'forbids access to a container template without an appropriate role' do
       api_basic_authorize

@@ -1,7 +1,7 @@
 RSpec.describe 'NetworkRouters API' do
   describe 'GET /api/network_routers' do
     it 'lists all cloud subnets with an appropriate role' do
-      network_router = FactoryGirl.create(:network_router)
+      network_router = FactoryBot.create(:network_router)
       api_basic_authorize collection_action_identifier(:network_routers, :read, :get)
 
       get(api_network_routers_url)
@@ -29,7 +29,7 @@ RSpec.describe 'NetworkRouters API' do
 
   describe 'GET /api/network_routers/:id' do
     it 'will show a cloud subnet with an appropriate role' do
-      network_router = FactoryGirl.create(:network_router)
+      network_router = FactoryBot.create(:network_router)
       api_basic_authorize action_identifier(:network_routers, :read, :resource_actions, :get)
 
       get(api_network_router_url(nil, network_router))
@@ -39,7 +39,7 @@ RSpec.describe 'NetworkRouters API' do
     end
 
     it 'forbids access to a cloud tenant without an appropriate role' do
-      network_router = FactoryGirl.create(:network_router)
+      network_router = FactoryBot.create(:network_router)
       api_basic_authorize
 
       get(api_network_router_url(nil, network_router))
@@ -60,7 +60,7 @@ RSpec.describe 'NetworkRouters API' do
 
   describe "DELETE /api/network_routers" do
     it "can delete a router" do
-      network_router = FactoryGirl.create(:network_router)
+      network_router = FactoryBot.create(:network_router)
       api_basic_authorize(action_identifier(:network_routers, :delete))
 
       delete(api_network_router_url(nil, network_router))
@@ -70,7 +70,7 @@ RSpec.describe 'NetworkRouters API' do
   end
 
   it "will not delete a router unless authorized" do
-    network_router = FactoryGirl.create(:network_router)
+    network_router = FactoryBot.create(:network_router)
     api_basic_authorize
 
     delete(api_network_router_url(nil, network_router))
@@ -80,8 +80,8 @@ RSpec.describe 'NetworkRouters API' do
 
   describe "POST /api/network_routers with delete action" do
     it "can delete a router" do
-      ems = FactoryGirl.create(:ems_network)
-      network_router = FactoryGirl.create(:network_router_openstack, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_network)
+      network_router = FactoryBot.create(:network_router_openstack, :ext_management_system => ems)
       api_basic_authorize(action_identifier(:network_routers, :delete, :resource_actions))
 
       post(api_network_router_url(nil, network_router), :params => gen_request(:delete))
@@ -95,7 +95,7 @@ RSpec.describe 'NetworkRouters API' do
     end
 
     it "will not delete a router unless authorized" do
-      network_router = FactoryGirl.create(:network_router)
+      network_router = FactoryBot.create(:network_router)
       api_basic_authorize
 
       post(api_network_router_url(nil, network_router), :params => {:action => "delete"})
@@ -104,8 +104,8 @@ RSpec.describe 'NetworkRouters API' do
     end
 
     it "can delete multiple network_routers" do
-      ems = FactoryGirl.create(:ems_network)
-      network_router1, network_router2 = FactoryGirl.create_list(:network_router_openstack, 2, :ext_management_system => ems)
+      ems = FactoryBot.create(:ems_network)
+      network_router1, network_router2 = FactoryBot.create_list(:network_router_openstack, 2, :ext_management_system => ems)
       api_basic_authorize(action_identifier(:network_routers, :delete, :resource_actions))
 
       post(api_network_routers_url, :params => { :action => "delete", :resources => [{:id => network_router1.id},
@@ -115,7 +115,7 @@ RSpec.describe 'NetworkRouters API' do
     end
 
     it "forbids multiple network router deletion without an appropriate role" do
-      network_router1, network_router2 = FactoryGirl.create_list(:network_router, 2)
+      network_router1, network_router2 = FactoryBot.create_list(:network_router, 2)
       api_basic_authorize
 
       post(api_network_routers_url, :params => { :action => "delete", :resources => [{:id => network_router1.id},
@@ -125,7 +125,7 @@ RSpec.describe 'NetworkRouters API' do
     end
 
     it 'raises an error when delete not supported for network router' do
-      network_router = FactoryGirl.create(:network_router)
+      network_router = FactoryBot.create(:network_router)
       api_basic_authorize(action_identifier(:network_routers, :delete, :resource_actions))
 
       post(api_network_router_url(nil, network_router), :params => gen_request(:delete))

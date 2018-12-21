@@ -10,10 +10,10 @@
 #
 describe "Querying" do
   def create_vms_by_name(names)
-    names.each.collect { |name| FactoryGirl.create(:vm_vmware, :name => name) }
+    names.each.collect { |name| FactoryBot.create(:vm_vmware, :name => name) }
   end
 
-  let(:vm1) { FactoryGirl.create(:vm_vmware, :name => "vm1") }
+  let(:vm1) { FactoryBot.create(:vm_vmware, :name => "vm1") }
 
   describe "Querying vms" do
     before { api_basic_authorize collection_action_identifier(:vms, :read, :get) }
@@ -36,7 +36,7 @@ describe "Querying" do
 
     specify "a user cannot exceed the maximum allowed page size" do
       stub_settings_merge(:api => {:max_results_per_page => 2})
-      FactoryGirl.create_list(:vm, 3)
+      FactoryBot.create_list(:vm, 3)
 
       get api_vms_url, :params => { :limit => 3 }
 
@@ -86,7 +86,7 @@ describe "Querying" do
     end
 
     it 'returns only id attributes if specified on a collection' do
-      vm = FactoryGirl.create(:vm)
+      vm = FactoryBot.create(:vm)
 
       get(api_vms_url, :params => { :expand => :resources, :attributes => 'id' })
 
@@ -238,8 +238,8 @@ describe "Querying" do
     end
 
     it "supports sorting with physical attributes" do
-      FactoryGirl.create(:vm_vmware, :vendor => "vmware", :name => "vmware_vm")
-      FactoryGirl.create(:vm_redhat, :vendor => "redhat", :name => "redhat_vm")
+      FactoryBot.create(:vm_vmware, :vendor => "vmware", :name => "vmware_vm")
+      FactoryBot.create(:vm_redhat, :vendor => "redhat", :name => "redhat_vm")
 
       get api_vms_url, :params => { :sort_by => "vendor", :sort_order => "asc", :expand => "resources" }
 
@@ -248,12 +248,12 @@ describe "Querying" do
     end
 
     it 'supports sql friendly virtual attributes' do
-      host_foo =  FactoryGirl.create(:host, :name => 'foo')
-      host_bar =  FactoryGirl.create(:host, :name => 'bar')
-      host_zap =  FactoryGirl.create(:host, :name => 'zap')
-      FactoryGirl.create(:vm, :name => 'vm_foo', :host => host_foo)
-      FactoryGirl.create(:vm, :name => 'vm_bar', :host => host_bar)
-      FactoryGirl.create(:vm, :name => 'vm_zap', :host => host_zap)
+      host_foo =  FactoryBot.create(:host, :name => 'foo')
+      host_bar =  FactoryBot.create(:host, :name => 'bar')
+      host_zap =  FactoryBot.create(:host, :name => 'zap')
+      FactoryBot.create(:vm, :name => 'vm_foo', :host => host_foo)
+      FactoryBot.create(:vm, :name => 'vm_bar', :host => host_bar)
+      FactoryBot.create(:vm, :name => 'vm_zap', :host => host_zap)
 
       get api_vms_url, :params => { :sort_by => 'host_name', :sort_order => 'desc', :expand => 'resources' }
 
@@ -262,7 +262,7 @@ describe "Querying" do
     end
 
     it 'does not support non sql friendly virtual attributes' do
-      FactoryGirl.create(:vm)
+      FactoryBot.create(:vm)
 
       get api_vms_url, :params => { :sort_by => 'aggressive_recommended_mem', :sort_order => 'asc' }
 
@@ -277,9 +277,9 @@ describe "Querying" do
 
     it 'allows sorting by asc when other filters are applied' do
       api_basic_authorize collection_action_identifier(:services, :read, :get)
-      svc1, _svc2 = FactoryGirl.create_list(:service, 2)
-      dept = FactoryGirl.create(:classification_department)
-      FactoryGirl.create(:classification_tag, :name => 'finance', :parent => dept)
+      svc1, _svc2 = FactoryBot.create_list(:service, 2)
+      dept = FactoryBot.create(:classification_department)
+      FactoryBot.create(:classification_tag, :name => 'finance', :parent => dept)
       Classification.classify(svc1, 'department', 'finance')
 
       get(
@@ -458,10 +458,10 @@ describe "Querying" do
     end
 
     it "supports filtering by attributes of associations" do
-      host1 = FactoryGirl.create(:host, :name => "foo")
-      host2 = FactoryGirl.create(:host, :name => "bar")
-      vm1 = FactoryGirl.create(:vm_vmware, :name => "baz", :host => host1)
-      _vm2 = FactoryGirl.create(:vm_vmware, :name => "qux", :host => host2)
+      host1 = FactoryBot.create(:host, :name => "foo")
+      host2 = FactoryBot.create(:host, :name => "bar")
+      vm1 = FactoryBot.create(:vm_vmware, :name => "baz", :host => host1)
+      _vm2 = FactoryBot.create(:vm_vmware, :name => "qux", :host => host2)
 
       get(
         api_vms_url,
@@ -476,10 +476,10 @@ describe "Querying" do
     end
 
     it "supports filtering by attributes of associations with paging" do
-      host1 = FactoryGirl.create(:host, :name => "foo")
-      host2 = FactoryGirl.create(:host, :name => "bar")
-      vm1 = FactoryGirl.create(:vm_vmware, :name => "baz", :host => host1)
-      _vm2 = FactoryGirl.create(:vm_vmware, :name => "qux", :host => host2)
+      host1 = FactoryBot.create(:host, :name => "foo")
+      host2 = FactoryBot.create(:host, :name => "bar")
+      vm1 = FactoryBot.create(:vm_vmware, :name => "baz", :host => host1)
+      _vm2 = FactoryBot.create(:vm_vmware, :name => "qux", :host => host2)
 
       get(
         api_vms_url,
@@ -502,10 +502,10 @@ describe "Querying" do
     end
 
     it "supports filtering by virtual string attributes" do
-      host_a = FactoryGirl.create(:host, :name => "aa")
-      host_b = FactoryGirl.create(:host, :name => "bb")
-      vm_a = FactoryGirl.create(:vm, :host => host_a)
-      _vm_b = FactoryGirl.create(:vm, :host => host_b)
+      host_a = FactoryBot.create(:host, :name => "aa")
+      host_b = FactoryBot.create(:host, :name => "bb")
+      vm_a = FactoryBot.create(:vm, :host => host_a)
+      _vm_b = FactoryBot.create(:vm, :host => host_b)
 
       get(api_vms_url, :params => { :filter => ["host_name='aa'"], :expand => "resources" })
 
@@ -514,10 +514,10 @@ describe "Querying" do
     end
 
     it "supports flexible filtering by virtual string attributes" do
-      host_a = FactoryGirl.create(:host, :name => "ab")
-      host_b = FactoryGirl.create(:host, :name => "cd")
-      vm_a = FactoryGirl.create(:vm, :host => host_a)
-      _vm_b = FactoryGirl.create(:vm, :host => host_b)
+      host_a = FactoryBot.create(:host, :name => "ab")
+      host_b = FactoryBot.create(:host, :name => "cd")
+      vm_a = FactoryBot.create(:vm, :host => host_a)
+      _vm_b = FactoryBot.create(:vm, :host => host_b)
 
       get(api_vms_url, :params => { :filter => ["host_name='a%'"], :expand => "resources" })
 
@@ -526,11 +526,11 @@ describe "Querying" do
     end
 
     it "supports filtering by virtual boolean attributes" do
-      ems = FactoryGirl.create(:ext_management_system)
-      storage = FactoryGirl.create(:storage)
-      host = FactoryGirl.create(:host, :storages => [storage])
-      _vm = FactoryGirl.create(:vm, :host => host, :ext_management_system => ems)
-      archived_vm = FactoryGirl.create(:vm)
+      ems = FactoryBot.create(:ext_management_system)
+      storage = FactoryBot.create(:storage)
+      host = FactoryBot.create(:host, :storages => [storage])
+      _vm = FactoryBot.create(:vm, :host => host, :ext_management_system => ems)
+      archived_vm = FactoryBot.create(:vm)
 
       get(api_vms_url, :params => { :filter => ["archived=true"], :expand => "resources" })
 
@@ -539,10 +539,10 @@ describe "Querying" do
     end
 
     it "supports filtering by comparison of virtual integer attributes" do
-      hardware_1 = FactoryGirl.create(:hardware, :cpu_sockets => 4)
-      hardware_2 = FactoryGirl.create(:hardware, :cpu_sockets => 8)
-      _vm_1 = FactoryGirl.create(:vm, :hardware => hardware_1)
-      vm_2 = FactoryGirl.create(:vm, :hardware => hardware_2)
+      hardware_1 = FactoryBot.create(:hardware, :cpu_sockets => 4)
+      hardware_2 = FactoryBot.create(:hardware, :cpu_sockets => 8)
+      _vm_1 = FactoryBot.create(:vm, :hardware => hardware_1)
+      vm_2 = FactoryBot.create(:vm, :hardware => hardware_2)
 
       get(api_vms_url, :params => { :filter => ["num_cpu > 4"], :expand => "resources" })
 
@@ -551,9 +551,9 @@ describe "Querying" do
     end
 
     it "supports = with dates mixed with virtual attributes" do
-      _vm_1 = FactoryGirl.create(:vm, :retires_on => "2016-01-01", :vendor => "vmware")
-      vm_2 = FactoryGirl.create(:vm, :retires_on => "2016-01-02", :vendor => "vmware")
-      _vm_3 = FactoryGirl.create(:vm, :retires_on => "2016-01-02", :vendor => "openstack")
+      _vm_1 = FactoryBot.create(:vm, :retires_on => "2016-01-01", :vendor => "vmware")
+      vm_2 = FactoryBot.create(:vm, :retires_on => "2016-01-02", :vendor => "vmware")
+      _vm_3 = FactoryBot.create(:vm, :retires_on => "2016-01-02", :vendor => "openstack")
 
       get(api_vms_url, :params => { :filter => ["retires_on = 2016-01-02", "vendor_display = VMware"] })
 
@@ -563,9 +563,9 @@ describe "Querying" do
     end
 
     it "supports > with dates mixed with virtual attributes" do
-      _vm_1 = FactoryGirl.create(:vm, :retires_on => "2016-01-01", :vendor => "vmware")
-      vm_2 = FactoryGirl.create(:vm, :retires_on => "2016-01-02", :vendor => "vmware")
-      _vm_3 = FactoryGirl.create(:vm, :retires_on => "2016-01-03", :vendor => "openstack")
+      _vm_1 = FactoryBot.create(:vm, :retires_on => "2016-01-01", :vendor => "vmware")
+      vm_2 = FactoryBot.create(:vm, :retires_on => "2016-01-02", :vendor => "vmware")
+      _vm_3 = FactoryBot.create(:vm, :retires_on => "2016-01-03", :vendor => "openstack")
 
       get(api_vms_url, :params => { :filter => ["retires_on > 2016-01-01", "vendor_display = VMware"] })
 
@@ -575,9 +575,9 @@ describe "Querying" do
     end
 
     it "supports > with datetimes mixed with virtual attributes" do
-      _vm_1 = FactoryGirl.create(:vm, :last_scan_on => "2016-01-01T07:59:59Z", :vendor => "vmware")
-      vm_2 = FactoryGirl.create(:vm, :last_scan_on => "2016-01-01T08:00:00Z", :vendor => "vmware")
-      _vm_3 = FactoryGirl.create(:vm, :last_scan_on => "2016-01-01T08:00:00Z", :vendor => "openstack")
+      _vm_1 = FactoryBot.create(:vm, :last_scan_on => "2016-01-01T07:59:59Z", :vendor => "vmware")
+      vm_2 = FactoryBot.create(:vm, :last_scan_on => "2016-01-01T08:00:00Z", :vendor => "vmware")
+      _vm_3 = FactoryBot.create(:vm, :last_scan_on => "2016-01-01T08:00:00Z", :vendor => "openstack")
 
       get(api_vms_url, :params => { :filter => ["last_scan_on > 2016-01-01T07:59:59Z", "vendor_display = VMware"] })
 
@@ -587,9 +587,9 @@ describe "Querying" do
     end
 
     it "supports < with dates mixed with virtual attributes" do
-      _vm_1 = FactoryGirl.create(:vm, :retires_on => "2016-01-01", :vendor => "openstack")
-      vm_2 = FactoryGirl.create(:vm, :retires_on => "2016-01-02", :vendor => "vmware")
-      _vm_3 = FactoryGirl.create(:vm, :retires_on => "2016-01-03", :vendor => "vmware")
+      _vm_1 = FactoryBot.create(:vm, :retires_on => "2016-01-01", :vendor => "openstack")
+      vm_2 = FactoryBot.create(:vm, :retires_on => "2016-01-02", :vendor => "vmware")
+      _vm_3 = FactoryBot.create(:vm, :retires_on => "2016-01-03", :vendor => "vmware")
 
       get(api_vms_url, :params => { :filter => ["retires_on < 2016-01-03", "vendor_display = VMware"] })
 
@@ -599,9 +599,9 @@ describe "Querying" do
     end
 
     it "supports < with datetimes mixed with virtual attributes" do
-      _vm_1 = FactoryGirl.create(:vm, :last_scan_on => "2016-01-01T07:59:59Z", :vendor => "openstack")
-      vm_2 = FactoryGirl.create(:vm, :last_scan_on => "2016-01-01T07:59:59Z", :vendor => "vmware")
-      _vm_3 = FactoryGirl.create(:vm, :last_scan_on => "2016-01-01T08:00:00Z", :vendor => "vmware")
+      _vm_1 = FactoryBot.create(:vm, :last_scan_on => "2016-01-01T07:59:59Z", :vendor => "openstack")
+      vm_2 = FactoryBot.create(:vm, :last_scan_on => "2016-01-01T07:59:59Z", :vendor => "vmware")
+      _vm_3 = FactoryBot.create(:vm, :last_scan_on => "2016-01-01T08:00:00Z", :vendor => "vmware")
 
       get(api_vms_url, :params => { :filter => ["last_scan_on < 2016-01-01T08:00:00Z", "vendor_display = VMware"] })
 
@@ -639,9 +639,9 @@ describe "Querying" do
     end
 
     it "does not support filtering vms as a subcollection" do
-      service = FactoryGirl.create(:service)
-      service << FactoryGirl.create(:vm_vmware, :name => "foo")
-      service << FactoryGirl.create(:vm_vmware, :name => "bar")
+      service = FactoryBot.create(:service)
+      service << FactoryBot.create(:vm_vmware, :name => "foo")
+      service << FactoryBot.create(:vm_vmware, :name => "bar")
 
       get(api_service_vms_url(nil, service), :params => { :filter => ["name=foo"] })
 
@@ -650,8 +650,8 @@ describe "Querying" do
     end
 
     it "can do fuzzy matching on strings with forward slashes" do
-      tag_1 = FactoryGirl.create(:tag, :name => "/managed/foo")
-      _tag_2 = FactoryGirl.create(:tag, :name => "/managed/bar")
+      tag_1 = FactoryBot.create(:tag, :name => "/managed/foo")
+      _tag_2 = FactoryBot.create(:tag, :name => "/managed/bar")
       api_basic_authorize collection_action_identifier(:tags, :read, :get)
 
       get(api_tags_url, :params => { :filter => ["name='*/foo'"] })
@@ -710,8 +710,8 @@ describe "Querying" do
       api_basic_authorize collection_action_identifier(:vms, :read, :get)
       vm1, _vm2, vm3 = create_vms_by_name(%w(aa bb cc))
 
-      dept = FactoryGirl.create(:classification_department)
-      FactoryGirl.create(:classification_tag, :name => "finance", :description => "Finance", :parent => dept)
+      dept = FactoryBot.create(:classification_department)
+      FactoryBot.create(:classification_tag, :name => "finance", :description => "Finance", :parent => dept)
       Classification.classify(vm1, "department", "finance")
       Classification.classify(vm3, "department", "finance")
 
@@ -725,10 +725,10 @@ describe "Querying" do
       api_basic_authorize collection_action_identifier(:vms, :read, :get)
       vm1, _vm2, vm3 = create_vms_by_name(%w(aa bb cc))
 
-      dept = FactoryGirl.create(:classification_department)
-      cc = FactoryGirl.create(:classification_cost_center)
-      FactoryGirl.create(:classification_tag, :name => "finance", :description => "Finance", :parent => dept)
-      FactoryGirl.create(:classification_tag, :name => "cc01", :description => "Cost Center 1", :parent => cc)
+      dept = FactoryBot.create(:classification_department)
+      cc = FactoryBot.create(:classification_cost_center)
+      FactoryBot.create(:classification_tag, :name => "finance", :description => "Finance", :parent => dept)
+      FactoryBot.create(:classification_tag, :name => "cc01", :description => "Cost Center 1", :parent => cc)
 
       Classification.classify(vm1, "department", "finance")
       Classification.classify(vm1, "cc", "cc01")
@@ -782,7 +782,7 @@ describe "Querying" do
 
     it "supports expanding resources and subcollections" do
       vm1 = create_vms_by_name(%w(aa)).first
-      FactoryGirl.create(:guest_application, :vm_or_template_id => vm1.id, :name => "LibreOffice")
+      FactoryBot.create(:guest_application, :vm_or_template_id => vm1.id, :name => "LibreOffice")
 
       get api_vms_url, :params => { :expand => "resources,software" }
 
@@ -791,7 +791,7 @@ describe "Querying" do
     end
 
     it "supports suppressing resources" do
-      FactoryGirl.create(:vm)
+      FactoryBot.create(:vm)
 
       get(api_vms_url, :params => { :hide => "resources" })
 
@@ -848,8 +848,8 @@ describe "Querying" do
       api_basic_authorize subcollection_action_identifier(:vms, :snapshots, :read, :get),
                           subcollection_action_identifier(:vms, :snapshots, :delete, :post),
                           subcollection_action_identifier(:vms, :snapshots, :create, :post)
-      vm = FactoryGirl.create(:vm)
-      FactoryGirl.create(:snapshot, :vm_or_template => vm)
+      vm = FactoryBot.create(:vm)
+      FactoryBot.create(:snapshot, :vm_or_template => vm)
 
       get(api_vm_snapshots_url(nil, vm))
 
@@ -864,8 +864,8 @@ describe "Querying" do
                           subcollection_action_identifier(:vms, :snapshots, :read, :get),
                           subcollection_action_identifier(:vms, :snapshots, :create, :post)
 
-      vm = FactoryGirl.create(:vm)
-      snapshot = FactoryGirl.create(:snapshot, :vm_or_template => vm)
+      vm = FactoryBot.create(:vm)
+      snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
       get(api_vm_snapshot_url(nil, vm, snapshot))
 
@@ -949,9 +949,9 @@ describe "Querying" do
     end
 
     it "succeed with collection_class matching the collection class and returns subclassed resources" do
-      FactoryGirl.create(:vm_vmware, :name => "aa")
-      FactoryGirl.create(:vm_vmware_cloud, :name => "bb")
-      FactoryGirl.create(:vm_vmware_cloud, :name => "cc")
+      FactoryBot.create(:vm_vmware, :name => "aa")
+      FactoryBot.create(:vm_vmware_cloud, :name => "bb")
+      FactoryBot.create(:vm_vmware_cloud, :name => "cc")
 
       get api_vms_url, :params => { :expand => "resources", :collection_class => "Vm" }
 
@@ -960,9 +960,9 @@ describe "Querying" do
     end
 
     it "succeed with collection_class and only returns subclassed resources" do
-      FactoryGirl.create(:vm_vmware, :name => "aa")
-      FactoryGirl.create(:vm_vmware_cloud, :name => "bb")
-      vmcc = FactoryGirl.create(:vm_vmware_cloud, :name => "cc")
+      FactoryBot.create(:vm_vmware, :name => "aa")
+      FactoryBot.create(:vm_vmware_cloud, :name => "bb")
+      vmcc = FactoryBot.create(:vm_vmware_cloud, :name => "cc")
 
       get api_vms_url, :params => { :expand => "resources", :collection_class => vmcc.class.name }
 

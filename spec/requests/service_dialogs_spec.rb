@@ -4,14 +4,14 @@
 # - Refresh dialog fields       /api/service_dialogs/:id "refresh_dialog_fields"
 #
 describe "Service Dialogs API" do
-  let(:dialog1)    { FactoryGirl.create(:dialog, :label => "ServiceDialog1") }
-  let(:dialog2)    { FactoryGirl.create(:dialog, :label => "ServiceDialog2") }
+  let(:dialog1)    { FactoryBot.create(:dialog, :label => "ServiceDialog1") }
+  let(:dialog2)    { FactoryBot.create(:dialog, :label => "ServiceDialog2") }
 
-  let(:ra1)        { FactoryGirl.create(:resource_action, :dialog => dialog1) }
-  let(:ra2)        { FactoryGirl.create(:resource_action, :dialog => dialog2) }
+  let(:ra1)        { FactoryBot.create(:resource_action, :dialog => dialog1) }
+  let(:ra2)        { FactoryBot.create(:resource_action, :dialog => dialog2) }
 
-  let(:template)   { FactoryGirl.create(:service_template, :name => "ServiceTemplate") }
-  let(:service)    { FactoryGirl.create(:service, :name => "Service1") }
+  let(:template)   { FactoryBot.create(:service_template, :name => "ServiceTemplate") }
+  let(:service)    { FactoryBot.create(:service, :name => "Service1") }
 
   context "Service Dialogs collection" do
     before { template.resource_actions = [ra1, ra2] }
@@ -68,7 +68,7 @@ describe "Service Dialogs API" do
 
     it "query single dialog to include content with target and resource action specified" do
       api_basic_authorize action_identifier(:service_dialogs, :read, :resource_actions, :get)
-      service_template = FactoryGirl.create(:service_template)
+      service_template = FactoryBot.create(:service_template)
       get(api_service_dialog_url(nil, dialog1), :params => { :resource_action_id => ra1.id, :target_id => service_template.id, :target_type => 'service_template' })
 
       expect_single_resource_query(
@@ -101,7 +101,7 @@ describe "Service Dialogs API" do
 
     context 'Delete Service Dialogs' do
       it 'DELETE /api/service_dialogs/:id' do
-        dialog = FactoryGirl.create(:dialog)
+        dialog = FactoryBot.create(:dialog)
         api_basic_authorize collection_action_identifier(:service_dialogs, :delete)
 
         expect do
@@ -111,7 +111,7 @@ describe "Service Dialogs API" do
       end
 
       it 'POST /api/service_dialogs/:id deletes a single service dialog' do
-        dialog = FactoryGirl.create(:dialog)
+        dialog = FactoryBot.create(:dialog)
         api_basic_authorize collection_action_identifier(:service_dialogs, :delete)
 
         expect do
@@ -121,7 +121,7 @@ describe "Service Dialogs API" do
       end
 
       it 'POST /api/service_dialogs deletes a single service dialog' do
-        dialog = FactoryGirl.create(:dialog)
+        dialog = FactoryBot.create(:dialog)
         api_basic_authorize collection_action_identifier(:service_dialogs, :delete)
 
         expect do
@@ -131,7 +131,7 @@ describe "Service Dialogs API" do
       end
 
       it 'POST /api/service_dialogs deletes multiple service dialogs' do
-        dialog_a, dialog_b = FactoryGirl.create_list(:dialog, 2)
+        dialog_a, dialog_b = FactoryBot.create_list(:dialog, 2)
         api_basic_authorize collection_action_identifier(:service_dialogs, :delete)
 
         expect do
@@ -148,7 +148,7 @@ describe "Service Dialogs API" do
     end
 
     context 'Edit Service Dialogs' do
-      let(:dialog) { FactoryGirl.create(:dialog_with_tab_and_group_and_field) }
+      let(:dialog) { FactoryBot.create(:dialog_with_tab_and_group_and_field) }
 
       it 'POST /api/service_dialogs/:id rejects a request without appropriate role' do
         api_basic_authorize
@@ -246,7 +246,7 @@ describe "Service Dialogs API" do
         api_basic_authorize collection_action_identifier(:service_dialogs, :edit)
         dialog_tab = dialog.dialog_tabs.first
         dialog_group = dialog_tab.dialog_groups.first
-        new_field = FactoryGirl.create(:dialog_field)
+        new_field = FactoryBot.create(:dialog_field)
         dialog_group.dialog_fields << new_field
 
         updated_dialog = {
@@ -282,7 +282,7 @@ describe "Service Dialogs API" do
       end
 
       it 'POST /api/service_dialogs updates multiple service dialog' do
-        dialog2 = FactoryGirl.create(:dialog_with_tab_and_group_and_field)
+        dialog2 = FactoryBot.create(:dialog_with_tab_and_group_and_field)
 
         api_basic_authorize collection_action_identifier(:service_dialogs, :edit)
 
@@ -317,7 +317,7 @@ describe "Service Dialogs API" do
 
     context 'Service Dialogs Copy' do
       it 'forbids blueprint copy without an appropriate role' do
-        dialog = FactoryGirl.create(:dialog_with_tab_and_group_and_field)
+        dialog = FactoryBot.create(:dialog_with_tab_and_group_and_field)
         api_basic_authorize
 
         post(api_service_dialog_url(nil, dialog), :params => { :action => 'copy' })
@@ -326,8 +326,8 @@ describe "Service Dialogs API" do
       end
 
       it 'Can copy multiple service dialogs' do
-        dialog1 = FactoryGirl.create(:dialog_with_tab_and_group_and_field, :label => 'foo')
-        dialog2 = FactoryGirl.create(:dialog_with_tab_and_group_and_field, :label => 'bar')
+        dialog1 = FactoryBot.create(:dialog_with_tab_and_group_and_field, :label => 'foo')
+        dialog2 = FactoryBot.create(:dialog_with_tab_and_group_and_field, :label => 'bar')
         api_basic_authorize collection_action_identifier(:service_dialogs, :copy)
 
         expected = {
@@ -358,7 +358,7 @@ describe "Service Dialogs API" do
       end
 
       it 'Can copy a single service dialog' do
-        dialog = FactoryGirl.create(:dialog_with_tab_and_group_and_field, :label => 'foo')
+        dialog = FactoryBot.create(:dialog_with_tab_and_group_and_field, :label => 'foo')
         api_basic_authorize collection_action_identifier(:service_dialogs, :copy)
 
         expected = {
@@ -373,7 +373,7 @@ describe "Service Dialogs API" do
       end
 
       it 'Can copy a service dialog with a new label' do
-        dialog = FactoryGirl.create(:dialog_with_tab_and_group_and_field, :label => 'bar')
+        dialog = FactoryBot.create(:dialog_with_tab_and_group_and_field, :label => 'bar')
         api_basic_authorize collection_action_identifier(:service_dialogs, :copy)
 
         expected = {
@@ -426,10 +426,10 @@ describe "Service Dialogs API" do
   end
 
   describe "Service Dialogs refresh dialog fields" do
-    let(:dialog1) { FactoryGirl.create(:dialog, :label => "Dialog1") }
-    let(:tab1)    { FactoryGirl.create(:dialog_tab, :label => "Tab1") }
-    let(:group1)  { FactoryGirl.create(:dialog_group, :label => "Group1") }
-    let(:text1)   { FactoryGirl.create(:dialog_field_text_box, :label => "TextBox1", :name => "text1") }
+    let(:dialog1) { FactoryBot.create(:dialog, :label => "Dialog1") }
+    let(:tab1)    { FactoryBot.create(:dialog_tab, :label => "Tab1") }
+    let(:group1)  { FactoryBot.create(:dialog_group, :label => "Group1") }
+    let(:text1)   { FactoryBot.create(:dialog_field_text_box, :label => "TextBox1", :name => "text1") }
 
     def init_dialog
       dialog1.dialog_tabs << tab1

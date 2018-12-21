@@ -2,17 +2,17 @@
 # REST API Request Tests - Queries
 #
 describe "Queries API" do
-  let(:zone)       { FactoryGirl.create(:zone, :name => "api_zone") }
-  let(:ems)        { FactoryGirl.create(:ems_vmware, :zone => zone) }
-  let(:host)       { FactoryGirl.create(:host) }
+  let(:zone)       { FactoryBot.create(:zone, :name => "api_zone") }
+  let(:ems)        { FactoryBot.create(:ems_vmware, :zone => zone) }
+  let(:host)       { FactoryBot.create(:host) }
 
-  let(:vm1)        { FactoryGirl.create(:vm_vmware, :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
+  let(:vm1)        { FactoryBot.create(:vm_vmware, :host => host, :ems_id => ems.id, :raw_power_state => "poweredOn") }
   let(:vm1_url)    { api_vm_url(nil, vm1) }
 
   let(:vm_href_pattern) { %r{^http://.*/api/vms/[0-9r]+$} }
 
   def create_vms(count)
-    count.times { FactoryGirl.create(:vm_vmware) }
+    count.times { FactoryBot.create(:vm_vmware) }
   end
 
   describe "Query collections" do
@@ -73,8 +73,8 @@ describe "Queries API" do
   end
 
   describe "Query subcollections" do
-    let(:acct1) { FactoryGirl.create(:account, :vm_or_template_id => vm1.id, :name => "John") }
-    let(:acct2) { FactoryGirl.create(:account, :vm_or_template_id => vm1.id, :name => "Jane") }
+    let(:acct1) { FactoryBot.create(:account, :vm_or_template_id => vm1.id, :name => "John") }
+    let(:acct2) { FactoryBot.create(:account, :vm_or_template_id => vm1.id, :name => "Jane") }
     let(:vm1_accounts_url) { api_vm_accounts_url(nil, vm1) }
     let(:acct1_url)        { api_vm_account_url(nil, vm1, acct1) }
     let(:acct2_url)        { api_vm_account_url(nil, vm1, acct2) }
@@ -136,7 +136,7 @@ describe "Queries API" do
 
       credentials = {:userid => "admin", :password => "super_password"}
 
-      provider = FactoryGirl.create(:ext_management_system, :name => "sample", :hostname => "sample.com")
+      provider = FactoryBot.create(:ext_management_system, :name => "sample", :hostname => "sample.com")
       provider.update_authentication(:default => credentials)
 
       get(api_provider_url(nil, provider), :params => { :attributes => "authentications" })
@@ -155,8 +155,8 @@ describe "Queries API" do
       password_field = ::MiqRequestWorkflow.all_encrypted_options_fields.last.to_s
       options = {:attrs => {:userid => "admin", password_field.to_sym => "super_password"}}
 
-      template = FactoryGirl.create(:template_vmware, :name => "template1")
-      request  = FactoryGirl.create(:miq_provision_request,
+      template = FactoryBot.create(:template_vmware, :name => "template1")
+      request  = FactoryBot.create(:miq_provision_request,
                                     :requester   => @user,
                                     :description => "sample provision",
                                     :src_vm_id   => template.id,

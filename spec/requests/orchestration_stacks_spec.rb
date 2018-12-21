@@ -9,7 +9,7 @@ describe "Orchestration Stacks API" do
     end
 
     it 'returns orchestration_stacks with an appropriate role' do
-      orchestration_stack = FactoryGirl.create(:orchestration_stack)
+      orchestration_stack = FactoryBot.create(:orchestration_stack)
       api_basic_authorize(collection_action_identifier(:orchestration_stacks, :read, :get))
 
       get(api_orchestration_stacks_url)
@@ -23,7 +23,7 @@ describe "Orchestration Stacks API" do
   end
 
   context 'GET /api/orchestration_stacks' do
-    let(:orchestration_stack) { FactoryGirl.create(:orchestration_stack) }
+    let(:orchestration_stack) { FactoryBot.create(:orchestration_stack) }
 
     it 'forbids access to a orchestration_stack without an appropriate role' do
       api_basic_authorize

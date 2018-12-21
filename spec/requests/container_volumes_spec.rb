@@ -9,7 +9,7 @@ describe "Container Volumes API" do
     end
 
     it 'returns container volumes with an appropriate role' do
-      container_volume = FactoryGirl.create(:container_volume)
+      container_volume = FactoryBot.create(:container_volume)
       api_basic_authorize(collection_action_identifier(:container_volumes, :read, :get))
 
       get(api_container_volumes_url)
@@ -23,7 +23,7 @@ describe "Container Volumes API" do
   end
 
   context 'GET /api/container_volumes' do
-    let(:container_volume) { FactoryGirl.create(:container_volume) }
+    let(:container_volume) { FactoryBot.create(:container_volume) }
 
     it 'forbids access to a container volume without an appropriate role' do
       api_basic_authorize

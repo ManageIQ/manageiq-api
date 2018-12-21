@@ -1,9 +1,9 @@
 RSpec.describe 'MetricRollups API' do
   describe 'GET /api/metric_rollups' do
     before do
-      FactoryGirl.create(:metric_rollup_vm_hr)
-      FactoryGirl.create(:metric_rollup_vm_daily)
-      FactoryGirl.create(:metric_rollup_host_daily)
+      FactoryBot.create(:metric_rollup_vm_hr)
+      FactoryBot.create(:metric_rollup_vm_daily)
+      FactoryBot.create(:metric_rollup_host_daily)
     end
 
     it 'returns metric_rollups for a specific resource_type' do
@@ -20,8 +20,8 @@ RSpec.describe 'MetricRollups API' do
     end
 
     it 'returns metric_rollups for specific resources' do
-      vm = FactoryGirl.create(:vm_or_template)
-      vm_metric = FactoryGirl.create(:metric_rollup_vm_hr, :resource => vm)
+      vm = FactoryBot.create(:vm_or_template)
+      vm_metric = FactoryBot.create(:metric_rollup_vm_hr, :resource => vm)
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
       get(
@@ -46,9 +46,9 @@ RSpec.describe 'MetricRollups API' do
     end
 
     it 'returns metric_rollups for specific resources and capture interval times' do
-      vm = FactoryGirl.create(:vm_or_template)
-      FactoryGirl.create(:metric_rollup_vm_hr, :resource => vm)
-      vm_daily = FactoryGirl.create(:metric_rollup_vm_daily, :resource => vm)
+      vm = FactoryBot.create(:vm_or_template)
+      FactoryBot.create(:metric_rollup_vm_hr, :resource => vm)
+      vm_daily = FactoryBot.create(:metric_rollup_vm_daily, :resource => vm)
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
       get(
@@ -130,8 +130,8 @@ RSpec.describe 'MetricRollups API' do
     end
 
     it 'can override the default limit' do
-      vm = FactoryGirl.create(:vm_or_template)
-      FactoryGirl.create_list(:metric_rollup_vm_hr, 3, :resource => vm)
+      vm = FactoryBot.create(:vm_or_template)
+      FactoryBot.create_list(:metric_rollup_vm_hr, 3, :resource => vm)
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
       get(

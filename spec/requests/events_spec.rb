@@ -11,7 +11,7 @@ describe "Events API" do
   let(:miq_event_guid_list) { MiqEventDefinition.pluck(:guid) }
 
   def create_events(count)
-    count.times { FactoryGirl.create(:miq_event_definition) }
+    count.times { FactoryBot.create(:miq_event_definition) }
   end
 
   context "Event collection" do
@@ -56,7 +56,7 @@ describe "Events API" do
   end
 
   context "Event subcollection" do
-    let(:policy)             { FactoryGirl.create(:miq_policy, :name => "Policy 1") }
+    let(:policy)             { FactoryBot.create(:miq_policy, :name => "Policy 1") }
 
     def relate_events_to(policy)
       MiqEventDefinition.all.collect(&:id).each do |event_id|

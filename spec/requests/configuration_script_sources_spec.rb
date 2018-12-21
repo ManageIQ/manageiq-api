@@ -1,13 +1,13 @@
 RSpec.describe 'Configuration Script Sources API' do
-  let(:provider) { FactoryGirl.create(:ext_management_system) }
-  let(:config_script_src) { FactoryGirl.create(:ansible_configuration_script_source, :manager => provider) }
-  let(:config_script_src_2) { FactoryGirl.create(:ansible_configuration_script_source, :manager => provider) }
-  let(:ansible_provider)      { FactoryGirl.create(:provider_ansible_tower, :with_authentication) }
+  let(:provider) { FactoryBot.create(:ext_management_system) }
+  let(:config_script_src) { FactoryBot.create(:ansible_configuration_script_source, :manager => provider) }
+  let(:config_script_src_2) { FactoryBot.create(:ansible_configuration_script_source, :manager => provider) }
+  let(:ansible_provider)      { FactoryBot.create(:provider_ansible_tower, :with_authentication) }
   let(:manager) { ansible_provider.managers.first }
 
   describe 'GET /api/configuration_script_sources' do
     it 'lists all the configuration script sources with an appropriate role' do
-      repository = FactoryGirl.create(:configuration_script_source)
+      repository = FactoryBot.create(:configuration_script_source)
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :read, :get)
 
       get(api_configuration_script_sources_url)
@@ -33,7 +33,7 @@ RSpec.describe 'Configuration Script Sources API' do
 
   describe 'GET /api/configuration_script_sources/:id' do
     it 'will show a configuration script source with an appropriate role' do
-      repository = FactoryGirl.create(:configuration_script_source)
+      repository = FactoryBot.create(:configuration_script_source)
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :read, :get)
 
       get(api_configuration_script_source_url(nil, repository))
@@ -46,7 +46,7 @@ RSpec.describe 'Configuration Script Sources API' do
     end
 
     it 'forbids access to a configuration script source without an appropriate role' do
-      repository = FactoryGirl.create(:configuration_script_source)
+      repository = FactoryBot.create(:configuration_script_source)
       api_basic_authorize
 
       get(api_configuration_script_source_url(nil, repository))
@@ -225,7 +225,7 @@ RSpec.describe 'Configuration Script Sources API' do
     end
 
     it 'requires that the type support update_in_provider_queue' do
-      config_script_src = FactoryGirl.create(:configuration_script_source)
+      config_script_src = FactoryBot.create(:configuration_script_source)
       api_basic_authorize action_identifier(:configuration_script_sources, :edit)
 
       post(api_configuration_script_source_url(nil, config_script_src), :params => { :action => 'edit', :resource => params })
@@ -285,7 +285,7 @@ RSpec.describe 'Configuration Script Sources API' do
     end
 
     it 'requires that the type support delete_in_provider_queue' do
-      config_script_src = FactoryGirl.create(:configuration_script_source)
+      config_script_src = FactoryBot.create(:configuration_script_source)
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :delete, :post)
 
       post(api_configuration_script_source_url(nil, config_script_src), :params => { :action => 'delete', :resource => params })
@@ -442,7 +442,7 @@ RSpec.describe 'Configuration Script Sources API' do
   end
 
   describe 'GET /api/configuration_script_sources/:id/configuration_script_payloads' do
-    let(:payload) { FactoryGirl.create(:configuration_script_payload) }
+    let(:payload) { FactoryBot.create(:configuration_script_payload) }
 
     before do
       config_script_src.configuration_script_payloads << payload
