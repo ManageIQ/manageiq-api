@@ -1,4 +1,8 @@
 describe "ConversionHosts API" do
+  before(:all) do
+    NotificationType.seed
+  end
+
   context "collections" do
     it 'lists all conversion hosts with an appropriate role' do
       conversion_host = FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm))
@@ -47,8 +51,10 @@ describe "ConversionHosts API" do
   end
 
   context "create" do
-    let(:vm) { FactoryBot.create(:vm) }
-    let(:host) { FactoryBot.create(:host) }
+    let(:zone) { FactoryBot.create(:zone, :name => "api_zone") }
+    let(:ems) { FactoryBot.create(:ems_vmware, :zone => zone) }
+    let(:vm) { FactoryBot.create(:vm, :ems_id => ems.id) }
+    let(:host) { FactoryBot.create(:host, :ems_id => ems.id) }
 
     let(:sample_conversion_host_from_vm) do
       {
@@ -70,29 +76,20 @@ describe "ConversionHosts API" do
 
     let(:expected_attributes) { %w(id name resource_type resource_id version) }
 
+    before do
+      allow_any_instance_of(ConversionHost).to receive(:enable_conversion_host_role).and_return(true)
+    end
+
     it "supports single conversion host creation" do
       api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
 
       post(api_conversion_hosts_url, :params => sample_conversion_host_from_vm)
 
       expect(response).to have_http_status(:ok)
-      expect_result_resources_to_include_keys("results", expected_attributes)
 
-      conversion_host_id = response.parsed_body["results"].first["id"]
-
-      expect(ConversionHost.find_by(:resource_id => vm.id).id).to eql(conversion_host_id.to_i)
-    end
-
-    it "supports single conversion host creation via action" do
-      api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
-
-      post(api_conversion_hosts_url, :params => gen_request(:create, sample_conversion_host_from_vm))
-
-      expect(response).to have_http_status(:ok)
-      expect_result_resources_to_include_keys("results", expected_attributes)
-
-      conversion_host_id = response.parsed_body["results"].first["id"]
-      expect(ConversionHost.find_by(:resource_id => vm.id).id).to eql(conversion_host_id.to_i)
+      results = response.parsed_body["results"]
+      expect(results).to be_kind_of(Array)
+      expect(results.first).to be_kind_of(Integer)
     end
 
     it "supports multiple conversion host creation" do
@@ -102,13 +99,31 @@ describe "ConversionHosts API" do
       post(api_conversion_hosts_url, :params => gen_request(:create, conversion_hosts))
 
       expect(response).to have_http_status(:ok)
-      expect_result_resources_to_include_keys("results", expected_attributes)
-
       results = response.parsed_body["results"]
+      expect(results).to be_kind_of(Array)
+      expect(results.first).to be_kind_of(Integer)
+    end
+  end
 
-      expect(ConversionHost.exists?(results.first["id"])).to be_truthy
-      expect(ConversionHost.exists?(results.last["id"])).to be_truthy
-      expect(results).to match_array([a_hash_including("resource_id" => vm.id.to_s), a_hash_including("resource_id" => host.id.to_s)])
+  context "disable" do
+    let(:zone) { FactoryBot.create(:zone, :name => "api_zone") }
+    let(:ems) { FactoryBot.create(:ems_vmware, :zone => zone) }
+    let(:vm) { FactoryBot.create(:vm, :ems_id => ems.id) }
+    let(:conversion_host) { FactoryBot.create(:conversion_host, :resource => vm) }
+    let(:conversion_host_url) { api_conversion_host_url(nil, conversion_host) }
+
+    before do
+      allow(conversion_host).to receive(:install_conversion_host_module).and_return(true)
+      allow_any_instance_of(ConversionHost).to receive(:ansible_playbook).and_return({})
+    end
+
+    it "can disable a resource via POST" do
+      api_basic_authorize(action_identifier(:conversion_hosts, :disable, :resource_actions))
+      allow(conversion_host).to receive(:check_conversion_host_role).and_return('disabled')
+
+      post(conversion_host_url, :params => {"action" => "disable"})
+
+      expect(response).to have_http_status(:ok)
     end
   end
 

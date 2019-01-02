@@ -967,6 +967,8 @@
         :identifier: conversion_host_edit
       - :name: delete
         :identifier: conversion_host_delete
+      - :name: disable
+        :identifier: conversion_host_disable
       :delete:
       - :name: delete
         :identifier: conversion_host_delete
