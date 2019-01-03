@@ -3,6 +3,15 @@ module Api
     module Quotas
       INVALID_QUOTA_ATTRS = %w(id href tenant_id unit).freeze
 
+      def custom_api_user_role_allows_method?(identifier)
+        MiqProductFeature.my_root_tenant_identifier?(identifier)
+      end
+
+      def custom_api_user_role_allows?(identifier)
+        tenant_identifier = MiqProductFeature.tenant_identifier(identifier, @req.collection_id)
+        User.current_user.role_allows?(:identifier => tenant_identifier)
+      end
+
       def quotas_create_resource(object, type, _id, data)
         bad_attrs = data.keys & INVALID_QUOTA_ATTRS
         errmsg = "Attributes %s should not be specified for creating a new tenant quota resource"
