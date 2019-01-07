@@ -1,6 +1,16 @@
 RSpec.describe "tenants API" do
   let!(:root_tenant) { Tenant.seed }
 
+  describe "custom_api_user_role_allows_method?" do
+    it "validates role in basic way for requests about some action of tenants" do
+      expect(Api::TenantsController.new.custom_api_user_role_allows_method?('rbac_tenant_add')).to be_falsey
+    end
+
+    it "validates role in custom way for requests about managing tenant quotas" do
+      expect(Api::TenantsController.new.custom_api_user_role_allows_method?('rbac_tenant_manage_quotas')).to be_truthy
+    end
+  end
+
   it "can list all the tenants" do
     api_basic_authorize action_identifier(:tenants, :read, :collection_actions, :get)
     tenant_1 = FactoryBot.create(:tenant, :parent => root_tenant)

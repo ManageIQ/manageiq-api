@@ -500,8 +500,15 @@ module Api
         collection_config.typed_subcollection_action(@req.collection, @req.subcollection, method)
       end
 
+      def custom_api_user_role_allows_method?(_action_identifier)
+        false
+      end
+
       def api_user_role_allows?(action_identifier)
         return true unless action_identifier
+
+        return custom_api_user_role_allows?(action_identifier) if custom_api_user_role_allows_method?(action_identifier)
+
         Array(action_identifier).any? { |identifier| User.current_user.role_allows?(:identifier => identifier) }
       end
 
