@@ -40,6 +40,49 @@ describe "tenant quotas API" do
       expect(response).to have_http_status(:ok)
     end
 
+    context 'with dynamic tenant features' do
+      let!(:tenant_alpha) { FactoryBot.create(:tenant, :parent => Tenant.root_tenant) }
+      let!(:tenant_omega) { FactoryBot.create(:tenant, :parent => tenant_alpha) }
+
+      let(:feature) { MiqProductFeature.find_all_by_identifier(["rbac_tenant_manage_quotas_tenant_#{tenant_omega.id}"]) }
+      let(:role_with_access_to_omega_rbac_tenant_manage_quota_permission) { FactoryGirl.create(:miq_user_role, :miq_product_features => feature) }
+
+      let(:group_alpha) { FactoryBot.create(:miq_group, :tenant => tenant_alpha, :miq_user_role => role_with_access_to_omega_rbac_tenant_manage_quota_permission) }
+      let(:user_alpha)  { FactoryBot.create(:user, :miq_groups => [group_alpha]) }
+
+      before do
+        Tenant.seed
+        @user.update(:miq_groups => [group_alpha])
+        @role = role_with_access_to_omega_rbac_tenant_manage_quota_permission
+      end
+
+      it "cannot create a quota for alpha tenant without tenant product permission for alpha tenant" do
+        api_basic_authorize ["rbac_tenant_manage_quotas_tenant_#{tenant_omega.id}"]
+
+        expect do
+          post "/api/tenants/#{tenant_alpha.id}/quotas/", :params => { :name => :cpu_allocated, :value => 1 }
+        end.not_to change(TenantQuota, :count)
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it "can create a quota from a tenant omega with tenant product permission for omega" do
+        api_basic_authorize ["rbac_tenant_manage_quotas_tenant_#{tenant_omega.id}"]
+
+        expected = {
+          'results' => [
+            a_hash_including('href' => a_string_including(api_tenant_quotas_url(nil, tenant_omega)))
+          ]
+        }
+
+        expect do
+          post "/api/tenants/#{tenant_omega.id}/quotas/", :params => { :name => :cpu_allocated, :value => 1 }
+        end.to change(TenantQuota, :count).by(1)
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
     it "can create a quota from a tenant" do
       api_basic_authorize action_identifier(:quotas, :create, :subcollection_actions, :post)
 
