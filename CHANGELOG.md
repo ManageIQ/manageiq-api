@@ -5,36 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer RC-2
+## Hammer-1
 
 ### Added
 - Add support for sui product features [(#501)](https://github.com/ManageIQ/manageiq-api/pull/501)
 - Expose conversion hosts as part of REST API [(#507)](https://github.com/ManageIQ/manageiq-api/pull/507)
-
-### Fixed
-- Seed tenant product features in Spec::Support::API::Helpers [(#508)](https://github.com/ManageIQ/manageiq-api/pull/508)
-
-## Hammer RC-1 - Released 2018-11-16
-
-### Fixed
-- Post body changes for `validate_vms_resource ` to include service template_id [(#486)](https://github.com/ManageIQ/manageiq-api/pull/486)
-- Ensure ServiceTemplate ordering passes through the submit_workflow flag [(#504)](https://github.com/ManageIQ/manageiq-api/pull/504)
-
-## Hammer Beta-2 - Released 2018-10-29
-
-### Added
 - Add subcollection options support for CORS preflight requests [(#495)](https://github.com/ManageIQ/manageiq-api/pull/495)
-
-### Fixed
-- Don't request HTTP Basic authenticaion when using a token [(#488)](https://github.com/ManageIQ/manageiq-api/pull/488)
-- Add flag to initialize field default values [(#485)](https://github.com/ManageIQ/manageiq-api/pull/485)
-- Need the user on this call [(#497)](https://github.com/ManageIQ/manageiq-api/pull/497)
-- Deny standalone service template ordering when product setting is enabled [(#476)](https://github.com/ManageIQ/manageiq-api/pull/476)
-- provide `service_template` to `orderable?` method [(#498)](https://github.com/ManageIQ/manageiq-api/pull/498)
-
-## Hammer Beta-1 - Released 2018-10-12
-
-### Added
 - transformation mappings `edit` action [(#467)](https://github.com/ManageIQ/manageiq-api/pull/467)
 - Endpoint api/cloud_volume_types [(#465)](https://github.com/ManageIQ/manageiq-api/pull/465)
 - Use the replacement backend method for searching and valiating VMs [(#463)](https://github.com/ManageIQ/manageiq-api/pull/463)
@@ -90,8 +66,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Adding support for /api/cloud_object_store_containers [(#183)](https://github.com/ManageIQ/manageiq-api/pull/183)
 - Add custom action support for models already exposed in api that need it [(#163)](https://github.com/ManageIQ/manageiq-api/pull/163)
 - Add basic CentralAdmin support to the API [(#472)](https://github.com/ManageIQ/manageiq-api/pull/472)
+- Add more CRUD operations to conversion hosts, plus tags [(#513)](https://github.com/ManageIQ/manageiq-api/pull/513)
+- Authorise action managing tenant quotas for according tenants in API [(#536)](https://github.com/ManageIQ/manageiq-api/pull/536)
+- Display plugins in the product_info under the root route [(#473)](https://github.com/ManageIQ/manageiq-api/pull/473)
 
 ### Fixed
+- Seed tenant product features in Spec::Support::API::Helpers [(#508)](https://github.com/ManageIQ/manageiq-api/pull/508)
+- Post body changes for `validate_vms_resource ` to include service template_id [(#486)](https://github.com/ManageIQ/manageiq-api/pull/486)
+- Ensure ServiceTemplate ordering passes through the submit_workflow flag [(#504)](https://github.com/ManageIQ/manageiq-api/pull/504)
+- Don't request HTTP Basic authenticaion when using a token [(#488)](https://github.com/ManageIQ/manageiq-api/pull/488)
+- Add flag to initialize field default values [(#485)](https://github.com/ManageIQ/manageiq-api/pull/485)
+- Need the user on this call [(#497)](https://github.com/ManageIQ/manageiq-api/pull/497)
+- Deny standalone service template ordering when product setting is enabled [(#476)](https://github.com/ManageIQ/manageiq-api/pull/476)
+- provide `service_template` to `orderable?` method [(#498)](https://github.com/ManageIQ/manageiq-api/pull/498)
 - EMS Cloud Refresh is missing [(#428)](https://github.com/ManageIQ/manageiq-api/pull/428)
 - Pass changed dialog field values to resource_action_workflow [(#448)](https://github.com/ManageIQ/manageiq-api/pull/448)
 - Expose CloudSubnet creation [(#440)](https://github.com/ManageIQ/manageiq-api/pull/440)
@@ -122,6 +109,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Squeeze consecutive slashes in the path portion of the URI [(#228)](https://github.com/ManageIQ/manageiq-api/pull/228)
 - Pass `User#userid` instead of `User#id` to queue chargeback report [(#480)](https://github.com/ManageIQ/manageiq-api/pull/480)
 - Fix policy spec due to new validation [(#484)](https://github.com/ManageIQ/manageiq-api/pull/484)
+- Custom Buttons with dialogs should be running invoke [(#506)](https://github.com/ManageIQ/manageiq-api/pull/506)
+- Fix invalid count query [(#520)](https://github.com/ManageIQ/manageiq-api/pull/520)
+- Updated service template's ui token info check to use token metadata for requester_type[(#529)](https://github.com/ManageIQ/manageiq-api/pull/529)
 
 ## Gaprindashvili-5 - Released 2018-09-07
 
