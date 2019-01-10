@@ -43,9 +43,9 @@ module Api
         response.headers["Content-Type"] = "application/json"
         case auth_mechanism
         when :system, :token
-          render :status => 401, :json => ErrorSerializer.new(:unauthorized, e).serialize.to_json
+          render :status => 401, :json => ErrorSerializer.new(:unauthorized, e).serialize(true).to_json
         when :basic, nil
-          request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize.to_json)
+          request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize(true).to_json)
         end
         log_api_response
       end
