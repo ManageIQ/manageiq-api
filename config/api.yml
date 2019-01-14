@@ -1089,7 +1089,7 @@
     :subresource_actions:
       :get:
       - :name: read
-        :identifier: ab_group 
+        :identifier: ab_group
       :post:
       - :name: delete
         :identifier: ab_group_delete
