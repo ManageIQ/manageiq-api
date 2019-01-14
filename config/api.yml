@@ -1015,6 +1015,8 @@
     :identifier: ab_buttons_accord
     :options:
     - :collection
+    :subcollections:
+    - :custom_buttons
     :verbs: *gpppd
     :klass: CustomButtonSet
     :collection_actions:
@@ -1048,6 +1050,7 @@
     :identifier: ab_buttons_accord
     :options:
     - :collection
+    - :subcollection
     :verbs: *gpppd
     :klass: CustomButton
     :collection_actions:
@@ -1059,6 +1062,13 @@
         :identifier: ab_group_new
       - :name: edit
         :identifier: ab_group_edit
+      - :name: delete
+        :identifier: ab_group_delete
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: ab_group
+      :post:
       - :name: delete
         :identifier: ab_group_delete
     :resource_actions:
@@ -1074,6 +1084,13 @@
       - :name: edit
         :identifier: ab_group_edit
       :delete:
+      - :name: delete
+        :identifier: ab_group_delete
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: ab_group 
+      :post:
       - :name: delete
         :identifier: ab_group_delete
   :customization_scripts:
