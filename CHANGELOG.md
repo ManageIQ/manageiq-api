@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 102 ending 2019-01-07
+
+## Added
+- Authorise action managing tenant quotas for according tenants in API [(#536)](https://github.com/ManageIQ/manageiq-api/pull/536)
+
+## Fixed
+- Ensure a users own tasks are the only ones returned when the users role has View/My Tasks [(#526)](https://github.com/ManageIQ/manageiq-api/pull/526)
+- Use the new universal methods for suspending/resuming a provider [(#434)](https://github.com/ManageIQ/manageiq-api/pull/434)
+
 ## Hammer-1
 
 ### Added
