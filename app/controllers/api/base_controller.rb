@@ -18,6 +18,7 @@ module Api
     include_concern 'Generic'
     include_concern 'Authentication'
     include ActionController::HttpAuthentication::Basic::ControllerMethods
+    include ActionController::RequestForgeryProtection
 
     before_action :log_request_initiated
     before_action :require_api_user_or_token, :except => [:options, :product_info]

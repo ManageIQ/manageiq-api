@@ -202,6 +202,48 @@ describe "Authentication API" do
     end
   end
 
+  context "UI authentication against the rails session" do
+    it 'succeeds with valid session and valid CSRF token' do
+      # Inspired by https://relishapp.com/rspec/rspec-mocks/docs/configuring-responses/block-implementation
+      # Store the original new method because we're going to mock it
+      original_new = ActionDispatch::Request::Session.method(:new)
+      # This is a little crazy: the session is not accessible before the HTTP request is fired,
+      # therefore, we have to mock the new method, call the original and catch its response.
+      # Then we can mock the :[] method on the response and so set session variables.
+      # In the end the block can simply return the response as if nothing happened.
+      expect(ActionDispatch::Request::Session).to receive(:new) do |*args|
+        _session = original_new.call(*args) # Call the original method
+        allow(_session).to receive(:[]).with(:userid).and_return(@user.userid) # session[:userid] = @user.userid
+        _session # Return the result of the original method
+      end
+
+      expect_any_instance_of(Api::ApiController).to receive(:valid_authenticity_token?).and_return(true)
+      get api_entrypoint_url, :headers => {'X-CSRF-TOKEN' => 'foo'}
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "fails with missing CSRF token" do
+      get api_entrypoint_url
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.headers['WWW-Authenticate']).not_to be_nil
+    end
+
+    it "fails with invalid CSRF token" do
+      expect_any_instance_of(Api::ApiController).to receive(:valid_authenticity_token?).and_return(false)
+      get api_entrypoint_url, :headers => {'X-CSRF-TOKEN' => 'foo'}
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.headers['WWW-Authenticate']).to be_nil
+    end
+
+    it "fails with missing session and valid CSRF token" do
+      expect_any_instance_of(Api::ApiController).to receive(:valid_authenticity_token?).and_return(true)
+      get api_entrypoint_url, :headers => {'X-CSRF-TOKEN' => 'foo'}
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.headers['WWW-Authenticate']).to be_nil
+    end
+  end
+
   context "Token Based Authentication" do
     %w(sql memory).each do |session_store|
       context "when using a #{session_store} session store" do
