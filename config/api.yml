@@ -1068,9 +1068,6 @@
       :get:
       - :name: read
         :identifier: ab_group
-      :post:
-      - :name: delete
-        :identifier: ab_group_delete
     :resource_actions:
       :get:
       - :name: read
@@ -1090,9 +1087,6 @@
       :get:
       - :name: read
         :identifier: ab_group
-      :post:
-      - :name: delete
-        :identifier: ab_group_delete
   :customization_scripts:
     :description: Customization Script
     :identifier: customization_script
