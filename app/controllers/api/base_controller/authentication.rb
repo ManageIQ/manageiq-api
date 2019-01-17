@@ -8,10 +8,13 @@ module Api
           :system
         elsif request.headers[HttpHeaders::AUTH_TOKEN]
           :token
-        elsif request.headers["HTTP_AUTHORIZATION"] && params[:requester_type] == 'ui'
-          :basic_ui
         elsif request.headers["HTTP_AUTHORIZATION"]
           :basic
+        elsif request.x_csrf_token
+          # Even if the session cookie is not set, we want to consider a request
+          # as a UI authentication request. Otherwise the response would force
+          # the browser to throw an undesired HTTP basic authentication dialog.
+          :ui_session
         else
           # no attempt at authentication, usually falls back to :basic
           nil
@@ -27,7 +30,10 @@ module Api
           authenticate_with_system_token(request.headers[HttpHeaders::MIQ_TOKEN])
         when :token
           authenticate_with_user_token(request.headers[HttpHeaders::AUTH_TOKEN])
-        when :basic, :basic_ui, nil
+        when :ui_session
+          raise AuthenticationError unless valid_ui_session?
+          auth_user(session[:userid])
+        when :basic, nil
           success = authenticate_with_http_basic do |u, p|
             begin
               timeout = ::Settings.api.authentication_timeout.to_i_with_method
@@ -44,7 +50,7 @@ module Api
         api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
         case auth_mechanism
-        when :system, :token, :basic_ui
+        when :system, :token, :ui_session
           render :status => 401, :json => ErrorSerializer.new(:unauthorized, e).serialize(true).to_json
         when :basic, nil
           request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize(true).to_json)
@@ -126,6 +132,14 @@ module Api
       def validate_system_token_timestamp(timestamp)
         raise "Missing timestamp" if timestamp.blank?
         raise "Invalid timestamp #{timestamp} specified" if SYSTEM_TOKEN_TTL.ago.utc > timestamp
+      end
+
+      def valid_ui_session?
+        [
+          valid_authenticity_token?(session, request.x_csrf_token), # CSRF token be set and valid
+          session[:userid].present?,                                # session has a userid stored
+          request.origin.nil? || request.origin == request.base_url # origin header if set matches base_url
+        ].all?
       end
     end
   end
