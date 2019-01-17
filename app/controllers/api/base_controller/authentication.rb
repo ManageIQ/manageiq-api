@@ -8,6 +8,8 @@ module Api
           :system
         elsif request.headers[HttpHeaders::AUTH_TOKEN]
           :token
+        elsif request.headers["HTTP_AUTHORIZATION"] && params[:requester_type] == 'ui'
+          :basic_ui
         elsif request.headers["HTTP_AUTHORIZATION"]
           :basic
         else
@@ -25,7 +27,7 @@ module Api
           authenticate_with_system_token(request.headers[HttpHeaders::MIQ_TOKEN])
         when :token
           authenticate_with_user_token(request.headers[HttpHeaders::AUTH_TOKEN])
-        when :basic, nil
+        when :basic, :basic_ui, nil
           success = authenticate_with_http_basic do |u, p|
             begin
               timeout = ::Settings.api.authentication_timeout.to_i_with_method
@@ -42,7 +44,7 @@ module Api
         api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
         case auth_mechanism
-        when :system, :token
+        when :system, :token, :basic_ui
           render :status => 401, :json => ErrorSerializer.new(:unauthorized, e).serialize(true).to_json
         when :basic, nil
           request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize(true).to_json)
