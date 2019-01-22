@@ -5,12 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 103 ending 2019-01-21
+
+### Added
+- Allow authentication against the _vmdb_session cookie for UI only [(#543)](https://github.com/ManageIQ/manageiq-api/pull/543)
+
+### Fixed
+- Do not request for basic auth if the auth_requester is set to UI [(#542)](https://github.com/ManageIQ/manageiq-api/pull/542)
+- Remove SQL select from exception error messages. [(#537)](https://github.com/ManageIQ/manageiq-api/pull/537)
+
 ## Unreleased as of Sprint 102 ending 2019-01-07
 
-## Added
+### Added
 - Authorise action managing tenant quotas for according tenants in API [(#536)](https://github.com/ManageIQ/manageiq-api/pull/536)
 
-## Fixed
+### Fixed
 - Ensure a users own tasks are the only ones returned when the users role has View/My Tasks [(#526)](https://github.com/ManageIQ/manageiq-api/pull/526)
 - Use the new universal methods for suspending/resuming a provider [(#434)](https://github.com/ManageIQ/manageiq-api/pull/434)
 
