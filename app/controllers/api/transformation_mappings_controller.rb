@@ -49,6 +49,15 @@ module Api
       end
     end
 
+    def add_mapping_item_resource(type, id, data)
+      resource_search(id, type, collection_class(type)).tap do |mapping|
+        mapping.transformation_mapping_items.append(create_mapping_items([data]))
+        mapping.save!
+      end
+    rescue StandardError => err
+      raise BadRequestError, "Failed to update Transformation Mapping - #{err}"
+    end
+
     private
 
     def create_mapping_items(items)
