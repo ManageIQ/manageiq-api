@@ -242,7 +242,7 @@
     :description: Automate Domains
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpd
     :klass: MiqAeDomain
     :collection_actions:
       :get:
@@ -253,6 +253,8 @@
         :identifier: miq_ae_domain_view
       - :name: refresh_from_source
         :identifier: miq_ae_git_refresh
+      - :name: delete
+        :identifier: miq_ae_domain_delete
     :resource_actions:
       :get:
       - :name: read
@@ -260,6 +262,11 @@
       :post:
       - :name: refresh_from_source
         :identifier: miq_ae_git_refresh
+      - :name: delete
+        :identifier: miq_ae_domain_delete
+      :delete:
+      - :name: delete
+        :identifier: miq_ae_domain_delete
   :automate_workspaces:
     :description: Automate Workspaces
     :options:
