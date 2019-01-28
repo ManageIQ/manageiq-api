@@ -19,12 +19,12 @@ module Api
         next if cspec[:klass].blank?
         klass = nil
 
-        # Temporary measure to avoid thread race condition which could lead to a deadlock
-        ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
+        # Ensure we're the only thread trying to autoload classes and their columns
+        ActiveSupport::Dependencies.interlock.loading do
           klass = cspec[:klass].constantize
-        end
-        klass.columns_hash.each do |name, typeobj|
-          result << name if %w(date datetime).include?(typeobj.type.to_s)
+          klass.columns_hash.each do |name, typeobj|
+            result << name if %w(date datetime).include?(typeobj.type.to_s)
+          end
         end
       end
     end
