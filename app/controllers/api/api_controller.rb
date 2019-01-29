@@ -93,9 +93,9 @@ module Api
 
     def branding_info
       {
-        :brand      => Settings.server.custom_brand || image_path('layout/brand.svg'),
-        :logo       => Settings.server.custom_logo || image_path('layout/login-screen-logo.png'),
-        :login_logo => Settings.server.custom_login_logo.presence
+        :brand      => Settings.server.custom_brand ? image_path('/upload/custom_brand.png') : image_path('layout/brand.svg'),
+        :logo       => Settings.server.custom_logo ? image_path('/upload/custom_logo.png') : image_path('layout/login-screen-logo.png'),
+        :login_logo => Settings.server.custom_login_logo ? image_path('/upload/custom_login_logo.png') : nil
       }.compact
     end
 
