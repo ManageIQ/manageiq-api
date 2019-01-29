@@ -95,7 +95,8 @@ module Api
       {
         :brand      => Settings.server.custom_brand ? image_path('/upload/custom_brand.png') : image_path('layout/brand.svg'),
         :logo       => Settings.server.custom_logo ? image_path('/upload/custom_logo.png') : image_path('layout/login-screen-logo.png'),
-        :login_logo => Settings.server.custom_login_logo ? image_path('/upload/custom_login_logo.png') : nil
+        :login_logo => Settings.server.custom_login_logo ? image_path('/upload/custom_login_logo.png') : nil,
+        :favicon    => Settings.server.custom_favicon ? image_path('/upload/custom_favicon.ico') : image_path('favicon.ico')
       }.compact
     end
 
