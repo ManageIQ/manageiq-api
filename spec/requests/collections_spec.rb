@@ -74,7 +74,7 @@ describe "Rest API Collections" do
 
     it "query Categories" do
       FactoryBot.create(:category)
-      test_collection_query(:categories, api_categories_url, Category)
+      test_collection_query(:categories, api_categories_url, Classification.is_category)
     end
 
     it "query Chargebacks" do
@@ -412,7 +412,7 @@ describe "Rest API Collections" do
 
     it "bulk query Categories" do
       FactoryBot.create(:category)
-      test_collection_bulk_query(:categories, api_categories_url, Category)
+      test_collection_bulk_query(:categories, api_categories_url, Classification.is_category)
     end
 
     it "bulk query Chargebacks" do

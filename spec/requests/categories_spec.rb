@@ -1,6 +1,7 @@
 RSpec.describe "categories API" do
   it "can list all the categories" do
     categories = FactoryBot.create_list(:category, 2)
+    FactoryBot.create(:classification_tag, :parent => categories.first)
     api_basic_authorize collection_action_identifier(:categories, :read, :get)
 
     get api_categories_url
@@ -78,7 +79,7 @@ RSpec.describe "categories API" do
 
       expect do
         post api_categories_url, :params => { :name => "test", :description => "Test" }
-      end.to change(Category, :count).by(1)
+      end.to change(Classification, :count).by(1)
 
       expect(response).to have_http_status(:ok)
     end
@@ -107,7 +108,7 @@ RSpec.describe "categories API" do
       api_basic_authorize collection_action_identifier(:categories, :create)
 
       post api_categories_url, :params => { :name => "test", :description => "Test" }
-      category = Category.find(response.parsed_body["results"].first["id"])
+      category = Classification.is_category.find(response.parsed_body["results"].first["id"])
 
       expect(category.tag.name).to eq("/managed/test")
     end
@@ -130,7 +131,7 @@ RSpec.describe "categories API" do
 
       expect do
         post api_category_url(nil, category), :params => gen_request(:delete)
-      end.to change(Category, :count).by(-1)
+      end.to change(Classification, :count).by(-1)
 
       expect(response).to have_http_status(:ok)
     end
@@ -141,7 +142,7 @@ RSpec.describe "categories API" do
 
       expect do
         delete api_category_url(nil, category)
-      end.to change(Category, :count).by(-1)
+      end.to change(Classification, :count).by(-1)
 
       expect(response).to have_http_status(:no_content)
     end
@@ -153,7 +154,7 @@ RSpec.describe "categories API" do
 
         expect do
           post api_category_url(nil, category), :params => gen_request(:delete)
-        end.not_to change(Category, :count)
+        end.not_to change(Classification, :count)
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -176,7 +177,7 @@ RSpec.describe "categories API" do
 
         expect do
           post api_categories_url, :params => { :name => "test", :description => "Test" }
-        end.not_to change(Category, :count)
+        end.not_to change(Classification, :count)
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -198,7 +199,7 @@ RSpec.describe "categories API" do
 
         expect do
           post api_category_url(nil, category), :params => gen_request(:delete)
-        end.not_to change(Category, :count)
+        end.not_to change(Classification, :count)
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -209,7 +210,7 @@ RSpec.describe "categories API" do
 
         expect do
           delete api_category_url(nil, category)
-        end.not_to change(Category, :count)
+        end.not_to change(Classification, :count)
 
         expect(response).to have_http_status(:forbidden)
       end

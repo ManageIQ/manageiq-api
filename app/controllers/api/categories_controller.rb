@@ -5,12 +5,12 @@ module Api
     before_action :set_additional_attributes, :only => [:index, :show, :update]
 
     def edit_resource(type, id, data = {})
-      raise ForbiddenError if Category.find(id).read_only?
+      raise ForbiddenError if Classification.is_category.find(id).read_only?
       super
     end
 
     def delete_resource(type, id, data = {})
-      raise ForbiddenError if Category.find(id).read_only?
+      raise ForbiddenError if Classification.is_category.find(id).read_only?
       super
     end
 

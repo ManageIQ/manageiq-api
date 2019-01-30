@@ -23,14 +23,14 @@ describe "Tags API" do
     context "with an appropriate role" do
       it "can create a tag with category by href" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryBot.create(:category)
+        category = FactoryBot.create(:classification)
         options = {:name => "test_tag", :description => "Test Tag", :category => {:href => api_category_url(nil, category)}}
 
         expect { post api_tags_url, :params => options }.to change(Tag, :count).by(1)
 
         result = response.parsed_body["results"].first
         tag = Tag.find(result["id"])
-        tag_category = Category.find(tag.category.id)
+        tag_category = tag.category
         expect(tag_category).to eq(category)
         expect(result["href"]).to include(api_tag_url(nil, tag))
         expect(response).to have_http_status(:ok)
@@ -38,14 +38,14 @@ describe "Tags API" do
 
       it "can create a tag with a category by id" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryBot.create(:category)
+        category = FactoryBot.create(:classification)
 
         expect do
           post api_tags_url, :params => { :name => "test_tag", :description => "Test Tag", :category => {:id => category.id} }
         end.to change(Tag, :count).by(1)
 
         tag = Tag.find(response.parsed_body["results"].first["id"])
-        tag_category = Category.find(tag.category.id)
+        tag_category = tag.category
         expect(tag_category).to eq(category)
 
         expect(response).to have_http_status(:ok)
@@ -53,14 +53,14 @@ describe "Tags API" do
 
       it "can create a tag with a category by name" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryBot.create(:category)
+        category = FactoryBot.create(:classification)
 
         expect do
           post api_tags_url, :params => { :name => "test_tag", :description => "Test Tag", :category => {:name => category.name} }
         end.to change(Tag, :count).by(1)
 
         tag = Tag.find(response.parsed_body["results"].first["id"])
-        tag_category = Category.find(tag.category.id)
+        tag_category = tag.category
         expect(tag_category).to eq(category)
 
         expect(response).to have_http_status(:ok)
@@ -68,13 +68,13 @@ describe "Tags API" do
 
       it "can create a tag as a subresource of a category" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryBot.create(:category)
+        category = FactoryBot.create(:classification)
 
         expect do
           post(api_category_tags_url(nil, category), :params => { :name => "test_tag", :description => "Test Tag" })
         end.to change(Tag, :count).by(1)
         tag = Tag.find(response.parsed_body["results"].first["id"])
-        tag_category = Category.find(tag.category.id)
+        tag_category = tag.category
         expect(tag_category).to eq(category)
 
         expect(response).to have_http_status(:ok)
@@ -91,7 +91,7 @@ describe "Tags API" do
       it "can update a tag's name" do
         api_basic_authorize action_identifier(:tags, :edit)
         classification = FactoryBot.create(:classification_tag)
-        category = FactoryBot.create(:category, :children => [classification])
+        category = FactoryBot.create(:classification, :children => [classification])
         tag = classification.tag
 
         expect do
@@ -104,7 +104,7 @@ describe "Tags API" do
       it "can update a tag's description" do
         api_basic_authorize action_identifier(:tags, :edit)
         classification = FactoryBot.create(:classification_tag)
-        FactoryBot.create(:category, :children => [classification])
+        FactoryBot.create(:classification, :children => [classification])
         tag = classification.tag
 
         expect do
@@ -160,7 +160,7 @@ describe "Tags API" do
         api_basic_authorize action_identifier(:tags, :delete)
         classification1 = FactoryBot.create(:classification_tag)
         classification2 = FactoryBot.create(:classification_tag)
-        category = FactoryBot.create(:category, :children => [classification1, classification2])
+        category = FactoryBot.create(:classification, :children => [classification1, classification2])
         tag1 = classification1.tag
         tag2 = classification2.tag
 
@@ -183,7 +183,7 @@ describe "Tags API" do
         api_basic_authorize action_identifier(:tags, :delete)
         classification1 = FactoryBot.create(:classification_tag)
         classification2 = FactoryBot.create(:classification_tag)
-        category = FactoryBot.create(:category, :children => [classification1, classification2])
+        category = FactoryBot.create(:classification, :children => [classification1, classification2])
         tag1 = classification1.tag
         tag2 = classification2.tag
         body = gen_request(:delete, [{:name => tag1.name}, {:name => tag2.name}])
