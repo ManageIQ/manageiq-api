@@ -17,15 +17,9 @@ module Api
       end
     end
 
-    def edit_resource(type, id, data)
-      klass = collection_class(type)
-      tag = resource_search(id, type, klass)
-      entry = Classification.find_by(:tag_id => tag.id)
+    def edit_resource(_type, id, data)
+      entry = Classification.find_by(:tag_id => id)
       raise BadRequestError, "Failed to find tag/#{id} resource" unless entry
-
-      if data["name"].present?
-        tag.update_attribute(:name, Classification.name2tag(data["name"], entry.parent_id, TAG_NAMESPACE))
-      end
       entry.update_attributes(data.except(*ID_ATTRS))
       entry.tag
     end
