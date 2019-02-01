@@ -19,7 +19,7 @@ module Api
     #   "auth_user": "some_user"
     # }
     #
-    def create_resource(_type, _id, data)
+    def create_resource(type, id, data)
       raise BadRequestError, "resource_id must be specified" unless data['resource_id']
       raise BadRequestError, "resource_type must be specified" unless data['resource_type']
 
@@ -33,7 +33,7 @@ module Api
 
       data['resource'] = resource
 
-      api_action(_type, _id) do
+      api_action(type, id) do
         begin
           message = "Enabling resource id:#{resource.id} type:#{resource.type}"
           task_id = ConversionHost.enable_queue(data, auth_user)

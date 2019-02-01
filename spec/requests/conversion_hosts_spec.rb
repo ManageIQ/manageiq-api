@@ -54,7 +54,7 @@ describe "ConversionHosts API" do
     let(:zone) { FactoryBot.create(:zone, :name => "api_zone") }
     let(:ems) { FactoryBot.create(:ems_vmware, :zone => zone) }
     let(:vm) { FactoryBot.create(:vm, :ems_id => ems.id) }
-    let(:host) { FactoryBot.create(:host, :ems_id => ems.id) }
+    let(:host) { FactoryBot.create(:host, :ems_id => ems.id, :type => "Host") }
 
     let(:sample_conversion_host_from_vm) do
       {
