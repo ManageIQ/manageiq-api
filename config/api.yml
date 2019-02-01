@@ -346,7 +346,7 @@
     :options:
     - :collection
     :verbs: *gpd
-    :klass: Category
+    :klass: Classification
     :subcollections:
     - :tags
     :collection_actions:

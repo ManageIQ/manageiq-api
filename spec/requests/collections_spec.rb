@@ -73,7 +73,8 @@ describe "Rest API Collections" do
     end
 
     it "query Categories" do
-      FactoryBot.create(:category)
+      category = FactoryBot.create(:category)
+      FactoryBot.create(:classification_tag, :parent => category)
       test_collection_query(:categories, api_categories_url, Classification.is_category)
     end
 
@@ -411,7 +412,8 @@ describe "Rest API Collections" do
     end
 
     it "bulk query Categories" do
-      FactoryBot.create(:category)
+      category = FactoryBot.create(:category)
+      FactoryBot.create(:classification_tag, :parent => category) # should not come back
       test_collection_bulk_query(:categories, api_categories_url, Classification.is_category)
     end
 
