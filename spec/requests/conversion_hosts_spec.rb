@@ -87,9 +87,11 @@ describe "ConversionHosts API" do
 
       expect(response).to have_http_status(:ok)
 
-      results = response.parsed_body["results"]
-      expect(results).to be_kind_of(Array)
-      expect(results.first).to be_kind_of(Integer)
+      results = response.parsed_body["results"].first
+
+      expect(results['success']).to be_truthy
+      expect(results['href']).to eql('http://www.example.com/api/conversion_hosts/')
+      expect(results['message']).to eql("Enabling resource id:#{vm.id} type:Vm")
     end
 
     it "supports multiple conversion host creation" do
@@ -99,9 +101,13 @@ describe "ConversionHosts API" do
       post(api_conversion_hosts_url, :params => gen_request(:create, conversion_hosts))
 
       expect(response).to have_http_status(:ok)
+
       results = response.parsed_body["results"]
-      expect(results).to be_kind_of(Array)
-      expect(results.first).to be_kind_of(Integer)
+
+      expect(results).to match_array([
+        a_hash_including("message" => "Enabling resource id:#{vm.id} type:Vm"),
+        a_hash_including("message" => "Enabling resource id:#{host.id} type:Host"),
+      ])
     end
   end
 

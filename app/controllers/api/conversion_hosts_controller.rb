@@ -29,9 +29,19 @@ module Api
       # The 'auth_user' param must be deleted since the model will otherwise
       # pass the data hash directly as params to ConversionHost.new.
       auth_user = data.delete('auth_user')
-      data['resource'] = resource_search(data['resource_id'], resource_type, collection_class(collection_type))
+      resource = resource_search(data['resource_id'], resource_type, collection_class(collection_type))
 
-      ConversionHost.enable_queue(data, auth_user)
+      data['resource'] = resource
+
+      api_action(_type, _id) do
+        begin
+          message = "Enabling resource id:#{resource.id} type:#{resource.type}"
+          task_id = ConversionHost.enable_queue(data, auth_user)
+          action_result(true, message, :task_id => task_id)
+        rescue err
+          action_result(false, err.to_s)
+        end
+      end
     end
 
     # Disable the conversion host role by installing the conversion host module
