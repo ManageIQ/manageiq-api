@@ -115,7 +115,8 @@ module Api
   end 
 end 
 ```
-The above example demonstrates a couple of the basic methods and formats that you'll see used throughout the API.
+The above example demonstrates a couple of the basic methods and formats that you'll see used throughout the API:
+
 * `order_resource(type, id, data)`
     * This is the normal method signature for a resource action, `<action>_resource`. You can see the target method being generated [here](https://github.com/ManageIQ/manageiq-api/blob/e9a142a2c4d55d8d0dc18d2e342cdfef251d37bf/app/controllers/api/base_controller/manager.rb#L80-L88) and being called [here](https://github.com/ManageIQ/manageiq-api/blob/e9a142a2c4d55d8d0dc18d2e342cdfef251d37bf/app/controllers/api/base_controller/manager.rb#L10).
 * `collection_class(type)`
@@ -226,7 +227,8 @@ POST /api/coffees/:id
 ```
 
 # Questions and Examples
-Below you'll find some common questions and example PRs to guide you through the development process.
+Below you'll find some common questions and example PRs to guide you through the development process:
+
 * Should this be a subcollection?
     * One question seen frequently is how to determine whether something should be added as a collection, subcollection, or both. Is your resource something that you would not look at outside of the context of its parent object? If so, then a subcollection is likely the way to go.
 * How are asynchronous tasks handled?
