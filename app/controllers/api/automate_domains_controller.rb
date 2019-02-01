@@ -1,5 +1,11 @@
 module Api
   class AutomateDomainsController < BaseController
+    def delete_resource(type, id = nil, _data = {})
+      raise BadRequestError, "Must specify an id for deleting a #{type} resource" unless id
+
+      delete_resource_action(type, id)
+    end
+
     def refresh_from_source_resource(type, id = nil, data = nil)
       raise BadRequestError, "Must specify an id for refreshing a #{type} resource from source" unless id
 
@@ -28,6 +34,23 @@ module Api
     end
 
     private
+
+    def delete_resource_action(type, id)
+      api_action(type, id) do |klass|
+        domain = resource_search(id, type, klass)
+        api_log_info("Delete will be queued for #{automate_domain_ident(domain)}")
+
+        begin
+          # Only delete unlocked user domains. System or GIT based domains will not be deleted.
+          MiqAeDomain.where(:name => domain.name).each { |d| raise "Not deleting. Domain is locked." if d.contents_locked? }
+
+          MiqAeDomain.where(:name => domain.name).each(&:destroy_queue)
+          action_result(true, "Delete queued for #{automate_domain_ident(domain)}")
+        rescue => err
+          action_result(false, err.to_s)
+        end
+      end
+    end
 
     def automate_domain_ident(domain)
       "Automate Domain id:#{domain.id} name:'#{domain.name}'"
