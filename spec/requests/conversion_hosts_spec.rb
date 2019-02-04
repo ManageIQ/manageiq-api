@@ -131,6 +131,13 @@ describe "ConversionHosts API" do
       post(conversion_host_url, :params => {"action" => "disable"})
 
       expect(response).to have_http_status(:ok)
+
+      results = response.parsed_body
+
+      expect(results['success']).to be_truthy
+      expect(results['href']).to eql("http://www.example.com/api/conversion_hosts/#{conversion_host.id}")
+      expect(results['message']).to eql("Disabling ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}")
+      expect(results['task_id']).to match(/\d+/)
     end
   end
 
