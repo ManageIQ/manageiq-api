@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 104 ending 2019-02-04
+
+### Added
+- Expose the favicon URL in the branding info endpoints [(#551)](https://github.com/ManageIQ/manageiq-api/pull/551)
+- Add delete automate domain support [(#548)](https://github.com/ManageIQ/manageiq-api/pull/548)
+
+### Fixed
+- Provide the path to the custom branding assets instead of booleans [(#549)](https://github.com/ManageIQ/manageiq-api/pull/549)
+
 ## Unreleased as of Sprint 103 ending 2019-01-21
 
 ### Added
