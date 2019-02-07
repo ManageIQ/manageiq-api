@@ -82,7 +82,7 @@ describe "Services API" do
 
       # Once for the main query and counts, and 3 for the `all_service_children`
       expect(Rbac).to receive(:filtered).exactly(5).times.and_call_original
-      expect(Rbac).to receive(:filtered_object).exactly(9).times
+      expect(Rbac).to receive(:filtered_object).never
 
       get api_services_url, :params => search_filters
 
@@ -100,7 +100,7 @@ describe "Services API" do
 
         # Once for the main query and counts, and 1 for the `all_service_children`
         expect(Rbac).to receive(:filtered).exactly(3).times.and_call_original
-        expect(Rbac).to receive(:filtered_object).exactly(3).times
+        expect(Rbac).to receive(:filtered_object).never
 
         get api_services_url, :params => search_filters
 

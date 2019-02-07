@@ -200,14 +200,18 @@ module Api
 
       def virtual_attribute_search(resource, attribute)
         if resource.class < ApplicationRecord
+          rbac = Rbac::Filterer.new
           # is relation in 'attribute' variable plural in the model class (from 'resource.class') ?
           if [:has_many, :has_and_belongs_to_many].include?(resource.class.reflection_with_virtual(attribute).try(:macro))
             resource_attr = resource.public_send(attribute)
             klass         = resource_attr.kind_of?(ActiveRecord::Relation) ? resource_attr.klass : resource_attr.try(:first).class
-            return resource_attr unless Rbac::Filterer.new.send(:apply_rbac_directly?, klass)
+            return resource_attr unless rbac.send(:apply_rbac_directly?, klass)
             Rbac.filtered(resource_attr)
-          else
+          # Don't re-do an Rbac query if it has already been done
+          elsif collection_class(@req.subject) != resource.class && rbac.send(:apply_rbac_directly?, resource.class)
             Rbac.filtered_object(resource).try(:public_send, attribute)
+          else
+            resource.public_send(attribute)
           end
         else
           resource.public_send(attribute)
