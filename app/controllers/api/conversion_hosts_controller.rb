@@ -51,7 +51,6 @@ module Api
     # You may optionally provide an 'auth_user' parameter.
     #
     # POST /api/conversion_hosts/:id { "action": "disable" }
-    # POST /api/conversion_hosts/:id { "action": "disable" }
     # POST /api/conversion_hosts/:id { "action": "disable", "auth_user": "someone" }
     #
     # This differs from the DELETE action in that it returns a response body.
@@ -76,7 +75,6 @@ module Api
     #
     # You may optionally provide an 'auth_user' parameter.
     #
-    # DELETE /api/conversion_hosts/:id
     # DELETE /api/conversion_hosts/:id
     # DELETE /api/conversion_hosts/:id { "auth_user": "someone" }
     #
