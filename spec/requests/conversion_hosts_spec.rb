@@ -5,7 +5,7 @@ describe "ConversionHosts API" do
 
   context "collections" do
     it 'lists all conversion hosts with an appropriate role' do
-      conversion_host = FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm))
+      conversion_host = FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm_openstack))
       api_basic_authorize(collection_action_identifier(:conversion_hosts, :read, :get))
       get(api_conversion_hosts_url)
 
@@ -23,7 +23,7 @@ describe "ConversionHosts API" do
 
   context "resources" do
     it 'will show a conversion host with an appropriate role' do
-      conversion_host = FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm))
+      conversion_host = FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm_openstack))
       api_basic_authorize(action_identifier(:conversion_hosts, :read, :resource_actions, :get))
 
       get(api_conversion_host_url(nil, conversion_host))
@@ -43,7 +43,7 @@ describe "ConversionHosts API" do
 
     it "forbids access to a conversion host resource without an appropriate role" do
       api_basic_authorize
-      conversion_host = FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm))
+      conversion_host = FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm_openstack))
       get(api_conversion_host_url(nil, conversion_host))
 
       expect(response).to have_http_status(:forbidden)
@@ -52,8 +52,8 @@ describe "ConversionHosts API" do
 
   context "create" do
     let(:zone) { FactoryBot.create(:zone, :name => "api_zone") }
-    let(:ems) { FactoryBot.create(:ems_vmware, :zone => zone) }
-    let(:vm) { FactoryBot.create(:vm, :ems_id => ems.id) }
+    let(:ems) { FactoryBot.create(:ems_openstack, :zone => zone) }
+    let(:vm) { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
     let(:host) { FactoryBot.create(:host, :ems_id => ems.id, :type => "Host") }
 
     let(:sample_conversion_host_from_vm) do
@@ -91,7 +91,7 @@ describe "ConversionHosts API" do
 
       expect(results['success']).to be_truthy
       expect(results['href']).to eql('http://www.example.com/api/conversion_hosts/')
-      expect(results['message']).to eql("Enabling resource id:#{vm.id} type:Vm")
+      expect(results['message']).to eql("Enabling resource id:#{vm.id} type:#{vm.class}")
       expect(results['task_id']).to match(/\d+/)
       expect(MiqTask.exists?(results['task_id'].to_i)).to be_truthy
     end
@@ -107,22 +107,23 @@ describe "ConversionHosts API" do
       results = response.parsed_body["results"]
 
       expect(results).to match_array([
-        a_hash_including("message" => "Enabling resource id:#{vm.id} type:Vm", "task_id" => a_kind_of(String)),
-        a_hash_including("message" => "Enabling resource id:#{host.id} type:Host", "task_id" => a_kind_of(String)),
+        a_hash_including("message" => "Enabling resource id:#{vm.id} type:#{vm.class}", "task_id" => a_kind_of(String)),
+        a_hash_including("message" => "Enabling resource id:#{host.id} type:#{host.class}", "task_id" => a_kind_of(String)),
       ])
     end
   end
 
   context "disable" do
     let(:zone) { FactoryBot.create(:zone, :name => "api_zone") }
-    let(:ems) { FactoryBot.create(:ems_vmware, :zone => zone) }
-    let(:vm) { FactoryBot.create(:vm, :ems_id => ems.id) }
+    let(:ems) { FactoryBot.create(:ems_openstack, :zone => zone) }
+    let(:vm) { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
     let(:conversion_host) { FactoryBot.create(:conversion_host, :resource => vm) }
     let(:conversion_host_url) { api_conversion_host_url(nil, conversion_host) }
 
     before do
       allow(conversion_host).to receive(:install_conversion_host_module).and_return(true)
-      allow_any_instance_of(ConversionHost).to receive(:ansible_playbook).and_return({})
+      allow(conversion_host).to receive(:resource_search).and_return(vm)
+      allow(conversion_host).to receive(:ansible_playbook).and_return({})
     end
 
     it "can disable a resource via POST" do
@@ -145,9 +146,9 @@ describe "ConversionHosts API" do
 
   context "delete" do
     let(:zone)                        { FactoryBot.create(:zone, :name => "api_zone") }
-    let(:ems)                         { FactoryBot.create(:ems_vmware, :zone => zone) }
-    let(:vm)                          { FactoryBot.create(:vm, :ems_id => ems.id) }
-    let(:vm2)                         { FactoryBot.create(:vm, :ems_id => ems.id) }
+    let(:ems)                         { FactoryBot.create(:ems_openstack, :zone => zone) }
+    let(:vm)                          { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
+    let(:vm2)                         { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
     let(:conversion_host)             { FactoryBot.create(:conversion_host, :resource => vm) }
     let(:conversion_host_url)         { api_conversion_host_url(nil, conversion_host) }
     let(:invalid_conversion_host_url) { api_conversion_host_url(nil, 999_999) }
@@ -212,10 +213,11 @@ describe "ConversionHosts API" do
   context "tags" do
     let(:tag1) { {:category => "department", :name => "finance", :path => "/managed/department/finance"} }
     let(:tag2) { {:category => "cc",         :name => "001",     :path => "/managed/cc/001"} }
+    let(:vm)   { FactoryBot.create(:vm_openstack) }
 
     let(:invalid_tag_url) { api_tag_url(nil, 999_999) }
 
-    let(:conversion_host) { FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:vm), :name => 'conversion_host_with_tags') }
+    let(:conversion_host) { FactoryBot.create(:conversion_host, :resource => vm, :name => 'conversion_host_with_tags') }
 
     before do
       FactoryBot.create(:classification_department_with_tags)
