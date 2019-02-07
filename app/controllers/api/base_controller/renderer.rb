@@ -203,7 +203,8 @@ module Api
           # is relation in 'attribute' variable plural in the model class (from 'resource.class') ?
           if [:has_many, :has_and_belongs_to_many].include?(resource.class.reflection_with_virtual(attribute).try(:macro))
             resource_attr = resource.public_send(attribute)
-            return resource_attr unless resource_attr.try(:first).kind_of?(ApplicationRecord)
+            klass         = resource_attr.kind_of?(ActiveRecord::Relation) ? resource_attr.klass : resource_attr.try(:first).class
+            return resource_attr unless Rbac::Filterer.new.send(:apply_rbac_directly?, klass)
             Rbac.filtered(resource_attr)
           else
             Rbac.filtered_object(resource).try(:public_send, attribute)
