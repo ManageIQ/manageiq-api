@@ -76,10 +76,6 @@ describe "ConversionHosts API" do
 
     let(:expected_attributes) { %w(id name resource_type resource_id version) }
 
-    before do
-      allow_any_instance_of(ConversionHost).to receive(:enable_conversion_host_role).and_return(true)
-    end
-
     it "supports single conversion host creation" do
       api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
 
