@@ -24,7 +24,7 @@ module Api
       raise BadRequestError, "resource_type must be specified" unless data['resource_type']
 
       resource_type = data['resource_type']
-      collection_type = resource_type.include?('Host') ? 'hosts' : 'vms'
+      collection_type = resource_type.classify.constantize.table_name
 
       # The 'auth_user' param must be deleted since the model will otherwise
       # pass the data hash directly as params to ConversionHost.new.
