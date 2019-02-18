@@ -84,12 +84,18 @@ describe "ConversionHosts API" do
       expect(response).to have_http_status(:ok)
 
       results = response.parsed_body["results"].first
+      task_id = results['task_id']
 
-      expect(results['success']).to be_truthy
-      expect(results['href']).to eql('http://www.example.com/api/conversion_hosts/')
-      expect(results['message']).to eql("Enabling resource id:#{vm.id} type:#{vm.class}")
-      expect(results['task_id']).to match(/\d+/)
-      expect(MiqTask.exists?(results['task_id'].to_i)).to be_truthy
+      expect(task_id).to match(/\d+/)
+      expect(MiqTask.exists?(task_id.to_i)).to be_truthy
+
+      expect(results).to include(
+        'success'   => true,
+        'href'      => 'http://www.example.com/api/conversion_hosts/',
+        'message'   => "Enabling resource id:#{vm.id} type:#{vm.class}",
+        'task_id'   => task_id,
+        'task_href' => "http://www.example.com/api/tasks/#{task_id}"
+      )
     end
 
     it "supports multiple conversion host creation" do
@@ -131,12 +137,18 @@ describe "ConversionHosts API" do
       expect(response).to have_http_status(:ok)
 
       results = response.parsed_body
+      task_id = results['task_id']
 
-      expect(results['success']).to be_truthy
-      expect(results['href']).to eql("http://www.example.com/api/conversion_hosts/#{conversion_host.id}")
-      expect(results['message']).to eql("Disabling ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}")
-      expect(results['task_id']).to match(/\d+/)
-      expect(MiqTask.exists?(results['task_id'].to_i)).to be_truthy
+      expect(task_id).to match(/\d+/)
+      expect(MiqTask.exists?(task_id.to_i)).to be_truthy
+
+      expect(results).to include(
+        'success'   => true,
+        'href'      => "http://www.example.com/api/conversion_hosts/#{conversion_host.id}",
+        'message'   => "Disabling ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}",
+        'task_id'   => task_id,
+        'task_href' => "http://www.example.com/api/tasks/#{task_id}"
+      )
     end
   end
 
@@ -161,13 +173,17 @@ describe "ConversionHosts API" do
       post(conversion_host_url, :params => gen_request(:delete))
 
       results = response.parsed_body
+      task_id = results['task_id']
 
-      expect(results['success']).to be_truthy
-      expect(results['message']).to eql("Disabling ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}")
-      expect(results['task_id']).to match(/\d+/)
-      expect(results['task_href']).to eql("http://www.example.com/api/tasks/#{results['task_id']}")
-      expect(MiqTask.exists?(results['task_id'].to_i)).to be_truthy
+      expect(task_id).to match(/\d+/)
+      expect(MiqTask.exists?(task_id.to_i)).to be_truthy
 
+      expect(results).to include(
+        'success'   => true,
+        'message'   => "Disabling ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}",
+        'task_id'   => task_id,
+        'task_href' => "http://www.example.com/api/tasks/#{task_id}"
+      )
     end
 
     it "will not delete a conversion host unless authorized" do
