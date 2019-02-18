@@ -121,10 +121,10 @@ describe "ConversionHosts API" do
 
       results = response.parsed_body["results"]
 
-      expect(results).to match_array([
+      expect(results).to contain_exactly(
         a_hash_including("message" => "Enabling resource id:#{vm.id} type:#{vm.class}", "task_id" => a_kind_of(String)),
         a_hash_including("message" => "Enabling resource id:#{host.id} type:#{host.class}", "task_id" => a_kind_of(String)),
-      ])
+      )
     end
   end
 
