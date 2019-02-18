@@ -53,8 +53,8 @@ describe "ConversionHosts API" do
   context "create" do
     let(:zone) { FactoryBot.create(:zone) }
     let(:ems) { FactoryBot.create(:ems_openstack, :zone => zone) }
-    let(:vm) { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
-    let(:host) { FactoryBot.create(:host_redhat, :ems_id => ems.id) }
+    let(:vm) { FactoryBot.create(:vm_openstack, :ext_management_system => ems) }
+    let(:host) { FactoryBot.create(:host_redhat, :ext_management_system => ems) }
 
     let(:sample_conversion_host_from_vm) do
       {
@@ -112,7 +112,7 @@ describe "ConversionHosts API" do
   context "disable" do
     let(:zone) { FactoryBot.create(:zone) }
     let(:ems) { FactoryBot.create(:ems_openstack, :zone => zone) }
-    let(:vm) { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
+    let(:vm) { FactoryBot.create(:vm_openstack, :ext_management_system => ems) }
     let(:conversion_host) { FactoryBot.create(:conversion_host, :resource => vm) }
     let(:conversion_host_url) { api_conversion_host_url(nil, conversion_host) }
 
@@ -143,8 +143,8 @@ describe "ConversionHosts API" do
   context "delete" do
     let(:zone)                        { FactoryBot.create(:zone) }
     let(:ems)                         { FactoryBot.create(:ems_openstack, :zone => zone) }
-    let(:vm)                          { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
-    let(:vm2)                         { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
+    let(:vm)                          { FactoryBot.create(:vm_openstack, :ext_management_system => ems) }
+    let(:vm2)                         { FactoryBot.create(:vm_openstack, :ext_management_system => ems) }
     let(:conversion_host)             { FactoryBot.create(:conversion_host, :resource => vm) }
     let(:conversion_host_url)         { api_conversion_host_url(nil, conversion_host) }
     let(:invalid_conversion_host_url) { api_conversion_host_url(nil, 999_999) }
