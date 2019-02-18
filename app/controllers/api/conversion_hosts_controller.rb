@@ -28,8 +28,9 @@ module Api
     def create_resource(type, id, data)
       raise BadRequestError, "resource_id must be specified" unless data['resource_id']
       raise BadRequestError, "resource_type must be specified" unless data['resource_type']
+      raise BadRequestError, "invalid resource_type #{data['resource_type']}" unless VALID_TYPES[data['resource_type']]
 
-      resource_type = VALID_TYPES.fetch(data['resource_type']){ |resource_type| "invalid resource type: #{resource_type}" }
+      resource_type = VALID_TYPES[data['resource_type']]
       collection_type = resource_type.table_name
 
       # The 'auth_user' param must be deleted since the model will otherwise

@@ -77,6 +77,18 @@ describe "ConversionHosts API" do
 
     let(:expected_attributes) { %w(id name resource_type resource_id version) }
 
+    it "raises an error if an invalid resource type is provided" do
+      api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
+      sample_conversion_host_from_vm['resource_type'] = 'bogus'
+      post(api_conversion_hosts_url, :params => sample_conversion_host_from_vm)
+
+      expect(response).to have_http_status(400)
+
+      results = response.parsed_body
+      expect(results['error']['kind']).to eql('bad_request')
+      expect(results['error']['message']).to eql('invalid resource_type bogus')
+    end
+
     it "supports single conversion host creation" do
       api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
 
