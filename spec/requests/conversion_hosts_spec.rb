@@ -51,7 +51,7 @@ describe "ConversionHosts API" do
   end
 
   context "create" do
-    let(:zone) { FactoryBot.create(:zone, :name => "api_zone") }
+    let(:zone) { FactoryBot.create(:zone) }
     let(:ems) { FactoryBot.create(:ems_openstack, :zone => zone) }
     let(:vm) { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
     let(:host) { FactoryBot.create(:host, :ems_id => ems.id, :type => "Host") }
@@ -110,7 +110,7 @@ describe "ConversionHosts API" do
   end
 
   context "disable" do
-    let(:zone) { FactoryBot.create(:zone, :name => "api_zone") }
+    let(:zone) { FactoryBot.create(:zone) }
     let(:ems) { FactoryBot.create(:ems_openstack, :zone => zone) }
     let(:vm) { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
     let(:conversion_host) { FactoryBot.create(:conversion_host, :resource => vm) }
@@ -141,7 +141,7 @@ describe "ConversionHosts API" do
   end
 
   context "delete" do
-    let(:zone)                        { FactoryBot.create(:zone, :name => "api_zone") }
+    let(:zone)                        { FactoryBot.create(:zone) }
     let(:ems)                         { FactoryBot.create(:ems_openstack, :zone => zone) }
     let(:vm)                          { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
     let(:vm2)                         { FactoryBot.create(:vm_openstack, :ems_id => ems.id) }
