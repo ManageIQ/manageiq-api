@@ -52,14 +52,15 @@ describe "ConversionHosts API" do
 
   context "create" do
     let(:zone) { FactoryBot.create(:zone) }
-    let(:ems) { FactoryBot.create(:ems_openstack, :zone => zone) }
-    let(:vm) { FactoryBot.create(:vm_openstack, :ext_management_system => ems) }
-    let(:host) { FactoryBot.create(:host_redhat, :ext_management_system => ems) }
+    let(:ems_openstack) { FactoryBot.create(:ems_openstack, :zone => zone) }
+    let(:ems_redhat) { FactoryBot.create(:ems_redhat, :zone => zone) }
+    let(:vm) { FactoryBot.create(:vm_openstack, :ext_management_system => ems_openstack) }
+    let(:host) { FactoryBot.create(:host_redhat, :ext_management_system => ems_redhat) }
 
     let(:sample_conversion_host_from_vm) do
       {
         :name          => "test_conversion_host_from_vm",
-        :resource_type => "VmOrTemplate",
+        :resource_type => vm.type,
         :resource_id   => vm.id,
         :version       => "1.0"
       }
@@ -68,7 +69,7 @@ describe "ConversionHosts API" do
     let(:sample_conversion_host_from_host) do
       {
         :name          => "test_conversion_host_from_host",
-        :resource_type => "Host",
+        :resource_type => host.type,
         :resource_id   => host.id,
         :version       => "1.0"
       }

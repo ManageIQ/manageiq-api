@@ -2,6 +2,12 @@ module Api
   class ConversionHostsController < BaseController
     include Subcollections::Tags
 
+    # Whitelist of valid resource types
+    VALID_TYPES = {
+      'ManageIQ::Providers::Openstack::CloudManager::Vm' => ManageIQ::Providers::Openstack::CloudManager::Vm,
+      'ManageIQ::Providers::Redhat::InfraManager::Host'  => ManageIQ::Providers::Redhat::InfraManager::Host
+    }
+
     # Create a conversion host and enable it. This operation will run as an
     # MiqTask.
     #
@@ -23,13 +29,13 @@ module Api
       raise BadRequestError, "resource_id must be specified" unless data['resource_id']
       raise BadRequestError, "resource_type must be specified" unless data['resource_type']
 
-      resource_type = data['resource_type']
-      collection_type = resource_type.classify.constantize.table_name
+      resource_type = VALID_TYPES.fetch(data['resource_type']){ |resource_type| "invalid resource type: #{resource_type}" }
+      collection_type = resource_type.table_name
 
       # The 'auth_user' param must be deleted since the model will otherwise
       # pass the data hash directly as params to ConversionHost.new.
       auth_user = data.delete('auth_user')
-      resource = resource_search(data['resource_id'], resource_type, collection_class(collection_type))
+      resource = resource_search(data['resource_id'], resource_type.to_s, collection_class(collection_type))
 
       data['resource'] = resource
 
