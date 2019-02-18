@@ -207,18 +207,26 @@ describe "ConversionHosts API" do
       expect_multiple_action_result(2)
 
       results = response.parsed_body['results']
+      task_one_id = results.first['task_id']
+      task_two_id = results.last['task_id']
 
-      expect(results.first['success']).to be_truthy
-      expect(results.first['message']).to eql("Disabling ConversionHost id:#{chost1.id} name:#{chost1.name}")
-      expect(results.first['task_id']).to match(/\d+/)
-      expect(results.first['task_href']).to eql("http://www.example.com/api/tasks/#{results.first['task_id']}")
-      expect(MiqTask.exists?(results.first['task_id'].to_i)).to be_truthy
+      expect(MiqTask.exists?(task_one_id.to_i)).to be_truthy
+      expect(MiqTask.exists?(task_two_id.to_i)).to be_truthy
 
-      expect(results.last['success']).to be_truthy
-      expect(results.last['message']).to eql("Disabling ConversionHost id:#{chost2.id} name:#{chost2.name}")
-      expect(results.last['task_id']).to match(/\d+/)
-      expect(results.last['task_href']).to eql("http://www.example.com/api/tasks/#{results.last['task_id']}")
-      expect(MiqTask.exists?(results.last['task_id'].to_i)).to be_truthy
+      expect(results).to contain_exactly(
+        a_hash_including(
+          'success'   => true,
+          'message'   => "Disabling ConversionHost id:#{chost1.id} name:#{chost1.name}",
+          'task_id'   => task_one_id,
+          'task_href' => "http://www.example.com/api/tasks/#{task_one_id}"
+        ),
+        a_hash_including(
+          'success'   => true,
+          'message'   => "Disabling ConversionHost id:#{chost2.id} name:#{chost2.name}",
+          'task_id'   => task_two_id,
+          'task_href' => "http://www.example.com/api/tasks/#{task_two_id}"
+        )
+      )
     end
   end
 
