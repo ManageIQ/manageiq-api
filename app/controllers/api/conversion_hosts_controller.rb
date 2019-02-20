@@ -6,7 +6,7 @@ module Api
     VALID_TYPES = {
       'ManageIQ::Providers::Openstack::CloudManager::Vm' => ManageIQ::Providers::Openstack::CloudManager::Vm,
       'ManageIQ::Providers::Redhat::InfraManager::Host'  => ManageIQ::Providers::Redhat::InfraManager::Host
-    }
+    }.freeze
 
     # Create a conversion host and enable it. This operation will run as an
     # MiqTask.
