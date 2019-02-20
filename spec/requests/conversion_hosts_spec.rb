@@ -128,43 +128,6 @@ describe "ConversionHosts API" do
     end
   end
 
-  context "disable" do
-    let(:zone) { FactoryBot.create(:zone) }
-    let(:ems) { FactoryBot.create(:ems_openstack, :zone => zone) }
-    let(:vm) { FactoryBot.create(:vm_openstack, :ext_management_system => ems) }
-    let(:conversion_host) { FactoryBot.create(:conversion_host, :resource => vm) }
-    let(:conversion_host_url) { api_conversion_host_url(nil, conversion_host) }
-
-    before do
-      allow(conversion_host).to receive(:install_conversion_host_module).and_return(true)
-      allow(conversion_host).to receive(:resource_search).and_return(vm)
-      allow(conversion_host).to receive(:ansible_playbook).and_return({})
-    end
-
-    it "can disable a resource via POST" do
-      api_basic_authorize(action_identifier(:conversion_hosts, :disable, :resource_actions))
-      allow(conversion_host).to receive(:check_conversion_host_role).and_return('disabled')
-
-      post(conversion_host_url, :params => {"action" => "disable"})
-
-      expect(response).to have_http_status(:ok)
-
-      results = response.parsed_body
-      task_id = results['task_id']
-
-      expect(task_id).to match(/\d+/)
-      expect(MiqTask.exists?(task_id.to_i)).to be_truthy
-
-      expect(results).to include(
-        'success'   => true,
-        'href'      => "http://www.example.com/api/conversion_hosts/#{conversion_host.id}",
-        'message'   => "Disabling ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}",
-        'task_id'   => task_id,
-        'task_href' => "http://www.example.com/api/tasks/#{task_id}"
-      )
-    end
-  end
-
   context "delete" do
     let(:zone)                        { FactoryBot.create(:zone) }
     let(:ems)                         { FactoryBot.create(:ems_openstack, :zone => zone) }
@@ -193,7 +156,7 @@ describe "ConversionHosts API" do
 
       expect(results).to include(
         'success'   => true,
-        'message'   => "Disabling ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}",
+        'message'   => "Disabling and deleting ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}",
         'task_id'   => task_id,
         'task_href' => "http://www.example.com/api/tasks/#{task_id}"
       )
@@ -229,13 +192,13 @@ describe "ConversionHosts API" do
       expect(results).to contain_exactly(
         a_hash_including(
           'success'   => true,
-          'message'   => "Disabling ConversionHost id:#{chost1.id} name:#{chost1.name}",
+          'message'   => "Disabling and deleting ConversionHost id:#{chost1.id} name:#{chost1.name}",
           'task_id'   => task_one_id,
           'task_href' => "http://www.example.com/api/tasks/#{task_one_id}"
         ),
         a_hash_including(
           'success'   => true,
-          'message'   => "Disabling ConversionHost id:#{chost2.id} name:#{chost2.name}",
+          'message'   => "Disabling and deleting ConversionHost id:#{chost2.id} name:#{chost2.name}",
           'task_id'   => task_two_id,
           'task_href' => "http://www.example.com/api/tasks/#{task_two_id}"
         )

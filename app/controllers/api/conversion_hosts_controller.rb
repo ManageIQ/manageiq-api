@@ -52,45 +52,21 @@ module Api
     end
 
     # Disable the conversion host role by installing the conversion host module
-    # and running the conversion host playbook that disables it. This operation
-    # run as an MiqTask.
-    #
-    # You may optionally provide an 'auth_user' parameter.
-    #
-    # POST /api/conversion_hosts/:id { "action": "disable" }
-    # POST /api/conversion_hosts/:id { "action": "disable", "auth_user": "someone" }
-    #
-    # This differs from the DELETE action in that it returns a response body.
-    #
-    def disable_resource(type, id, data)
-      conversion_host = resource_search(id, type, collection_class(type))
-
-      api_action(type, id) do
-        message = "Disabling ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}"
-        begin
-          task_id = conversion_host.disable_queue(data['auth_user']) # Ok if nil
-          action_result(true, message, :task_id => task_id)
-        rescue => err
-          action_result(false, err.to_s)
-        end
-      end
-    end
-
-    # Disable the conversion host role by installing the conversion host module
-    # and running the conversion host playbook that disables it. This operation
-    # run as an MiqTask.
+    # and running the conversion host playbook that disables it, then delete
+    # the conversion host record. This operation run as an MiqTask.
     #
     # You may optionally provide an 'auth_user' parameter.
     #
     # DELETE /api/conversion_hosts/:id
     # DELETE /api/conversion_hosts/:id { "auth_user": "someone" }
     #
-    # This differs from the POST action in that it does not return a response body.
+    # Note that you can also delete via a POST action using "action: delete" as
+    # a parameter, which will include a response body.
     #
     def delete_resource(type, id, data = {})
       delete_action_handler do
         conversion_host = resource_search(id, type, collection_class(type))
-        message = "Disabling ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}"
+        message = "Disabling and deleting ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}"
         begin
           task_id = conversion_host.disable_queue(data['auth_user']) # Ok if nil
           action_result(true, message, :task_id => task_id)
