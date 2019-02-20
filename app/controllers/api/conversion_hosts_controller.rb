@@ -19,7 +19,7 @@ module Api
     #
     # POST /api/conversion_hosts {
     #   "name": "some_name",
-    #   "resource_type": "Host",
+    #   "resource_type": "ManageIQ::Providers::Redhat::InfraManager::Host",
     #   "resource_id": "7"
     #   "param_v2v_vddk_package_url": "some_url"
     #   "auth_user": "some_user"
