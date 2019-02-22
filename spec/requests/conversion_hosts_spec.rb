@@ -1,5 +1,5 @@
 describe "ConversionHosts API" do
-  before(:each) do
+  before do
     NotificationType.seed
   end
 

@@ -33,9 +33,6 @@ module Api
       resource_type = VALID_TYPES[data['resource_type']]
       collection_type = resource_type.table_name
 
-      # The 'auth_user' param must be deleted since the model will otherwise
-      # pass the data hash directly as params to ConversionHost.new.
-      auth_user = data.delete('auth_user')
       resource = resource_search(data['resource_id'], resource_type.to_s, collection_class(collection_type))
 
       data['resource'] = resource
@@ -43,7 +40,7 @@ module Api
       api_action(type, id) do
         begin
           message = "Enabling resource id:#{resource.id} type:#{resource.type}"
-          task_id = ConversionHost.enable_queue(data, auth_user)
+          task_id = ConversionHost.enable_queue(data.except('auth_user'), data['auth_user'])
           action_result(true, message, :task_id => task_id)
         rescue => err
           action_result(false, err.to_s)
