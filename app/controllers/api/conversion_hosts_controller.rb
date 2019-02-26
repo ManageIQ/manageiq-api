@@ -2,12 +2,6 @@ module Api
   class ConversionHostsController < BaseController
     include Subcollections::Tags
 
-    # Whitelist of valid resource types
-    VALID_TYPES = {
-      'ManageIQ::Providers::Openstack::CloudManager::Vm' => ManageIQ::Providers::Openstack::CloudManager::Vm,
-      'ManageIQ::Providers::Redhat::InfraManager::Host'  => ManageIQ::Providers::Redhat::InfraManager::Host
-    }.freeze
-
     # Create a conversion host and enable it. This operation will run as an
     # MiqTask.
     #
@@ -28,9 +22,18 @@ module Api
     def create_resource(type, id, data)
       raise BadRequestError, "resource_id must be specified" unless data['resource_id']
       raise BadRequestError, "resource_type must be specified" unless data['resource_type']
-      raise BadRequestError, "invalid resource_type #{data['resource_type']}" unless VALID_TYPES[data['resource_type']]
 
-      resource_type = VALID_TYPES[data['resource_type']]
+      # The scary constantize call below is mitigated by the fact that it won't get
+      # past the following checks we make before passing along the params.
+
+      resource_type = data['resource_type'].classify.safe_constantize
+
+      raise BadRequestError, "invalid resource_type #{data['resource_type']}" unless resource_type
+
+      unless resource_type.respond_to?(:supports_conversion_host?) && resource_type.supports_conversion_host?
+        raise BadRequestError, "unsupported resource_type #{resource_type}"
+      end
+
       collection_type = resource_type.table_name
 
       resource = resource_search(data['resource_id'], resource_type.to_s, collection_class(collection_type))
