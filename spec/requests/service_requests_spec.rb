@@ -635,6 +635,13 @@ describe "Service Requests API" do
     context "SubResource#cancel" do
       let(:resource_1_response) { {"success" => true, "message" => "RequestTask #{resource_1.id} canceled"} }
       let(:resource_2_response) { {"success" => true, "message" => "RequestTask #{resource_2.id} canceled"} }
+      let(:infra_conversion_job) { FactoryBot.create(:infra_conversion_job) }
+
+      before do
+        allow_any_instance_of(ServiceTemplateTransformationPlanTask).to receive(:infra_conversion_job).and_return(infra_conversion_job)
+        allow_any_instance_of(Job).to receive(:cancel)
+      end
+
       include_context "SubResource#cancel", [:service_request, :request_task], :service_template_transformation_plan_request, :service_template_transformation_plan_task
     end
   end
