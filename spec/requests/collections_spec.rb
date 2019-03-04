@@ -313,11 +313,6 @@ describe "Rest API Collections" do
       test_collection_query(:zones, api_zones_url, Zone)
     end
 
-    it "query ContainerDeployments" do
-      FactoryBot.create(:container_deployment)
-      test_collection_query(:container_deployments, api_container_deployments_url, ContainerDeployment)
-    end
-
     it "query ContainerProjects" do
       FactoryBot.create(:container_project)
       test_collection_query(:container_projects, api_container_projects_url, ContainerProject)
@@ -443,11 +438,6 @@ describe "Rest API Collections" do
     it "bulk query Actions" do
       FactoryBot.create(:miq_action)
       test_collection_bulk_query(:actions, api_actions_url, MiqAction)
-    end
-
-    it "bulk query ContainerDeployments" do
-      FactoryBot.create(:container_deployment)
-      test_collection_bulk_query(:container_deployments, api_container_deployments_url, ContainerDeployment)
     end
 
     it "bulk query ContainerGroups" do
