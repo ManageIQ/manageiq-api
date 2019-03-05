@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Hammer-3
+
+### Fixed
+- One semaphore to exclusively load them all [(#550)](https://github.com/ManageIQ/manageiq-api/pull/550)
+
 ## Hammer-1
 
 ### Added
