@@ -793,26 +793,6 @@
       :get:
       - :name: read
         :identifier: configuration_script_view
-  :container_deployments:
-    :description: Container Provider Deployment
-    :identifier: container_deployment
-    :klass: ContainerDeployment
-    :verbs: *gpppd
-    :options:
-    - :collection
-    :collection_actions:
-      :get:
-      - :name: read
-        :identifier: container_deployment_show
-      :post:
-      - :name: query
-        :identifier: container_deployment_show
-      - :name: create
-        :identifier: container_deployment_create
-    :resource_actions:
-      :get:
-      - :name: read
-        :identifier: container_deployment_show
   :container_groups:
     :description: Container Groups
     :identifier: container_group
