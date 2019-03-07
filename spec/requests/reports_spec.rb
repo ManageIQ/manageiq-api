@@ -97,18 +97,19 @@ RSpec.describe "reports API" do
     end
 
     context "pagination and sorting with report result's result_set" do
+      let(:columns) { %w[name size] }
       let(:result_set) do
         [{"name" => "VM2", "size" => 115_533},
          {"name" => "VM1", "size" => 332_233},
          {"name" => "VG1", "size" => 112_233}]
       end
 
-      let(:col_formats) { Array.new(result_set.first.keys.count) }
+      let(:col_formats) { Array.new(columns.count) }
       let(:report_result) { FactoryBot.create(:miq_report_result, :miq_group => user.current_group) }
       let(:report) do
         FactoryBot.create(:miq_report, :miq_group          => user.current_group,
                                        :miq_report_results => [report_result],
-                                       :col_order          => result_set.first.keys,
+                                       :col_order          => columns,
                                        :col_formats        => col_formats)
       end
 

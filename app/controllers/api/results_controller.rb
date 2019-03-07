@@ -6,66 +6,36 @@ module Api
       MiqReportResult.for_user(User.current_user).where_clause.ast
     end
 
-    def apply_limit_and_offset(results, options)
-      results.slice(options['offset'].to_i, options['limit'].to_i) || []
-    end
-
     def sort_order
       params['sort_order'] == 'desc' ? :descending : :ascending
-    end
-
-    def sort_by(report_result)
-      sort_by(report_result).split(",").collect do |attr|
-        if report(report_result).col_order&.include?(attr)
-          attr
-        else
-          raise BadRequestError, "#{attr} is not a valid attribute for #{report_result.name}"
-        end
-      end.compact
     end
 
     def param_result_set?
       params.key?(:hash_attribute) && params[:hash_attribute] == "result_set"
     end
 
-    def format_result_set(miq_report, result_set)
-      tz = miq_report.get_time_zone(Time.zone)
-
-      col_format_hash = miq_report.col_order.zip(miq_report.col_formats).to_h
-
-      result_set.map! do |row|
-        row.map do |key, _|
-          [key, miq_report.format_column(key, row, tz, col_format_hash[key])]
-        end.to_h
-      end
+    def report_options
+      params.merge(:sort_by => params['sort_by'], :sort_order => sort_order).merge(filter_options)
     end
 
-    def report(report_result)
-      @report ||= report_result.report || report_result.miq_report
+    def filter_options
+      filtering_enabled? ? {:filter_string => params[:filter_string], :filter_column => params[:filter_column]} : {}
     end
 
-    def sort_by(report_result)
-      params['sort_by'] || report(report_result)&.sortby || report(report_result)&.col_order
+    def filtering_enabled?
+      params.key?(:filter_column) && params.key?(:filter_string) && params[:filter_string]
     end
 
     def result_set
       ensure_pagination
 
       report_result = MiqReportResult.for_user(User.current_user).find(@req.collection_id)
-      result_set = report_result.result_set
+      result = report_result.result_set_for_reporting(report_options)
 
-      if result_set.present? && report(report_result)
-        result_set = result_set.stable_sort_by(sort_by(report_result), sort_order)
-        result_set = apply_limit_and_offset(result_set, params)
-        result_set.map! { |x| x.slice(*report(report_result).col_order) }
-
-        result_set = format_result_set(report(report_result), result_set)
-      end
-
-      hash = {:result_set => result_set,
-              :count      => report_result.result_set.count,
-              :subcount   => result_set.count,
-              :pages      => (report_result.result_set.count / params['limit'].to_f).ceil}
+      hash = {:result_set => result[:result_set],
+              :count      => result[:count_of_full_result_set],
+              :subcount   => result[:result_set].count,
+              :pages      => (result[:count_of_full_result_set] / params['limit'].to_f).ceil}
 
       report_result.attributes.merge(hash)
     end
