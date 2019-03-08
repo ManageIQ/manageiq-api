@@ -108,8 +108,7 @@ RSpec.describe 'GenericObjects API' do
     it "includes the hrefs for custom buttons and button groups" do
       generic_no_group = FactoryGirl.create(:custom_button, :name => "generic_no_group", :applies_to_class => "GenericObject")
       generic_group = FactoryGirl.create(:custom_button, :name => "generic_group", :applies_to_class => "GenericObject")
-      generic_group_set = FactoryGirl.create(:custom_button_set, :name => "generic_group_set")
-      generic_group_set.add_member(generic_group)
+      generic_group_set = FactoryBot.create(:custom_button_set, :name => "generic_group_set", :set_data => {:applies_to_class => "GenericObject", :button_order => [generic_group.id]})
       assigned_no_group = FactoryGirl.create(
         :custom_button,
         :name             => "assigned_no_group",
@@ -122,8 +121,7 @@ RSpec.describe 'GenericObjects API' do
         :applies_to_class => "GenericObjectDefinition",
         :applies_to_id    => object_definition.id
       )
-      assigned_group_set = FactoryGirl.create(:custom_button_set, :name => "assigned_group_set")
-      assigned_group_set.add_member(assigned_group)
+      assigned_group_set = FactoryBot.create(:custom_button_set, :name => "assigned_group_set", :set_data => {:applies_to_class => "GenericObject", :button_order => [assigned_group.id]})
       object_definition.update(:custom_button_sets => [assigned_group_set])
       api_basic_authorize action_identifier(:generic_objects, :read, :resource_actions, :get)
 
