@@ -3609,6 +3609,8 @@
         :identifier: transformation_mapping_new
       - :name: delete
         :identifier: transformation_mapping_delete
+      - :name: add_mapping_item
+        :identifier: transformation_mapping_new
       :delete:
       - :name: delete
         :identifier: transformation_mapping_delete

@@ -382,6 +382,20 @@ describe "Transformation Mappings" do
             expect(response.parsed_body).to include(expected)
           end
         end
+
+        context "add_mapping_item" do
+          it "can add transformation mapping item" do
+            api_basic_authorize(action_identifier(:transformation_mappings, :add_mapping_item, :resource_actions, :post))
+            transformation_mapping = FactoryBot.create(:transformation_mapping)
+            request = {
+              'action'   => 'add_mapping_item',
+              'resource' => {'source' => api_cluster_url(nil, source_cluster), 'destination' => api_cluster_url(nil, destination_cluster)}
+            }
+            post(api_transformation_mapping_url(nil, transformation_mapping), :params => request)
+            expect(response).to have_http_status(:ok)
+            expect(transformation_mapping.transformation_mapping_items.length).to eq(1)
+          end
+        end
       end
     end
 
