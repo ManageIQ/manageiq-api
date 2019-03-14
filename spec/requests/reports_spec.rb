@@ -240,6 +240,72 @@ RSpec.describe "reports API" do
           expect(response).to have_http_status(:ok)
         end
       end
+
+      context "with filtering" do
+        let(:filtered_result_set) do
+          [{"name" => "VM1", "size" => "324.4 KB"},
+           {"name" => "VM3", "size" => "220.2 KB"},
+           {"name" => "VM2", "size" => "112.8 KB"}]
+        end
+
+        let(:result_set) do
+          [{"id" => 1, "name" => "VM2", "size" => 115_533},
+           {"id" => 2, "name" => "VM1", "size" => 332_233},
+           {"id" => 3, "name" => "VM3", "size" => 225_533},
+           {"id" => 4, "name" => "VG1", "size" => 112_233_444_1}]
+        end
+
+        it "returns filtered and sorted result_set according to integer column and default formatting, sort_order=descending" do
+          params[:sort_by] = 'size'
+          params[:sort_order] = 'desc'
+          params[:filter_column] = 'name'
+          params[:filter_string] = 'VM'
+          get api_result_url(nil, report_result), :params => params
+          expect_result_to_match_hash(response.parsed_body, "result_set" => filtered_result_set)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it "returns filtered and sorted result_set by integer column, default formatting, sort_order=descending and pagination" do
+          params[:sort_by] = 'size'
+          params[:sort_order] = 'desc'
+          params[:filter_column] = 'name'
+          params[:filter_string] = 'VM'
+          params[:limit] = 2
+          params[:offset] = 1
+          get api_result_url(nil, report_result), :params => params
+          expect_result_to_match_hash(response.parsed_body, "result_set" => filtered_result_set[1..2]) # second page
+          expect_result_to_match_hash(response.parsed_body, "count" => 3)
+          expect_result_to_match_hash(response.parsed_body, "subcount" => 2)
+          expect_result_to_match_hash(response.parsed_body, "pages" => 2)
+          expect(response).to have_http_status(:ok)
+        end
+
+        let(:filtered_result_set_ascending) do
+          [{"name" => "VM2", "size" => "112.8 KB"},
+           {"name" => "VM3", "size" => "220.2 KB"},
+           {"name" => "VM1", "size" => "324.4 KB"}]
+        end
+
+        it "returns filtered and sorted result_set according to integer column and default formatting, sort_order=ascending" do
+          params[:sort_by] = 'size'
+          params[:sort_order] = 'asc'
+          params[:filter_column] = 'name'
+          params[:filter_string] = 'VM'
+          get api_result_url(nil, report_result), :params => params
+          expect_result_to_match_hash(response.parsed_body, "result_set" => filtered_result_set_ascending)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it "returns filtered(in formatted output) and sorted result_set according to integer column and default formatting, sort_order=ascending" do
+          params[:sort_by] = 'size'
+          params[:sort_order] = 'asc'
+          params[:filter_column] = 'size'
+          params[:filter_string] = 'GB'
+          get api_result_url(nil, report_result), :params => params
+          expect_result_to_match_hash(response.parsed_body, "result_set" => [{"name" => "VG1", "size" => "1 GB"}])
+          expect(response).to have_http_status(:ok)
+        end
+      end
     end
 
     it "can fetch a specific result as a primary collection" do
