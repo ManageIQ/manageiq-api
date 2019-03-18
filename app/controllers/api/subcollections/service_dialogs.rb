@@ -15,7 +15,7 @@ module Api
         when "services"
           service_template = parent_resource_obj.service_template
         end
-        return resource.content if service_template.nil?
+        return resource.content(nil, nil, true) if service_template.nil? || params[:custom_param] == "empty_dialog"
         resource_action = service_template.resource_actions.where(:dialog_id => resource.id).first
         if resource_action.nil?
           raise BadRequestError,
