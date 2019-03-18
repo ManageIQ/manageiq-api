@@ -1,5 +1,30 @@
 module Api
   class AutomateDomainsController < BaseController
+
+    REQUIRED_FIELDS = %w(git_url ref_type ref_name)
+
+    def create_resource(type, _id, data)
+      assert_all_required_fields_exists(data, type, REQUIRED_FIELDS)
+      raise BadRequestError, 'ref_type must be "branch" or "tag"' unless valid_ref_type?(data)
+      
+      api_log_info("Create will be queued for automate domain from #{data["git_url"]} / #{data["ref_name"]}")
+
+      begin
+        unless GitBasedDomainImportService.available?
+          raise "Git owner role must enabled to import git repositories"
+        end
+        task_id = GitBasedDomainImportService.new.queue_refresh_and_import(data["git_url"],
+                                                                           data["ref_name"],
+                                                                           data["ref_type"],
+                                                                           User.current_user.current_tenant.id,
+                                                                           optional_data(data))
+
+        action_result(true, 'Creating Automate Domain from git repository', :task_id => task_id)
+      rescue => err
+        action_result(false, err.to_s)
+      end
+    end
+
     def delete_resource(type, id = nil, _data = {})
       raise BadRequestError, "Must specify an id for deleting a #{type} resource" unless id
 
@@ -71,6 +96,23 @@ module Api
 
     def current_tenant
       User.current_user.current_tenant || Tenant.default_tenant
+    end
+
+    def valid_ref_type?(data)
+      return false unless data.has_key?("ref_type")
+      return true if data["ref_type"] == "tag" || data["ref_type"] == "branch"
+      false
+    end
+
+    def optional_data(data)
+        optional_data = {}
+        optional_data["userid"] = data["userid"] if data.has_key?("userid")
+        optional_data["password"] = data["password"] if data.has_key?("password")
+
+        # If data["verify_ssl"] is missing or set to false use VERIFY_NONE. If true use VERIFY_PEER
+        optional_data["verify_ssl"] = data["verify_ssl"] ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
+
+        optional_data
     end
   end
 end
