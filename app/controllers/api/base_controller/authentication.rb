@@ -111,7 +111,7 @@ module Api
       end
 
       def authenticate_with_system_token(x_miq_token)
-        @miq_token_hash = YAML.load(MiqPassword.decrypt(x_miq_token))
+        @miq_token_hash = YAML.load(ManageIQ::Password.decrypt(x_miq_token))
 
         validate_system_token_server(@miq_token_hash[:server_guid])
         validate_system_token_timestamp(@miq_token_hash[:timestamp])

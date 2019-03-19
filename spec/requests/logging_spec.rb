@@ -55,7 +55,7 @@ describe "Logging" do
         userid = @user.userid
         timestamp = Time.now.utc
 
-        miq_token = MiqPassword.encrypt({:server_guid => server_guid, :userid => userid, :timestamp => timestamp}.to_yaml)
+        miq_token = ManageIQ::Password.encrypt({:server_guid => server_guid, :userid => userid, :timestamp => timestamp}.to_yaml)
 
         get api_entrypoint_url, :headers => {Api::HttpHeaders::MIQ_TOKEN => miq_token}
 
