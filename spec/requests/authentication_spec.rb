@@ -385,7 +385,7 @@ describe "Authentication API" do
     AUTHENTICATION_ERROR = "Invalid System Authentication Token specified".freeze
 
     def systoken(server_guid, userid, timestamp)
-      MiqPassword.encrypt({:server_guid => server_guid, :userid => userid, :timestamp => timestamp}.to_yaml)
+      ManageIQ::Password.encrypt({:server_guid => server_guid, :userid => userid, :timestamp => timestamp}.to_yaml)
     end
 
     it "authentication using a bad token" do
