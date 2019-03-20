@@ -11,6 +11,10 @@ module Api
       # string-only matching, use quotes
       "===" => {:default => "="},
       "!==" => {:default => "!="},
+
+      # regex-only matching without mangling, use slashes and optionally /i
+      "=~" => {:default => "REGULAR EXPRESSION MATCHES"},
+      "!~" => {:default => "REGULAR EXPRESSION DOES NOT MATCH"},
     }.freeze
 
     attr_reader :filters, :model
