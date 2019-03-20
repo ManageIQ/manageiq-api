@@ -6,7 +6,11 @@ module Api
       ">=" => {:default => ">="},
       "<"  => {:default => "<", :datetime => "BEFORE"},
       ">"  => {:default => ">", :datetime => "AFTER"},
-      "="  => {:default => "=", :datetime => "IS", :regex => "REGULAR EXPRESSION MATCHES", :null => "IS NULL"}
+      "="  => {:default => "=", :datetime => "IS", :regex => "REGULAR EXPRESSION MATCHES", :null => "IS NULL"},
+
+      # string-only matching, use quotes
+      "===" => {:default => "="},
+      "!==" => {:default => "!="},
     }.freeze
 
     attr_reader :filters, :model
@@ -68,7 +72,9 @@ module Api
       filter_attr, _, filter_value = filter.partition(operator)
       filter_attr.strip!
       filter_value.strip!
-      str_method = filter_value =~ /%|\*/ && methods[:regex] || methods[:default]
+
+      is_regex = filter_value =~ /%|\*/ && methods[:regex]
+      str_method = is_regex ? methods[:regex] : methods[:default]
 
       filter_value, method = case filter_value
                              when /^'.*'$/
@@ -91,7 +97,7 @@ module Api
                                end
                              end
 
-      if filter_value =~ /%|\*/
+      if is_regex
         filter_value = "/\\A#{Regexp.escape(filter_value)}\\z/"
         filter_value.gsub!(/%|\\\*/, ".*")
       end

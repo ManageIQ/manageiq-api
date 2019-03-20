@@ -328,5 +328,23 @@ RSpec.describe Api::Filter do
       expected = {"=" => {"field" => "MiqReport-name", "value" => "Vms with free space > 50 percent"}}
       expect(actual.exp).to eq(expected)
     end
+
+    it "can handle exact strings" do
+      filters = ["name==='  foo.*bar%f '"]
+
+      actual = described_class.parse(filters, MiqReport)
+
+      expected = {"=" => {"field" => "MiqReport-name", "value" => "  foo.*bar%f "}}
+      expect(actual.exp).to eq(expected)
+    end
+
+    it "can handle exact string nonequality" do
+      filters = ["name !== '  foo.*bar%f ' "]
+
+      actual = described_class.parse(filters, MiqReport)
+
+      expected = {"!=" => {"field" => "MiqReport-name", "value" => "  foo.*bar%f "}}
+      expect(actual.exp).to eq(expected)
+    end
   end
 end
