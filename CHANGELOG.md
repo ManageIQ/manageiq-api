@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Hammer-4
+
+### Fixed
+- Remove SQL select from exception error messages. [(#537)](https://github.com/ManageIQ/manageiq-api/pull/537)
+
 ## Unreleased as of Sprint 107 ending 2019-03-18
 
 ### Added
@@ -36,7 +41,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Do not request for basic auth if the auth_requester is set to UI [(#542)](https://github.com/ManageIQ/manageiq-api/pull/542)
-- Remove SQL select from exception error messages. [(#537)](https://github.com/ManageIQ/manageiq-api/pull/537)
 
 ## Unreleased as of Sprint 102 ending 2019-01-07
 
