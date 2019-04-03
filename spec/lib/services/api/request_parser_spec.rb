@@ -33,6 +33,14 @@ RSpec.describe Api::RequestParser do
       expected = {:foo => "bar", :foobar => {:bazz => "foo"}}
       expect(actual).to eq(expected)
     end
+
+    it "deep symbolizes keys except the dialog" do
+      actual = described_class.parse_options("options" => {"foo" => "bar", "dialog" => { "item" => "value"}})
+      expected = {:foo => "bar", :dialog => { "item" => "value" }}
+      expect(actual).to eq(expected)
+      expect(actual[:dialog][:item]).to eq("value")
+      expect(actual[:dialog]["item"]).to eq("value")
+    end
   end
 
   describe ".parse_auto_approve" do
