@@ -10,7 +10,11 @@ module Api
 
     def self.parse_options(data)
       raise BadRequestError, "Request is missing options" if data["options"].blank?
-      data["options"].deep_symbolize_keys
+      # Need to preserve string keys in dialog sub-hash while still supporting access by symbols
+      dialog = data["options"].delete("dialog")
+      data["options"].deep_symbolize_keys.tap do |hash|
+        hash[:dialog] = dialog.with_indifferent_access if dialog.present?
+      end
     end
 
     def self.parse_auto_approve(data)
