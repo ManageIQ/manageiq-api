@@ -206,7 +206,12 @@ module Api
             return resource_attr unless resource_attr.try(:first).kind_of?(ApplicationRecord)
             Rbac.filtered(resource_attr)
           else
-            Rbac.filtered_object(resource).try(:public_send, attribute)
+            obj = Rbac.filtered_object(resource)
+            begin
+              obj.try(:public_send, attribute)
+            rescue => error
+              raise BadRequestError, "Invalid attributes specified: #{error}"
+            end
           end
         else
           resource.public_send(attribute)
