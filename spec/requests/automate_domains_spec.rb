@@ -117,7 +117,7 @@ describe "Automate Domains API" do
         post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git, sample_params))
         expect_single_action_result(
           :success => true,
-          :message => "Creating Automate Domain from git repository",
+          :message => "Creating Automate Domain from #{sample_params["git_url"]}/#{sample_params["ref_name"]}",
           :zhref   => api_automate_domain_url(nil, git_domain)
         )
       end

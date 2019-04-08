@@ -10,15 +10,16 @@ module Api
 
       begin
         unless GitBasedDomainImportService.available?
-          raise "Git owner role must enabled to import git repositories"
+          raise BadRequestError, "Git owner role must enabled to import git repositories"
         end
+
         task_id = GitBasedDomainImportService.new.queue_refresh_and_import(data["git_url"],
                                                                            data["ref_name"],
                                                                            data["ref_type"],
                                                                            User.current_user.current_tenant.id,
                                                                            prepare_optional_auth(data))
 
-        action_result(true, 'Creating Automate Domain from git repository', :task_id => task_id)
+        action_result(true, "Creating Automate Domain from #{data["git_url"]}/#{data["ref_name"]}", :task_id => task_id)
       rescue => err
         action_result(false, err.to_s)
       end
@@ -97,10 +98,8 @@ module Api
       User.current_user.current_tenant || Tenant.default_tenant
     end
 
-    def valid_ref_type?(data)
-      return false unless data.key?("ref_type")
-      return true if data["ref_type"] == "tag" || data["ref_type"] == "branch"
-      false
+    def valid_ref_type?(data = {})
+      %w[tag branch].include?(data["ref_type"]) if data.key?("ref_type")
     end
 
     def prepare_optional_auth(data)
