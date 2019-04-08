@@ -251,7 +251,7 @@
       :post:
       - :name: query
         :identifier: miq_ae_domain_view
-      - :name: create
+      - :name: create_from_git
         :identifier: miq_ae_domain_new
       - :name: refresh_from_source
         :identifier: miq_ae_git_refresh
@@ -262,7 +262,7 @@
       - :name: read
         :identifier: miq_ae_domain_view
       :post:
-      - :name: create
+      - :name: create_from_git
         :identifier: miq_ae_domain_new
       - :name: refresh_from_source
         :identifier: miq_ae_git_refresh

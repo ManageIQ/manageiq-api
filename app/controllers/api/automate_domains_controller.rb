@@ -3,7 +3,7 @@ module Api
 
     REQUIRED_FIELDS = %w(git_url ref_type ref_name)
 
-    def create_resource(type, _id, data)
+    def create_from_git_resource(type, _id, data)
       assert_all_required_fields_exists(data, type, REQUIRED_FIELDS)
       raise BadRequestError, 'ref_type must be "branch" or "tag"' unless valid_ref_type?(data)
       
@@ -17,7 +17,7 @@ module Api
                                                                            data["ref_name"],
                                                                            data["ref_type"],
                                                                            User.current_user.current_tenant.id,
-                                                                           optional_data(data))
+                                                                           prepare_optional_auth(data))
 
         action_result(true, 'Creating Automate Domain from git repository', :task_id => task_id)
       rescue => err
@@ -104,15 +104,15 @@ module Api
       false
     end
 
-    def optional_data(data)
-        optional_data = {}
-        optional_data["userid"] = data["userid"] if data.has_key?("userid")
-        optional_data["password"] = data["password"] if data.has_key?("password")
+    def prepare_optional_auth(data)
+        optional_auth = {}
+        optional_auth["userid"] = data["userid"] if data.has_key?("userid")
+        optional_auth["password"] = data["password"] if data.has_key?("password")
 
         # If data["verify_ssl"] is missing or set to false use VERIFY_NONE. If true use VERIFY_PEER
-        optional_data["verify_ssl"] = data["verify_ssl"] ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
+        optional_auth["verify_ssl"] = data["verify_ssl"] ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
 
-        optional_data
+        optional_auth
     end
   end
 end

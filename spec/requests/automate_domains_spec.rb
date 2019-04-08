@@ -64,7 +64,7 @@ describe "Automate Domains API" do
     end
   end
 
-  describe 'create action' do
+  describe 'create_from_git action' do
     let(:git_domain) { FactoryBot.create(:miq_ae_git_domain) }
     let(:action) { FactoryBot.create(:miq_action) }
     let(:event) { FactoryBot.create(:miq_event_definition) }
@@ -81,10 +81,10 @@ describe "Automate Domains API" do
       }
     end
 
-    it 'forbids create for users without proper permissions' do
+    it 'forbids create_from_git for users without proper permissions' do
       api_basic_authorize
 
-      post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create))
+      post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git))
       expect(response).to have_http_status(:forbidden)
     end
 
@@ -93,28 +93,28 @@ describe "Automate Domains API" do
         allow(GitBasedDomainImportService).to receive(:available?).and_return(true)
       end
 
-      it 'should not create a new automate domain when missing params' do
-        api_basic_authorize collection_action_identifier(:automate_domains, :create)
+      it 'should not create a new automate domain from git when missing params' do
+        api_basic_authorize collection_action_identifier(:automate_domains, :create_from_git)
 
-        post(api_automate_domain_url(nil, git_domain), :params => { "git_url" => "url" })
+        post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git, { "git_url" => "url" }))
         expect(response).to have_http_status(:bad_request)
         expect(response.parsed_body["error"]["message"]).to include(miq_automate_domains_contents.keys.join(", "))
       end
 
-      it 'should not create new automate domain with incorrect ref_type param' do
-        api_basic_authorize collection_action_identifier(:automate_domains, :create)
+      it 'should not create new automate domain from git with incorrect ref_type param' do
+        api_basic_authorize collection_action_identifier(:automate_domains, :create_from_git)
 
-        post(api_automate_domain_url(nil, git_domain), :params => sample_params)
+        post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git, sample_params))
         expect(response).to have_http_status(:bad_request)
         expect(response.parsed_body["error"]["message"]).to include("ref_type must be")
       end
 
-      it 'create domain from git_repository' do
-        api_basic_authorize collection_action_identifier(:automate_domains, :create)
+      it 'create domain from a git repository' do
+        api_basic_authorize collection_action_identifier(:automate_domains, :create_from_git)
         expect_any_instance_of(GitBasedDomainImportService).to receive(:queue_refresh_and_import)
         sample_params["ref_type"] = "tag"
 
-        post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create, sample_params))
+        post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git, sample_params))
         expect_single_action_result(
           :success => true,
           :message => "Creating Automate Domain from git repository",
