@@ -1,12 +1,11 @@
 module Api
   class AutomateDomainsController < BaseController
-
-    REQUIRED_FIELDS = %w(git_url ref_type ref_name)
+    REQUIRED_FIELDS = %w[git_url ref_type ref_name].freeze
 
     def create_from_git_resource(type, _id, data)
       assert_all_required_fields_exists(data, type, REQUIRED_FIELDS)
       raise BadRequestError, 'ref_type must be "branch" or "tag"' unless valid_ref_type?(data)
-      
+
       api_log_info("Create will be queued for automate domain from #{data["git_url"]} / #{data["ref_name"]}")
 
       begin
@@ -99,20 +98,20 @@ module Api
     end
 
     def valid_ref_type?(data)
-      return false unless data.has_key?("ref_type")
+      return false unless data.key?("ref_type")
       return true if data["ref_type"] == "tag" || data["ref_type"] == "branch"
       false
     end
 
     def prepare_optional_auth(data)
-        optional_auth = {}
-        optional_auth["userid"] = data["userid"] if data.has_key?("userid")
-        optional_auth["password"] = data["password"] if data.has_key?("password")
+      optional_auth = {}
+      optional_auth["userid"] = data["userid"] if data.key?("userid")
+      optional_auth["password"] = data["password"] if data.key?("password")
 
-        # If data["verify_ssl"] is missing or set to false use VERIFY_NONE. If true use VERIFY_PEER
-        optional_auth["verify_ssl"] = data["verify_ssl"] ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
+      # If data["verify_ssl"] is missing or set to false use VERIFY_NONE. If true use VERIFY_PEER
+      optional_auth["verify_ssl"] = data["verify_ssl"] ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
 
-        optional_auth
+      optional_auth
     end
   end
 end

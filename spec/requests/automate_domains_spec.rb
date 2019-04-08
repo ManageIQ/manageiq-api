@@ -70,7 +70,7 @@ describe "Automate Domains API" do
     let(:event) { FactoryBot.create(:miq_event_definition) }
     let(:miq_automate_domains_contents) do
       {"automate_domains" => [{'event_id' => event.id,
-                              "actions"  => [{"action_id" => action.id, "opts" => { :qualifier => "failure" }}] }]}
+                               "actions"  => [{"action_id" => action.id, "opts" => { :qualifier => "failure" }}] }]}
     end
 
     let(:sample_params) do
@@ -96,7 +96,7 @@ describe "Automate Domains API" do
       it 'should not create a new automate domain from git when missing params' do
         api_basic_authorize collection_action_identifier(:automate_domains, :create_from_git)
 
-        post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git, { "git_url" => "url" }))
+        post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git, "git_url" => "url"))
         expect(response).to have_http_status(:bad_request)
         expect(response.parsed_body["error"]["message"]).to include(miq_automate_domains_contents.keys.join(", "))
       end
@@ -118,7 +118,7 @@ describe "Automate Domains API" do
         expect_single_action_result(
           :success => true,
           :message => "Creating Automate Domain from git repository",
-          :zhref    => api_automate_domain_url(nil, git_domain)
+          :zhref   => api_automate_domain_url(nil, git_domain)
         )
       end
     end
