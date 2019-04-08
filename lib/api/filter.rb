@@ -1,20 +1,20 @@
 module Api
   class Filter
     OPERATORS = {
-      "!=" => {:default => "!=", :regex => "REGULAR EXPRESSION DOES NOT MATCH", :null => "IS NOT NULL"},
-      "<=" => {:default => "<="},
-      ">=" => {:default => ">="},
-      "<"  => {:default => "<", :datetime => "BEFORE"},
-      ">"  => {:default => ">", :datetime => "AFTER"},
-      "="  => {:default => "=", :datetime => "IS", :regex => "REGULAR EXPRESSION MATCHES", :null => "IS NULL"},
+      "!="  => {:default => "!=", :regex => "REGULAR EXPRESSION DOES NOT MATCH", :null => "IS NOT NULL"},
+      "<="  => {:default => "<="},
+      ">="  => {:default => ">="},
+      "<"   => {:default => "<", :datetime => "BEFORE"},
+      ">"   => {:default => ">", :datetime => "AFTER"},
+      "="   => {:default => "=", :datetime => "IS", :regex => "REGULAR EXPRESSION MATCHES", :null => "IS NULL"},
 
       # string-only matching, use quotes
       "===" => {:default => "="},
       "!==" => {:default => "!="},
 
       # regex-only matching without mangling, use slashes and optionally /i
-      "=~" => {:default => "REGULAR EXPRESSION MATCHES"},
-      "!~" => {:default => "REGULAR EXPRESSION DOES NOT MATCH"},
+      "=~"  => {:default => "REGULAR EXPRESSION MATCHES"},
+      "!~"  => {:default => "REGULAR EXPRESSION DOES NOT MATCH"},
     }.freeze
 
     attr_reader :filters, :model
