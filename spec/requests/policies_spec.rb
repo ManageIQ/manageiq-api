@@ -367,7 +367,7 @@ describe "Policies API" do
       api_basic_authorize collection_action_identifier(:policies, :create)
       post(api_policies_url, :params => sample_policy)
       expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body["error"]["message"]).to include(miq_policy_contents.keys.join(", "))
+      expect(response.parsed_body["error"]["message"]).to include("#{miq_policy_contents.keys.join(", ")} must be specified when creating")
     end
 
     describe "POST /api/policies/:id with 'delete' action" do
