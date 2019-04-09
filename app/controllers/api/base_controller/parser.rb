@@ -272,7 +272,7 @@ module Api
       def assert_all_required_fields_exists(data, type, required_fields)
         missing_fields = required_fields - data.keys
         unless missing_fields.empty?
-          raise BadRequestError, "Resource #{missing_fields.join(", ")} needs be specified for creating a new #{type}"
+          raise BadRequestError, "Resource #{missing_fields.join(", ")} must be specified when creating a new #{type}"
         end
       end
 
