@@ -1082,6 +1082,29 @@
       :get:
       - :name: read
         :identifier: customization_script_show
+  :customization_templates:
+    :description: Customization Template
+    :identifier: customization_template_accord
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: CustomizationTemplate
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: customization_template_view
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: customization_template_view
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: customization_template_view
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: customization_template_view
   :data_stores:
     :description: Datastores
     :identifier: storage
@@ -2329,6 +2352,48 @@
         :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
+  :pxe_images:
+    :description: PXE Images
+    :identifier: pxe_server_accord
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: PxeImage
+    :subcollections:
+    - :customization_templates
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+  :pxe_servers:
+    :description: PXE Servers
+    :identifier: pxe_server_accord
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: PxeServer
+    :subcollections:
+    - :pxe_images
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
   :quotas:
     :description: TenantQuotas
     :options:
@@ -2514,6 +2579,8 @@
           :identifier: service_retire
         - :klass: VmRetireRequest
           :identifier: vm_retire
+        - :klass: PhysicalServerProvisionRequest
+          :identifier: physical_server_provision
       - :name: edit
         :identifier: miq_request_edit
       - :name: approve
