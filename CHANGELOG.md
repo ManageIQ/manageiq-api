@@ -5,22 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-4
-
-### Fixed
-- Remove SQL select from exception error messages. [(#537)](https://github.com/ManageIQ/manageiq-api/pull/537)
-
-## Unreleased as of Sprint 107 ending 2019-03-18
+## Hammer-5
 
 ### Added
 - TransformationMapping: API for adding mapping item [(#546)](https://github.com/ManageIQ/manageiq-api/pull/546)
+- [RFE] Add the /api/product_info route with product and branding info [(#438)](https://github.com/ManageIQ/manageiq-api/pull/438)
+
+### Fixed
+- Provide the path to the custom branding assets instead of booleans [(#549)](https://github.com/ManageIQ/manageiq-api/pull/549)
+- Added logic to support both string and symbol access to keys in dialog hash under options [(#572)](https://github.com/ManageIQ/manageiq-api/pull/572)
+
+## Hammer-4 - Released 2019-03-29
+
+### Fixed
+- Remove SQL select from exception error messages. [(#537)](https://github.com/ManageIQ/manageiq-api/pull/537)
 
 ## Unreleased as of Sprint 106 ending 2019-03-04
 
 ### Added
 - Add ability to enable and disable conversion hosts [(#535)](https://github.com/ManageIQ/manageiq-api/pull/535)
 
-## Hammer-3
+## Hammer-3 - Released 2019-03-06
 
 ### Fixed
 - One semaphore to exclusively load them all [(#550)](https://github.com/ManageIQ/manageiq-api/pull/550)
@@ -30,9 +35,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Added
 - Expose the favicon URL in the branding info endpoints [(#551)](https://github.com/ManageIQ/manageiq-api/pull/551)
 - Add delete automate domain support [(#548)](https://github.com/ManageIQ/manageiq-api/pull/548)
-
-### Fixed
-- Provide the path to the custom branding assets instead of booleans [(#549)](https://github.com/ManageIQ/manageiq-api/pull/549)
 
 ## Unreleased as of Sprint 103 ending 2019-01-21
 
@@ -51,7 +53,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Ensure a users own tasks are the only ones returned when the users role has View/My Tasks [(#526)](https://github.com/ManageIQ/manageiq-api/pull/526)
 - Use the new universal methods for suspending/resuming a provider [(#434)](https://github.com/ManageIQ/manageiq-api/pull/434)
 
-## Hammer-1
+## Hammer-1 - Released 2019-01-15
 
 ### Added
 - Add support for sui product features [(#501)](https://github.com/ManageIQ/manageiq-api/pull/501)
@@ -163,11 +165,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Added
 - Include product features list in the identity section of /api [(#490)](https://github.com/ManageIQ/manageiq-api/pull/490)
 - Add custom_button_events subcollection for users tenants and groups [(#464)](https://github.com/ManageIQ/manageiq-api/pull/464)
-
-## Unreleased as of Sprint 97 ending 2018-10-22
-
-### Added
-- [RFE] Add the /api/product_info route with product and branding info [(#438)](https://github.com/ManageIQ/manageiq-api/pull/438)
 
 ## Unreleased as of Sprint 96 ending 2018-10-08
 
