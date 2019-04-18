@@ -5,17 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-4
+## Hammer-5
+
+### Added
+- TransformationMapping: API for adding mapping item [(#546)](https://github.com/ManageIQ/manageiq-api/pull/546)
+- [RFE] Add the /api/product_info route with product and branding info [(#438)](https://github.com/ManageIQ/manageiq-api/pull/438)
+
+### Fixed
+- Provide the path to the custom branding assets instead of booleans [(#549)](https://github.com/ManageIQ/manageiq-api/pull/549)
+- Added logic to support both string and symbol access to keys in dialog hash under options [(#572)](https://github.com/ManageIQ/manageiq-api/pull/572)
+
+## Hammer-4 - Released 2019-03-29
 
 ### Fixed
 - Remove SQL select from exception error messages. [(#537)](https://github.com/ManageIQ/manageiq-api/pull/537)
 
-## Hammer-3
+## Hammer-3 - Released 2019-03-06
 
 ### Fixed
 - One semaphore to exclusively load them all [(#550)](https://github.com/ManageIQ/manageiq-api/pull/550)
 
-## Hammer-1
+## Hammer-1 - Released 2019-01-15
 
 ### Added
 - Add support for sui product features [(#501)](https://github.com/ManageIQ/manageiq-api/pull/501)
