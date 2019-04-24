@@ -242,7 +242,7 @@
     :description: Automate Domains
     :options:
     - :collection
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: MiqAeDomain
     :collection_actions:
       :get:
@@ -251,6 +251,8 @@
       :post:
       - :name: query
         :identifier: miq_ae_domain_view
+      - :name: create_from_git
+        :identifier: miq_ae_domain_new
       - :name: refresh_from_source
         :identifier: miq_ae_git_refresh
       - :name: delete
@@ -260,6 +262,8 @@
       - :name: read
         :identifier: miq_ae_domain_view
       :post:
+      - :name: create_from_git
+        :identifier: miq_ae_domain_new
       - :name: refresh_from_source
         :identifier: miq_ae_git_refresh
       - :name: delete

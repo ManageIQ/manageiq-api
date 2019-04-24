@@ -64,6 +64,66 @@ describe "Automate Domains API" do
     end
   end
 
+  describe 'create_from_git action' do
+    let(:git_domain) { FactoryBot.create(:miq_ae_git_domain) }
+    let(:action) { FactoryBot.create(:miq_action) }
+    let(:event) { FactoryBot.create(:miq_event_definition) }
+    let(:miq_automate_domains_contents) do
+      {"automate_domains" => [{'event_id' => event.id,
+                               "actions"  => [{"action_id" => action.id, "opts" => { :qualifier => "failure" }}] }]}
+    end
+
+    let(:sample_params) do
+      {
+        "git_url"  => "git url",
+        "ref_name" => "ref name",
+        "ref_type" => "ref type"
+      }
+    end
+
+    it 'forbids create_from_git for users without proper permissions' do
+      api_basic_authorize
+
+      post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git))
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    context 'with proper git_owner role' do
+      before do
+        allow(GitBasedDomainImportService).to receive(:available?).and_return(true)
+      end
+
+      it 'should not create a new automate domain from git when missing params' do
+        api_basic_authorize collection_action_identifier(:automate_domains, :create_from_git)
+
+        post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git, "git_url" => "url"))
+        expect(response).to have_http_status(:bad_request)
+        expect(response.parsed_body["error"]["message"]).to include(miq_automate_domains_contents.keys.join(", "))
+      end
+
+      it 'should not create new automate domain from git with incorrect ref_type param' do
+        api_basic_authorize collection_action_identifier(:automate_domains, :create_from_git)
+
+        post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git, sample_params))
+        expect(response).to have_http_status(:bad_request)
+        expect(response.parsed_body["error"]["message"]).to include("ref_type must be")
+      end
+
+      it 'create domain from a git repository' do
+        api_basic_authorize collection_action_identifier(:automate_domains, :create_from_git)
+        expect_any_instance_of(GitBasedDomainImportService).to receive(:queue_refresh_and_import)
+        sample_params["ref_type"] = "tag"
+
+        post(api_automate_domain_url(nil, git_domain), :params => gen_request(:create_from_git, sample_params))
+        expect_single_action_result(
+          :success => true,
+          :message => "Creating Automate Domain from #{sample_params["git_url"]}/#{sample_params["ref_name"]}",
+          :zhref   => api_automate_domain_url(nil, git_domain)
+        )
+      end
+    end
+  end
+
   describe 'refresh_from_source action' do
     let(:git_domain) { FactoryBot.create(:miq_ae_git_domain) }
     it 'forbids access for users without proper permissions' do
