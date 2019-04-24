@@ -1584,6 +1584,9 @@ describe "Providers API" do
       expect(response.parsed_body["data"]["provider_settings"].keys.count).to eq(
         ManageIQ::Providers::BaseManager.leaf_subclasses.count
       )
+      expect(response.parsed_body["data"]["supported_providers"].count).to eq(
+        ExtManagementSystem.supported_types_for_create.count
+      )
       expect(response.parsed_body["data"]["provider_settings"]["kubernetes"]["proxy_settings"]["settings"]["http_proxy"]["label"]).to eq(N_('HTTP Proxy'))
     end
   end
