@@ -30,6 +30,85 @@ describe "Services API" do
   let(:orchestration_template) { FactoryBot.create(:orchestration_template) }
   let(:ems) { FactoryBot.create(:ext_management_system) }
 
+  # Specs and queries here are based off of the following BZ:
+  #
+  #   https://bugzilla.redhat.com/show_bug.cgi?id=1656371
+  #
+  # Some data might not be fully fleshed out and could be improved to better
+  # capture all the improvements made and edge cases, but for now, shows a
+  # relative improvement with just these changes.
+  describe "Services search" do
+    let(:tenant) { FactoryBot.create(:tenant) }
+    let(:role)   { FactoryBot.create(:miq_user_role) }
+    let(:group)  { FactoryBot.create(:miq_group, :tenant => tenant, :miq_user_role => role) }
+
+    let!(:svc3) do
+      FactoryBot.create :service, :name        => "svc3",
+                                  :description => "svc3 description",
+                                  :parent      => svc2,
+                                  :miq_group   => group
+    end
+
+    let(:search_attrs) do
+      [
+        "picture", "picture.image_href", "chargeback_report",
+        "evm_owner.userid", "v_total_vms", "power_state",
+        "all_service_children", "tags"
+      ]
+    end
+
+    let(:search_filters) do
+      {
+        :expand       => "resources",
+        :attributes   => search_attrs.join(','),
+        :filter       => ['ancestry=null'],
+        :sort_by      => "created_at",
+        :sort_options => nil,
+        :sort_order   => "desc"
+      }
+    end
+
+    before do
+      # create services from above
+      svc
+      svc1
+
+      # Add svc2 to user group
+      svc2.update(:miq_group => group)
+    end
+
+    it "lists all of the Services" do
+      api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
+
+      # Once for the main query and counts, and 3 for the `all_service_children`
+      expect(Rbac).to receive(:filtered).exactly(5).times.and_call_original
+      expect(Rbac).to receive(:filtered_object).never
+
+      get api_services_url, :params => search_filters
+
+      expect(response.parsed_body["subcount"]).to eq 3
+    end
+
+    context "with restricted user" do
+      before do
+        @user.update(:miq_groups => [group])
+        @role = role
+      end
+
+      it "lists only visable services" do
+        api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
+
+        # Once for the main query and counts, and 1 for the `all_service_children`
+        expect(Rbac).to receive(:filtered).exactly(3).times.and_call_original
+        expect(Rbac).to receive(:filtered_object).never
+
+        get api_services_url, :params => search_filters
+
+        expect(response.parsed_body["subcount"]).to eq 1
+      end
+    end
+  end
+
   describe "Services create" do
     it "rejects requests without appropriate role" do
       api_basic_authorize
