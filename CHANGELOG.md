@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Include a list of supported providers in `OPTIONS /api/providers` [(#579)](https://github.com/ManageIQ/manageiq-api/pull/579)
+- Add create Git backed automation domain [(#571)](https://github.com/ManageIQ/manageiq-api/pull/571)
 
 ## Hammer-5 - Released 2019-04-23
 
