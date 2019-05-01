@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-5
+## Unreleased as of Sprint 110 ending 2019-04-29
+
+### Added
+- Include a list of supported providers in `OPTIONS /api/providers` [(#579)](https://github.com/ManageIQ/manageiq-api/pull/579)
+
+## Hammer-5 - Released 2019-04-23
 
 ### Added
 - TransformationMapping: API for adding mapping item [(#546)](https://github.com/ManageIQ/manageiq-api/pull/546)
