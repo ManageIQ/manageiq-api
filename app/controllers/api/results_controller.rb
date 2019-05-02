@@ -1,29 +1,11 @@
 module Api
   class ResultsController < BaseController
+    include Parameters::ResultsController
+
     before_action :set_additional_attributes, :only => [:index, :show]
 
     def results_search_conditions
       MiqReportResult.for_user(User.current_user).where_clause.ast
-    end
-
-    def sort_order
-      params['sort_order'] == 'desc' ? :descending : :ascending
-    end
-
-    def param_result_set?
-      params.key?(:hash_attribute) && params[:hash_attribute] == "result_set"
-    end
-
-    def report_options
-      params.merge(:sort_by => params['sort_by'], :sort_order => sort_order).merge(filter_options)
-    end
-
-    def filter_options
-      filtering_enabled? ? {:filter_string => params[:filter_string], :filter_column => params[:filter_column]} : {}
-    end
-
-    def filtering_enabled?
-      params.key?(:filter_column) && params.key?(:filter_string) && params[:filter_string]
     end
 
     def result_set
