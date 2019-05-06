@@ -7,7 +7,7 @@ module Api
     DEFAULT_AUTH_TYPE = "default".freeze
     CONNECTION_ATTRS  = %w(connection_configurations).freeze
     ENDPOINT_ATTRS    = %w(verify_ssl hostname url ipaddress port security_protocol certificate_authority).freeze
-    RESTRICTED_ATTRS  = [TYPE_ATTR, CREDENTIALS_ATTR, ZONE_ATTR, "zone_id"].freeze
+    RESTRICTED_ATTRS  = [TYPE_ATTR, CREDENTIALS_ATTR, ZONE_ATTR, "zone_id", "endpoints"].freeze
 
     include Subcollections::Policies
     include Subcollections::PolicyProfiles
@@ -24,6 +24,7 @@ module Api
     include Subcollections::Folders
     include Subcollections::Networks
     include Subcollections::Lans
+    include Subcollections::Endpoints
 
     before_action :validate_provider_class
 
@@ -184,7 +185,9 @@ module Api
       provider_klass = fetch_provider_klass(collection_class(:providers), data)
       create_data    = fetch_provider_data(provider_klass, data, :requires_zone => true)
       provider       = provider_klass.create!(create_data)
+      endpoints_add_resource(provider, data.delete('endpoints'))
       update_provider_authentication(provider, data)
+
       provider
     rescue => err
       provider.destroy if provider

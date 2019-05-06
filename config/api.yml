@@ -30,6 +30,15 @@
     - :patch
     - :delete
 :collections:
+  :endpoints:
+    :description: EndPoints
+    :options:
+      - :subcollection
+    :verbs: *gpd
+    :klass: Endpoint
+    :subcollection_actions:
+      :post:
+        - :name: add
   :accounts:
     :description: Accounts
     :options:
@@ -2182,6 +2191,7 @@
     - :folders
     - :networks
     - :lans
+    - :endpoints
     :collection_actions:
       :get:
       - :name: read
