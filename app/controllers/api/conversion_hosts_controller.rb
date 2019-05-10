@@ -6,16 +6,23 @@ module Api
     # MiqTask.
     #
     # Both the 'resource_type' and 'resource_id' are mandatory arguments,
-    # and the 'resource_type' must be either 'Host' or 'VmOrTemplate'.
+    # and the 'resource_type' must be a supported resource type, such as
+    # ManageIQ::Providers::Openstack::CloudProvider::Vm.
     #
-    # You may optionally pass in 'param_v2v_vddk_package_url' or 'auth_user'
-    # arguments as well.
+    # You may optionally pass in the following parameters:
+    #
+    #   * vmware_vddk_package_url
+    #   * vmware_ssh_private_key
+    #   * conversion_host_ssh_private_key
+    #   * auth_user
+    #
+    # Example:
     #
     # POST /api/conversion_hosts {
     #   "name": "some_name",
     #   "resource_type": "ManageIQ::Providers::Redhat::InfraManager::Host",
     #   "resource_id": "7"
-    #   "param_v2v_vddk_package_url": "some_url"
+    #   "vmware_vddk_package_url": "some_url"
     #   "auth_user": "some_user"
     # }
     #
