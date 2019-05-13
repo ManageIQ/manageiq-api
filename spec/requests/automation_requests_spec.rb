@@ -18,7 +18,7 @@ describe "Automation Requests API" do
         "uri_parts"  => {"
           namespace" => "System", "class" => "Request", "instance" => "InspectME", "message" => "create"
          },
-        "parameters" => {"var1" => "xyzzy", "var2" => 1024, "var3" => true},
+        "parameters" => {"var1" => "xyzzy", "var2" => 1024, "var3" => true, "schedule_time" => Time.now.utc + 10.days },
         "requester"  => {"user_name" => approver.userid, "auto_approve" => true}
       }
     end
