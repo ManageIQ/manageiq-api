@@ -35,7 +35,7 @@ module ManageIQ
         _('REST API')
       end
 
-      def vmdb_plugin?
+      def self.vmdb_plugin?
         true
       end
     end
