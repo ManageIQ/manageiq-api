@@ -16,7 +16,9 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,lib}/**/*", "LICENSE.txt", "Rakefile", "README.md"]
 
   s.add_dependency "config"
-  s.add_dependency "jbuilder", "~> 2.5"
+  # 2.9.0 regressed serialization
+  # See: https://github.com/rails/jbuilder/issues/461
+  s.add_dependency "jbuilder", "~> 2.5", "!= 2.9.0"
 
   s.add_development_dependency "codeclimate-test-reporter", "~> 1.0.0"
   s.add_development_dependency "simplecov"
