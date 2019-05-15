@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Hammer-6
+
+### Added
+- Add ability to enable and disable conversion hosts [(#535)](https://github.com/ManageIQ/manageiq-api/pull/535)
+
+### Fixed
+- Fixes conversion_hosts_spec.rb failures [(#524)](https://github.com/ManageIQ/manageiq-api/pull/524)
+
 ## Unreleased as of Sprint 111 ending 2019-05-13
 
 ### Added
@@ -31,11 +39,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Remove SQL select from exception error messages. [(#537)](https://github.com/ManageIQ/manageiq-api/pull/537)
-
-## Unreleased as of Sprint 106 ending 2019-03-04
-
-### Added
-- Add ability to enable and disable conversion hosts [(#535)](https://github.com/ManageIQ/manageiq-api/pull/535)
 
 ## Hammer-3 - Released 2019-03-06
 
