@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Include the regions if they're supported with OPTIONS /api/providers [(#581)](https://github.com/ManageIQ/manageiq-api/pull/581)
+- Support physical server provisioning [(#578)](https://github.com/ManageIQ/manageiq-api/pull/578)
 
 ## Unreleased as of Sprint 110 ending 2019-04-29
 
