@@ -9,7 +9,7 @@ module Api
       "="   => {:default => "=", :datetime => "IS", :regex => "REGULAR EXPRESSION MATCHES", :null => "IS NULL"},
 
       # string-only matching, use quotes
-      "===" => {:default => "="},
+      "=="  => {:default => "="},
       "!==" => {:default => "!="},
 
       # regex-only matching without mangling, use slashes and optionally /i

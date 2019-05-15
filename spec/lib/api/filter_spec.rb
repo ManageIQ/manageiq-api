@@ -330,7 +330,7 @@ RSpec.describe Api::Filter do
     end
 
     it "can handle exact strings" do
-      filters = ["name==='  foo.*bar%f '"]
+      filters = ["name=='  foo.*bar%f '"]
 
       actual = described_class.parse(filters, MiqReport)
 
