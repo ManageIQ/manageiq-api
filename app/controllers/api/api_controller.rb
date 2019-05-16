@@ -103,7 +103,7 @@ module Api
     def plugin_info
       Vmdb::Plugins.versions.each_with_object({}) do |(engine, version), hash|
         hash[engine.to_s] = {
-          :display_name => engine.respond_to?(:plugin_name) ? engine.plugin_name : engine.to_s.gsub(/ManageIQ::|::Engine/, ''),
+          :display_name => engine.plugin_name,
           :version      => version
         }
       end
