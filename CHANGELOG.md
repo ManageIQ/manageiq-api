@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-5
+## Hammer-6
+
+### Added
+- Add ability to enable and disable conversion hosts [(#535)](https://github.com/ManageIQ/manageiq-api/pull/535)
+
+### Fixed
+- Fixes conversion_hosts_spec.rb failures [(#524)](https://github.com/ManageIQ/manageiq-api/pull/524)
+
+## Hammer-5 - Released 2019-04-23
 
 ### Added
 - TransformationMapping: API for adding mapping item [(#546)](https://github.com/ManageIQ/manageiq-api/pull/546)
