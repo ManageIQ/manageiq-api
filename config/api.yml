@@ -2356,31 +2356,6 @@
         :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
-  :pxe_menus:
-    :description: PXE Menus
-    :identifier: pxe_server_accord
-    :options:
-      - :collection
-    :verbs: *gpppd
-    :klass: PxeMenu
-    :collection_actions:
-      :get:
-      - :name: read
-        :identifier: pxe_server_view
-      :post:
-      - :name: create
-        :identifier: pxe_server_create
-    :subresource_actions:
-      :get:
-      - :name: read
-        :identifier: pxe_server_view
-    :subcollection_actions:
-      :get:
-      - :name: read
-        :identifier: pxe_server_view
-      :post:
-      - :name: create
-        :identifier: pxe_server_create
   :pxe_images:
     :description: PXE Images
     :identifier: pxe_server_accord
@@ -2406,6 +2381,31 @@
       :get:
       - :name: read
         :identifier: pxe_server_view
+  :pxe_menus:
+    :description: PXE Menus
+    :identifier: pxe_server_accord
+    :options:
+    - :collection
+    :verbs: *gpppd
+    :klass: PxeMenu
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+      :post:
+      - :name: create
+        :identifier: pxe_server_create
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+      :post:
+      - :name: create
+        :identifier: pxe_server_create
   :pxe_servers:
     :description: PXE Servers
     :identifier: pxe_server_accord

@@ -125,7 +125,7 @@ RSpec.describe 'PxeServers API' do
         "href"          => api_pxe_server_pxe_menu_url(nil, pxe_server, pxe_menu_1),
         "id"            => pxe_menu_1.id.to_s,
         "pxe_server_id" => pxe_server.id.to_s,
-        "file_name"          => pxe_menu_1.file_name
+        "file_name"     => pxe_menu_1.file_name
       )
       expect(response).to have_http_status(:ok)
     end
@@ -142,10 +142,7 @@ RSpec.describe 'PxeServers API' do
 
     it 'create new pxe server' do
       api_basic_authorize collection_action_identifier(:pxe_servers, :create, :post)
-      post(url, :params => {
-        :name => 'foo',
-        :uri  => 'bar/quax'
-      })
+      post(url, :params => {:name => 'foo', :uri => 'bar/quax'})
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['results'].first['name']).to eq('foo')
       expect(response.parsed_body['results'].first['uri']).to eq('bar/quax')
@@ -153,11 +150,7 @@ RSpec.describe 'PxeServers API' do
 
     it 'create new pxe server with pxe menu' do
       api_basic_authorize collection_action_identifier(:pxe_servers, :create, :post)
-      post(url, :params => {
-        :name       => 'foo',
-        :uri        => 'bar/quax',
-        :pxe_menus  => [{:file_name => 'menu_1'}]
-      })
+      post(url, :params => {:name => 'foo', :uri => 'bar/quax', :pxe_menus => [{:file_name => 'menu_1'}]})
       expect(response).to have_http_status(:ok)
       expect(PxeServer.find(response.parsed_body['results'].first['id']).pxe_menus.first[:file_name]).to eq('menu_1')
     end
@@ -168,11 +161,7 @@ RSpec.describe 'PxeServers API' do
 
     it 'update pxe server' do
       api_basic_authorize collection_action_identifier(:pxe_servers, :edit, :patch)
-      patch(url, :params => {
-        :name       => 'updated name',
-        :uri        => 'updated/url',
-        :pxe_menus  => [{ file_name: 'updated menu' }]
-      })
+      patch(url, :params => {:name => 'updated name', :uri => 'updated/url', :pxe_menus => [{:file_name => 'updated menu'}]})
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['name']).to eq('updated name')
       expect(response.parsed_body['uri']).to eq('updated/url')
