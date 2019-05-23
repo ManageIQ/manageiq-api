@@ -2420,6 +2420,8 @@
       :post:
       - :name: create
         :identifier: pxe_server_create
+      - :name: edit
+        :identifier: pxe_server_edit
       :patch:
       - :name: edit
         :identifier: pxe_server_edit
@@ -2433,6 +2435,17 @@
       :get:
       - :name: read
         :identifier: pxe_server_view
+      :patch:
+      - :name: edit
+        :identifier: pxe_server_edit
+      :post:
+      - :name: create
+        :identifier: pxe_server_create
+      - :name: edit
+        :identifier: pxe_server_edit
+      :delete:
+      - :name: delete
+        :identifier: pxe_server_delete
   :quotas:
     :description: TenantQuotas
     :options:

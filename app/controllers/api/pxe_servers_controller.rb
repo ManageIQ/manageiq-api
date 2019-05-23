@@ -1,21 +1,40 @@
 module Api
   class PxeServersController < BaseController
-    INVALID_PXE_SERVER_ATTRS = %w[id href].freeze # Cannot update or create these
-
     include Subcollections::PxeImages
     include Subcollections::PxeMenus
+    INVALID_ATTRIBUTES = {
+      "PxeServer" => %w[id href], # Cannot update or create these
+    }.freeze
+    PXE_ATTRIBUTES = {
+      "PxeServer"      => %w[name uri],
+      "PxeMenu"        => %w[file_name],
+      "Authentication" => %w[userid password]
+    }.freeze
 
     def create_resource(_type, _id, data = {})
-      validate_pxe_server_create_data(data)
+      authentication = data.delete('authentication')
       menus = data.delete('pxe_menus')
+      validate_data_for('PxeServer', data)
 
-      server = collection_class(:pxe_servers).create(data)
-      if server.invalid?
-        raise BadRequestError, "Failed to add a pxe server - #{server.errors.full_messages.join(', ')}"
+      PxeServer.transaction do
+        server = collection_class(:pxe_servers).new(data)
+        # generates uir_prefix which checks if server needs authentication or not
+        server.verify_uri_prefix_before_save
+
+        if server.requires_credentials? && server.missing_credentials?
+          validate_data_for('Authentication', authentication || {})
+          server.update_authentication({:default => authentication.compact}, {:save => true})
+        end
+
+        server.pxe_menus = create_pxe_menus(menus) if menus
+
+        if server.invalid?
+          raise BadRequestError, "Failed to add a pxe server - #{server.errors.full_messages.join(', ')}"
+        end
+
+        server.save
+        server
       end
-
-      server.pxe_menus = create_pxe_menus(menus) if menus
-      server
     end
 
     def delete_resource(_type, id = nil, data = nil)
@@ -27,34 +46,33 @@ module Api
     def edit_resource(type, id, data)
       server = resource_search(id, type, collection_class(:pxe_servers))
       menus = data.delete('pxe_menus')
-      if menus
-        server.pxe_menus.clear
-        data['pxe_menus'] = create_pxe_menus(menus)
+      authentication = data.delete('authentication')
+      PxeServer.transaction do
+        if menus
+          server.pxe_menus.clear
+          data['pxe_menus'] = create_pxe_menus(menus)
+        end
+        server.update!(data)
+        server.update_authentication({:default => authentication.transform_keys(&:to_sym)}, {:save => true}) if authentication && server.requires_credentials?
+        server
       end
-
-      server.update!(data)
-      server
     end
 
     private
 
     def create_pxe_menus(menus)
+      menus.each do |menu|
+        validate_data_for('PxeMenu', menu)
+      end
       menus.map do |menu|
         collection_class(:pxe_menus).create(menu)
       end
     end
 
-    def validate_pxe_server_data(data)
-      bad_attrs = data.keys.select { |k| INVALID_PXE_SERVER_ATTRS.include?(k) }.compact.join(", ")
-      raise BadRequestError, "Invalid attribute(s) #{bad_attrs} specified for a pxe server" if bad_attrs.present?
-    end
-
-    def validate_pxe_server_create_data(data)
-      validate_pxe_server_data(data)
-      req_attrs = %w[name uri]
+    def validate_data_for(klass, data)
       bad_attrs = []
-      req_attrs.each { |attr| bad_attrs << attr if data[attr].blank? }
-      raise BadRequestError, "Missing attribute(s) #{bad_attrs.join(', ')} for creating a pxe server" if bad_attrs.present?
+      PXE_ATTRIBUTES[klass].each { |attr| bad_attrs << attr if data[attr].blank? }
+      raise BadRequestError, "Missing attribute(s) #{bad_attrs.join(', ')} for creating a #{klass}" if bad_attrs.present?
     end
   end
 end

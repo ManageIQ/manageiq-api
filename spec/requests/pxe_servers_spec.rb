@@ -1,5 +1,5 @@
 RSpec.describe 'PxeServers API' do
-  let!(:pxe_server) { FactoryBot.create(:pxe_server) }
+  let(:pxe_server) { FactoryBot.build(:pxe_server).tap { |x| x.update_authentication(:default => {:userid => 'foo', :password => 'bar'}) } }
   let!(:pxe_image_1) { FactoryBot.create(:pxe_image, :pxe_server => pxe_server) }
   let!(:pxe_image_2) { FactoryBot.create(:pxe_image, :pxe_server => pxe_server) }
   let!(:pxe_menu_1) { FactoryBot.create(:pxe_menu, :pxe_server => pxe_server) }
@@ -142,30 +142,72 @@ RSpec.describe 'PxeServers API' do
 
     it 'create new pxe server' do
       api_basic_authorize collection_action_identifier(:pxe_servers, :create, :post)
-      post(url, :params => {:name => 'foo', :uri => 'bar/quax'})
+      post(
+        url,
+        :params => {
+          :name           => 'test server',
+          :uri            => 'bar://quax',
+          :authentication => {
+            :userid   => 'foo',
+            :password => 'bar'
+          }
+        }
+      )
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['results'].first['name']).to eq('foo')
-      expect(response.parsed_body['results'].first['uri']).to eq('bar/quax')
+      expect(response.parsed_body['results'].first['name']).to eq('test server')
+      expect(response.parsed_body['results'].first['uri']).to eq('bar://quax')
+      expect(response.parsed_body['results'].first['uri_prefix']).to eq('bar')
+    end
+
+    it 'create new nfs pxe server without authentication' do
+      api_basic_authorize collection_action_identifier(:pxe_servers, :create, :post)
+      post(url, :params => {:name => 'test server', :uri => 'nfs://quax'})
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['results'].first['name']).to eq('test server')
+      expect(response.parsed_body['results'].first['uri']).to eq('nfs://quax')
+      expect(response.parsed_body['results'].first['uri_prefix']).to eq('nfs')
     end
 
     it 'create new pxe server with pxe menu' do
       api_basic_authorize collection_action_identifier(:pxe_servers, :create, :post)
-      post(url, :params => {:name => 'foo', :uri => 'bar/quax', :pxe_menus => [{:file_name => 'menu_1'}]})
+      post(url, :params => {:name => 'foo', :uri => 'bar://quax',
+        :pxe_menus      => [{:file_name => 'menu_1'}, {:file_name => 'menu_2'}],
+        :authentication => {:userid => 'foo', :password => 'bar' }})
       expect(response).to have_http_status(:ok)
       expect(PxeServer.find(response.parsed_body['results'].first['id']).pxe_menus.first[:file_name]).to eq('menu_1')
     end
+
+    it 'fail to create new non nfs pxe server without correct authentication' do
+      api_basic_authorize collection_action_identifier(:pxe_servers, :create, :post)
+      post(url, :params => {:name => 'test server', :uri => 'smb://quax', :authentication => {:userid => 'user'}})
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'will forbid create action withouth an appropriate authorization' do
+      api_basic_authorize
+      post(url, :params => {:name => 'foo', :uri => 'bar/quax',
+                            :pxe_menus      => [{:file_name => 'menu_1'}, {:file_name => 'menu_2'}],
+                            :authentication => {:userid => 'foo', :password => 'bar' }})
+      expect(response).to have_http_status(:forbidden)
+    end
   end
 
-  describe 'patch /api/pxe_servers/:id' do
+  describe 'update /api/pxe_servers/:id' do
     let(:url) { "/api/pxe_servers/#{pxe_server.id}" }
 
     it 'update pxe server' do
       api_basic_authorize collection_action_identifier(:pxe_servers, :edit, :patch)
-      patch(url, :params => {:name => 'updated name', :uri => 'updated/url', :pxe_menus => [{:file_name => 'updated menu'}]})
+      patch(url, :params => {:name => 'updated name', :uri => 'updated://url', :pxe_menus => [{:file_name => 'updated menu'}]})
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['name']).to eq('updated name')
-      expect(response.parsed_body['uri']).to eq('updated/url')
+      expect(response.parsed_body['uri']).to eq('updated://url')
       expect(PxeServer.find(response.parsed_body['id']).pxe_menus.first[:file_name]).to eq('updated menu')
+    end
+
+    it 'will forbid update action withouth an appropriate authorization' do
+      api_basic_authorize
+      patch(url, :params => {:name => 'updated name', :uri => 'updated://url', :pxe_menus => [{:file_name => 'updated menu'}]})
+      expect(response).to have_http_status(:forbidden)
     end
   end
 
@@ -177,6 +219,12 @@ RSpec.describe 'PxeServers API' do
       delete(url)
       expect(response).to have_http_status(:no_content)
       expect(PxeServer.exists?(pxe_server.id)).to be_falsey
+    end
+
+    it 'will forbid delete action withouth an appropriate authorization' do
+      api_basic_authorize
+      delete(url)
+      expect(response).to have_http_status(:forbidden)
     end
   end
 end
