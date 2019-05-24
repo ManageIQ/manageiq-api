@@ -3,6 +3,7 @@ module Api
     before_action :set_additional_attributes, :only => [:index, :show]
 
     CONTENT_PARAMS = %w[target_type target_id resource_action_id].freeze
+    ORCHESTRATION_TEMPLATE_DIALOG_ATTRS = %w[ot_id label].freeze
 
     def refresh_dialog_fields_resource(type, id = nil, data = nil)
       raise BadRequestError, "Must specify an id for Reconfiguring a #{type} resource" unless id
@@ -46,6 +47,14 @@ module Api
       service_dialog.deep_copy(attributes).tap(&:save!)
     rescue => err
       raise BadRequestError, "Failed to copy service dialog - #{err}"
+    end
+
+    def orchestration_template_service_dialog_resource(_type, _id, data)
+      validate_orchestration_template_dialog_create_data(data)
+      orchestration_template = OrchestrationTemplate.find(data['ot_id'])
+      raise BadRequestError, "Failed to create service dialog from orchestration template. Orchestration template with id: #{data['ot_id']} does not exist." unless orchestration_template
+
+      Dialog::OrchestrationTemplateServiceDialog.create_dialog(data['label'], orchestration_template)
     end
 
     private
@@ -97,6 +106,14 @@ module Api
 
     def service_dialog_ident(service_dialog)
       "Service Dialog id:#{service_dialog.id} label:'#{service_dialog.label}'"
+    end
+
+    def validate_orchestration_template_dialog_create_data(data)
+      missing_attributes = ORCHESTRATION_TEMPLATE_DIALOG_ATTRS - data.keys
+      raise BadRequestError, "Missing attribute(s) #{missing_attributes.join(', ')} for creating a service dialog from orchestration template" if missing_attributes.present?
+
+      invalid_attributes = data.keys - ORCHESTRATION_TEMPLATE_DIALOG_ATTRS
+      raise BadRequestError, "Invalid attribute(s) #{invalid_attributes.join(', ')} for creating a service dialog from orchestration template" if invalid_attributes.present?
     end
   end
 end

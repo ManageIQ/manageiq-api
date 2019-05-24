@@ -739,4 +739,64 @@ describe "Service Dialogs API" do
       expect(response).to have_http_status(:bad_request)
     end
   end
+
+  context 'Create servide dialog from orchestration template' do
+    let(:ot) do
+      FactoryBot.create(:orchestration_template_amazon_in_json).tap do |template|
+        allow(template).to receive(:parameter_groups).and_return(param_groups)
+        allow(template).to receive(:tabs).and_return(tabs) if tabs.count > 0
+      end
+    end
+
+    let(:param_groups) { [] }
+    let(:tabs) do
+      [
+        {
+          :title       => 'Tab 1',
+          :stack_group => [
+            OrchestrationTemplate::OrchestrationParameter.new(:label => 'Param 1', :name => SecureRandom.hex, :data_type => 'string'),
+            OrchestrationTemplate::OrchestrationParameter.new(:label => 'Param 2', :name => SecureRandom.hex, :data_type => 'string')
+          ]
+        }
+      ]
+    end
+
+    it 'should create service dialog' do
+      api_basic_authorize collection_action_identifier(:service_dialogs, :create)
+
+      orchestration_template_dialog_request = {
+        :action   => 'orchestration_template_service_dialog',
+        :resource => {:label => 'Foo', :ot_id => ot.id}
+      }
+
+      post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['results'][0]['label']).to eq('Foo')
+      expect(response.parsed_body['results'][0]['buttons']).to eq('submit,cancel')
+    end
+
+    it 'should fail when ot_id is undefined' do
+      api_basic_authorize collection_action_identifier(:service_dialogs, :create)
+
+      orchestration_template_dialog_request = {
+        :action   => 'orchestration_template_service_dialog',
+        :resource => {:label => 'Foo'}
+      }
+
+      post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'should fail when label is undefined' do
+      api_basic_authorize collection_action_identifier(:service_dialogs, :create)
+
+      orchestration_template_dialog_request = {
+        :action   => 'orchestration_template_service_dialog',
+        :resource => {:ot_id => ot.id}
+      }
+
+      post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
+      expect(response).to have_http_status(:bad_request)
+    end
+  end
 end
