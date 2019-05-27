@@ -622,5 +622,40 @@ RSpec.describe "physical_servers API" do
         end
       end
     end
+
+    describe 'FirmwareBinaries subcollection' do
+      let(:physical_server) { FactoryBot.create(:physical_server, :with_asset_detail) }
+      let(:firmware_binary) { FactoryBot.create(:firmware_binary) }
+      let!(:firmware_target) do
+        FactoryBot.create(
+          :firmware_target,
+          :manufacturer      => physical_server.asset_detail.manufacturer,
+          :model             => physical_server.asset_detail.model,
+          :firmware_binaries => [firmware_binary]
+        )
+      end
+
+      describe 'GET /api/physical_servers/:id/firmware_binaries' do
+        let(:url) { api_physical_server_firmware_binaries_url(nil, physical_server) }
+
+        it 'returns the firmware_binaries with an appropriate role' do
+          api_basic_authorize subcollection_action_identifier(:physical_servers, :firmware_binaries, :read, :get)
+          get(url)
+          expect_result_resources_to_include_hrefs(
+            'resources',
+            [
+              api_physical_server_firmware_binary_url(nil, physical_server, firmware_binary)
+            ]
+          )
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'does not return the event_streams without an appropriate role' do
+          api_basic_authorize
+          get(url)
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+    end
   end
 end

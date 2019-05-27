@@ -1,6 +1,7 @@
 module Api
   class PhysicalServersController < BaseController
     include Subcollections::EventStreams
+    include Subcollections::FirmwareBinaries
 
     def blink_loc_led_resource(type, id, _data)
       change_resource_state(:blink_loc_led, type, id)
