@@ -1,5 +1,6 @@
 module Api
   class VmsController < BaseController
+    include Subcollections::Disks
     include Subcollections::Tags
     include Subcollections::Policies
     include Subcollections::PolicyProfiles
