@@ -54,8 +54,10 @@ describe "ConversionHosts API" do
     let(:zone) { FactoryBot.create(:zone) }
     let(:ems_openstack) { FactoryBot.create(:ems_openstack, :zone => zone) }
     let(:ems_redhat) { FactoryBot.create(:ems_redhat, :zone => zone) }
+    let(:ems_azure) { FactoryBot.create(:ems_azure, :zone => zone) }
     let(:vm) { FactoryBot.create(:vm_openstack, :ext_management_system => ems_openstack) }
     let(:host) { FactoryBot.create(:host_redhat, :ext_management_system => ems_redhat) }
+    let(:azure_vm) { FactoryBot.create(:vm_azure, :ext_management_system => ems_azure) }
 
     let(:sample_conversion_host_from_vm) do
       {
@@ -71,6 +73,15 @@ describe "ConversionHosts API" do
         :name          => "test_conversion_host_from_host",
         :resource_type => host.type,
         :resource_id   => host.id,
+        :version       => "1.0"
+      }
+    end
+
+    let(:sample_conversion_host_from_invalid_vm) do
+      {
+        :name          => "test_invalid_conversion_host",
+        :resource_type => azure_vm.type,
+        :resource_id   => azure_vm.id,
         :version       => "1.0"
       }
     end
@@ -91,14 +102,13 @@ describe "ConversionHosts API" do
 
     it "raises an error if an unsupported resource type is provided" do
       api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
-      sample_conversion_host_from_vm['resource_type'] = 'Logger'
-      post(api_conversion_hosts_url, :params => sample_conversion_host_from_vm)
+      post(api_conversion_hosts_url, :params => sample_conversion_host_from_invalid_vm)
 
       expect(response).to have_http_status(400)
 
       results = response.parsed_body
       expect(results['error']['kind']).to eql('bad_request')
-      expect(results['error']['message']).to eql('unsupported resource_type Logger')
+      expect(results['error']['message']).to eql("unsupported resource_type #{azure_vm.type}")
     end
 
     it "supports single conversion host creation" do

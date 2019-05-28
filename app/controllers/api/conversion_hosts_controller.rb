@@ -37,13 +37,13 @@ module Api
 
       raise BadRequestError, "invalid resource_type #{data['resource_type']}" unless resource_type
 
-      unless resource_type.respond_to?(:supports_conversion_host?) && resource_type.supports_conversion_host?
-        raise BadRequestError, "unsupported resource_type #{resource_type}"
-      end
-
       collection_type = resource_type.table_name
 
       resource = resource_search(data['resource_id'], resource_type.to_s, collection_class(collection_type))
+
+      unless resource.respond_to?(:supports_conversion_host?) && resource.supports_conversion_host?
+        raise BadRequestError, "unsupported resource_type #{resource_type}"
+      end
 
       data['resource'] = resource
 
