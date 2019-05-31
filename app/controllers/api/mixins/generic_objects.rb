@@ -35,7 +35,7 @@ module Api
       end
 
       def set_additional_attributes
-        @additional_attributes = %w(property_attributes)
+        @additional_attributes = %w(property_attributes property_associations)
       end
 
       def set_associations
