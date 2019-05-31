@@ -62,18 +62,14 @@ module Api
       end
 
       def request_retire_resource(type, id, _data = nil)
-        if api_user_role_allows?('miq_request_approval')
-          klass = collection_class(type)
-          if id
-            msg = "#{User.current_user.userid} retiring #{type} id #{id} immediately as a request."
-            resource = resource_search(id, type, klass)
-            api_log_info(msg)
-            klass.make_retire_request(resource.id, User.current_user)
-          else
-            raise BadRequestError, "Must specify an id for retiring a #{type} resource"
-          end
+        klass = collection_class(type)
+        if id
+          msg = "#{User.current_user.userid} retiring #{type} id #{id} immediately as a request."
+          resource = resource_search(id, type, klass)
+          api_log_info(msg)
+          klass.make_retire_request(resource.id, User.current_user)
         else
-          raise ForbiddenError, "User lacking correct permissions to approve a #{type} retire as a request."
+          raise BadRequestError, "Must specify an id for retiring a #{type} resource"
         end
       end
 
