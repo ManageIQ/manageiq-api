@@ -1097,20 +1097,6 @@ describe "Vms API" do
     context "request_retire" do
       context "valid" do
         it "to a single Vm" do
-          api_basic_authorize(action_identifier(:vms, :request_retire), :miq_request_approval)
-
-          post(vm_url, :params => gen_request(:request_retire))
-
-          expected = {
-            "href"    => a_string_matching(api_requests_url),
-            "message" => a_string_matching(/VM Retire - Request Created/),
-            "options" => a_hash_including("src_ids" => a_collection_containing_exactly(vm.id))
-          }
-          expect(response).to have_http_status(:ok)
-          expect(response.parsed_body).to include(expected)
-        end
-
-        it "to a single Vm without approval" do
           api_basic_authorize(action_identifier(:vms, :request_retire))
 
           post(vm_url, :params => gen_request(:request_retire))
@@ -1118,14 +1104,14 @@ describe "Vms API" do
           expected = {
             "href"    => a_string_matching(api_requests_url),
             "message" => a_string_matching(/VM Retire - Request Created/),
-            "options" => a_hash_including("src_ids" => a_collection_containing_exactly(vm.id))
+            "options" => a_hash_including("src_ids" => a_collection_including(vm.id))
           }
-          expect(response).to have_http_status(:forbidden)
-          expect(response.parsed_body).to_not include(expected)
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body).to include(expected)
         end
 
         it "to multiple Vms" do
-          api_basic_authorize(collection_action_identifier(:vms, :request_retire), :miq_request_approval)
+          api_basic_authorize(collection_action_identifier(:vms, :request_retire))
 
           post(api_vms_url, :params => gen_request(:request_retire, [{"href" => vm1_url}, {"href" => vm2_url}]))
 
@@ -1150,19 +1136,11 @@ describe "Vms API" do
 
       context "invalid" do
         it "to an invalid vm" do
-          api_basic_authorize(action_identifier(:vms, :request_retire), :miq_request_approval)
-
-          post(invalid_vm_url, :params => gen_request(:request_retire))
-
-          expect(response).to have_http_status(:not_found)
-        end
-
-        it "to an invalid vm without approval" do
           api_basic_authorize(action_identifier(:vms, :request_retire))
 
           post(invalid_vm_url, :params => gen_request(:request_retire))
 
-          expect(response).to have_http_status(:forbidden)
+          expect(response).to have_http_status(:not_found)
         end
 
         it "to an invalid vm with only basic auth" do

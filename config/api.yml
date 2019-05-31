@@ -3167,12 +3167,12 @@
         - sui_services_edit
       - :name: retire
         :identifier:
-        - service_retire
+        - service_retire_now
         - sui_services_retire
       - :name: request_retire
         :identifier:
-        - service_retire
-        - sui_services_retire_date
+        - service_retire_now
+        - sui_services_retire
       - :name: set_ownership
         :identifier:
         - service_ownership

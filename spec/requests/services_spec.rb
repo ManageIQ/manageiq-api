@@ -405,8 +405,10 @@ describe "Services API" do
 
           expect(response).to have_http_status(:forbidden)
         end
+      end
 
-        it "rejects multiple requests without approval" do
+      context "good permissions" do
+        it "supports single service retirement now" do
           api_basic_authorize(action_identifier(:services, :request_retire))
 
           post(api_service_url(nil, svc), :params => gen_request(:request_retire))
@@ -414,23 +416,7 @@ describe "Services API" do
           expected = {
             "href"    => a_string_matching(api_requests_url),
             "message" => a_string_matching(/Service Retire - Request Created/),
-            "options" => a_hash_including("src_ids" => a_collection_containing_exactly(svc.id))
-          }
-          expect(response).to have_http_status(:forbidden)
-          expect(response.parsed_body).to_not include(expected)
-        end
-      end
-
-      context "good permissions" do
-        it "supports single service retirement now" do
-          api_basic_authorize(action_identifier(:services, :request_retire), :miq_request_approval)
-
-          post(api_service_url(nil, svc), :params => gen_request(:request_retire))
-
-          expected = {
-            "href"    => a_string_matching(api_requests_url),
-            "message" => a_string_matching(/Service Retire - Request Created/),
-            "options" => a_hash_including("src_ids" => a_collection_containing_exactly(svc.id))
+            "options" => a_hash_including("src_ids" => a_collection_including(svc.id))
           }
           expect(response).to have_http_status(:ok)
           expect(response.parsed_body).to include(expected)
