@@ -81,10 +81,9 @@ module Api
       str_method = is_regex ? methods[:regex] : methods[:default]
 
       filter_value, method = case filter_value
-                             when /^'.*'$/
-                               [filter_value.gsub(/^'|'$/, ''), str_method]
-                             when /^".*"$/
-                               [filter_value.gsub(/^"|"$/, ''), str_method]
+                             when /^['"](.*)['"]$/
+                               unquoted_filter_value = $1
+                               [unquoted_filter_value, str_method]
                              when /^(NULL|nil)$/i
                                [nil, methods[:null] || methods[:default]]
                              else
