@@ -243,12 +243,12 @@ describe "Transformation Mappings" do
         it "can validate vms with csv data specified" do
           api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
           ems = FactoryBot.create(:ext_management_system)
-          source_ems = FactoryBot.create(:ems_cluster)
-          destination_ems = FactoryBot.create(:ems_cluster)
+          source_cluster = FactoryBot.create(:ems_cluster)
+          destination_cluster = FactoryBot.create(:ems_cluster)
           transformation_mapping =
             FactoryBot.create(:transformation_mapping,
-                               :transformation_mapping_items => [TransformationMappingItem.new(:source => source_ems, :destination => destination_ems)])
-          vm = FactoryBot.create(:vm_openstack, :name => "foo", :ems_cluster => source_ems, :ext_management_system => ems)
+                               :transformation_mapping_items => [TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster)])
+          vm = FactoryBot.create(:vm_openstack, :name => "foo", :ems_cluster => source_cluster, :ext_management_system => ems)
 
           request = {
             "action" => "validate_vms",
@@ -260,7 +260,7 @@ describe "Transformation Mappings" do
           post(api_transformation_mapping_url(nil, transformation_mapping), :params => request)
 
           expected = {
-            "valid"      => [a_hash_including("name" => vm.name, "id" => vm.id.to_s, "status" => "ok", "reason" => "ok", "cluster" => source_ems.name)],
+            "valid"      => [a_hash_including("name" => vm.name, "id" => vm.id.to_s, "status" => "ok", "reason" => "ok", "cluster" => source_cluster.name)],
             "invalid"    => [a_hash_including("name" => "bad name")],
             "conflicted" => []
           }
