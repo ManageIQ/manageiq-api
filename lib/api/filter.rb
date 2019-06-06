@@ -84,11 +84,7 @@ module Api
       filter_value, method = case filter_value
                              when /^['"](.*)['"]$/
                                unquoted_filter_value = $1
-                               if column_type(model, filter_attr) == :string_set
-                                 unless methods[:string_set]
-                                   raise BadRequestError, "Unsupported operator for string_set: #{operator}"
-                                 end
-
+                               if column_type(model, filter_attr) == :string_set && methods[:string_set]
                                  [unquoted_filter_value, methods[:string_set]]
                                else
                                  [unquoted_filter_value, str_method]
