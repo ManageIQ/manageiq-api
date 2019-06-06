@@ -173,6 +173,15 @@ RSpec.describe Api::Filter do
       expect(actual.exp).to eq(expected)
     end
 
+    it "supports filtering by string set attributes, e.g.: ipaddresses" do
+      filters = ["ipaddresses='192.0.2.0'"]
+
+      actual = described_class.parse(filters, Vm)
+
+      expected = {"includes all" => {"field" => "Vm-ipaddresses", "value" => "192.0.2.0"}}
+      expect(actual.exp).to eq(expected)
+    end
+
     it "supports flexible filtering by virtual string attributes" do
       filters = ["host_name='a%'"]
 

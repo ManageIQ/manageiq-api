@@ -6,7 +6,7 @@ module Api
       ">="  => {:default => ">="},
       "<"   => {:default => "<", :datetime => "BEFORE"},
       ">"   => {:default => ">", :datetime => "AFTER"},
-      "="   => {:default => "=", :datetime => "IS", :regex => "REGULAR EXPRESSION MATCHES", :null => "IS NULL"},
+      "="   => {:default => "=", :datetime => "IS", :regex => "REGULAR EXPRESSION MATCHES", :string_set => "includes all", :null => "IS NULL"},
 
       # string-only matching, use quotes
       "=="  => {:default => "="},
@@ -41,6 +41,7 @@ module Api
         unless virtual_or_physical_attribute?(target_class(model, associations), attr)
           raise BadRequestError, "attribute #{attr} does not exist"
         end
+
         associations.map! { |assoc| ".#{assoc}" }
         field = "#{model.name}#{associations.join}-#{attr}"
         target = parsed_filter[:logical_or] ? or_expressions : and_expressions
@@ -81,10 +82,13 @@ module Api
       str_method = is_regex ? methods[:regex] : methods[:default]
 
       filter_value, method = case filter_value
-                             when /^'.*'$/
-                               [filter_value.gsub(/^'|'$/, ''), str_method]
-                             when /^".*"$/
-                               [filter_value.gsub(/^"|"$/, ''), str_method]
+                             when /^'(.*)'$/, /^"(.*)"$/
+                               unquoted_filter_value = $1
+                               if column_type(model, filter_attr) == :string_set && methods[:string_set]
+                                 [unquoted_filter_value, methods[:string_set]]
+                               else
+                                 [unquoted_filter_value, str_method]
+                               end
                              when /^(NULL|nil)$/i
                                [nil, methods[:null] || methods[:default]]
                              else
@@ -95,6 +99,7 @@ module Api
                                  unless Time.zone.parse(filter_value)
                                    raise BadRequestError, "Bad format for datetime: #{filter_value}"
                                  end
+
                                  [filter_value, methods[:datetime]]
                                else
                                  [filter_value, methods[:default]]
