@@ -82,7 +82,7 @@ module Api
       str_method = is_regex ? methods[:regex] : methods[:default]
 
       filter_value, method = case filter_value
-                             when /^['"](.*)['"]$/
+                             when /^'(.*)'$/, /^"(.*)"$/
                                unquoted_filter_value = $1
                                if column_type(model, filter_attr) == :string_set && methods[:string_set]
                                  [unquoted_filter_value, methods[:string_set]]
