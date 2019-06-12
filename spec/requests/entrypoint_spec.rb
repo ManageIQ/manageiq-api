@@ -73,12 +73,7 @@ RSpec.describe "API entrypoint" do
       )
     )
 
-    # This test will fail if you have the assets precompiled
-    expect(response.parsed_body['product_info']['branding_info']).to eq(
-      "brand"   => "/images/layout/brand.svg",
-      "logo"    => "/images/layout/login-screen-logo.png",
-      "favicon" => "/images/favicon.ico"
-    )
+    expect(response.parsed_body['product_info']['branding_info'].keys).to match_array(%w[brand favicon logo])
   end
 
   context 'UI is available' do
