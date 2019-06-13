@@ -1,5 +1,5 @@
 RSpec.describe 'CloudSubnets API' do
-  let(:ems) { FactoryBot.create(:ems_network) }
+  let(:ems) { FactoryBot.create(:ems_amazon_network) }
 
   describe 'GET /api/cloud_subnets' do
     it 'lists all cloud subnets with an appropriate role' do

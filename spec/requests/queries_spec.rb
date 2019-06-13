@@ -136,7 +136,7 @@ describe "Queries API" do
 
       credentials = {:userid => "admin", :password => "super_password"}
 
-      provider = FactoryBot.create(:ext_management_system, :name => "sample", :hostname => "sample.com")
+      provider = FactoryBot.create(:ems_vmware, :name => "sample", :hostname => "sample.com")
       provider.update_authentication(:default => credentials)
 
       get(api_provider_url(nil, provider), :params => { :attributes => "authentications" })

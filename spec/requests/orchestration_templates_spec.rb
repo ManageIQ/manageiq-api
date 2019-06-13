@@ -1,5 +1,5 @@
 RSpec.describe 'Orchestration Template API' do
-  let(:ems) { FactoryBot.create(:ext_management_system) }
+  let(:ems) { FactoryBot.create(:ems_vmware) }
 
   context 'orchestration_template index' do
     it 'can list the orchestration_template' do

@@ -59,7 +59,7 @@ RSpec.describe "Cloud Templates API" do
   describe "POST /api/providers/:c_id/cloud_templates" do
     it "can queue the creation of an images" do
       api_basic_authorize(action_identifier(:cloud_templates, :create, :subcollection_actions))
-      ems = FactoryBot.create(:ems_cloud)
+      ems = FactoryBot.create(:ems_vmware_cloud)
 
       post(api_provider_cloud_templates_url(nil, ems), :params => { :name => "test-image", :vendor => "test-cloud", :location => "test-location" })
 
@@ -79,7 +79,7 @@ RSpec.describe "Cloud Templates API" do
 
     it "will not create an image unless authorized" do
       api_basic_authorize
-      ems = FactoryBot.create(:ems_cloud)
+      ems = FactoryBot.create(:ems_vmware_cloud)
 
       post(api_provider_cloud_templates_url(nil, ems), :params => { :name => "test-image" })
 
@@ -89,7 +89,7 @@ RSpec.describe "Cloud Templates API" do
 
   describe "POST /api/providers/:c_id/cloud_templates/:id" do
     it "can queue the updating of an image" do
-      ems = FactoryBot.create(:ems_cloud)
+      ems = FactoryBot.create(:ems_vmware_cloud)
       image = FactoryBot.create(:template_cloud, :ext_management_system => ems)
 
       api_basic_authorize(action_identifier(:cloud_templates, :edit, :subresource_actions, :post))
@@ -106,7 +106,7 @@ RSpec.describe "Cloud Templates API" do
     end
 
     it "can't queue the updating of an image unless authorized" do
-      ems = FactoryBot.create(:ems_cloud)
+      ems = FactoryBot.create(:ems_vmware_cloud)
       image = FactoryBot.create(:template_cloud, :ext_management_system => ems)
 
       api_basic_authorize

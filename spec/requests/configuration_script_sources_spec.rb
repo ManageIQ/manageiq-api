@@ -1,5 +1,5 @@
 RSpec.describe 'Configuration Script Sources API' do
-  let(:provider) { FactoryBot.create(:ext_management_system) }
+  let(:provider) { FactoryBot.create(:ems_vmware) }
   let(:config_script_src) { FactoryBot.create(:ansible_configuration_script_source, :manager => provider) }
   let(:config_script_src_2) { FactoryBot.create(:ansible_configuration_script_source, :manager => provider) }
   let(:ansible_provider)      { FactoryBot.create(:provider_ansible_tower, :with_authentication) }

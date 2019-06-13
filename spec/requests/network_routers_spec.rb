@@ -80,7 +80,7 @@ RSpec.describe 'NetworkRouters API' do
 
   describe "POST /api/network_routers with delete action" do
     it "can delete a router" do
-      ems = FactoryBot.create(:ems_network)
+      ems = FactoryBot.create(:ems_amazon_network)
       network_router = FactoryBot.create(:network_router_openstack, :ext_management_system => ems)
       api_basic_authorize(action_identifier(:network_routers, :delete, :resource_actions))
 
@@ -104,7 +104,7 @@ RSpec.describe 'NetworkRouters API' do
     end
 
     it "can delete multiple network_routers" do
-      ems = FactoryBot.create(:ems_network)
+      ems = FactoryBot.create(:ems_amazon_network)
       network_router1, network_router2 = FactoryBot.create_list(:network_router_openstack, 2, :ext_management_system => ems)
       api_basic_authorize(action_identifier(:network_routers, :delete, :resource_actions))
 

@@ -28,7 +28,7 @@ describe "Services API" do
   let(:svc2) { FactoryBot.create(:service, :name => "svc2", :description => "svc2 description") }
   let(:svc_orchestration) { FactoryBot.create(:service_orchestration) }
   let(:orchestration_template) { FactoryBot.create(:orchestration_template) }
-  let(:ems) { FactoryBot.create(:ext_management_system) }
+  let(:ems) { FactoryBot.create(:ems_vmware) }
 
   # Specs and queries here are based off of the following BZ:
   #

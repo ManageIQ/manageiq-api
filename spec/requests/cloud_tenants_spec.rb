@@ -96,7 +96,7 @@ RSpec.describe 'CloudTenants API' do
 
   context 'As a subcollection' do
     it 'returns an empty array for collections that do not have cloud tenants' do
-      ems_infra = FactoryBot.create(:ems_infra)
+      ems_infra = FactoryBot.create(:ems_vmware)
       api_basic_authorize(subcollection_action_identifier(:providers, :cloud_tenants, :read, :get))
 
       get(api_provider_cloud_tenants_url(nil, ems_infra))

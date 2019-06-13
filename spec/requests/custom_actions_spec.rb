@@ -701,7 +701,7 @@ describe "Custom Actions API" do
 
   describe "Providers" do
     before do
-      @resource = FactoryBot.create(:ext_management_system)
+      @resource = FactoryBot.create(:ems_vmware)
       @button1 = define_custom_button1(@resource)
     end
 

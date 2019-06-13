@@ -20,7 +20,7 @@ RSpec.describe "Custom Attributes API" do
 
   describe "POST /api/<collection>/:cid/custom_attributes/:sid" do
     it "does not duplicate a custom attribute" do
-      ems = FactoryBot.create(:ext_management_system)
+      ems = FactoryBot.create(:ems_vmware)
       custom_attribute = FactoryBot.create(:custom_attribute, :name => "foo", :value => "bar", :section => "metadata", :resource => ems)
       api_basic_authorize(subcollection_action_identifier(:providers, :custom_attributes, :add, :post))
 
@@ -51,7 +51,7 @@ RSpec.describe "Custom Attributes API" do
   end
 
   it 'returns the correct href' do
-    provider = FactoryBot.create(:ext_management_system)
+    provider = FactoryBot.create(:ems_vmware)
     custom_attribute = FactoryBot.create(:custom_attribute, :resource => provider, :name => 'foo', :value => 'bar')
     api_basic_authorize subcollection_action_identifier(:providers, :custom_attributes, :edit, :post)
 

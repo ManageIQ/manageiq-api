@@ -526,7 +526,7 @@ describe "Querying" do
     end
 
     it "supports filtering by virtual boolean attributes" do
-      ems = FactoryBot.create(:ext_management_system)
+      ems = FactoryBot.create(:ems_vmware)
       storage = FactoryBot.create(:storage)
       host = FactoryBot.create(:host, :storages => [storage])
       _vm = FactoryBot.create(:vm, :host => host, :ext_management_system => ems)

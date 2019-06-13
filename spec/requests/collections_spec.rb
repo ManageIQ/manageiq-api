@@ -187,7 +187,7 @@ describe "Rest API Collections" do
     end
 
     it "query Providers" do
-      FactoryBot.create(:ext_management_system)
+      FactoryBot.create(:ems_vmware)
       test_collection_query(:providers, api_providers_url, ExtManagementSystem, :guid)
     end
 
@@ -497,7 +497,7 @@ describe "Rest API Collections" do
     end
 
     it "bulk query Providers" do
-      FactoryBot.create(:ext_management_system)
+      FactoryBot.create(:ems_vmware)
       test_collection_bulk_query(:providers, api_providers_url, ExtManagementSystem)
     end
 

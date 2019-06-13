@@ -65,7 +65,7 @@ RSpec.describe "Snapshots API" do
     describe "POST /api/vms/:c_id/snapshots" do
       it "can queue the creation of a snapshot" do
         api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :create))
-        ems = FactoryBot.create(:ext_management_system)
+        ems = FactoryBot.create(:ems_vmware)
         host = FactoryBot.create(:host, :ext_management_system => ems)
         vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
 
@@ -105,7 +105,7 @@ RSpec.describe "Snapshots API" do
 
       it "renders a failed action response if a name is not provided" do
         api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :create))
-        ems = FactoryBot.create(:ext_management_system)
+        ems = FactoryBot.create(:ems_vmware)
         host = FactoryBot.create(:host, :ext_management_system => ems)
         vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
 
@@ -136,7 +136,7 @@ RSpec.describe "Snapshots API" do
     describe "POST /api/vms/:c_id/snapshots/:s_id with revert action" do
       it "can queue a VM for reverting to a snapshot" do
         api_basic_authorize(action_identifier(:vms, :revert, :snapshots_subresource_actions))
-        ems = FactoryBot.create(:ext_management_system)
+        ems = FactoryBot.create(:ems_vmware)
         host = FactoryBot.create(:host, :ext_management_system => ems)
         vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
         snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
@@ -182,7 +182,7 @@ RSpec.describe "Snapshots API" do
     describe "POST /api/vms/:c_id/snapshots/:s_id with delete action" do
       it "can queue a snapshot for deletion" do
         api_basic_authorize(action_identifier(:vms, :delete, :snapshots_subresource_actions, :delete))
-        ems = FactoryBot.create(:ext_management_system)
+        ems = FactoryBot.create(:ems_vmware)
         host = FactoryBot.create(:host, :ext_management_system => ems)
         vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
         snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
@@ -245,7 +245,7 @@ RSpec.describe "Snapshots API" do
     describe "POST /api/vms/:c_id/snapshots with delete action" do
       it "can queue multiple snapshots for deletion" do
         api_basic_authorize(action_identifier(:vms, :delete, :snapshots_subcollection_actions, :post))
-        ems = FactoryBot.create(:ext_management_system)
+        ems = FactoryBot.create(:ems_vmware)
         host = FactoryBot.create(:host, :ext_management_system => ems)
         vm = FactoryBot.create(:vm_vmware, :name => "Alice and Bob's VM", :host => host, :ext_management_system => ems)
         snapshot1 = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
