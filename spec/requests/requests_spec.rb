@@ -258,7 +258,7 @@ RSpec.describe "Requests API" do
 
       FactoryBot.create(:classification_department_with_tags)
 
-      t = Classification.where(:description => 'Department', :parent_id => 0).includes(:tag).first
+      t = Classification.where(:description => 'Department', :parent_id => nil).includes(:tag).first
       request.add_tag(t.name, t.children.first.name)
 
       api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
@@ -289,7 +289,7 @@ RSpec.describe "Requests API" do
 
       FactoryBot.create(:classification_department_with_tags)
 
-      t = Classification.where(:description => 'Department', :parent_id => 0).includes(:tag).first
+      t = Classification.where(:description => 'Department', :parent_id => nil).includes(:tag).first
       request.add_tag(t.name, t.children.first.name)
 
       api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
