@@ -395,6 +395,12 @@
         :identifier: ops_settings
       - :name: delete
         :identifier: ops_settings
+  :cdroms:
+    :description: CD-ROMs
+    :options:
+    - :subcollection
+    :verbs: *g
+    :klass: Disk
   :chargebacks:
     :description: Chargebacks
     :identifier: chargeback
@@ -3751,6 +3757,7 @@
     :verbs: *gpd
     :klass: Vm
     :subcollections:
+    - :cdroms
     - :disks
     - :tags
     - :policies
@@ -3908,7 +3915,17 @@
       - :name: read
         :identifier:
         - vm_show
+    :cdroms_subcollection_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - vm_show
     :disks_subresource_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - vm_show
+    :cdroms_subresource_actions:
       :get:
       - :name: read
         :identifier:

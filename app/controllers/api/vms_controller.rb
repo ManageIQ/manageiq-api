@@ -10,6 +10,7 @@ module Api
     include Subcollections::Software
     include Subcollections::Snapshots
     include Subcollections::MetricRollups
+    include Subcollections::Cdroms
     extend Api::Mixins::CentralAdmin
 
     VALID_EDIT_ATTRS = %w(description child_resources parent_resource).freeze
