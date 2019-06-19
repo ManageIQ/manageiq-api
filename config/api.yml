@@ -2504,6 +2504,8 @@
           :identifier: configured_system_provision
         - :klass: VmReconfigureRequest
           :identifier: vm_reconfigure
+        - :klass: VmCloudReconfigureRequest
+          :identifier: vm_cloud_reconfigure
         - :klass: VmMigrateRequest
           :identifier: vm_migrate
         - :klass: ServiceTemplateProvisionRequest
