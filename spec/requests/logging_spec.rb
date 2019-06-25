@@ -3,6 +3,7 @@
 #
 describe "Logging" do
   let(:log_io) { StringIO.new }
+  let(:filter_parameters) { Settings.api.filter_parameters }
 
   around do |example|
     old_logger = $api_log
@@ -35,6 +36,17 @@ describe "Logging" do
       expect(request_log_line).to include(":method", ":action", ":fullpath", ":url", ":base", ":path", ":prefix",
                                           ":version", ":api_prefix", ":collection", ":c_suffix", ":collection_id",
                                           ":subcollection", ":subcollection_id")
+    end
+
+    it "filters attributes specified in the settings file" do
+      api_basic_authorize collection_action_identifier(:services, :create)
+      params = Hash[filter_parameters.map { |e| [e, "SECRET"] }].merge(:name => 'some_service_1')
+
+      post(api_services_url, :params => gen_request(:create, params))
+
+      expect(log_io.string).to include('"conversion_host_ssh_private_key"=>"[FILTERED]"')
+      expect(log_io.string).to include('"vmware_ssh_private_key"=>"[FILTERED]"')
+      expect(log_io.string).to include('"openstack_tls_ca_certs"=>"[FILTERED]"')
     end
 
     it "filters password attributes in nested parameters" do
