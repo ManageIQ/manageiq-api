@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 114 ending 2019-06-24
+
+### Added
+- Add a subcollection under VMs for displaying CD-ROMs [(#605)](https://github.com/ManageIQ/manageiq-api/pull/605)
+- Add a subcollection under VMs for displaying disks [(#598)](https://github.com/ManageIQ/manageiq-api/pull/598)
+
+### Fixed
+- Allow reconfigure vm on OSP provider over Centralized Administration [(#608)](https://github.com/ManageIQ/manageiq-api/pull/608)
+
 ## Hammer-6
 
 ### Added
