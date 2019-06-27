@@ -3,7 +3,10 @@ module Api
     before_action :set_additional_attributes, :only => [:index, :show]
 
     CONTENT_PARAMS = %w[target_type target_id resource_action_id].freeze
-    ORCHESTRATION_TEMPLATE_DIALOG_ATTRS = %w[ot_id label].freeze
+    TEMPLATE_DIALOG_ATTRS = %w[template_id label template_class dialog_class].freeze
+    TEMPLATE_CLASSES = %w[OrchestrationTemplate ConfigurationScript].freeze
+    DIALOG_CLASSES = %w[Dialog::OrchestrationTemplateServiceDialog Dialog::AnsibleTowerJobTemplateDialogService].freeze
+
 
     def refresh_dialog_fields_resource(type, id = nil, data = nil)
       raise BadRequestError, "Must specify an id for Reconfiguring a #{type} resource" unless id
@@ -49,12 +52,12 @@ module Api
       raise BadRequestError, "Failed to copy service dialog - #{err}"
     end
 
-    def orchestration_template_service_dialog_resource(_type, _id, data)
-      validate_orchestration_template_dialog_create_data(data)
-      orchestration_template = OrchestrationTemplate.find(data['ot_id'])
-      raise BadRequestError, "Failed to create service dialog from orchestration template. Orchestration template with id: #{data['ot_id']} does not exist." unless orchestration_template
+    def template_service_dialog_resource(_type, _id, data)
+      validate_template_dialog_create_data(data)
+      template = data['template_class'].constantize.find(data['template_id'])
+      raise BadRequestError, "Failed to create service dialog from template. Template with id: #{data['template_id']} does not exist." unless template
 
-      Dialog::OrchestrationTemplateServiceDialog.create_dialog(data['label'], orchestration_template)
+      data['dialog_class'].constantize.create_dialog(data['label'], template)
     end
 
     private
@@ -108,12 +111,15 @@ module Api
       "Service Dialog id:#{service_dialog.id} label:'#{service_dialog.label}'"
     end
 
-    def validate_orchestration_template_dialog_create_data(data)
-      missing_attributes = ORCHESTRATION_TEMPLATE_DIALOG_ATTRS - data.keys
-      raise BadRequestError, "Missing attribute(s) #{missing_attributes.join(', ')} for creating a service dialog from orchestration template" if missing_attributes.present?
+    def validate_template_dialog_create_data(data)
+      missing_attributes = TEMPLATE_DIALOG_ATTRS - data.keys
+      raise BadRequestError, "Missing attribute(s) #{missing_attributes.join(', ')} for creating a service dialog from template" if missing_attributes.present?
 
-      invalid_attributes = data.keys - ORCHESTRATION_TEMPLATE_DIALOG_ATTRS
-      raise BadRequestError, "Invalid attribute(s) #{invalid_attributes.join(', ')} for creating a service dialog from orchestration template" if invalid_attributes.present?
+      invalid_attributes = data.keys - TEMPLATE_DIALOG_ATTRS
+      raise BadRequestError, "Invalid attribute(s) #{invalid_attributes.join(', ')} for creating a service dialog from template" if invalid_attributes.present?
+
+      raise BadRequestError, "Invalid template_class #{data['template_class']} for creating a service dialog from template" unless TEMPLATE_CLASSES.include?(data['template_class'])
+      raise BadRequestError, "Invalid dialog_class #{data['dialog_class']} for creating a service dialog from template" unless DIALOG_CLASSES.include?(data['dialog_class'])
     end
   end
 end
