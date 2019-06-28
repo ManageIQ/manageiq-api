@@ -2393,16 +2393,53 @@
       :get:
       - :name: read
         :identifier: pxe_server_view
+  :pxe_menus:
+    :description: PXE Menus
+    :identifier: pxe_server_accord
+    :options:
+    - :collection
+    :verbs: *gpppd
+    :klass: PxeMenu
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+      :post:
+      - :name: create
+        :identifier: pxe_server_create
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
+      :post:
+      - :name: create
+        :identifier: pxe_server_create
   :pxe_servers:
     :description: PXE Servers
     :identifier: pxe_server_accord
     :options:
     - :collection
-    :verbs: *g
+    :verbs: *gpppd
     :klass: PxeServer
     :subcollections:
     - :pxe_images
+    - :pxe_menus
     :collection_actions:
+      :post:
+      - :name: create
+        :identifier: pxe_server_create
+      - :name: edit
+        :identifier: pxe_server_edit
+      :patch:
+      - :name: edit
+        :identifier: pxe_server_edit
+      :delete:
+      - :name: delete
+        :identifier: pxe_server_delete
       :get:
       - :name: read
         :identifier: pxe_server_view
@@ -2410,6 +2447,17 @@
       :get:
       - :name: read
         :identifier: pxe_server_view
+      :patch:
+      - :name: edit
+        :identifier: pxe_server_edit
+      :post:
+      - :name: create
+        :identifier: pxe_server_create
+      - :name: edit
+        :identifier: pxe_server_edit
+      :delete:
+      - :name: delete
+        :identifier: pxe_server_delete
   :quotas:
     :description: TenantQuotas
     :options:
