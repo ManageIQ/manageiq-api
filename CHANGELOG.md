@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-6
+## Hammer-8
+
+### Added
+- Adjust ConversionHost support check so that it uses resource instead of singleton [(#600)](https://github.com/ManageIQ/manageiq-api/pull/600)
+
+## Hammer-6 - Released 2019-05-22
 
 ### Added
 - Add ability to enable and disable conversion hosts [(#535)](https://github.com/ManageIQ/manageiq-api/pull/535)
