@@ -238,7 +238,7 @@ describe "Providers API" do
   end
 
   context "Provider custom_attributes" do
-    let(:provider) { FactoryBot.create(:ext_management_system, sample_rhevm.except("credentials")) }
+    let(:provider) { FactoryBot.create(:ems_redhat_v4, sample_rhevm.except("credentials")) }
     let(:provider_url) { api_provider_url(nil, provider) }
     let(:ca1) { FactoryBot.create(:custom_attribute, :name => "name1", :value => "value1") }
     let(:ca2) { FactoryBot.create(:custom_attribute, :name => "name2", :value => "value2") }
@@ -723,7 +723,7 @@ describe "Providers API" do
     it "supports single resource edit" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
-      provider = FactoryBot.create(:ext_management_system, sample_rhevm.except("credentials"))
+      provider = FactoryBot.create(:ems_redhat_v4, sample_rhevm.except("credentials"))
 
       post(api_provider_url(nil, provider), :params => gen_request(:edit, "name" => "updated provider", "port" => "8080"))
 
@@ -735,20 +735,19 @@ describe "Providers API" do
     it "supports editing per provider options" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
-      provider = FactoryBot.create(:ext_management_system, sample_rhevm.except("credentials"))
+      provider = FactoryBot.create(:ems_redhat_v4, sample_rhevm.except("credentials"))
 
       options = {"hello" => "world"}
       options_symbolized = options.deep_symbolize_keys
       post(api_provider_url(nil, provider), :params => gen_request(:edit,
                                                                    "options" => options))
-
       expect(provider.reload.options).to eq(options_symbolized)
     end
 
     it "only returns real attributes" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
-      provider = FactoryBot.create(:ext_management_system, sample_rhevm.except("credentials"))
+      provider = FactoryBot.create(:ems_redhat_v4, sample_rhevm.except("credentials"))
 
       post(api_provider_url(nil, provider), :params => gen_request(:edit, "name" => "updated provider", "port" => "8080"))
 
@@ -798,7 +797,7 @@ describe "Providers API" do
         it "schedules a new credentials check if endpoint change" do
           api_basic_authorize collection_action_identifier(:providers, :edit)
 
-          provider = FactoryBot.create(:ext_management_system, sample_containers_multi_end_point_with_hawkular)
+          provider = FactoryBot.create(:ems_kubernetes)
           MiqQueue.where(:method_name => "authentication_check_types",
                          :class_name  => "ExtManagementSystem",
                          :instance_id => provider.id).delete_all
@@ -823,15 +822,15 @@ describe "Providers API" do
     it "supports additions of credentials" do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
-      provider = FactoryBot.create(:ext_management_system, sample_rhevm.except("credentials"))
+      provider = FactoryBot.create(:ems_redhat)
       provider.update_authentication(:default => default_credentials.symbolize_keys)
 
       post(api_provider_url(nil, provider), :params => gen_request(:edit,
-                                                                   "name"        => "updated rhevm",
+                                                                   "name"        => "updated redhat",
                                                                    "credentials" => [metrics_credentials]))
 
-      expect_single_resource_query("id" => provider.id.to_s, "name" => "updated rhevm")
-      expect(provider.reload.name).to eq("updated rhevm")
+      expect_single_resource_query("id" => provider.id.to_s, "name" => "updated redhat")
+      expect(provider.reload.name).to eq("updated redhat")
       expect(provider.authentication_userid).to eq(default_credentials["userid"])
       expect(provider.authentication_userid(:metrics)).to eq(metrics_credentials["userid"])
     end
