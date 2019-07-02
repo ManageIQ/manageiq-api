@@ -3864,8 +3864,8 @@
         :identifier: vm_pause
       - :name: request_console
         :identifier:
-        - vm_console
-        - sui_vm_console
+        - vm_html5_console
+        - sui_vm_html5_console
         - sui_vm_web_console
       - :name: reset
         :identifier: vm_reset
@@ -3934,8 +3934,8 @@
         :identifier: vm_pause
       - :name: request_console
         :identifier:
-        - vm_console
-        - sui_vm_console
+        - vm_html5_console
+        - sui_vm_html5_console
         - sui_vm_web_console
       - :name: reset
         :identifier: vm_reset
