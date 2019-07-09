@@ -38,7 +38,19 @@ describe 'API configuration (config/api.yml)' do
         expect(sui_product_features.subset?(api_feature_identifiers))
       end
 
-      def each_product_feature(feature = YAML.load_file("#{MiqProductFeature::FIXTURE_PATH}.yml"), &block)
+      def all_product_features
+        features = YAML.load_file("#{MiqProductFeature::FIXTURE_PATH}.yml")
+        plugin_files = Vmdb::Plugins.flat_map do |plugin|
+          Dir.glob("#{plugin.root.join(MiqProductFeature::RELATIVE_FIXTURE_PATH)}{.yml,.yaml,/*.yml,/*.yaml}")
+        end
+        plugin_files.each do |plugin|
+          features[:children] += YAML.load_file(plugin)
+        end
+
+        features
+      end
+
+      def each_product_feature(feature = all_product_features, &block)
         yield(feature)
         Array(feature[:children]).each do |child|
           each_product_feature(child, &block)
