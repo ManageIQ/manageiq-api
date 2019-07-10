@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-8
+## Unreleased as of Sprint 115 ending 2019-07-08
+
+### Added
+- Allow api.yml to be pluggable [(#613)](https://github.com/ManageIQ/manageiq-api/pull/613)
+- Added PxeServer create update and delete actions [(#594)](https://github.com/ManageIQ/manageiq-api/pull/594)
+
+## Hammer-8 - Released 2019-07-02
 
 ### Added
 - Adjust ConversionHost support check so that it uses resource instead of singleton [(#600)](https://github.com/ManageIQ/manageiq-api/pull/600)
