@@ -12,6 +12,8 @@
 #
 describe "Automation Requests API" do
   describe "Automation Requests" do
+    before { FactoryBot.create(:user_admin, :userid => 'admin') }
+
     let(:approver) { FactoryBot.create(:user_miq_request_approver) }
     let(:single_automation_request) do
       {

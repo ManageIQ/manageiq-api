@@ -219,6 +219,7 @@ RSpec.describe "Requests API" do
     it "succeed immediately with optional data and auto_approve set to true" do
       api_basic_authorize :service_reconfigure
 
+      FactoryBot.create(:user_admin, :userid => 'admin')
       approver = FactoryBot.create(:user_miq_request_approver)
       service = FactoryBot.create(:service, :name => "service1")
       post(api_requests_url, :params => gen_request(:create,
