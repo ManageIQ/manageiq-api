@@ -11,12 +11,6 @@ describe 'API configuration (config/api.yml)' do
     end
 
     describe 'identifiers' do
-      let(:miq_product_features) do
-        identifiers = Set.new
-        each_product_feature { |f| identifiers.add(f[:identifier]) }
-        identifiers
-      end
-
       let(:api_feature_identifiers) do
         feature_identifiers { |set, id| set.add(id) }
       end
@@ -30,31 +24,13 @@ describe 'API configuration (config/api.yml)' do
       end
 
       it 'contains only valid miq_feature identifiers' do
-        dangling = api_feature_identifiers - miq_product_features
+        MiqProductFeature.seed_features
+        dangling = Array(api_feature_identifiers).reject { |feature| MiqProductFeature.feature_exists?(feature) }
         expect(dangling).to be_empty
       end
 
       it 'contains valid sui specific miq_feature identifiers' do
         expect(sui_product_features.subset?(api_feature_identifiers))
-      end
-
-      def all_product_features
-        features = YAML.load_file("#{MiqProductFeature::FIXTURE_PATH}.yml")
-        plugin_files = Vmdb::Plugins.flat_map do |plugin|
-          Dir.glob("#{plugin.root.join(MiqProductFeature::RELATIVE_FIXTURE_PATH)}{.yml,.yaml,/*.yml,/*.yaml}")
-        end
-        plugin_files.each do |plugin|
-          features[:children] += YAML.load_file(plugin)
-        end
-
-        features
-      end
-
-      def each_product_feature(feature = all_product_features, &block)
-        yield(feature)
-        Array(feature[:children]).each do |child|
-          each_product_feature(child, &block)
-        end
       end
 
       def feature_identifiers
