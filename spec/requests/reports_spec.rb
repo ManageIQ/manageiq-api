@@ -421,7 +421,7 @@ RSpec.describe "reports API" do
       report_1 = FactoryBot.create(:miq_report_with_results)
       report_2 = FactoryBot.create(:miq_report_with_results)
 
-      # Includes roles "API" and "Cloud Intel"
+      # Includes roles "API" and "Overview"
       MiqProductFeature.seed
       api_basic_authorize :dashboard, :miq_report, :chargeback, :timeline, :rss, :api_exclusive
       get api_reports_url
