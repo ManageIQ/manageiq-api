@@ -1225,6 +1225,16 @@
       :post:
       - :name: assign
       - :name: unassign
+  :firmware_binaries:
+    :description: Firmware Binaries
+    :options:
+    - :subcollection
+    :verbs: *g
+    :klass: FirmwareBinary
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: firmware
   :firmwares:
     :description: Firmwares
     :options:
@@ -1244,6 +1254,7 @@
       :get:
       - :name: read
         :identifier: firmware_show
+
   :flavors:
     :description: Flavors
     :identifier: flavor
@@ -1931,6 +1942,7 @@
     :klass: PhysicalServer
     :subcollections:
     - :event_streams
+    - :firmware_binaries
     :collection_actions:
       :get:
       - :name: read
@@ -2647,6 +2659,8 @@
           :identifier: vm_retire
         - :klass: PhysicalServerProvisionRequest
           :identifier: physical_server_provision
+        - :klass: PhysicalServerFirmwareUpdateRequest
+          :identifier: firmware
       - :name: edit
         :identifier: miq_request_edit
       - :name: approve
