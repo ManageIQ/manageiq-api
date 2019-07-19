@@ -64,6 +64,7 @@ module Api
       {
         :version         => Vmdb::Appliance.VERSION,
         :build           => Vmdb::Appliance.BUILD,
+        :release         => Vmdb::Appliance.RELEASE,
         :appliance       => MiqServer.my_server.name,
         :time            => Time.now.utc.iso8601,
         :server_href     => "#{@req.api_prefix}/servers/#{MiqServer.my_server.id}",
