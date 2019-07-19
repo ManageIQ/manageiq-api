@@ -740,13 +740,15 @@ describe "Service Dialogs API" do
     end
   end
 
-  context 'Create servide dialog from orchestration template' do
+  context 'Create servide dialog from template' do
     let(:ot) do
       FactoryBot.create(:orchestration_template_amazon_in_json).tap do |template|
         allow(template).to receive(:parameter_groups).and_return(param_groups)
         allow(template).to receive(:tabs).and_return(tabs) if tabs.count > 0
       end
     end
+
+    let(:cs) { FactoryBot.create(:ansible_configuration_script) }
 
     let(:param_groups) { [] }
     let(:tabs) do
@@ -761,12 +763,12 @@ describe "Service Dialogs API" do
       ]
     end
 
-    it 'should create service dialog' do
+    it 'should create service dialog from orchestration_template' do
       api_basic_authorize collection_action_identifier(:service_dialogs, :create)
 
       orchestration_template_dialog_request = {
-        :action   => 'orchestration_template_service_dialog',
-        :resource => {:label => 'Foo', :ot_id => ot.id}
+        :action   => 'template_service_dialog',
+        :resource => {:label => 'Foo', :template_id => ot.id, :template_class => "OrchestrationTemplate", :dialog_class => "Dialog::OrchestrationTemplateServiceDialog"}
       }
 
       post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
@@ -775,12 +777,26 @@ describe "Service Dialogs API" do
       expect(response.parsed_body['results'][0]['buttons']).to eq('submit,cancel')
     end
 
-    it 'should fail when ot_id is undefined' do
+    it 'should create service dialog from configuration_script' do
+      api_basic_authorize collection_action_identifier(:service_dialogs, :create)
+
+      configuration_script_dialog_request = {
+        :action   => 'template_service_dialog',
+        :resource => {:label => 'Foo', :template_id => cs.id, :template_class => "ConfigurationScript", :dialog_class => "Dialog::AnsibleTowerJobTemplateDialogService"}
+      }
+
+      post(api_service_dialogs_url, :params => configuration_script_dialog_request)
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['results'][0]['label']).to eq('Foo')
+      expect(response.parsed_body['results'][0]['buttons']).to eq('submit,cancel')
+    end
+
+    it 'should fail when template_id is undefined' do
       api_basic_authorize collection_action_identifier(:service_dialogs, :create)
 
       orchestration_template_dialog_request = {
-        :action   => 'orchestration_template_service_dialog',
-        :resource => {:label => 'Foo'}
+        :action   => 'template_service_dialog',
+        :resource => {:label => 'Foo', :template_class => "OrchestrationTemplate", :dialog_class => "Dialog::OrchestrationTemplateServiceDialog"}
       }
 
       post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
@@ -791,8 +807,68 @@ describe "Service Dialogs API" do
       api_basic_authorize collection_action_identifier(:service_dialogs, :create)
 
       orchestration_template_dialog_request = {
-        :action   => 'orchestration_template_service_dialog',
-        :resource => {:ot_id => ot.id}
+        :action   => 'template_service_dialog',
+        :resource => {:template_id => ot.id, :template_class => "OrchestrationTemplate", :dialog_class => "Dialog::OrchestrationTemplateServiceDialog"}
+      }
+
+      post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'should fail when label is undefined' do
+      api_basic_authorize collection_action_identifier(:service_dialogs, :create)
+
+      orchestration_template_dialog_request = {
+        :action   => 'template_service_dialog',
+        :resource => {:template_id => ot.id, :template_class => "OrchestrationTemplate", :dialog_class => "Dialog::OrchestrationTemplateServiceDialog"}
+      }
+
+      post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'should fail when template_class is undefined' do
+      api_basic_authorize collection_action_identifier(:service_dialogs, :create)
+
+      orchestration_template_dialog_request = {
+        :action   => 'template_service_dialog',
+        :resource => {:template_id => ot.id, :label => 'Foo', :dialog_class => "Dialog::OrchestrationTemplateServiceDialog"}
+      }
+
+      post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'should fail when dialog_class is undefined' do
+      api_basic_authorize collection_action_identifier(:service_dialogs, :create)
+
+      orchestration_template_dialog_request = {
+        :action   => 'template_service_dialog',
+        :resource => {:template_id => ot.id, :label => 'Foo', :template_class => "OrchestrationTemplate"}
+      }
+
+      post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'should fail when dialog_class is not in whitelist' do
+      api_basic_authorize collection_action_identifier(:service_dialogs, :create)
+
+      orchestration_template_dialog_request = {
+        :action   => 'template_service_dialog',
+        :resource => {:label => 'Foo', :template_id => ot.id, :template_class => "OrchestrationTemplate", :dialog_class => "Dialog::VeryEvilDialogService"}
+      }
+
+      post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'should fail when template_class is not in whitelist' do
+      api_basic_authorize collection_action_identifier(:service_dialogs, :create)
+
+      orchestration_template_dialog_request = {
+        :action   => 'template_service_dialog',
+        :resource => {:label => 'Foo', :template_id => ot.id, :template_class => "EvilTemplate", :dialog_class => "Dialog::OrchestrationTemplateServiceDialog"}
       }
 
       post(api_service_dialogs_url, :params => orchestration_template_dialog_request)
