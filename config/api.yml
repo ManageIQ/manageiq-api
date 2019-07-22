@@ -2960,7 +2960,7 @@
         :identifier: dialog_edit_editor
       - :name: copy
         :identifier: dialog_copy_editor
-      - :name: orchestration_template_service_dialog
+      - :name: template_service_dialog
         :identifier: dialog_new_editor
     :resource_actions:
       :get:
@@ -2977,7 +2977,7 @@
         :identifier: dialog_edit_editor
       - :name: copy
         :identifier: dialog_copy_editor
-      - :name: orchestration_template_service_dialog
+      - :name: template_service_dialog
         :identifier: dialog_new_editor
       :delete:
       - :name: delete
