@@ -47,6 +47,7 @@ RSpec.describe "API entrypoint" do
         "server_info" => a_hash_including(
           "version"         => Vmdb::Appliance.VERSION,
           "build"           => Vmdb::Appliance.BUILD,
+          "release"         => Vmdb::Appliance.RELEASE,
           "appliance"       => MiqServer.my_server.name,
           "time"            => "2018-01-01T00:00:00Z",
           "server_href"     => api_server_url(nil, MiqServer.my_server),
