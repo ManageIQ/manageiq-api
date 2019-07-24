@@ -6,6 +6,11 @@ module Api
           return send("#{@req.method}_resource", type, id)
         end
 
+        unless id || @req.subcollection? || @req.json_body.key?("resources")
+          collection_target = "#{@req.action}_collection"
+          return send(collection_target, type, @req.json_body.except("action")) if respond_to?(collection_target)
+        end
+
         action = @req.action
         target = target_resource_method(type, action)
         raise BadRequestError,
