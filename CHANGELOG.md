@@ -5,7 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-9
+## Ivanchuk Beta1
+
+### Added
+- Add a subcollection under VMs for displaying CD-ROMs [(#605)](https://github.com/ManageIQ/manageiq-api/pull/605)
+- Add a subcollection under VMs for displaying disks [(#598)](https://github.com/ManageIQ/manageiq-api/pull/598)
+- Include the regions if they're supported with OPTIONS /api/providers [(#581)](https://github.com/ManageIQ/manageiq-api/pull/581)
+- Support physical server provisioning [(#578)](https://github.com/ManageIQ/manageiq-api/pull/578)
+- Include a list of supported providers in `OPTIONS /api/providers` [(#579)](https://github.com/ManageIQ/manageiq-api/pull/579)
+- Add create Git backed automation domain [(#571)](https://github.com/ManageIQ/manageiq-api/pull/571)
+- Expose the favicon URL in the branding info endpoints [(#551)](https://github.com/ManageIQ/manageiq-api/pull/551)
+- Add delete automate domain support [(#548)](https://github.com/ManageIQ/manageiq-api/pull/548)
+- Allow authentication against the _vmdb_session cookie for UI only [(#543)](https://github.com/ManageIQ/manageiq-api/pull/543)
+- Authorise action managing tenant quotas for according tenants in API [(#536)](https://github.com/ManageIQ/manageiq-api/pull/536)
+
+### Fixed
+- Allow reconfigure vm on OSP provider over Centralized Administration [(#608)](https://github.com/ManageIQ/manageiq-api/pull/608)
+- Do not request for basic auth if the auth_requester is set to UI [(#542)](https://github.com/ManageIQ/manageiq-api/pull/542)
+- Ensure a users own tasks are the only ones returned when the users role has View/My Tasks [(#526)](https://github.com/ManageIQ/manageiq-api/pull/526)
+- Use the new universal methods for suspending/resuming a provider [(#434)](https://github.com/ManageIQ/manageiq-api/pull/434)
+
+## Hammer-9 - Released 2019-07-23
 
 ### Fixed
 - Allow reconfigure vm on OSP provider over Centralized Administration [(#608)](https://github.com/ManageIQ/manageiq-api/pull/608)
