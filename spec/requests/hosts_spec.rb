@@ -23,7 +23,7 @@ RSpec.describe "hosts API" do
         expect(response).to have_http_status(:ok)
       end
 
-      it "prevents duplicate string/symbol keys mess" do
+      it "can edit the password on a host without creating duplicate keys" do
         host = FactoryBot.create(:host)
         api_basic_authorize action_identifier(:hosts, :edit)
         options = { :credentials => { 'userid' => "I'm", 'password' => 'abc123' } }
