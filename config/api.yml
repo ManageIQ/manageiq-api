@@ -3661,6 +3661,17 @@
         :identifier: miq_template_protect
       - :name: resolve
         :identifier: miq_template_policy_sim
+  :tenant_groups:
+    :description: Tenant Groups
+    :identifier: rbac_group
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: MiqGroup
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: rbac_group_show_list
   :tenants:
     :description: Tenants
     :identifier: rbac_tenant
