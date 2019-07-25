@@ -23,6 +23,17 @@ RSpec.describe "hosts API" do
         expect(response).to have_http_status(:ok)
       end
 
+      it "prevents duplicate string/symbol keys mess" do
+        host = FactoryBot.create(:host)
+        api_basic_authorize action_identifier(:hosts, :edit)
+        options = { :credentials => { 'userid' => "I'm", 'password' => 'abc123' } }
+
+        expect do
+          post api_host_url(nil, host), :params => gen_request(:edit, options)
+        end.to change { host.reload.authentication_password(:default) }.to('abc123')
+        expect(response).to have_http_status(:ok)
+      end
+
       it "sending non-credentials attributes will result in a bad request error" do
         host = FactoryBot.create(:host_with_authentication)
         api_basic_authorize action_identifier(:hosts, :edit)
