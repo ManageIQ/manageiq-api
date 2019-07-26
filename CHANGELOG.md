@@ -5,30 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-9
+## Ivanchuk Beta1
+
+### Added
+- Add a subcollection under VMs for displaying CD-ROMs [(#605)](https://github.com/ManageIQ/manageiq-api/pull/605)
+- Add a subcollection under VMs for displaying disks [(#598)](https://github.com/ManageIQ/manageiq-api/pull/598)
+- Include the regions if they're supported with OPTIONS /api/providers [(#581)](https://github.com/ManageIQ/manageiq-api/pull/581)
+- Support physical server provisioning [(#578)](https://github.com/ManageIQ/manageiq-api/pull/578)
+- Include a list of supported providers in `OPTIONS /api/providers` [(#579)](https://github.com/ManageIQ/manageiq-api/pull/579)
+- Add create Git backed automation domain [(#571)](https://github.com/ManageIQ/manageiq-api/pull/571)
+- Expose the favicon URL in the branding info endpoints [(#551)](https://github.com/ManageIQ/manageiq-api/pull/551)
+- Add delete automate domain support [(#548)](https://github.com/ManageIQ/manageiq-api/pull/548)
+- Allow authentication against the _vmdb_session cookie for UI only [(#543)](https://github.com/ManageIQ/manageiq-api/pull/543)
+- Authorise action managing tenant quotas for according tenants in API [(#536)](https://github.com/ManageIQ/manageiq-api/pull/536)
+- Allow api.yml to be pluggable [(#613)](https://github.com/ManageIQ/manageiq-api/pull/613)
+- Added PxeServer create update and delete actions [(#594)](https://github.com/ManageIQ/manageiq-api/pull/594)
 
 ### Fixed
 - Allow reconfigure vm on OSP provider over Centralized Administration [(#608)](https://github.com/ManageIQ/manageiq-api/pull/608)
+- Do not request for basic auth if the auth_requester is set to UI [(#542)](https://github.com/ManageIQ/manageiq-api/pull/542)
+- Ensure a users own tasks are the only ones returned when the users role has View/My Tasks [(#526)](https://github.com/ManageIQ/manageiq-api/pull/526)
+- Use the new universal methods for suspending/resuming a provider [(#434)](https://github.com/ManageIQ/manageiq-api/pull/434)
 
-## Unreleased as of Sprint 115 ending 2019-07-08
+## Hammer-9 - Released 2019-07-23
 
-### Added
-- Allow api.yml to be pluggable [(#613)](https://github.com/ManageIQ/manageiq-api/pull/613)
-- Added PxeServer create update and delete actions [(#594)](https://github.com/ManageIQ/manageiq-api/pull/594)
+### Fixed
+- Allow reconfigure vm on OSP provider over Centralized Administration [(#608)](https://github.com/ManageIQ/manageiq-api/pull/608)
 
 ## Hammer-8 - Released 2019-07-02
 
 ### Added
 - Adjust ConversionHost support check so that it uses resource instead of singleton [(#600)](https://github.com/ManageIQ/manageiq-api/pull/600)
-
-## Unreleased as of Sprint 114 ending 2019-06-24
-
-### Added
-- Add a subcollection under VMs for displaying CD-ROMs [(#605)](https://github.com/ManageIQ/manageiq-api/pull/605)
-- Add a subcollection under VMs for displaying disks [(#598)](https://github.com/ManageIQ/manageiq-api/pull/598)
-
-### Fixed
-- Allow reconfigure vm on OSP provider over Centralized Administration [(#608)](https://github.com/ManageIQ/manageiq-api/pull/608)
 
 ## Hammer-6 - Released 2019-05-22
 
@@ -37,18 +44,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Fixes conversion_hosts_spec.rb failures [(#524)](https://github.com/ManageIQ/manageiq-api/pull/524)
-
-## Unreleased as of Sprint 111 ending 2019-05-13
-
-### Added
-- Include the regions if they're supported with OPTIONS /api/providers [(#581)](https://github.com/ManageIQ/manageiq-api/pull/581)
-- Support physical server provisioning [(#578)](https://github.com/ManageIQ/manageiq-api/pull/578)
-
-## Unreleased as of Sprint 110 ending 2019-04-29
-
-### Added
-- Include a list of supported providers in `OPTIONS /api/providers` [(#579)](https://github.com/ManageIQ/manageiq-api/pull/579)
-- Add create Git backed automation domain [(#571)](https://github.com/ManageIQ/manageiq-api/pull/571)
 
 ## Hammer-5 - Released 2019-04-23
 
@@ -69,29 +64,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - One semaphore to exclusively load them all [(#550)](https://github.com/ManageIQ/manageiq-api/pull/550)
-
-## Unreleased as of Sprint 104 ending 2019-02-04
-
-### Added
-- Expose the favicon URL in the branding info endpoints [(#551)](https://github.com/ManageIQ/manageiq-api/pull/551)
-- Add delete automate domain support [(#548)](https://github.com/ManageIQ/manageiq-api/pull/548)
-
-## Unreleased as of Sprint 103 ending 2019-01-21
-
-### Added
-- Allow authentication against the _vmdb_session cookie for UI only [(#543)](https://github.com/ManageIQ/manageiq-api/pull/543)
-
-### Fixed
-- Do not request for basic auth if the auth_requester is set to UI [(#542)](https://github.com/ManageIQ/manageiq-api/pull/542)
-
-## Unreleased as of Sprint 102 ending 2019-01-07
-
-### Added
-- Authorise action managing tenant quotas for according tenants in API [(#536)](https://github.com/ManageIQ/manageiq-api/pull/536)
-
-### Fixed
-- Ensure a users own tasks are the only ones returned when the users role has View/My Tasks [(#526)](https://github.com/ManageIQ/manageiq-api/pull/526)
-- Use the new universal methods for suspending/resuming a provider [(#434)](https://github.com/ManageIQ/manageiq-api/pull/434)
 
 ## Hammer-1 - Released 2019-01-15
 
