@@ -3879,7 +3879,9 @@
       - :name: request_console
         :identifier:
         - vm_html5_console
+        - vm_vmrc_console
         - sui_vm_html5_console
+        - sui_vm_vmrc_console
         - sui_vm_web_console
       - :name: reset
         :identifier: vm_reset
@@ -3949,7 +3951,9 @@
       - :name: request_console
         :identifier:
         - vm_html5_console
+        - vm_vmrc_console
         - sui_vm_html5_console
+        - sui_vm_vmrc_console
         - sui_vm_web_console
       - :name: reset
         :identifier: vm_reset
