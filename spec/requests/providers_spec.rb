@@ -1588,6 +1588,31 @@ describe "Providers API" do
       )
       expect(response.parsed_body["data"]["provider_settings"]["kubernetes"]["proxy_settings"]["settings"]["http_proxy"]["label"]).to eq('HTTP Proxy')
     end
+
+    context 'single provider queried' do
+      it 'raises an error if the provider is invalid' do
+        options("#{api_providers_url}?type=foo")
+        expect_bad_request("Invalid provider - foo")
+      end
+
+      context 'valid provider' do
+        before do
+          class DummyProvider; end
+          allow(DummyProvider).to receive(:<).with(ExtManagementSystem).and_return(true)
+        end
+
+        it 'raises an error if the provider has no DDF' do
+          options("#{api_providers_url}?type=DummyProvider")
+          expect_bad_request("No DDF specified for - DummyProvider")
+        end
+
+        it 'calls the .params_for_create on the provider' do
+          expect(DummyProvider).to receive(:params_for_create).and_return('foo' => 'bar')
+          options("#{api_providers_url}?type=DummyProvider")
+          expect(response.parsed_body['data']['provider_form_schema']).to eq('foo' => 'bar')
+        end
+      end
+    end
   end
 
   context 'GET /api/providers/:id/vms' do
