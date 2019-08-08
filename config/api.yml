@@ -271,6 +271,33 @@
       :delete:
       - :name: delete
         :identifier: miq_ae_domain_delete
+  :automate_namespaces:
+    :description: Automate Namespaces
+    :options:
+    - :collection
+    :verbs: *gpppd
+    :klass: MiqAeNamespace
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_ae_namespace_view
+      :post:
+      - :name: create
+        :identifier: miq_ae_namespace_new
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: miq_ae_namespace_view
+      :post:
+      - :name: create
+        :identifier: miq_ae_namespace_new
+      - name: edit
+        :identifier: miq_ae_namespace_edit
+      - name: delete
+        :identifier: miq_ae_namespace_delete
+      :delete:
+      - name: delete
+        :identifier: miq_ae_namespace_delete
   :automate_workspaces:
     :description: Automate Workspaces
     :options:
