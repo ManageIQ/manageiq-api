@@ -49,7 +49,7 @@ module Api
       authentication = data.delete('authentication')
       PxeServer.transaction do
         if menus
-          server.pxe_menus.clear
+          server.pxe_menus.destroy_all
           data['pxe_menus'] = create_pxe_menus(menus)
         end
         server.update!(data)
