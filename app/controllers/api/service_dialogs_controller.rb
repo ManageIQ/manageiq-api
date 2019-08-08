@@ -121,5 +121,17 @@ module Api
       raise BadRequestError, "Invalid template_class #{data['template_class']} for creating a service dialog from template" unless TEMPLATE_CLASSES.include?(data['template_class'])
       raise BadRequestError, "Invalid dialog_class #{data['dialog_class']} for creating a service dialog from template" unless DIALOG_CLASSES.include?(data['dialog_class'])
     end
+
+    def normalize_encrypted(value)
+      value
+    end
+
+    def api_resource_action_options
+      if @req.action == "refresh_dialog_fields" && @req.collection_id && @req.subcollection.blank?
+        super + %w[include_encrypted_attributes]
+      else
+        super
+      end
+    end
   end
 end
