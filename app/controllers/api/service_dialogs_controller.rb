@@ -98,5 +98,13 @@ module Api
     def service_dialog_ident(service_dialog)
       "Service Dialog id:#{service_dialog.id} label:'#{service_dialog.label}'"
     end
+
+    def api_resource_action_options
+      if @req.action == "refresh_dialog_fields" && @req.collection_id && @req.subcollection.blank?
+        %w[include_encrypted_attributes]
+      else
+        super
+      end
+    end
   end
 end

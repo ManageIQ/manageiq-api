@@ -23,7 +23,7 @@ module Api
 
         is_ar = obj.kind_of?(ActiveRecord::Base)
         attrs.each do |k|
-          next if Api.encrypted_attribute?(k)
+          next if Api.encrypted_attribute?(k) && api_resource_action_options.exclude?("include_encrypted_attributes")
           next if is_ar ? !obj.respond_to?(k) : !obj.key?(k)
           result[k] = normalize_attr(k, is_ar ? obj.try(k) : obj[k])
         end
@@ -45,7 +45,7 @@ module Api
         elsif Api.url_attribute?(attr)
           normalize_url(value)
         elsif Api.encrypted_attribute?(attr)
-          normalize_encrypted
+          normalize_encrypted(value)
         elsif Api.resource_attribute?(attr)
           normalize_resource(value)
         else
@@ -110,7 +110,7 @@ module Api
       #
       # Let's filter out encrypted attributes, i.e. passwords
       #
-      def normalize_encrypted
+      def normalize_encrypted(_value)
         nil
       end
 
