@@ -26,7 +26,7 @@ module Api
           server.update_authentication({:default => authentication.compact}, {:save => true})
         end
 
-        server.pxe_menus = create_pxe_menus(menus) if menus
+        server.ensure_menu_list(menus.map { |el| el['file_name'] }) if menus
 
         if server.invalid?
           raise BadRequestError, "Failed to add a pxe server - #{server.errors.full_messages.join(', ')}"
@@ -48,26 +48,14 @@ module Api
       menus = data.delete('pxe_menus')
       authentication = data.delete('authentication')
       PxeServer.transaction do
-        if menus
-          server.pxe_menus.destroy_all
-          data['pxe_menus'] = create_pxe_menus(menus)
-        end
         server.update!(data)
         server.update_authentication({:default => authentication.transform_keys(&:to_sym)}, {:save => true}) if authentication && server.requires_credentials?
+        server.ensure_menu_list(menus.map { |el| el['file_name'] }) if menus
         server
       end
     end
 
     private
-
-    def create_pxe_menus(menus)
-      menus.each do |menu|
-        validate_data_for('PxeMenu', menu)
-      end
-      menus.map do |menu|
-        collection_class(:pxe_menus).create(menu)
-      end
-    end
 
     def validate_data_for(klass, data)
       bad_attrs = []
