@@ -251,6 +251,8 @@
       :post:
       - :name: query
         :identifier: miq_ae_domain_view
+      - :name: create
+        :identifier: miq_ae_domain_new
       - :name: create_from_git
         :identifier: miq_ae_domain_new
       - :name: refresh_from_source
@@ -266,8 +268,13 @@
         :identifier: miq_ae_domain_new
       - :name: refresh_from_source
         :identifier: miq_ae_git_refresh
+      - name: edit
+        :identifier: miq_ae_domain_edit
       - :name: delete
         :identifier: miq_ae_domain_delete
+      :put:
+      - name: edit
+        :identifier: miq_ae_domain_edit
       :delete:
       - :name: delete
         :identifier: miq_ae_domain_delete

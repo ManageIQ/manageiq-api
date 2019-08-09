@@ -19,6 +19,33 @@ describe "Automate Domains API" do
     end
   end
 
+  describe 'POST /api/automate_domains' do
+    it 'can create automate domains' do
+      api_basic_authorize collection_action_identifier(:automate_domains, :create)
+
+      post(api_automate_domains_url, :params => {'name' => 'foo'})
+
+      expect(response).to have_http_status(:ok)
+      domain = MiqAeDomain.find(response.parsed_body['results'].first["id"])
+      expect(domain.name).to eq('foo')
+    end
+  end
+
+  describe 'PUT /api/automate_domains/:id' do
+    let(:domain) { FactoryBot.create(:miq_ae_domain) }
+
+    it 'can edit automate domains' do
+      api_basic_authorize action_identifier(:automate_domains, :edit, :resource_actions, :put)
+
+      expect(domain.name).not_to eq('foo')
+
+      put(api_automate_domain_url(nil, domain), :params => {'name' => 'foo'})
+
+      expect(response).to have_http_status(:ok)
+      expect(domain.reload.name).to eq('foo')
+    end
+  end
+
   describe 'delete action' do
     let(:automate_domain) { FactoryBot.create(:miq_ae_domain) }
     let(:automate_domain_locked) { FactoryBot.create(:miq_ae_domain_user_locked, :enabled => true) }
