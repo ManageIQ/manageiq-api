@@ -431,10 +431,13 @@ describe "Service Dialogs API" do
     let(:group1)  { FactoryBot.create(:dialog_group, :label => "Group1") }
     let(:text1)   { FactoryBot.create(:dialog_field_text_box, :label => "TextBox1", :name => "text1") }
 
+    let(:password1) { FactoryBot.create(:dialog_field_text_box, :label => "PasswordBox1", :name => "password1") }
+
     def init_dialog
       dialog1.dialog_tabs << tab1
       tab1.dialog_groups << group1
       group1.dialog_fields << text1
+      group1.dialog_fields << password1
     end
 
     it "rejects refresh dialog fields requests without appropriate role" do
@@ -512,6 +515,29 @@ describe "Service Dialogs API" do
         "message" => a_string_matching(/refreshing dialog fields/i),
         "href"    => api_service_dialog_url(nil, dialog1),
         "result"  => hash_including("text1")
+      )
+    end
+
+    it "supports refresh of encrypted attributes" do
+      api_basic_authorize action_identifier(:service_dialogs, :refresh_dialog_fields)
+      init_dialog
+
+      post(api_service_dialog_url(nil, dialog1), :params => gen_request(
+        :refresh_dialog_fields,
+        "fields"             => %w[text1 password1],
+        "resource_action_id" => ra1.id,
+        "target_id"          => template.id,
+        "target_type"        => "service_template"
+      ))
+
+      expect(response.parsed_body).to include(
+        "success" => true,
+        "message" => a_string_matching(/refreshing dialog fields/i),
+        "href"    => api_service_dialog_url(nil, dialog1),
+        "result"  => a_hash_including(
+          "text1"     => a_hash_including("name" => "text1"),
+          "password1" => a_hash_including("name" => "password1", "default_value" => anything)
+        )
       )
     end
 
