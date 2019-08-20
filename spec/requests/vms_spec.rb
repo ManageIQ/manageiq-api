@@ -1098,7 +1098,12 @@ describe "Vms API" do
       context "valid" do
         it "to a single Vm" do
           api_basic_authorize(action_identifier(:vms, :request_retire))
-
+          puts "XXXXXX"
+          puts Vm.count
+          puts vm_url
+          puts Vm.count
+          puts  gen_request(:request_retire)
+          puts "XXXXXX"
           post(vm_url, :params => gen_request(:request_retire))
 
           expected = {

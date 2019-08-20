@@ -122,6 +122,19 @@ module Api
         elsif obj.respond_to?(:attributes)
           obj.attributes.keys
         else
+
+          if obj.kind_of?(Array)
+
+            puts "YYYYYY"
+            puts obj.map(&:class)
+            obj.each do |o|
+              puts "zzz"
+              puts o.try(:name)
+              puts "zzz"
+            end
+            puts "YYYYYY"
+          end
+
           obj.keys
         end
       end
