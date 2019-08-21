@@ -20,7 +20,8 @@ module Api
       def orderable?(service_template)
         errors = []
         errors << 'Service ordering via API is not allowed' unless api_request_allowed?
-        errors << service_template.orderable?
+        errors += service_template.orderable?
+        errors
       end
 
       def api_request_allowed?

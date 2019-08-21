@@ -465,11 +465,13 @@ describe "Service Templates API" do
   end
 
   describe "Service Templates order" do
-    let(:service_template) { FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog, :orderable) }
+    let(:service_template_catalog) { FactoryBot.create(:service_template_catalog) }
+    let(:service_template) { FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog, :service_template_catalog => service_template_catalog, :display => true) }
     let(:allow_api_service_ordering) { true }
 
     before do
       stub_settings_merge(:product => {:allow_api_service_ordering => allow_api_service_ordering})
+      allow(Api::ServiceTemplatesController).to receive(:resource_search).and_return(service_template)
       userid = User.first.userid
       test_token = Api::UserTokenService.new.generate_token(userid, "api")
       request_headers["x-auth-token"] = test_token
