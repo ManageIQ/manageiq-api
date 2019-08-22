@@ -79,15 +79,19 @@ RSpec.describe 'CustomButtons API' do
       end
 
       context "with an object derived from a virtual attribute" do
-        before do
-          cb.resource_action = FactoryBot.create(:resource_action)
-        end
+        before { cb.resource_action = FactoryBot.create(:resource_action, :ae_attributes => {:request=> 'test'}) }
 
         it 'does not include an href for that object, as it is not a valid collection' do
           get(api_custom_button_url(nil, cb, :attributes => 'resource_action'))
 
           expect(response.parsed_body['resource_action']).to be_present
           expect(response.parsed_body['resource_action']).to_not include('href')
+        end
+
+        it 'includes uri_attributes' do
+          get(api_custom_button_url(nil, cb, :attributes => 'uri_attributes'))
+
+          expect(response.parsed_body['uri_attributes']).to eq('request'=> 'test')
         end
       end
     end
