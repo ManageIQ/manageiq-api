@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Append RBAC features for VMRC console request through the API [(#642)](https://github.com/ManageIQ/manageiq-api/pull/642)
+- FirmwareRegistry create/list/delete and sync_fw_binaries [(#636)](https://github.com/ManageIQ/manageiq-api/pull/636)
 
 ## Ivanchuk Beta1 - Released 2019-08-14
 
