@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Ivanchuk Beta1
+## Ivanchuk RC1
+
+### Added
+- Append RBAC features for VMRC console request through the API [(#642)](https://github.com/ManageIQ/manageiq-api/pull/642)
+- FirmwareRegistry create/list/delete and sync_fw_binaries [(#636)](https://github.com/ManageIQ/manageiq-api/pull/636)
+
+## Ivanchuk Beta1 - Released 2019-08-14
 
 ### Added
 - Add a subcollection under VMs for displaying CD-ROMs [(#605)](https://github.com/ManageIQ/manageiq-api/pull/605)
