@@ -559,7 +559,7 @@ describe "Service Templates API" do
       end
 
       it "can order multiple service templates" do
-        service_template2 = FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog, :orderable)
+        service_template2 = FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog, :service_template_catalog => service_template_catalog, :display => true)
         api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
 
         post(api_service_templates_url, :params => { :action => "order", :resources =>
