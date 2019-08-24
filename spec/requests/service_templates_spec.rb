@@ -608,7 +608,7 @@ describe "Service Templates API" do
         expected = {
           "error" => a_hash_including(
             "kind"    => "bad_request",
-            "message" => /cannot be ordered/
+            "message" => /cannot be ordered - Service template does not belong to a service catalog, Service template is not configured to be displayed/
           )
         }
         expect(response).to have_http_status(:bad_request)

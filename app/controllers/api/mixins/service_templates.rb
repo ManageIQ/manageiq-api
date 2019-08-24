@@ -3,7 +3,7 @@ module Api
     module ServiceTemplates
       def order_service_template(id, data, scheduled_time = nil)
         service_template = resource_search(id, :service_templates, ServiceTemplate)
-        errors = validate_order(service_template)
+        errors = validate_order(service_template, true)
         if errors.present?
           raise BadRequestError, "#{service_template_ident(service_template)} cannot be ordered - #{errors.join(", ")}"
         end
@@ -18,16 +18,15 @@ module Api
 
       private
 
-      def validate_order(service_template)
+      def validate_order(service_template, with_errors = false)
         errors = []
         errors << 'Service ordering via API is not allowed' unless api_request_allowed?
-        errors += service_template.validate_order
+        errors += service_template.validate_order(true)
         errors
-      end
 
-      def orderable?(service_template)
-        validate_order(service_template).blank?
+        with_errors ? errors : errors.blank?
       end
+      alias orderable? validate_order
 
       def api_request_allowed?
         return true if request_from_ui?
