@@ -22,8 +22,6 @@ module Api
         errors = []
         errors << 'Service ordering via API is not allowed' unless api_request_allowed?
         errors += service_template.validate_order(true)
-        errors
-
         with_errors ? errors : errors.blank?
       end
       alias orderable? validate_order
