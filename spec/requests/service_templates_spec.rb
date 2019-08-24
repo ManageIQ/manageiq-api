@@ -471,7 +471,6 @@ describe "Service Templates API" do
 
     before do
       stub_settings_merge(:product => {:allow_api_service_ordering => allow_api_service_ordering})
-      allow(Api::ServiceTemplatesController).to receive(:resource_search).and_return(service_template)
       userid = User.first.userid
       test_token = Api::UserTokenService.new.generate_token(userid, "api")
       request_headers["x-auth-token"] = test_token
