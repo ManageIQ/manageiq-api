@@ -125,7 +125,15 @@ module Api
 
       private
 
+      def check_existence(id, type)
+        raise BadRequestError, "Must specify an id for content generation for a #{type} resource" unless id
+        if single_resource?
+          raise NotFoundError, "#{type} with id:#{id} not found" unless collection_class(type).exists?(id)
+        end
+      end
+
       def resource_search(id, type, klass)
+        check_existence(id, type)
         validate_id(id, type, klass)
         key_id = collection_config.resource_identifier(type)
         target =

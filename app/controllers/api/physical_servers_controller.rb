@@ -69,10 +69,6 @@ module Api
     private
 
     def change_resource_state(state, type, id, data = [])
-      raise BadRequestError, "Must specify an id for changing a #{type} resource" unless id
-
-      ensure_resource_exists(type, id) if single_resource?
-
       api_action(type, id) do |klass|
         begin
           server = resource_search(id, type, klass)
@@ -84,10 +80,6 @@ module Api
           action_result(false, err.to_s)
         end
       end
-    end
-
-    def ensure_resource_exists(type, id)
-      raise NotFoundError, "#{type} with id:#{id} not found" unless collection_class(type).exists?(id)
     end
 
     def server_ident(server)
