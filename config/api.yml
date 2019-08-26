@@ -182,6 +182,43 @@
     :options:
     - :primary
     :verbs: *gd
+  :auth_key_pairs:
+    :description: Auth Key Pairs
+    :verbs: *gpppd
+    :identifier: auth_key_pair_cloud
+    :options:
+    - :collection
+    :klass: ManageIQ::Providers::CloudManager::AuthKeyPair
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: auth_key_pair_cloud_view
+      :post:
+      - :name: create
+        :identifier: auth_key_pair_cloud_new
+      - :name: edit
+        :identifier: auth_key_pair_cloud_admin
+      - :name: delete
+        :identifier: auth_key_pair_cloud_delete
+      - :name: set_ownership
+        :identifier: auth_key_pair_ownership
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: auth_key_pair_cloud_show
+      :post:
+      - :name: edit
+        :identifier: auth_key_pair_cloud_admin
+      - :name: delete
+        :identifier: auth_key_pair_cloud_delete
+      - :name: set_ownership
+        :identifier: auth_key_pair_ownership
+      :put:
+      - :name: edit
+        :identifier: auth_key_pair_cloud_admin
+      :delete:
+      - :name: delete
+        :identifier: auth_key_pair_cloud_delete
   :authentications:
     :description: Authentications
     :options:
