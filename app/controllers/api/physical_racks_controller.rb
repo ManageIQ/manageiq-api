@@ -1,10 +1,6 @@
 module Api
   class PhysicalRacksController < BaseController
     def refresh_resource(type, id, _data = nil)
-      raise BadRequestError, "Must specify an id for refreshing a #{type} resource" unless id
-
-      ensure_resource_exists(type, id) if single_resource?
-
       api_action(type, id) do |klass|
         physical_rack = resource_search(id, type, klass)
         api_log_info("Refreshing #{physical_rack_ident(physical_rack)}")
@@ -13,10 +9,6 @@ module Api
     end
 
     private
-
-    def ensure_resource_exists(type, id)
-      raise NotFoundError, "#{type} with id:#{id} not found" unless collection_class(type).exists?(id)
-    end
 
     def refresh_physical_rack(physical_rack)
       desc = "#{physical_rack_ident(physical_rack)} refreshing"
