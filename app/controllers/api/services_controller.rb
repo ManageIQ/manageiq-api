@@ -89,7 +89,7 @@ module Api
     end
 
     def stop_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
+      raise BadRequestError, "Must specify an id for stopping a #{type} resource" unless id
 
       api_action(type, id) do |klass|
         service = resource_search(id, type, klass)

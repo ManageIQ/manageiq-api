@@ -127,6 +127,7 @@ module Api
 
       def check_existence(id, type)
         raise BadRequestError, "Must specify an id for content generation for a #{type} resource" unless id
+
         if single_resource?
           raise NotFoundError, "#{type} with id:#{id} not found" unless collection_class(type).exists?(id)
         end
