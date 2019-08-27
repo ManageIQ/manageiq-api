@@ -3,7 +3,7 @@ module Api
     def create_resource(_type, _id, data = {})
       raise "Must specify transformation_mapping_items" unless data["transformation_mapping_items"]
       TransformationMapping.new(data.except("transformation_mapping_items")).tap do |mapping|
-        mapping.transformation_mapping_items = create_mapping_items(data["transformation_mapping_items"])
+        mapping.transformation_mapping_items = create_mapping_items(data["transformation_mapping_items"], mapping)
         mapping.save!
       end
     rescue StandardError => err
@@ -17,7 +17,7 @@ module Api
       updated_data = data.except("transformation_mapping_items")
       transformation_mapping.update_attributes!(updated_data) if updated_data.present?
 
-      transformation_mapping.transformation_mapping_items = create_mapping_items(data["transformation_mapping_items"])
+      transformation_mapping.transformation_mapping_items = create_mapping_items(data["transformation_mapping_items"], transformation_mapping)
       transformation_mapping.save!
       transformation_mapping
     rescue StandardError => err
@@ -51,7 +51,7 @@ module Api
 
     def add_mapping_item_resource(type, id, data)
       resource_search(id, type, collection_class(type)).tap do |mapping|
-        mapping.transformation_mapping_items.append(create_mapping_items([data]))
+        mapping.transformation_mapping_items.append(create_mapping_items([data], mapping))
         mapping.save!
       end
     rescue StandardError => err
@@ -60,10 +60,14 @@ module Api
 
     private
 
-    def create_mapping_items(items)
+    def create_mapping_items(items, mapping)
       items.collect do |item|
         raise "Must specify source and destination hrefs" unless item["source"] && item["destination"]
-        TransformationMappingItem.new(:source => fetch_mapping_resource(item["source"]), :destination => fetch_mapping_resource(item["destination"]))
+        TransformationMappingItem.new(
+          :transformation_mapping => mapping,
+          :source                 => fetch_mapping_resource(item["source"]),
+          :destination            => fetch_mapping_resource(item["destination"])
+        )
       end
     end
 
