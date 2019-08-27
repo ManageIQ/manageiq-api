@@ -1098,37 +1098,58 @@ describe "Vms API" do
       context "valid" do
         it "to a single Vm" do
           api_basic_authorize(action_identifier(:vms, :request_retire))
+          message = "VM id:#{vm.id} name:'#{vm.name}' request retire"
+          task_id = MiqTask.find_by(:name => message)&.id
+          expect(task_id).to be_nil
 
           post(vm_url, :params => gen_request(:request_retire))
 
+          task = MiqTask.find_by(:name => message)
           expected = {
-            "href"    => a_string_matching(api_requests_url),
-            "message" => a_string_matching(/VM Retire - Request Created/),
-            "options" => a_hash_including("src_ids" => a_collection_including(vm.id))
+            "success"   => true,
+            "message"   => "VM id:#{vm.id} name:'#{vm.name}' request retire",
+            "task_id"   => task.id.to_s,
+            "task_href" => api_task_url(nil, task),
+            "href"      => api_vm_url(nil, vm)
           }
+
           expect(response).to have_http_status(:ok)
           expect(response.parsed_body).to include(expected)
         end
 
         it "to multiple Vms" do
           api_basic_authorize(collection_action_identifier(:vms, :request_retire))
+          message_vm1 = "VM id:#{vm1.id} name:'#{vm1.name}' request retire"
+          task_id_vm1 = MiqTask.find_by(:name => message_vm1)&.id
+          expect(task_id_vm1).to be_nil
+
+          message_vm2 = "VM id:#{vm2.id} name:'#{vm2.name}' request retire"
+          task_id_vm2 = MiqTask.find_by(:name => message_vm2)&.id
+          expect(task_id_vm2).to be_nil
 
           post(api_vms_url, :params => gen_request(:request_retire, [{"href" => vm1_url}, {"href" => vm2_url}]))
+          task_vm1 = MiqTask.find_by(:name => message_vm1)
+          task_vm2 = MiqTask.find_by(:name => message_vm2)
 
           expected = {
-            "results" => a_collection_containing_exactly(
-              a_hash_including(
-                "message" => a_string_matching(/VM Retire - Request Created/),
-                "href"    => a_string_matching(api_requests_url),
-                "options" => a_hash_including("src_ids" => a_collection_containing_exactly(vm1.id))
-              ),
-              a_hash_including(
-                "message" => a_string_matching(/VM Retire - Request Created/),
-                "href"    => a_string_matching(api_requests_url),
-                "options" => a_hash_including("src_ids" => a_collection_containing_exactly(vm2.id))
-              )
-            )
+            "results" => [
+              {
+                "success"   => true,
+                "message"   => a_string_matching(/#{vm1.id}.* request retire/i),
+                "task_id"   => task_vm1.id.to_s,
+                "task_href" => api_task_url(nil, task_vm1),
+                "href"      => api_vm_url(nil, vm1)
+              },
+              {
+                "success"   => true,
+                "message"   => message_vm2,
+                "task_id"   => task_vm2.id.to_s,
+                "task_href" => api_task_url(nil, task_vm2),
+                "href"      => api_vm_url(nil, vm2)
+              }
+            ]
           }
+
           expect(response).to have_http_status(:ok)
           expect(response.parsed_body).to include(expected)
         end

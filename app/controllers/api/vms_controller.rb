@@ -271,6 +271,14 @@ module Api
       action_result(false, "Failed to set miq_server - #{err}")
     end
 
+    def request_retire_resource(type, id, _data = nil)
+      api_action(type, id) do |klass|
+        vm = resource_search(id, type, klass)
+        api_log_info("Retiring request of vm #{vm_ident(vm)}")
+        request_retire(vm)
+      end
+    end
+
     private
 
     def miq_server_message(miq_server)
@@ -483,6 +491,15 @@ module Api
       # context_data is returned as part of the task i.e. GET /api/tasks/:id
       action_result(true, desc, :task_id => task_id)
     rescue => err
+      action_result(false, err.to_s)
+    end
+
+    def request_retire(virtual_machine)
+      desc = "#{vm_ident(virtual_machine)} request retire"
+
+      task_id = queue_object_action(virtual_machine, desc, queue_options("make_retire_request", "automate"))
+      action_result(true, desc, :task_id => task_id)
+    rescue StandardError => err
       action_result(false, err.to_s)
     end
   end
