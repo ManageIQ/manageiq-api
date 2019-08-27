@@ -3,6 +3,7 @@ module Api
     module ServiceTemplates
       def order_service_template(id, data, scheduled_time = nil)
         service_template = resource_search(id, :service_templates, ServiceTemplate)
+        validate_order(service_template)
         raise BadRequestError, "#{service_template_ident(service_template)} cannot be ordered - #{service_template.unsupported_reason(:order)}" unless service_template.supports_order?
 
         request_result = service_template.order(User.current_user, (data || {}), order_request_options, scheduled_time)
@@ -16,8 +17,8 @@ module Api
       private
 
       def validate_order(service_template)
-        service_template.unsupported_reason_add(:order, 'Service ordering via API is not allowed') unless api_request_allowed?
-        service_template.supports_order?
+        raise BadRequestError, "Service ordering via API is not allowed" unless api_request_allowed?
+        true
       end
       alias orderable? validate_order
 

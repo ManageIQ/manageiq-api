@@ -627,7 +627,6 @@ describe "Service Templates API" do
     end
 
     context "with the product setting not allowing automate to run on submit" do
-      let(:template_no_display) { FactoryBot.create(:service_template, :display => false) }
       let(:allow_api_service_ordering) { false }
 
       context "if the token info is blank" do
@@ -637,11 +636,11 @@ describe "Service Templates API" do
 
         it "rejects the request" do
           api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
-          post(api_service_template_url(nil, template_no_display), :params => { :action => "order" })
+          post(api_service_template_url(nil, service_template), :params => { :action => "order" })
           expected = {
             "error" => a_hash_including(
               "kind"    => "bad_request",
-              "message" => /cannot be ordered/
+              "message" => "Service ordering via API is not allowed"
             )
           }
           expect(response).to have_http_status(:bad_request)
