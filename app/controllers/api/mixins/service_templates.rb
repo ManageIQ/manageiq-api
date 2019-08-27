@@ -16,7 +16,7 @@ module Api
       private
 
       def validate_order(service_template)
-        service_template.unsupported_reason_add(:order, 'Service ordering via API is not allowed') unless  api_request_allowed?
+        service_template.unsupported_reason_add(:order, 'Service ordering via API is not allowed') unless api_request_allowed?
         service_template.supports_order?
       end
       alias orderable? validate_order
