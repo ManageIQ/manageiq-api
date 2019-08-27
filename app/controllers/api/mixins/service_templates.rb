@@ -16,8 +16,9 @@ module Api
 
       private
 
-      def validate_order(service_template)
+      def validate_order(_service_template)
         raise BadRequestError, "Service ordering via API is not allowed" unless api_request_allowed?
+
         true
       end
       alias orderable? validate_order
