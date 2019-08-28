@@ -192,7 +192,7 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: auth_key_pair_cloud_view
+        :identifier: auth_key_pair_cloud_show_list
       :post:
       - :name: create
         :identifier: auth_key_pair_cloud_new
