@@ -650,8 +650,8 @@ describe "Querying" do
     end
 
     it "can do fuzzy matching on strings with forward slashes" do
-      tag_1 = FactoryBot.create(:tag, :name => "/managed/foo")
-      _tag_2 = FactoryBot.create(:tag, :name => "/managed/bar")
+      tag_1 = FactoryBot.create(:classification, :name => "foo").tag
+      _tag_2 = FactoryBot.create(:classification, :name => "bar")
       api_basic_authorize collection_action_identifier(:tags, :read, :get)
 
       get(api_tags_url, :params => { :filter => ["name='*/foo'"] })

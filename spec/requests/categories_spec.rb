@@ -60,7 +60,7 @@ RSpec.describe "categories API" do
     classification = FactoryBot.create(:classification_tag)
     category = FactoryBot.create(:category, :children => [classification])
     tag = classification.tag
-    Tag.create(:name => "some_other_tag")
+    FactoryBot.create(:classification, :name => "some_other_tag")
     api_basic_authorize
 
     get(api_category_tags_url(nil, category))

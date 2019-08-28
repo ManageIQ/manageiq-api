@@ -17,20 +17,20 @@ describe "Tags API" do
 
       get api_tags_url
 
-      expect_query_result(:tags, Tag.count)
+      expect_query_result(:tags, Classification.count)
     end
 
     context "with an appropriate role" do
       it "can create a tag with category by href" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryBot.create(:category)
+        category = FactoryBot.create(:classification)
         options = {:name => "test_tag", :description => "Test Tag", :category => {:href => api_category_url(nil, category)}}
 
-        expect { post api_tags_url, :params => options }.to change(Tag, :count).by(1)
+        expect { post api_tags_url, :params => options }.to change(Classification, :count).by(1)
 
         result = response.parsed_body["results"].first
-        tag = Tag.find(result["id"])
-        tag_category = Category.find(tag.category.id)
+        tag = Classification.find_by!(:tag_id => result["id"]).tag
+        tag_category = tag.category
         expect(tag_category).to eq(category)
         expect(result["href"]).to include(api_tag_url(nil, tag))
         expect(response).to have_http_status(:ok)
@@ -38,14 +38,14 @@ describe "Tags API" do
 
       it "can create a tag with a category by id" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryBot.create(:category)
+        category = FactoryBot.create(:classification)
 
         expect do
           post api_tags_url, :params => { :name => "test_tag", :description => "Test Tag", :category => {:id => category.id} }
-        end.to change(Tag, :count).by(1)
+        end.to change(Classification, :count).by(1)
 
-        tag = Tag.find(response.parsed_body["results"].first["id"])
-        tag_category = Category.find(tag.category.id)
+        tag = Classification.find_by!(:tag_id => response.parsed_body["results"].first["id"]).tag
+        tag_category = tag.category
         expect(tag_category).to eq(category)
 
         expect(response).to have_http_status(:ok)
@@ -53,14 +53,14 @@ describe "Tags API" do
 
       it "can create a tag with a category by name" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryBot.create(:category)
+        category = FactoryBot.create(:classification)
 
         expect do
           post api_tags_url, :params => { :name => "test_tag", :description => "Test Tag", :category => {:name => category.name} }
-        end.to change(Tag, :count).by(1)
+        end.to change(Classification, :count).by(1)
 
-        tag = Tag.find(response.parsed_body["results"].first["id"])
-        tag_category = Category.find(tag.category.id)
+        tag = Classification.find_by!(:tag_id => response.parsed_body["results"].first["id"]).tag
+        tag_category = tag.category
         expect(tag_category).to eq(category)
 
         expect(response).to have_http_status(:ok)
@@ -68,13 +68,13 @@ describe "Tags API" do
 
       it "can create a tag as a subresource of a category" do
         api_basic_authorize collection_action_identifier(:tags, :create)
-        category = FactoryBot.create(:category)
+        category = FactoryBot.create(:classification)
 
         expect do
           post(api_category_tags_url(nil, category), :params => { :name => "test_tag", :description => "Test Tag" })
-        end.to change(Tag, :count).by(1)
-        tag = Tag.find(response.parsed_body["results"].first["id"])
-        tag_category = Category.find(tag.category.id)
+        end.to change(Classification, :count).by(1)
+        tag = Classification.find_by!(:tag_id => response.parsed_body["results"].first["id"]).tag
+        tag_category = tag.category
         expect(tag_category).to eq(category)
 
         expect(response).to have_http_status(:ok)
@@ -108,8 +108,8 @@ describe "Tags API" do
         tag = classification.tag
 
         expect do
-          post api_tag_url(nil, tag), :params => gen_request(:edit, :description => "New Description")
-        end.to change { tag.reload.classification.description }.to("New Description")
+          post api_tag_url(nil, classification.tag), :params => gen_request(:edit, :description => "New Description")
+        end.to change { classification.reload.description }.to("New Description")
 
         expect(response).to have_http_status(:ok)
       end
@@ -119,7 +119,7 @@ describe "Tags API" do
         classification = FactoryBot.create(:classification_tag)
         tag = classification.tag
 
-        expect { post api_tag_url(nil, tag), :params => { :action => :delete } }.to change(Tag, :count).by(-1)
+        expect { post api_tag_url(nil, tag), :params => { :action => :delete } }.to change(Classification, :count).by(-1)
         expect { classification.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect(response).to have_http_status(:ok)
       end
@@ -129,7 +129,7 @@ describe "Tags API" do
         classification = FactoryBot.create(:classification_tag)
         tag = classification.tag
 
-        expect { delete api_tag_url(nil, tag) }.to change(Tag, :count).by(-1)
+        expect { delete api_tag_url(nil, tag) }.to change(Classification, :count).by(-1)
         expect { classification.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect(response).to have_http_status(:no_content)
       end
@@ -166,7 +166,7 @@ describe "Tags API" do
 
         expect do
           post(api_category_tags_url(nil, category), :params => gen_request(:delete, [{:id => tag1.id}, {:id => tag2.id}]))
-        end.to change(Tag, :count).by(-2)
+        end.to change(Classification, :count).by(-2)
         expect { classification1.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { classification2.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect_result_to_match_hash(
@@ -190,7 +190,7 @@ describe "Tags API" do
 
         expect do
           post(api_category_tags_url(nil, category), :params => body)
-        end.to change(Tag, :count).by(-2)
+        end.to change(Classification, :count).by(-2)
         expect { classification1.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { classification2.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect_result_to_match_hash(
@@ -210,36 +210,37 @@ describe "Tags API" do
 
         expect do
           post api_tags_url, :params => { :name => "test_tag", :description => "Test Tag" }
-        end.not_to change(Tag, :count)
+        end.not_to change(Classification, :count)
 
         expect(response).to have_http_status(:forbidden)
       end
 
       it "cannot update a tag" do
         api_basic_authorize
-        tag = Tag.create(:name => "Old name")
+        classification = FactoryBot.create(:classification)
+        tag = classification.tag
 
         expect do
-          post api_tag_url(nil, tag), :params => gen_request(:edit, :name => "New name")
-        end.not_to change { tag.reload.name }
+          post api_tag_url(nil, tag), :params => gen_request(:edit, :name => "new_name")
+        end.not_to change { classification.reload.name }
 
         expect(response).to have_http_status(:forbidden)
       end
 
       it "cannot delete a tag through POST" do
         api_basic_authorize
-        tag = Tag.create(:name => "Test tag")
+        tag = FactoryBot.create(:classification).tag
 
-        expect { post api_tag_url(nil, tag), :params => { :action => :delete } }.not_to change(Tag, :count)
+        expect { post api_tag_url(nil, tag), :params => { :action => :delete } }.not_to change(Classification, :count)
 
         expect(response).to have_http_status(:forbidden)
       end
 
       it "cannot delete a tag through DELETE" do
         api_basic_authorize
-        tag = Tag.create(:name => "Test tag")
+        tag = FactoryBot.create(:classification).tag
 
-        expect { delete api_tag_url(nil, tag) }.not_to change(Tag, :count)
+        expect { delete api_tag_url(nil, tag) }.not_to change(Classification, :count)
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -258,14 +259,14 @@ describe "Tags API" do
 
       get api_tags_url, :params => { :expand => "resources" }
 
-      expect_query_result(:tags, Tag.count, Tag.count)
+      expect_query_result(:tags, Classification.count, Classification.count)
       expect_result_resources_to_include_keys("resources", %w(id name))
     end
 
     it "query tag details with multiple virtual attributes" do
       api_basic_authorize action_identifier(:tags, :read, :resource_actions, :get)
 
-      tag = Tag.last
+      tag = Classification.is_entry.last.tag
       attr_list = "category.name,category.description,classification.name,classification.description"
       get api_tag_url(nil, tag), :params => { :attributes => attr_list }
 
@@ -281,7 +282,7 @@ describe "Tags API" do
     it "query tag details with categorization" do
       api_basic_authorize action_identifier(:tags, :read, :resource_actions, :get)
 
-      tag = Tag.last
+      tag = Classification.is_entry.last.tag
       get api_tag_url(nil, tag), :params => { :attributes => "categorization" }
 
       expect_single_resource_query(
@@ -302,7 +303,7 @@ describe "Tags API" do
 
       get api_tags_url, :params => { :expand => "resources", :attributes => "categorization" }
 
-      expect_query_result(:tags, Tag.count, Tag.count)
+      expect_query_result(:tags, Classification.count, Classification.count)
       expect_result_resources_to_include_keys("resources", %w(id name categorization))
     end
   end
