@@ -2854,11 +2854,45 @@
         :identifier: rbac_role_delete
   :schedules:
     :description: Schedules
-    :identifier: miq_report_reports
+    :identifier:
+    - schedule
+    - miq_report_reports
     :options:
+    - :collection
     - :subcollection
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: MiqSchedule
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: schedule_show_list
+      :post:
+      - :name: create
+        :identifier: schedule_add
+      - :name: edit
+        :identifier: schedule_edit
+      - :name: delete
+        :identifier: schedule_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: schedule_show
+      :create:
+      - :name: create
+        :identifier: schedule_add
+      :put:
+      - :name: edit
+        :identifier: schedule_edit
+      :delete:
+      - :name: delete
+        :identifier: schedule_delete
+      :post:
+      - :name: create
+        :identifier: schedule_add
+      - :name: edit
+        :identifier: schedule_edit
+      - :name: delete
+        :identifier: schedule_delete
     :subcollection_actions:
       :get:
       - :name: read
