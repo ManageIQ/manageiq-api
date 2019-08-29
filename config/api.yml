@@ -3890,6 +3890,30 @@
         :identifier:
         - vm_snapshot_delete
         - sui_vm_snapshot_delete
+  :widgets:
+    :description: Miq Widgets
+    :identifier: miq_report_widget_admin
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: MiqWidget
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_widget_show_list
+      :post:
+      - :name: query
+        :identifier: miq_widget_show_list
+      - :name: generate_content
+        :identifier: widget_generate_content
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: miq_widget_show
+      :post:
+      - :name: generate_content
+        :identifier: widget_generate_content
   :zones:
     :description: Zones
     :identifier: zone
