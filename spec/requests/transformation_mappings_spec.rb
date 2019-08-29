@@ -4,28 +4,25 @@ describe "Transformation Mappings" do
   let(:source_cluster) { FactoryBot.create(:ems_cluster, :ext_management_system => source_ems) }
   let(:destination_cluster) { FactoryBot.create(:ems_cluster, :ext_management_system => dest_ems) }
 
-  let(:source_storage) { FactoryBot.create(:storage) }
-  let(:destination_storage) { FactoryBot.create(:storage) }
+  let(:source_redhat_host) { FactoryBot.create(:host_redhat, :ems_cluster => source_cluster) }
+  let(:source_storage) { FactoryBot.create(:storage, :hosts => [source_redhat_host]) }
+
+  let(:destination_vmware_host) { FactoryBot.create(:host_vmware, :ems_cluster => destination_cluster) }
+  let(:destination_storage) { FactoryBot.create(:storage, :hosts => [destination_vmware_host]) }
 
   let(:source_lan) { FactoryBot.create(:lan) }
   let(:destination_lan) { FactoryBot.create(:lan) }
 
-  let(:transformation_mapping) do
-    FactoryBot.create(
-      :transformation_mapping,
-      :transformation_mapping_items => [
-        TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster),
-        TransformationMappingItem.new(:source => source_storage, :destination => destination_storage),
-        TransformationMappingItem.new(:source => source_lan, :destination => destination_lan)
-      ]
-    )
-  end
+  let(:transformation_mapping) { FactoryBot.create(:transformation_mapping) }
+  let!(:transformation_mapping_item_cluster) { FactoryBot.create(:transformation_mapping_item, :source => source_cluster, :destination => destination_cluster, :transformation_mapping => transformation_mapping) }
+  let!(:transformation_mapping_item_storage) { FactoryBot.create(:transformation_mapping_item, :source => source_storage, :destination => destination_storage, :transformation_mapping => transformation_mapping) }
+  let!(:transformation_mapping_item_item)    { FactoryBot.create(:transformation_mapping_item, :source => source_lan, :destination => destination_lan, :transformation_mapping => transformation_mapping) }
 
   let(:source_cluster2) { FactoryBot.create(:ems_cluster, :ext_management_system => source_ems) }
   let(:destination_cluster2) { FactoryBot.create(:ems_cluster, :ext_management_system => dest_ems) }
 
-  let(:source_storage2) { FactoryBot.create(:storage) }
-  let(:destination_storage2) { FactoryBot.create(:storage) }
+  let(:source_storage2) { FactoryBot.create(:storage, :hosts => [source_redhat_host]) }
+  let(:destination_storage2) { FactoryBot.create(:storage, :hosts => [destination_vmware_host]) }
 
   let(:source_lan2) { FactoryBot.create(:lan) }
   let(:destination_lan2) { FactoryBot.create(:lan) }
@@ -67,7 +64,6 @@ describe "Transformation Mappings" do
     context "without an appropriate role" do
       it "is forbidden" do
         api_basic_authorize
-
         get(api_transformation_mapping_url(nil, transformation_mapping))
 
         expect(response).to have_http_status(:forbidden)
@@ -241,9 +237,9 @@ describe "Transformation Mappings" do
       context "with an appropriate role" do
         it "can validate vms with csv data specified" do
           api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
-          transformation_mapping =
-            FactoryBot.create(:transformation_mapping,
-                               :transformation_mapping_items => [TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster)])
+          transformation_mapping = FactoryBot.create(:transformation_mapping)
+          FactoryBot.create(:transformation_mapping_item, :source => source_cluster, :destination => destination_cluster, :transformation_mapping => transformation_mapping)
+
           vm = FactoryBot.create(:vm_openstack, :name => "foo", :ems_cluster => source_cluster, :ext_management_system => source_ems)
 
           request = {
@@ -279,13 +275,14 @@ describe "Transformation Mappings" do
             'action'                       => "edit",
             "name"                         => "updated transformation mapping",
             "transformation_mapping_items" => [
-              { "source" => api_cluster_url(nil, source_cluster), "destination" => api_cluster_url(nil, destination_cluster2) },
+              { "source" => api_cluster_url(nil, source_cluster), "destination" => api_cluster_url(nil, destination_cluster) },
               { "source" => api_cluster_url(nil, source_cluster2), "destination" => api_cluster_url(nil, destination_cluster2) },
               { "source" => api_data_store_url(nil, source_storage), "destination" => api_data_store_url(nil, destination_storage) },
-              { "source" => api_data_store_url(nil, source_storage2), "destination" => api_data_store_url(nil, destination_storage) },
+              { "source" => api_data_store_url(nil, source_storage2), "destination" => api_data_store_url(nil, destination_storage2) },
               { "source" => api_lan_url(nil, source_lan2), "destination" => api_lan_url(nil, destination_lan) }
             ]
           }
+
           post(api_transformation_mapping_url(nil, transformation_mapping), :params => request)
 
           updated_mapping_source = transformation_mapping.reload.transformation_mapping_items.pluck(:source_id)
@@ -305,9 +302,9 @@ describe "Transformation Mappings" do
         context "can validate vms with csv data and service_template_id are specified" do
           it "vm belongs to the service_template record" do
             api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
-            transformation_mapping =
-              FactoryBot.create(:transformation_mapping,
-                                 :transformation_mapping_items => [TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster)])
+
+            transformation_mapping = FactoryBot.create(:transformation_mapping)
+            FactoryBot.create(:transformation_mapping_item, :source => source_cluster, :destination => destination_cluster, :transformation_mapping => transformation_mapping)
             vm = FactoryBot.create(:vm_vmware, :ems_cluster => source_cluster, :ext_management_system => source_ems)
             service_template = FactoryBot.create(:service_template_transformation_plan)
 
@@ -338,9 +335,8 @@ describe "Transformation Mappings" do
 
           it "vm does not belong to the service_template record" do
             api_basic_authorize(action_identifier(:transformation_mappings, :validate_vms, :resource_actions, :post))
-            transformation_mapping =
-              FactoryBot.create(:transformation_mapping,
-                                 :transformation_mapping_items => [TransformationMappingItem.new(:source => source_cluster, :destination => destination_cluster)])
+            transformation_mapping = FactoryBot.create(:transformation_mapping)
+            FactoryBot.create(:transformation_mapping_item, :source => source_cluster, :destination => destination_cluster, :transformation_mapping => transformation_mapping)
             vm = FactoryBot.create(:vm_vmware, :ems_cluster => source_cluster, :ext_management_system => source_ems)
             service_template = FactoryBot.create(:service_template_transformation_plan)
             service_template2 = FactoryBot.create(:service_template_transformation_plan)
