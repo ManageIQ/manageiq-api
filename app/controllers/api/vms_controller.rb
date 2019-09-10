@@ -59,6 +59,14 @@ module Api
     end
     central_admin :suspend_resource, :suspend
 
+    def parent_choices_resource(ids)
+      parent_choices = {}
+      parent_choices[Digest::MD5.hexdigest(ids.inspect)] ||= begin
+        ems_ids = VmOrTemplate.where(:id => ids).distinct.pluck(:ems_id).compact
+        Rbac.filtered(VmOrTemplate.where(:ems_id => ems_ids).where.not(:id => ids).order(:name))
+      end
+    end
+
     def pause_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for pausing a #{type} resource" unless id
 

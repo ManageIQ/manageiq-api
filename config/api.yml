@@ -3992,6 +3992,9 @@
         :identifier:
         - vm_show
         - sui_vm_details_view
+      - :name: parent_choices
+        :identifier:
+        - vm_parent_choices
       :post:
       - :name: edit
         :identifier: vm_edit
