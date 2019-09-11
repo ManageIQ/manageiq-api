@@ -465,7 +465,8 @@ describe "Service Templates API" do
   end
 
   describe "Service Templates order" do
-    let(:service_template) { FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog, :orderable) }
+    let(:service_template_catalog) { FactoryBot.create(:service_template_catalog) }
+    let(:service_template) { FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog, :service_template_catalog => service_template_catalog, :display => true) }
     let(:allow_api_service_ordering) { true }
 
     before do
@@ -557,7 +558,7 @@ describe "Service Templates API" do
       end
 
       it "can order multiple service templates" do
-        service_template2 = FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog, :orderable)
+        service_template2 = FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog, :service_template_catalog => service_template_catalog, :display => true)
         api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
 
         post(api_service_templates_url, :params => { :action => "order", :resources =>
@@ -606,7 +607,7 @@ describe "Service Templates API" do
         expected = {
           "error" => a_hash_including(
             "kind"    => "bad_request",
-            "message" => /cannot be ordered/
+            "message" => /cannot be ordered - Service template is not configured to be displayed/
           )
         }
         expect(response).to have_http_status(:bad_request)
@@ -640,7 +641,7 @@ describe "Service Templates API" do
           expected = {
             "error" => a_hash_including(
               "kind"    => "bad_request",
-              "message" => /cannot be ordered/
+              "message" => "Service ordering via API is not allowed"
             )
           }
           expect(response).to have_http_status(:bad_request)
