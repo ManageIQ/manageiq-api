@@ -193,7 +193,7 @@ module Api
 
     def edit_provider(provider, data)
       update_data = fetch_provider_data(provider.class, data)
-      provider.update_attributes(update_data) if update_data.present?
+      provider.update(update_data) if update_data.present?
       update_provider_authentication(provider, data)
       provider
     rescue => err

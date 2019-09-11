@@ -17,7 +17,7 @@ module Api
       begin
         add_policies_content(data, policy) if data["policy_contents"]
         policy.conditions = Condition.where(:id => data.delete("conditions_ids")) if data["conditions_ids"]
-        policy.update_attributes(data)
+        policy.update(data)
       rescue => err
         raise BadRequestError, "Could not edit the policy - #{err}"
       end

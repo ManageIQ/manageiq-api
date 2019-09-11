@@ -41,7 +41,7 @@ module Api
 
       get_settings_and_features(data)
 
-      role.update_attributes!(data.except(*ID_ATTRS))
+      role.update!(data.except(*ID_ATTRS))
       api_log_info("Modified role #{role.name}")
       role
     end

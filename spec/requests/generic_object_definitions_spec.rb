@@ -279,7 +279,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
 
     it 'can remove a picture via edit' do
       api_basic_authorize collection_action_identifier(:generic_object_definitions, :edit)
-      object_def.update_attributes!(:picture => picture)
+      object_def.update!(:picture => picture)
 
       request = {
         'action'    => 'edit',

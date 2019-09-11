@@ -1,6 +1,6 @@
 RSpec.describe "Instances API" do
   def update_raw_power_state(state, *instances)
-    instances.each { |instance| instance.update_attributes!(:raw_power_state => state) }
+    instances.each { |instance| instance.update!(:raw_power_state => state) }
   end
 
   let(:zone) { FactoryBot.create(:zone, :name => "api_zone") }

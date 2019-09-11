@@ -61,7 +61,7 @@ module Api
 
       def update_custom_attributes(ca, data)
         data = format_custom_attributes(data)
-        ca.update_attributes(data.slice("name", "value", "section"))
+        ca.update(data.slice("name", "value", "section"))
       end
 
       def update_custom_field(object, ca)

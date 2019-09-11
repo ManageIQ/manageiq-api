@@ -404,7 +404,7 @@ describe "Service Dialogs API" do
     end
 
     it "query all service dialogs of a Service" do
-      service.update_attributes!(:service_template_id => template.id)
+      service.update!(:service_template_id => template.id)
 
       get(api_service_service_dialogs_url(nil, service), :params => { :expand => "resources" })
 

@@ -18,7 +18,7 @@ module Api
       go_def = fetch_generic_object_definition(type, id, data)
       updated_data = data['resource'] || data
       updated_data['picture'] = add_picture_resource(updated_data['picture']) if updated_data.key?('picture')
-      go_def.update_attributes!(updated_data.deep_symbolize_keys) if data.present?
+      go_def.update!(updated_data.deep_symbolize_keys) if data.present?
       go_def
     rescue => err
       raise BadRequestError, "Failed to update generic object definition - #{err}"

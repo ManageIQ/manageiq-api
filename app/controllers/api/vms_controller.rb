@@ -102,7 +102,7 @@ module Api
       attrs = validate_edit_data(data)
       parent, children = build_parent_children(data)
       resource_search(id, type, collection_class(type)).tap do |vm|
-        vm.update_attributes!(attrs)
+        vm.update!(attrs)
         vm.replace_children(children)
         vm.set_parent(parent)
       end

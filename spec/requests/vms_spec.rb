@@ -25,7 +25,7 @@ describe "Vms API" do
   let(:invalid_vm_url) { api_vm_url(nil, ApplicationRecord.id_in_region(999_999, ApplicationRecord.my_region_number)) }
 
   def update_raw_power_state(state, *vms)
-    vms.each { |vm| vm.update_attributes!(:raw_power_state => state) }
+    vms.each { |vm| vm.update!(:raw_power_state => state) }
   end
 
   context 'href_slug' do

@@ -50,7 +50,7 @@ module Api
       def edit_resource(type, id, data)
         klass = collection_class(type)
         resource = resource_search(id, type, klass)
-        resource.update_attributes!(data.except(*ID_ATTRS))
+        resource.update!(data.except(*ID_ATTRS))
         resource
       end
 

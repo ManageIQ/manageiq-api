@@ -116,7 +116,7 @@ RSpec.describe "reports API" do
       let(:params) { { :hash_attribute => "result_set" } }
 
       before do
-        report_result.update_attributes(:report => report)
+        report_result.update(:report => report)
         allow_any_instance_of(MiqReportResult).to receive(:result_set).and_return(result_set)
 
         api_basic_authorize action_identifier(:results, :read, :resource_actions, :get)
