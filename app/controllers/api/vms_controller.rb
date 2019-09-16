@@ -62,8 +62,8 @@ module Api
     def parent_choices_resource(ids)
       parent_choices = {}
       parent_choices[Digest::MD5.hexdigest(ids.inspect)] ||= begin
-        ems_ids = VmOrTemplate.where(:id => ids).distinct.pluck(:ems_id).compact
-        Rbac.filtered(VmOrTemplate.where(:ems_id => ems_ids).where.not(:id => ids).order(:name))
+        ems_ids = VmOrTemplate.where(:id => ids).select(:ems_id).distinct
+        Rbac.filtered(VmOrTemplate.where(:ems_id => ems_ids.where.not(:id => ids)))
       end
     end
 
