@@ -351,7 +351,7 @@ describe "Querying" do
 
     it "supports NULL/nil equality test via =" do
       vm1, vm2 = create_vms_by_name(%w(aa bb))
-      vm2.update_attributes!(:retired => true)
+      vm2.update!(:retired => true)
 
       get api_vms_url, :params => { :expand => "resources", :filter => ["retired=NULL"] }
 
@@ -361,7 +361,7 @@ describe "Querying" do
 
     it "supports NULL/nil inequality test via !=" do
       _vm1, vm2 = create_vms_by_name(%w(aa bb))
-      vm2.update_attributes!(:retired => true)
+      vm2.update!(:retired => true)
 
       get api_vms_url, :params => { :expand => "resources", :filter => ["retired!=nil"] }
 

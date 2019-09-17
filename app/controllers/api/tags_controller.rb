@@ -20,7 +20,7 @@ module Api
     def edit_resource(_type, id, data)
       entry = Classification.find_by(:tag_id => id)
       raise BadRequestError, "Failed to find tag/#{id} resource" unless entry
-      entry.update_attributes(data.except(*ID_ATTRS))
+      entry.update(data.except(*ID_ATTRS))
       entry.tag
     end
 

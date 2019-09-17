@@ -59,7 +59,7 @@ RSpec.describe "physical_servers API" do
 
         firmware = FactoryBot.create(:firmware)
         hardware = FactoryBot.create(:hardware, :firmwares => [firmware], :guest_devices => [gd1, gd2])
-        network.update_attributes!(:hardware_id => hardware.id.to_s)
+        network.update!(:hardware_id => hardware.id.to_s)
 
         comp_system = FactoryBot.create(:computer_system, :hardware => hardware)
         ps = FactoryBot.create(:physical_server, :computer_system => comp_system, :asset_detail => asset_detail, :host => host)

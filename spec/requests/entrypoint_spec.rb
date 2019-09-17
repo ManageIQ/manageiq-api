@@ -21,7 +21,7 @@ RSpec.describe "API entrypoint" do
     api_basic_authorize
 
     test_settings = {:cartoons => {:saturday => {:tom_jerry => 'n', :bugs_bunny => 'y'}}}
-    @user.update_attributes!(:settings => test_settings)
+    @user.update!(:settings => test_settings)
 
     get api_entrypoint_url
 

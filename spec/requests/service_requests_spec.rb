@@ -53,7 +53,7 @@ describe "Service Requests API" do
     end
 
     it "can return the request's user.email" do
-      @user.update_attributes!(:email => "admin@api.net")
+      @user.update!(:email => "admin@api.net")
       get api_service_request_url(nil, service_request), :params => { :attributes => "user.email" }
 
       expect_result_to_have_user_email(@user.email)
@@ -73,7 +73,7 @@ describe "Service Requests API" do
     end
 
     it "can return the request's user.email" do
-      @user.update_attributes!(:email => "admin@api.net")
+      @user.update!(:email => "admin@api.net")
       get api_service_url(nil, service), :params => { :attributes => "user.email" }
 
       expect_result_to_have_user_email(@user.email)

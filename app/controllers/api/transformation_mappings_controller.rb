@@ -14,7 +14,7 @@ module Api
       raise "Must specify transformation_mapping_items" unless data["transformation_mapping_items"]
       transformation_mapping = resource_search(id, type, collection_class(type))
       updated_data = data.except("transformation_mapping_items")
-      transformation_mapping.update_attributes!(updated_data) if updated_data.present?
+      transformation_mapping.update!(updated_data) if updated_data.present?
       transformation_mapping.transformation_mapping_items = create_mapping_items(data["transformation_mapping_items"], transformation_mapping)
       transformation_mapping.save!
       transformation_mapping

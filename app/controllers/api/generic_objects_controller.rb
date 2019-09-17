@@ -17,7 +17,7 @@ module Api
 
     def edit_resource(type, id, data)
       resource_search(id, type, collection_class(type)).tap do |generic_object|
-        generic_object.update_attributes!(data.except(*ADDITIONAL_ATTRS))
+        generic_object.update!(data.except(*ADDITIONAL_ATTRS))
         add_associations(generic_object, data, generic_object.generic_object_definition) if data.key?('associations')
         generic_object.save!
       end
