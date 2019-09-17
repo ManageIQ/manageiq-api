@@ -518,7 +518,7 @@ describe "Vms API" do
       expect_single_action_result(:success => true, :message => 'shelving', :href => api_vm_url(nil, vm_openstack))
     end
 
-    it "shelves a shelveed vm" do
+    it "shelves a shelved vm" do
       api_basic_authorize action_identifier(:vms, :shelve)
       update_raw_power_state("SHELVED", vm_openstack)
 
