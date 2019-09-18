@@ -4,6 +4,7 @@ module Api
       raise "Must specify transformation_mapping_items" unless data["transformation_mapping_items"]
       TransformationMapping.create(data.except("transformation_mapping_items")).tap do |mapping|
         mapping.transformation_mapping_items = create_mapping_items(data["transformation_mapping_items"], mapping)
+        mapping.save!
       end
     rescue StandardError => err
       raise BadRequestError, "Could not create Transformation Mapping - #{err}"
