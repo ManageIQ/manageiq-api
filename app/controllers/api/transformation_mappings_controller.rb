@@ -2,7 +2,7 @@ module Api
   class TransformationMappingsController < BaseController
     def create_resource(_type, _id, data = {})
       raise "Must specify transformation_mapping_items" unless data["transformation_mapping_items"]
-      TransformationMapping.new(data.except("transformation_mapping_items")).tap do |mapping|
+      TransformationMapping.create(data.except("transformation_mapping_items")).tap do |mapping|
         mapping.transformation_mapping_items = create_mapping_items(data["transformation_mapping_items"], mapping)
         mapping.save!
       end
