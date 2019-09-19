@@ -67,7 +67,7 @@ module Api
     def fetch_tag_classification_resource(data)
       tag_spec = tag_specified(data["id"], data)
       raise BadRequestError, "Must specify tag id, href, or name of classification" if tag_spec.empty?
-      classification = Classification.find_by_name(tag_spec[:category])
+      classification = Classification.lookup_by_name(tag_spec[:category])
       classification.find_entry_by_name(tag_spec[:name])
     end
     # rubocop:enable Rails/DynamicFindBy
