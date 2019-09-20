@@ -57,10 +57,10 @@ RSpec.describe "categories API" do
   end
 
   it "can list all the tags under a category" do
-    classification = FactoryBot.create(:classification_tag)
+    classification = FactoryBot.create(:classification_tag, :description => 'a tag')
     category = FactoryBot.create(:category, :children => [classification])
     tag = classification.tag
-    FactoryBot.create(:classification, :name => "some_other_tag")
+    FactoryBot.create(:classification, :name => "some_other_tag", :description => 'a different tag')
     api_basic_authorize
 
     get(api_category_tags_url(nil, category))
