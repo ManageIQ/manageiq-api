@@ -2468,20 +2468,16 @@
     - :pxe_images
     - :pxe_menus
     :collection_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_server_view
       :post:
       - :name: create
         :identifier: pxe_server_create
       - :name: edit
         :identifier: pxe_server_edit
-      :patch:
-      - :name: edit
-        :identifier: pxe_server_edit
-      :delete:
       - :name: delete
         :identifier: pxe_server_delete
-      :get:
-      - :name: read
-        :identifier: pxe_server_view
     :resource_actions:
       :get:
       - :name: read

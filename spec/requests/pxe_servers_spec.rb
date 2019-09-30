@@ -192,11 +192,51 @@ RSpec.describe 'PxeServers API' do
     end
   end
 
+  describe 'POST /api/pxe_servers with delete action' do
+    let!(:pxe_server1) { FactoryBot.create(:pxe_server) }
+    let!(:pxe_server2) { FactoryBot.create(:pxe_server) }
+
+    it "can bulk delete pxe_servers" do
+      api_basic_authorize(collection_action_identifier(:pxe_servers, :delete, :post))
+
+      post(
+        api_pxe_servers_url,
+        :params => {
+          :action    => "delete",
+          :resources => [
+            {:href => api_pxe_server_url(nil, pxe_server1)},
+            {:href => api_pxe_server_url(nil, pxe_server2)}
+          ]
+        }
+      )
+
+      expected = {
+        "results" => a_collection_containing_exactly(
+          a_hash_including(
+            "message" => "pxe_servers id: #{pxe_server1.id} deleting",
+            "success" => true,
+            "href"    => api_pxe_server_url(nil, pxe_server1)
+          ),
+          a_hash_including(
+            "message" => "pxe_servers id: #{pxe_server2.id} deleting",
+            "success" => true,
+            "href"    => api_pxe_server_url(nil, pxe_server2)
+          )
+        )
+      }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+      expect(PxeServer.exists?(pxe_server1.id)).to be_falsey
+      expect(PxeServer.exists?(pxe_server2.id)).to be_falsey
+    end
+  end
+
   describe 'update /api/pxe_servers/:id' do
     let(:url) { "/api/pxe_servers/#{pxe_server.id}" }
 
     it 'update pxe server' do
-      api_basic_authorize collection_action_identifier(:pxe_servers, :edit, :patch)
+      api_basic_authorize resource_action_identifier(:pxe_servers, :edit, :patch)
       patch(url, :params => {:name => 'updated name', :uri => 'updated://url', :pxe_menus => [{:file_name => 'updated menu'}]})
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body['name']).to eq('updated name')
@@ -215,7 +255,7 @@ RSpec.describe 'PxeServers API' do
     let(:url) { "/api/pxe_servers/#{pxe_server.id}" }
 
     it 'delete pxe server' do
-      api_basic_authorize collection_action_identifier(:pxe_servers, :delete, :delete)
+      api_basic_authorize resource_action_identifier(:pxe_servers, :delete, :delete)
       delete(url)
       expect(response).to have_http_status(:no_content)
       expect(PxeServer.exists?(pxe_server.id)).to be_falsey
