@@ -64,17 +64,21 @@ describe "Widgets API" do
 
       it "generate_content of a single Widget" do
         miq_widget = FactoryBot.create(:miq_widget)
+
         api_basic_authorize('widget_generate_content')
 
+        expect(MiqTask.count).to eq(0)
         post(api_widget_url(nil, miq_widget), :params => gen_request(:generate_content))
 
         expect_single_action_result(:success => true, :message => /#{miq_widget.id}.* content generation/i, :href => api_widget_url(nil, miq_widget))
+        expect(MiqTask.first.message).to match(/content generation\]\ being run for user/)
       end
 
       it "generate_content of multiple Widgets" do
         first_miq_widget = FactoryBot.create(:miq_widget)
         second_miq_widget = FactoryBot.create(:miq_widget)
         api_basic_authorize('widget_generate_content')
+        expect(MiqTask.count).to eq(0)
 
         post(api_widgets_url, :params => gen_request(:generate_content, [{"href" => api_widget_url(nil, first_miq_widget)}, {"href" => api_widget_url(nil, second_miq_widget)}]))
 
@@ -94,6 +98,7 @@ describe "Widgets API" do
         }
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)
+        expect(MiqTask.count).to eq(2)
       end
     end
   end
