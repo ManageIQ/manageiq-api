@@ -84,24 +84,9 @@ module Api
     end
 
     def options
-      providers_options = ManageIQ::Providers::BaseManager.leaf_subclasses.inject({}) do |po, ems|
-        po.merge(ems.ems_type => ems.options_description)
-      end
-
-      supported_providers = ExtManagementSystem.supported_types_for_create.map do |klass|
-        if klass.supports_regions?
-          regions = klass.parent::Regions.all.sort_by { |r| r[:description] }.map { |r| r.slice(:name, :description) }
-        end
-
-        {
-          :title   => klass.description,
-          :type    => klass.to_s,
-          :kind    => klass.to_s.demodulize.sub(/Manager$/, '').underscore,
-          :regions => regions
-        }.compact
-      end
-
-      render_options(:providers, "provider_settings" => providers_options, "supported_providers" => supported_providers)
+      options = providers_options
+      options['provider_form_schema'] = provider_options(params[:type]) if params[:type]
+      render_options(:providers, options)
     end
 
     def pause_resource(type, id, _data)
@@ -130,6 +115,36 @@ module Api
     end
 
     private
+
+    def provider_options(type)
+      klass = type.safe_constantize
+
+      raise BadRequestError, "Invalid provider - #{type}" unless klass.try(:<, ExtManagementSystem)
+      raise BadRequestError, "No DDF specified for - #{type}" unless klass.respond_to?(:params_for_create)
+
+      klass.params_for_create
+    end
+
+    def providers_options
+      providers_options = ManageIQ::Providers::BaseManager.leaf_subclasses.inject({}) do |po, ems|
+        po.merge(ems.ems_type => ems.options_description)
+      end
+
+      supported_providers = ExtManagementSystem.supported_types_for_create.map do |klass|
+        if klass.supports_regions?
+          regions = klass.parent::Regions.all.sort_by { |r| r[:description] }.map { |r| r.slice(:name, :description) }
+        end
+
+        {
+          :title   => klass.description,
+          :type    => klass.to_s,
+          :kind    => klass.to_s.demodulize.sub(/Manager$/, '').underscore,
+          :regions => regions
+        }.compact
+      end
+
+      { "provider_settings" => providers_options, "supported_providers" => supported_providers }
+    end
 
     # Process password change request for a single resource
     #
