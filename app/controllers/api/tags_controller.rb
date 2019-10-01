@@ -37,7 +37,7 @@ module Api
 
     def fetch_category(data)
       category_id = parse_id(data, :categories)
-      category_id ||= collection_class(:categories).find_by_name(data["name"]).try(:id) if data["name"]
+      category_id ||= collection_class(:categories).lookup_by_name(data["name"]).try(:id) if data["name"]
       unless category_id
         raise BadRequestError, "Category id, href or name needs to be specified for creating a new tag resource"
       end
