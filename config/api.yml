@@ -2297,6 +2297,8 @@
         :identifier: ems_infra_edit
       - :name: resume
         :identifier: ems_infra_edit
+      - :name: verify_credentials
+        :identifier: ems_infra_new
     :resource_actions:
       :get:
       - :name: read

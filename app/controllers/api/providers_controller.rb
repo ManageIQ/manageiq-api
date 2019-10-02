@@ -114,6 +114,15 @@ module Api
       end
     end
 
+    def verify_credentials_resource(_type, _id, data = {})
+      klass = fetch_provider_klass(collection_class(:providers), data)
+      zone_name = fetch_zone(data).name
+      task_id = klass.verify_credentials_task(current_user, zone_name, data)
+      action_result(true, 'Credentials sent for verification', :task_id => task_id)
+    rescue => err
+      action_result(false, err.to_s)
+    end
+
     private
 
     def provider_options(type)
