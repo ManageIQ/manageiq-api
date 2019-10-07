@@ -30,6 +30,10 @@ module Api
     def create_resource(type, id, data)
       raise BadRequestError, "resource_id must be specified" unless data['resource_id']
       raise BadRequestError, "resource_type must be specified" unless data['resource_type']
+      raise BadRequestError, "auth_user must be specified" unless data['auth_user']
+      raise BadRequestError, "conversion_host_ssh_private_key must be specified" unless data['conversion_host_ssh_private_key']
+      raise BadRequestError, "vmware_vddk_package_url or vmware_ssh_private_key must be specified" unless data['vmware_vddk_package_url'] || data['vmware_ssh_private_key']
+      raise BadRequestError, "vmware_vddk_package_url and vmware_ssh_private_key cannot both be specified" if data['vmware_vddk_package_url'] && data['vmware_ssh_private_key']
 
       # The scary constantize call below is mitigated by the fact that it won't get
       # past the following checks we make before passing along the params.
