@@ -61,32 +61,54 @@ describe "ConversionHosts API" do
 
     let(:sample_conversion_host_from_vm) do
       {
-        :name          => "test_conversion_host_from_vm",
-        :resource_type => vm.type,
-        :resource_id   => vm.id,
-        :version       => "1.0"
+        :name                            => "test_conversion_host_from_vm",
+        :resource_type                   => vm.type,
+        :resource_id                     => vm.id,
+        :version                         => "1.0",
+        :auth_user                       => "root",
+        :conversion_host_ssh_private_key => "private_ssh_key_for_conversion_host",
+        :vmware_vddk_package_url         => "http://vmware_vddk_package_dummy_url.com"
       }
     end
 
     let(:sample_conversion_host_from_host) do
       {
-        :name          => "test_conversion_host_from_host",
-        :resource_type => host.type,
-        :resource_id   => host.id,
-        :version       => "1.0"
+        :name                            => "test_conversion_host_from_host",
+        :resource_type                   => host.type,
+        :resource_id                     => host.id,
+        :version                         => "1.0",
+        :auth_user                       => "root",
+        :conversion_host_ssh_private_key => "private_ssh_key_for_conversion_host",
+        :vmware_vddk_package_url         => "http://vmware_vddk_package_dummy_url.com"
       }
     end
 
     let(:sample_conversion_host_from_invalid_vm) do
       {
-        :name          => "test_invalid_conversion_host",
-        :resource_type => azure_vm.type,
-        :resource_id   => azure_vm.id,
-        :version       => "1.0"
+        :name                            => "test_invalid_conversion_host",
+        :resource_type                   => azure_vm.type,
+        :resource_id                     => azure_vm.id,
+        :version                         => "1.0",
+        :auth_user                       => "root",
+        :conversion_host_ssh_private_key => "private_ssh_key_for_conversion_host",
+        :vmware_vddk_package_url         => "http://vmware_vddk_package_dummy_url.com",
       }
     end
 
-    let(:expected_attributes) { %w(id name resource_type resource_id version) }
+    let(:sample_conversion_host_with_vddk_and_ssh) do
+      {
+        :name                            => "test_invalid_conversion_host",
+        :resource_type                   => azure_vm.type,
+        :resource_id                     => azure_vm.id,
+        :version                         => "1.0",
+        :auth_user                       => "root",
+        :conversion_host_ssh_private_key => "private_ssh_key_for_conversion_host",
+        :vmware_vddk_package_url         => "http://vmware_vddk_package_dummy_url.com",
+        :vmware_ssh_private_key          => "private_ssh_key_for_vmware_source"
+      }
+    end
+
+    let(:expected_attributes) { %w[id name resource_type resource_id version] }
 
     it "raises an error if an invalid resource type is provided" do
       api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
@@ -98,6 +120,56 @@ describe "ConversionHosts API" do
       results = response.parsed_body
       expect(results['error']['kind']).to eql('bad_request')
       expect(results['error']['message']).to eql('invalid resource_type bogus')
+    end
+
+    it "raises an error if auth_user not provided" do
+      api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
+      sample_conversion_host_from_vm['auth_user'] = nil
+      post(api_conversion_hosts_url, :params => sample_conversion_host_from_vm)
+
+      expect(response).to have_http_status(400)
+
+      results = response.parsed_body
+      expect(results['error']['kind']).to eql('bad_request')
+      expect(results['error']['message']).to eql('auth_user must be specified')
+    end
+
+    it "raises an error if conversion_host_ssh_private_key not provided" do
+      api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
+      sample_conversion_host_from_vm['conversion_host_ssh_private_key'] = nil
+      post(api_conversion_hosts_url, :params => sample_conversion_host_from_vm)
+
+      expect(response).to have_http_status(400)
+
+      results = response.parsed_body
+      expect(results['error']['kind']).to eql('bad_request')
+      expect(results['error']['message']).to eql('conversion_host_ssh_private_key must be specified')
+    end
+
+    it "raises an error if vmware_vddk_package_url or vmware_ssh_private_key not provided" do
+      api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
+      sample_conversion_host_from_vm['vmware_vddk_package_url'] = nil
+      sample_conversion_host_from_vm['vmware_ssh_private_key'] = nil
+      post(api_conversion_hosts_url, :params => sample_conversion_host_from_vm)
+
+      expect(response).to have_http_status(400)
+
+      results = response.parsed_body
+      expect(results['error']['kind']).to eql('bad_request')
+      expect(results['error']['message']).to eql('vmware_vddk_package_url or vmware_ssh_private_key must be specified')
+    end
+
+    it "raises an error if vmware_vddk_package_url and vmware_ssh_private_key not provided" do
+      api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
+      sample_conversion_host_from_vm['vmware_vddk_package_url'] = nil
+      sample_conversion_host_from_vm['vmware_ssh_private_key'] = nil
+      post(api_conversion_hosts_url, :params => sample_conversion_host_with_vddk_and_ssh)
+
+      expect(response).to have_http_status(400)
+
+      results = response.parsed_body
+      expect(results['error']['kind']).to eql('bad_request')
+      expect(results['error']['message']).to eql('vmware_vddk_package_url and vmware_ssh_private_key cannot both be specified')
     end
 
     it "raises an error if an unsupported resource type is provided" do
@@ -145,7 +217,7 @@ describe "ConversionHosts API" do
 
       expect(results).to contain_exactly(
         a_hash_including("message" => "Enabling resource id:#{vm.id} type:#{vm.class}", "task_id" => a_kind_of(String)),
-        a_hash_including("message" => "Enabling resource id:#{host.id} type:#{host.class}", "task_id" => a_kind_of(String)),
+        a_hash_including("message" => "Enabling resource id:#{host.id} type:#{host.class}", "task_id" => a_kind_of(String))
       )
     end
   end
