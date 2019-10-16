@@ -670,6 +670,8 @@
     - :collection
     - :custom_actions
     :verbs: *gpd
+    :subcollections:
+    - :tags
     :klass: CloudVolume
     :collection_actions:
       :get:
@@ -690,6 +692,12 @@
       :delete:
       - :name: delete
         :identifier: cloud_volume_delete
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: cloud_volume_tag
+      - :name: unassign
+        :identifier: cloud_volume_tag
   :clusters:
     :description: Clusters
     :identifier: ems_cluster
