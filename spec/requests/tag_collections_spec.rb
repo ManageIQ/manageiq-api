@@ -1392,4 +1392,52 @@ describe "Tag Collections API" do
       end
     end
   end
+
+  context "Cloud Tenant Tag subcollection" do
+    let(:cloud_tenant) { FactoryBot.create(:cloud_tenant) }
+
+    it "query all tags of a Cloud Tenant and verify tag category and names" do
+      api_basic_authorize
+      classify_resource(cloud_tenant)
+
+      get api_cloud_tenant_tags_url(nil, cloud_tenant), :params => { :expand => "resources" }
+
+      expect_query_result(:tags, 2, Tag.count)
+      expect_result_resources_to_include_data("resources", "name" => tag_paths)
+    end
+
+    it "does not assign a tag to a Cloud Tenant without appropriate role" do
+      api_basic_authorize
+
+      post(api_cloud_tenant_tags_url(nil, cloud_tenant), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "assigns a tag to a Cloud Tenant" do
+      api_basic_authorize subcollection_action_identifier(:cloud_tenants, :tags, :assign)
+
+      post(api_cloud_tenant_tags_url(nil, cloud_tenant), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_cloud_tenant_url(nil, cloud_tenant)))
+    end
+
+    it "does not unassign a tag from a Cloud Tenant without appropriate role" do
+      api_basic_authorize
+
+      post(api_cloud_tenant_tags_url(nil, cloud_tenant), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "unassigns a tag from a Cloud Tenant" do
+      api_basic_authorize subcollection_action_identifier(:cloud_tenants, :tags, :unassign)
+      classify_resource(cloud_tenant)
+
+      post(api_cloud_tenant_tags_url(nil, cloud_tenant), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_cloud_tenant_url(nil, cloud_tenant)))
+      expect_resource_has_tags(cloud_tenant, tag2[:path])
+    end
+  end
 end

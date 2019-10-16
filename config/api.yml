@@ -622,6 +622,7 @@
     :klass: CloudTenant
     :subcollections:
     - :security_groups
+    - :tags
     :collection_actions:
       :get:
       - :name: read
@@ -641,6 +642,12 @@
       :get:
       - :name: read
         :identifier: cloud_tenant_show
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: cloud_tenant_tag
+      - :name: unassign
+        :identifier: cloud_tenant_tag
   :cloud_volume_types:
     :description: Cloud Volume Types
     :identifier: cloud_volume_type
