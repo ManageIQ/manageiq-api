@@ -1,5 +1,7 @@
 module Api
   class CloudVolumesController < BaseController
+    include Subcollections::Tags
+
     def delete_resource(type, id, _data = {})
       delete_action_handler do
         cloud_volume = resource_search(id, type, collection_class(:cloud_volumes))

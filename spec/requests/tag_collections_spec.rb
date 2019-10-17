@@ -1440,4 +1440,52 @@ describe "Tag Collections API" do
       expect_resource_has_tags(cloud_tenant, tag2[:path])
     end
   end
+
+  context "Cloud Volume Tag subcollection" do
+    let(:cloud_volume) { FactoryBot.create(:cloud_volume) }
+
+    it "query all tags of a Cloud Volume and verify tag category and names" do
+      api_basic_authorize
+      classify_resource(cloud_volume)
+
+      get api_cloud_volume_tags_url(nil, cloud_volume), :params => { :expand => "resources" }
+
+      expect_query_result(:tags, 2, Tag.count)
+      expect_result_resources_to_include_data("resources", "name" => tag_paths)
+    end
+
+    it "does not assign a tag to a Cloud Volume without appropriate role" do
+      api_basic_authorize
+
+      post(api_cloud_volume_tags_url(nil, cloud_volume), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "assigns a tag to a Cloud Volume" do
+      api_basic_authorize subcollection_action_identifier(:cloud_volumes, :tags, :assign)
+
+      post(api_cloud_volume_tags_url(nil, cloud_volume), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_cloud_volume_url(nil, cloud_volume)))
+    end
+
+    it "does not unassign a tag from a Cloud Volume without appropriate role" do
+      api_basic_authorize
+
+      post(api_cloud_volume_tags_url(nil, cloud_volume), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "unassigns a tag from a Cloud Volume" do
+      api_basic_authorize subcollection_action_identifier(:cloud_volumes, :tags, :unassign)
+      classify_resource(cloud_volume)
+
+      post(api_cloud_volume_tags_url(nil, cloud_volume), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+
+      expect_tagging_result(tag1_results(api_cloud_volume_url(nil, cloud_volume)))
+      expect_resource_has_tags(cloud_volume, tag2[:path])
+    end
+  end
 end
