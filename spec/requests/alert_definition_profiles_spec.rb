@@ -2,7 +2,7 @@ describe "Alert Definition Profiles API" do
   let(:alert_definition_profile) { FactoryBot.create(:miq_alert_set) }
   let(:cluster) { FactoryBot.create(:ems_cluster) }
   let(:department_classification) { FactoryBot.create(:classification_department) }
-  let(:classification_tag) { FactoryBot.create(:classification_tag, :name => "foo", :parent => department_classification) }
+  let(:classification_tag) { FactoryBot.create(:classification_tag, :parent => department_classification) }
 
   describe "POST /api/alert_definition_profiles" do
     context "assign" do
