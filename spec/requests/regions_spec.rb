@@ -8,52 +8,68 @@
 # GET /api/regions/:id
 #
 
-describe "Regions API" do
-  it "forbids access to regions without an appropriate role" do
-    api_basic_authorize
+RSpec.describe "Regions API", :regions do
+  context "authorization", :authorization do
+    it "forbids access to regions without an appropriate role" do
+      api_basic_authorize
 
-    get(api_regions_url)
+      get(api_regions_url)
 
-    expect(response).to have_http_status(:forbidden)
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "forbids access to a region resource without an appropriate role" do
+      api_basic_authorize
+
+      region = FactoryBot.create(:miq_region, :region => "2")
+
+      get(api_region_url(nil, region))
+
+      expect(response).to have_http_status(:forbidden)
+    end
   end
 
-  it "forbids access to a region resource without an appropriate role" do
-    api_basic_authorize
+  context "get", :get do
+    it "allows GETs of a region" do
+      api_basic_authorize action_identifier(:regions, :read, :resource_actions, :get)
 
-    region = FactoryBot.create(:miq_region, :region => "2")
+      region = FactoryBot.create(:miq_region, :region => "2")
 
-    get(api_region_url(nil, region))
+      get(api_region_url(nil, region))
 
-    expect(response).to have_http_status(:forbidden)
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(
+        "href" => api_region_url(nil, region),
+        "id"   => region.id.to_s
+      )
+    end
   end
 
-  it "allows GETs of a region" do
-    api_basic_authorize action_identifier(:regions, :read, :resource_actions, :get)
+  context "edit", :edit do
+    it "can update a region with POST" do
+      api_basic_authorize action_identifier(:regions, :edit)
 
-    region = FactoryBot.create(:miq_region, :region => "2")
+      region = FactoryBot.create(:miq_region, :description => "Current Region description")
 
-    get(api_region_url(nil, region))
+      post api_region_url(nil, region), :params => gen_request(:edit, :description => "New Region description")
 
-    expect(response).to have_http_status(:ok)
-    expect(response.parsed_body).to include(
-      "href" => api_region_url(nil, region),
-      "id"   => region.id.to_s
-    )
+      expect(response).to have_http_status(:ok)
+      region.reload
+      expect(region.description).to eq("New Region description")
+    end
+
+    it "will fail if you try to edit forbidden fields" do
+      api_basic_authorize action_identifier(:regions, :edit)
+
+      region = FactoryBot.create(:miq_region, :description => "Current Region description")
+
+      post api_region_url(nil, region), :params => gen_request(:edit, :created_at => Time.now)
+
+      expect(response).to have_http_status(:internal_server_error)
+    end
   end
 
-  it "can update a region with POST" do
-    api_basic_authorize action_identifier(:regions, :edit)
-
-    region = FactoryBot.create(:miq_region, :description => "Current Region description")
-
-    post api_region_url(nil, region), :params => gen_request(:edit, :description => "New Region description")
-
-    expect(response).to have_http_status(:ok)
-    region.reload
-    expect(region.description).to eq("New Region description")
-  end
-
-  describe "Settings" do
+  context "Settings", :settings do
     let(:region_number) { ApplicationRecord.my_region_number + 1 }
     let(:id) { ApplicationRecord.id_in_region(1, region_number) }
     let(:region) { FactoryBot.create(:miq_region, :id => id, :region => region_number) }
