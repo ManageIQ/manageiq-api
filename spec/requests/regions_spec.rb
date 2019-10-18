@@ -41,6 +41,18 @@ describe "Regions API" do
     )
   end
 
+  it "can update a region with POST" do
+    api_basic_authorize action_identifier(:regions, :edit)
+
+    region = FactoryBot.create(:miq_region, :description => "Current Region description")
+
+    post api_region_url(nil, region), :params => gen_request(:edit, :description => "New Region description")
+
+    expect(response).to have_http_status(:ok)
+    region.reload
+    expect(region.description).to eq("New Region description")
+  end
+
   describe "Settings" do
     let(:region_number) { ApplicationRecord.my_region_number + 1 }
     let(:id) { ApplicationRecord.id_in_region(1, region_number) }
