@@ -2634,6 +2634,11 @@
       :get:
       - :name: read
         :identifier: region
+      :post:
+      - :name: edit
+        :identifier: region_edit
+      - :name: delete
+        :identifier: region_delete
   :reports:
     :description: Reports
     :identifier: miq_report
