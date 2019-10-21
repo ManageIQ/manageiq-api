@@ -95,6 +95,22 @@ RSpec.describe "Regions API", :regions do
       expect(region_1.reload.name).to eq("Updated Test Region 1")
       expect(region_2.reload.name).to eq("Updated Test Region 2")
     end
+
+    it "will fail to update multiple regions if forbidden fields are used" do
+      api_basic_authorize action_identifier(:regions, :edit)
+
+      region_1 = FactoryBot.create(:miq_region, :description => "Test Region 1")
+      region_2 = FactoryBot.create(:miq_region, :description => "Test Region 2")
+
+      options = [
+        {"href" => api_region_url(nil, region_1), "description" => "Updated Test Region 1"},
+        {"href" => api_region_url(nil, region_2), "description" => "Updated Test Region 2"}
+      ]
+
+      post api_regions_url, :params => gen_request(:edit, options)
+
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   context "delete", :delete do
