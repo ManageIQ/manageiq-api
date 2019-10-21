@@ -85,7 +85,8 @@ RSpec.describe "Regions API", :regions do
 
       expect(response).to have_http_status(:ok)
 
-      expect_results_to_match_hash("results",
+      expect_results_to_match_hash(
+        "results",
         [
           {"id" => region1.id.to_s, "description" => "Updated Test Region 1"},
           {"id" => region2.id.to_s, "description" => "Updated Test Region 2"}
