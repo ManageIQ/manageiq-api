@@ -1,6 +1,6 @@
 module Api
   class RegionsController < BaseController
-    INVALID_REGIONS_ATTRS = %w[id created_at updated_at].freeze
+    INVALID_REGIONS_ATTRS = %w[created_at updated_at].freeze
 
     # Edit an existing region (MiqRegion). Certain fields are meant for
     # internal use only and may not be edited. Attempting to edit one of
@@ -10,7 +10,7 @@ module Api
       bad_attrs = data_includes_invalid_attrs(data)
 
       if bad_attrs.present?
-        msg = "Attributes #{bad_attrs} should not be specified for updating a region resource"
+        msg = "Attribute(s) '#{bad_attrs}' should not be specified for updating a region resource"
         raise BadRequestError, msg
       end
 

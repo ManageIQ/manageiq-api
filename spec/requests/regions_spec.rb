@@ -66,19 +66,19 @@ RSpec.describe "Regions API", :regions do
       post api_region_url(nil, region), :params => gen_request(:edit, :created_at => Time.now.utc)
       expect(response).to have_http_status(:bad_request)
 
-      post api_region_url(nil, region), :params => gen_request(:edit, :id => 999)
+      post api_region_url(nil, region), :params => gen_request(:edit, :updated_at => Time.now.utc)
       expect(response).to have_http_status(:bad_request)
     end
 
     it "can update multiple regions with POST" do
       api_basic_authorize action_identifier(:regions, :edit)
 
-      region_1 = FactoryBot.create(:miq_region, :description => "Test Region 1")
-      region_2 = FactoryBot.create(:miq_region, :description => "Test Region 2")
+      region1 = FactoryBot.create(:miq_region, :description => "Test Region 1")
+      region2 = FactoryBot.create(:miq_region, :description => "Test Region 2")
 
       options = [
-        {"href" => api_region_url(nil, region_1), "description" => "Updated Test Region 1"},
-        {"href" => api_region_url(nil, region_2), "description" => "Updated Test Region 2"}
+        {"href" => api_region_url(nil, region1), "description" => "Updated Test Region 1"},
+        {"href" => api_region_url(nil, region2), "description" => "Updated Test Region 2"}
       ]
 
       post api_regions_url, :params => gen_request(:edit, options)
@@ -87,29 +87,31 @@ RSpec.describe "Regions API", :regions do
 
       expect_results_to_match_hash("results",
         [
-          {"id" => region_1.id.to_s, "description" => "Updated Test Region 1"},
-          {"id" => region_2.id.to_s, "description" => "Updated Test Region 2"}
+          {"id" => region1.id.to_s, "description" => "Updated Test Region 1"},
+          {"id" => region2.id.to_s, "description" => "Updated Test Region 2"}
         ]
       )
 
-      expect(region_1.reload.name).to eq("Updated Test Region 1")
-      expect(region_2.reload.name).to eq("Updated Test Region 2")
+      expect(region1.reload.name).to eq("Updated Test Region 1")
+      expect(region2.reload.name).to eq("Updated Test Region 2")
     end
 
-    it "will fail to update multiple regions if forbidden fields are used" do
+    it "will fail to update multiple regions if any forbidden fields are edited" do
       api_basic_authorize action_identifier(:regions, :edit)
 
-      region_1 = FactoryBot.create(:miq_region, :description => "Test Region 1")
-      region_2 = FactoryBot.create(:miq_region, :description => "Test Region 2")
+      region1 = FactoryBot.create(:miq_region, :description => "Test Region 1")
+      region2 = FactoryBot.create(:miq_region, :description => "Test Region 2")
 
       options = [
-        {"href" => api_region_url(nil, region_1), "description" => "Updated Test Region 1"},
-        {"href" => api_region_url(nil, region_2), "description" => "Updated Test Region 2"}
+        {"href" => api_region_url(nil, region1), "description" => "New description"},
+        {"href" => api_region_url(nil, region2), "created_at" => Time.now.utc}
       ]
 
       post api_regions_url, :params => gen_request(:edit, options)
 
-      expect(response).to have_http_status(:ok)
+      expected_message = "Attribute(s) 'created_at' should not be specified for updating a region resource"
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body['error']['message']).to eql(expected_message)
     end
   end
 
