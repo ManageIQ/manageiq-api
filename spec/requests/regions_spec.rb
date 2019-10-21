@@ -64,8 +64,36 @@ RSpec.describe "Regions API", :regions do
       region = FactoryBot.create(:miq_region, :description => "Current Region description")
 
       post api_region_url(nil, region), :params => gen_request(:edit, :created_at => Time.now.utc)
-
       expect(response).to have_http_status(:bad_request)
+
+      post api_region_url(nil, region), :params => gen_request(:edit, :id => 999)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "can update multiple regions with POST" do
+      api_basic_authorize action_identifier(:regions, :edit)
+
+      region_1 = FactoryBot.create(:miq_region, :description => "Test Region 1")
+      region_2 = FactoryBot.create(:miq_region, :description => "Test Region 2")
+
+      options = [
+        {"href" => api_region_url(nil, region_1), "description" => "Updated Test Region 1"},
+        {"href" => api_region_url(nil, region_2), "description" => "Updated Test Region 2"}
+      ]
+
+      post api_regions_url, :params => gen_request(:edit, options)
+
+      expect(response).to have_http_status(:ok)
+
+      expect_results_to_match_hash("results",
+        [
+          {"id" => region_1.id.to_s, "description" => "Updated Test Region 1"},
+          {"id" => region_2.id.to_s, "description" => "Updated Test Region 2"}
+        ]
+      )
+
+      expect(region_1.reload.name).to eq("Updated Test Region 1")
+      expect(region_2.reload.name).to eq("Updated Test Region 2")
     end
   end
 
