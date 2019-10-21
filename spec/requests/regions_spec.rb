@@ -63,7 +63,7 @@ RSpec.describe "Regions API", :regions do
 
       region = FactoryBot.create(:miq_region, :description => "Current Region description")
 
-      post api_region_url(nil, region), :params => gen_request(:edit, :created_at => Time.now)
+      post api_region_url(nil, region), :params => gen_request(:edit, :created_at => Time.now.utc)
 
       expect(response).to have_http_status(:bad_request)
     end
