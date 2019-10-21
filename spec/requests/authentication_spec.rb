@@ -84,8 +84,8 @@ describe "Authentication API" do
   end
 
   context "Basic Authentication with Group Authorization" do
-    let(:group1) { FactoryBot.create(:miq_group, :description => "Group1", :miq_user_role => @role) }
-    let(:group2) { FactoryBot.create(:miq_group, :description => "Group2", :miq_user_role => @role) }
+    let(:group1) { FactoryBot.create(:miq_group, :miq_user_role => @role) }
+    let(:group2) { FactoryBot.create(:miq_group, :miq_user_role => @role) }
 
     before(:each) do
       @user.miq_groups = [group1, group2, @user.current_group]
@@ -133,8 +133,8 @@ describe "Authentication API" do
   end
 
   context "Authentication/Authorization Identity" do
-    let(:group1) { FactoryBot.create(:miq_group, :description => "Group1", :miq_user_role => @role) }
-    let(:group2) { FactoryBot.create(:miq_group, :description => "Group2", :miq_user_role => @role) }
+    let(:group1) { FactoryBot.create(:miq_group, :miq_user_role => @role) }
+    let(:group2) { FactoryBot.create(:miq_group, :miq_user_role => @role) }
 
     before do
       @user.miq_groups = [group1, group2, @user.current_group]
