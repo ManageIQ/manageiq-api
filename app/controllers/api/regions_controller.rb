@@ -16,7 +16,8 @@ module Api
     private
 
     def data_includes_invalid_attrs(data)
-      data.keys.select { |k| INVALID_REGIONS_ATTRS.include?(k) }.compact.join(", ") if data
+      return nil unless data
+      data.keys.select { |key| INVALID_REGIONS_ATTRS.include?(key) }.compact.join(", ")
     end
   end
 end

@@ -65,7 +65,7 @@ RSpec.describe "Regions API", :regions do
 
       post api_region_url(nil, region), :params => gen_request(:edit, :created_at => Time.now)
 
-      expect(response).to have_http_status(:internal_server_error)
+      expect(response).to have_http_status(:bad_request)
     end
   end
 
