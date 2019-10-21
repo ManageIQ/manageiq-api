@@ -1,6 +1,6 @@
 module Api
   class RegionsController < BaseController
-    INVALID_REGIONS_ATTRS = %w[created_at updated_at].freeze
+    INVALID_REGIONS_ATTRS = ID_ATTRS + %w[created_at updated_at].freeze
 
     # Edit an existing region (MiqRegion). Certain fields are meant for
     # internal use only and may not be edited. Attempting to edit one of
