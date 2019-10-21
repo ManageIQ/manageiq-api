@@ -85,6 +85,19 @@ RSpec.describe "Regions API", :regions do
       expect { delete api_region_url(nil, region) }.to change(MiqRegion, :count).by(-1)
       expect(response).to have_http_status(:no_content)
     end
+
+    it "can delete multiple regions with POST" do
+      api_basic_authorize action_identifier(:regions, :delete)
+      regions = FactoryBot.create_list(:miq_region, 2)
+
+      options = [
+        {"href" => api_region_url(nil, regions.first)},
+        {"href" => api_region_url(nil, regions.last)}
+      ]
+
+      expect { post api_regions_url, :params => gen_request(:delete, options) }.to change(MiqRegion, :count).by(-2)
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   context "Settings", :settings do

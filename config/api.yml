@@ -2630,6 +2630,8 @@
       :post:
       - :name: query
         :identifier: region
+      - :name: delete
+        :identifier: region_delete
     :resource_actions:
       :get:
       - :name: read
