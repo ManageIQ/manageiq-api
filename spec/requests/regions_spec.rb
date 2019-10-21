@@ -69,6 +69,24 @@ RSpec.describe "Regions API", :regions do
     end
   end
 
+  context "delete", :delete do
+    it "can delete a region with POST" do
+      api_basic_authorize action_identifier(:regions, :delete)
+      region = FactoryBot.create(:miq_region)
+
+      expect { post api_region_url(nil, region), :params => gen_request(:delete) }.to change(MiqRegion, :count).by(-1)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "can delete a region with DELETE" do
+      api_basic_authorize action_identifier(:regions, :delete)
+      region = FactoryBot.create(:miq_region)
+
+      expect { delete api_region_url(nil, region) }.to change(MiqRegion, :count).by(-1)
+      expect(response).to have_http_status(:no_content)
+    end
+  end
+
   context "Settings", :settings do
     let(:region_number) { ApplicationRecord.my_region_number + 1 }
     let(:id) { ApplicationRecord.id_in_region(1, region_number) }

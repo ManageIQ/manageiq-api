@@ -2621,7 +2621,7 @@
     - :settings
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpd
     :klass: MiqRegion
     :collection_actions:
       :get:
@@ -2637,6 +2637,9 @@
       :post:
       - :name: edit
         :identifier: region_edit
+      - :name: delete
+        :identifier: region_delete
+      :delete:
       - :name: delete
         :identifier: region_delete
   :reports:
