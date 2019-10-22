@@ -92,8 +92,8 @@ RSpec.describe "Regions API", :regions do
         ]
       )
 
-      expect(region1.reload.name).to eq("Updated Test Region 1")
-      expect(region2.reload.name).to eq("Updated Test Region 2")
+      expect(region1.reload.description).to eq("Updated Test Region 1")
+      expect(region2.reload.description).to eq("Updated Test Region 2")
     end
 
     it "will fail to update multiple regions if any forbidden fields are edited" do
