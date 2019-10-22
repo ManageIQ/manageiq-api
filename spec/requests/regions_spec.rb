@@ -63,10 +63,10 @@ RSpec.describe "Regions API", :regions do
       region = FactoryBot.create(:miq_region, :description => "Current Region description")
 
       post api_region_url(nil, region), :params => gen_request(:edit, :created_at => Time.now.utc)
-      expect(response).to have_http_status(:bad_request)
+      expect_bad_request("Attribute(s) 'created_at' should not be specified for updating a region resource")
 
       post api_region_url(nil, region), :params => gen_request(:edit, :updated_at => Time.now.utc)
-      expect(response).to have_http_status(:bad_request)
+      expect_bad_request("Attribute(s) 'updated_at' should not be specified for updating a region resource")
     end
 
     it "can update multiple regions with POST" do
