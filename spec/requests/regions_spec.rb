@@ -37,8 +37,7 @@ RSpec.describe "Regions API", :regions do
 
       get(api_region_url(nil, region))
 
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(
+      expect_single_resource_query(
         "href" => api_region_url(nil, region),
         "id"   => region.id.to_s
       )
