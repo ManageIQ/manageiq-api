@@ -111,6 +111,16 @@ RSpec.describe "Regions API", :regions do
 
       expect_bad_request("Attribute(s) 'created_at' should not be specified for updating a region resource")
     end
+
+    it "forbids edit of a region without an appropriate role" do
+      api_basic_authorize
+
+      region = FactoryBot.create(:miq_region, :description => "Current Region description")
+
+      post api_region_url(nil, region), :params => gen_request(:edit, :description => "New Region description")
+
+      expect(response).to have_http_status(:forbidden)
+    end
   end
 
   context "delete", :delete do
@@ -141,6 +151,15 @@ RSpec.describe "Regions API", :regions do
 
       expect { post api_regions_url, :params => gen_request(:delete, options) }.to change(MiqRegion, :count).by(-2)
       expect(response).to have_http_status(:ok)
+    end
+
+    it "forbids deletion of a region without an appropriate role" do
+      api_basic_authorize
+      region = FactoryBot.create(:miq_region, :description => "Current Region description")
+
+      delete api_region_url(nil, region)
+
+      expect(response).to have_http_status(:forbidden)
     end
   end
 
