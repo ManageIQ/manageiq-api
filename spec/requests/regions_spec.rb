@@ -109,9 +109,7 @@ RSpec.describe "Regions API", :regions do
 
       post api_regions_url, :params => gen_request(:edit, options)
 
-      expected_message = "Attribute(s) 'created_at' should not be specified for updating a region resource"
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body['error']['message']).to eql(expected_message)
+      expect_bad_request("Attribute(s) 'created_at' should not be specified for updating a region resource")
     end
   end
 
