@@ -4207,13 +4207,10 @@
         :identifier: zone
       - :name: add
         :identifier: zone_new
-        :disabled: true
       - :name: edit
         :identifier: zone_edit
-        :disabled: true
       - :name: delete
         :identifier: zone_delete
-        :disabled: true
     :resource_actions:
       :get:
       - :name: read
@@ -4221,8 +4218,6 @@
       :post:
       - :name: edit
         :identifier: zone_edit
-        :disabled: true
       :delete:
       - :name: delete
         :identifier: zone_delete
-        :disabled: true
