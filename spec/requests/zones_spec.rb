@@ -99,6 +99,46 @@ RSpec.describe "Zones" do
     end
   end
 
+  context "delete", :delete do
+    it "can delete a zone with POST" do
+      api_basic_authorize action_identifier(:zones, :delete)
+      zone = FactoryBot.create(:zone)
+
+      expect { post api_zone_url(nil, zone), :params => gen_request(:delete) }.to change(Zone, :count).by(-1)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "can delete a zone with DELETE" do
+      api_basic_authorize action_identifier(:zones, :delete)
+      zone = FactoryBot.create(:zone)
+
+      expect { delete api_zone_url(nil, zone) }.to change(Zone, :count).by(-1)
+      expect(response).to have_http_status(:no_content)
+    end
+
+    it "can delete multiple zones with POST" do
+      api_basic_authorize action_identifier(:zones, :delete)
+      zones = FactoryBot.create_list(:zone, 2)
+
+      options = [
+        {"href" => api_zone_url(nil, zones.first)},
+        {"href" => api_zone_url(nil, zones.last)}
+      ]
+
+      expect { post api_zones_url, :params => gen_request(:delete, options) }.to change(Zone, :count).by(-2)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "forbids deletion of a zone without an appropriate role" do
+      api_basic_authorize
+      zone = FactoryBot.create(:zone, :description => "Current Region description")
+
+      delete api_zone_url(nil, zone)
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   describe "/api/zones/:id?expand=settings", :settings do
     it "expands the settings subcollection" do
       api_basic_authorize(action_identifier(:zones, :read, :resource_actions, :get), :ops_settings)
