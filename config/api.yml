@@ -4205,7 +4205,7 @@
       :post:
       - :name: query
         :identifier: zone
-      - :name: add
+      - :name: create
         :identifier: zone_new
       - :name: edit
         :identifier: zone_edit
