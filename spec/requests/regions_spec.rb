@@ -129,7 +129,7 @@ RSpec.describe "Regions API", :regions do
       region = FactoryBot.create(:miq_region)
 
       expect { post api_region_url(nil, region), :params => gen_request(:delete) }.to change(MiqRegion, :count).by(-1)
-      expect(response).to have_http_status(:ok)
+      expect_single_action_result(:success => true, :message => /#{region.id}/)
     end
 
     it "can delete a region with DELETE" do
@@ -150,7 +150,7 @@ RSpec.describe "Regions API", :regions do
       ]
 
       expect { post api_regions_url, :params => gen_request(:delete, options) }.to change(MiqRegion, :count).by(-2)
-      expect(response).to have_http_status(:ok)
+      expect_multiple_action_result(regions.size)
     end
 
     it "forbids deletion of a region without an appropriate role" do
