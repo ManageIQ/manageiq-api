@@ -4196,7 +4196,7 @@
     - :collection
     :subcollections:
     - :settings
-    :verbs: *gp
+    :verbs: *gpd
     :klass: Zone
     :collection_actions:
       :get:
@@ -4205,15 +4205,12 @@
       :post:
       - :name: query
         :identifier: zone
-      - :name: add
+      - :name: create
         :identifier: zone_new
-        :disabled: true
       - :name: edit
         :identifier: zone_edit
-        :disabled: true
       - :name: delete
         :identifier: zone_delete
-        :disabled: true
     :resource_actions:
       :get:
       - :name: read
@@ -4221,8 +4218,8 @@
       :post:
       - :name: edit
         :identifier: zone_edit
-        :disabled: true
+      - :name: delete
+        :identifier: zone_delete
       :delete:
       - :name: delete
         :identifier: zone_delete
-        :disabled: true
