@@ -3,19 +3,11 @@ RSpec.describe "Zones" do
 
   context "authorization", :authorization do
     it "forbids access to zones without an appropriate role" do
-      api_basic_authorize
-
-      get(api_zones_url)
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request { get(api_zones_url) }
     end
 
     it "forbids access to a zone resource without an appropriate role" do
-      api_basic_authorize
-
-      get(api_zone_url(nil, zone))
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request { get(api_zone_url(nil, zone)) }
     end
   end
 
@@ -33,7 +25,7 @@ RSpec.describe "Zones" do
   end
 
   context "edit", :edit do
-    it "will fail if you try to edit forbidden fields" do
+    it "will fail if you try to edit invalid fields" do
       api_basic_authorize action_identifier(:zones, :edit)
 
       zone = FactoryBot.create(:zone, :description => "Current Zone description")
@@ -72,7 +64,7 @@ RSpec.describe "Zones" do
       expect(zone2.reload.description).to eq("Updated Test Zone 2")
     end
 
-    it "will fail to update multiple zones if any forbidden fields are edited" do
+    it "will fail to update multiple zones if any invalid fields are edited" do
       api_basic_authorize action_identifier(:zones, :edit)
 
       zone1 = FactoryBot.create(:zone, :description => "Test Zone 1")
@@ -89,13 +81,10 @@ RSpec.describe "Zones" do
     end
 
     it "forbids edit of a zone without an appropriate role" do
-      api_basic_authorize
-
-      zone = FactoryBot.create(:zone, :description => "Current Zone description")
-
-      post api_zone_url(nil, zone), :params => gen_request(:edit, :description => "New Zone description")
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request do
+        zone = FactoryBot.create(:zone, :description => "Current Zone description")
+        post(api_zone_url(nil, zone), :params => gen_request(:edit, :description => "New Zone description"))
+      end
     end
   end
 
@@ -130,12 +119,10 @@ RSpec.describe "Zones" do
     end
 
     it "forbids deletion of a zone without an appropriate role" do
-      api_basic_authorize
-      zone = FactoryBot.create(:zone, :description => "Current Region description")
-
-      delete api_zone_url(nil, zone)
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request do
+        zone = FactoryBot.create(:zone, :description => "Current Region description")
+        delete api_zone_url(nil, zone)
+      end
     end
   end
 
@@ -171,11 +158,7 @@ RSpec.describe "Zones" do
     end
 
     it "does not allow an authenticated user who doesn't have the proper role to view the settings" do
-      api_basic_authorize
-
-      get(api_zone_settings_url(nil, zone))
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request { get(api_zone_settings_url(nil, zone)) }
     end
 
     it "does not allow an unauthenticated user to view the settings" do
