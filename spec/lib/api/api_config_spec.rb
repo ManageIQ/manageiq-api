@@ -14,7 +14,7 @@ describe 'API configuration (config/api.yml)' do
       it 'each primary collection has an identifier for GET read action except for a few' do
         whitelisted = collection_settings.find_all do |_, v|
           v.options.index(:collection) &&
-            v.collection_actions&.[](:get)&.find{ |h| h[:name] == 'read' }&.identifier.nil?
+            v.collection_actions&.[](:get)&.find { |h| h[:name] == 'read' }&.identifier.nil?
         end.map(&:first).sort
         expect(whitelisted).to eq(%i[automate_workspaces currencies features measures notifications pictures])
       end
