@@ -9,23 +9,15 @@
 #
 
 RSpec.describe "Regions API", :regions do
+  let(:region) { FactoryBot.create(:miq_region, :region => '2') }
+
   context "authorization", :authorization do
     it "forbids access to regions without an appropriate role" do
-      api_basic_authorize
-
-      get(api_regions_url)
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request { get(api_regions_url) }
     end
 
     it "forbids access to a region resource without an appropriate role" do
-      api_basic_authorize
-
-      region = FactoryBot.create(:miq_region, :region => "2")
-
-      get(api_region_url(nil, region))
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request { get(api_region_url(nil, region)) }
     end
   end
 
@@ -57,7 +49,7 @@ RSpec.describe "Regions API", :regions do
       expect(region.description).to eq("New Region description")
     end
 
-    it "will fail if you try to edit forbidden fields" do
+    it "will fail if you try to edit invalid fields" do
       api_basic_authorize action_identifier(:regions, :edit)
 
       region = FactoryBot.create(:miq_region, :description => "Current Region description")
@@ -96,7 +88,7 @@ RSpec.describe "Regions API", :regions do
       expect(region2.reload.description).to eq("Updated Test Region 2")
     end
 
-    it "will fail to update multiple regions if any forbidden fields are edited" do
+    it "will fail to update multiple regions if any invalid fields are edited" do
       api_basic_authorize action_identifier(:regions, :edit)
 
       region1 = FactoryBot.create(:miq_region, :description => "Test Region 1")
@@ -113,13 +105,10 @@ RSpec.describe "Regions API", :regions do
     end
 
     it "forbids edit of a region without an appropriate role" do
-      api_basic_authorize
-
-      region = FactoryBot.create(:miq_region, :description => "Current Region description")
-
-      post api_region_url(nil, region), :params => gen_request(:edit, :description => "New Region description")
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request do
+        region = FactoryBot.create(:miq_region, :description => "Current Region description")
+        post(api_region_url(nil, region), :params => gen_request(:edit, :description => "New Region description"))
+      end
     end
   end
 
@@ -154,12 +143,10 @@ RSpec.describe "Regions API", :regions do
     end
 
     it "forbids deletion of a region without an appropriate role" do
-      api_basic_authorize
-      region = FactoryBot.create(:miq_region, :description => "Current Region description")
-
-      delete api_region_url(nil, region)
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request do
+        region = FactoryBot.create(:miq_region, :description => "Current Region description")
+        delete(api_region_url(nil, region))
+      end
     end
   end
 
@@ -205,11 +192,7 @@ RSpec.describe "Regions API", :regions do
       end
 
       it "does not allow an authenticated user who doesn't have the proper role to view the settings" do
-        api_basic_authorize
-
-        get(api_region_settings_url(nil, region))
-
-        expect(response).to have_http_status(:forbidden)
+        expect_forbidden_request { get(api_region_settings_url(nil, region)) }
       end
 
       it "does not allow an unauthenticated user to view the settings" do
