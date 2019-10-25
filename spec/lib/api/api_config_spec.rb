@@ -10,6 +10,16 @@ describe 'API configuration (config/api.yml)' do
       expect(actual).to eq(expected)
     end
 
+    describe 'collection' do
+      it 'each primary collection has an identifier for GET read action except for a few' do
+        whitelisted = collection_settings.find_all do |_, v|
+          v.options.index(:collection) &&
+            v.collection_actions&.[](:get)&.find { |h| h[:name] == 'read' }&.identifier.nil?
+        end.map(&:first).sort
+        expect(whitelisted).to eq(%i[automate_workspaces currencies features measures notifications pictures])
+      end
+    end
+
     describe 'identifiers' do
       let(:api_feature_identifiers) do
         feature_identifiers { |set, id| set.add(id) }

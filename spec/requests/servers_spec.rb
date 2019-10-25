@@ -1,9 +1,19 @@
 RSpec.describe "Servers" do
   let(:server) { FactoryBot.create(:miq_server) }
 
+  describe "/api/servers" do
+    it "does not allow an unauthorized user to list the servers" do
+      api_basic_authorize
+
+      get(api_servers_url)
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   describe "/api/servers/:id?expand=settings" do
     it "expands the settings subcollection" do
-      api_basic_authorize(:ops_settings)
+      api_basic_authorize(:ops_settings, :ops_diagnostics)
 
       get(api_server_url(nil, server), :params => {:expand => 'settings'})
 
