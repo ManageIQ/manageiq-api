@@ -254,10 +254,8 @@ describe "Roles API" do
 
       expect(response).to have_http_status(:forbidden)
 
-      # Refresh the role object
-      role = MiqUserRole.find(role.id)
-
       # Confirm original feature
+      role.reload
       expect(role.allows?(:identifier => 'miq_request_approval')).to be_truthy
 
       # Confirm new feature is not there
@@ -275,10 +273,8 @@ describe "Roles API" do
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", %w(id name read_only))
 
-      # Refresh the role object
-      role = MiqUserRole.find(role.id)
-
       # Confirm original feature
+      role.reload
       expect(role.allows?(:identifier => 'miq_request_approval')).to be_truthy
 
       # Confirm new feature
