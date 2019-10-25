@@ -244,6 +244,24 @@ describe "Roles API" do
   end
 
   describe "Role Feature Assignments" do
+    it "does not allow assigning features for an unauthorized user" do
+      api_basic_authorize
+      role = FactoryBot.create(:miq_user_role, :features => "miq_request_approval")
+
+      new_feature = {:identifier => "miq_request_view"}
+      url = api_role_features_url(nil, role)
+      post(url, :params => gen_request(:assign, new_feature))
+
+      expect(response).to have_http_status(:forbidden)
+
+      # Confirm original feature
+      role.reload
+      expect(role.allows?(:identifier => 'miq_request_approval')).to be_truthy
+
+      # Confirm new feature is not there
+      expect(role.allows?(new_feature)).to be_falsey
+    end
+
     it "supports assigning just a single product feature" do
       api_basic_authorize collection_action_identifier(:roles, :edit)
       role = FactoryBot.create(:miq_user_role, :features => "miq_request_approval")
@@ -255,10 +273,8 @@ describe "Roles API" do
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_keys("results", %w(id name read_only))
 
-      # Refresh the role object
-      role = MiqUserRole.find(role.id)
-
       # Confirm original feature
+      role.reload
       expect(role.allows?(:identifier => 'miq_request_approval')).to be_truthy
 
       # Confirm new feature
