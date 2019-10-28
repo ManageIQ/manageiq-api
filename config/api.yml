@@ -2978,11 +2978,12 @@
         :identifier: security_group_tag
   :servers:
     :description: EVM Servers
+    :identifier: server
     :subcollections:
     - :settings
     :options:
     - :collection
-    :verbs: *g
+    :verbs: *gpd
     :klass: MiqServer
     :collection_actions:
       :get:
@@ -2991,10 +2992,26 @@
       :post:
       - :name: query
         :identifier: ops_diagnostics
+      - :name: query
+        :identifier: server
+      - :name: edit
+        :identifier: server_edit
+      - :name: delete
+        :identifier: server_delete
     :resource_actions:
       :get:
       - :name: read
         :identifier: ops_diagnostics
+      - :name: read
+        :identifier: server
+      :post:
+      - :name: edit
+        :identifier: server_edit
+      - :name: delete
+        :identifier: server_delete
+      :delete:
+      - :name: delete
+        :identifier: server_delete
   :service_catalogs:
     :description: Service Catalogs
     :identifier: st_catalog_accord

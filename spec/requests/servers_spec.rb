@@ -3,15 +3,141 @@ RSpec.describe "Servers" do
 
   describe "/api/servers" do
     it "does not allow an unauthorized user to list the servers" do
-      api_basic_authorize
-
-      get(api_servers_url)
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request { get(api_servers_url) }
     end
   end
 
-  describe "/api/servers/:id?expand=settings" do
+  context "get", :get do
+    it "allows GETs of a server" do
+      api_basic_authorize action_identifier(:servers, :read, :resource_actions, :get)
+
+      get(api_server_url(nil, server))
+
+      expect_single_resource_query(
+        "href" => api_server_url(nil, server),
+        "id"   => server.id.to_s
+      )
+    end
+  end
+
+  context "edit", :edit do
+    it "can update a server with POST" do
+      api_basic_authorize action_identifier(:servers, :edit)
+
+      server = FactoryBot.create(:miq_server, :name => "Current Server name")
+
+      post api_server_url(nil, server), :params => gen_request(:edit, :name => "New Server name")
+
+      expect(response).to have_http_status(:ok)
+      server.reload
+      expect(server.name).to eq("New Server name")
+    end
+
+    it "will fail if you try to edit forbidden fields" do
+      api_basic_authorize action_identifier(:servers, :edit)
+
+      server = FactoryBot.create(:miq_server, :name => "Current Server name")
+
+      post api_server_url(nil, server), :params => gen_request(:edit, :started_on => Time.now.utc)
+      expect_bad_request("Attribute(s) 'started_on' should not be specified for updating a server resource")
+
+      post api_server_url(nil, server), :params => gen_request(:edit, :stopped_on => Time.now.utc)
+      expect_bad_request("Attribute(s) 'stopped_on' should not be specified for updating a server resource")
+    end
+
+    it "can update multiple servers with POST" do
+      api_basic_authorize action_identifier(:servers, :edit)
+
+      server1 = FactoryBot.create(:miq_server, :name => "Test Server 1")
+      server2 = FactoryBot.create(:miq_server, :name => "Test Server 2")
+
+      options = [
+        {"href" => api_server_url(nil, server1), "name" => "Updated Test Server 1"},
+        {"href" => api_server_url(nil, server2), "name" => "Updated Test Server 2"}
+      ]
+
+      post api_servers_url, :params => gen_request(:edit, options)
+
+      expect(response).to have_http_status(:ok)
+
+      expect_results_to_match_hash(
+        "results",
+        [
+          {"id" => server1.id.to_s, "name" => "Updated Test Server 1"},
+          {"id" => server2.id.to_s, "name" => "Updated Test Server 2"}
+        ]
+      )
+
+      expect(server1.reload.name).to eq("Updated Test Server 1")
+      expect(server2.reload.name).to eq("Updated Test Server 2")
+    end
+
+    it "will fail to update multiple servers if any invalid fields are edited" do
+      api_basic_authorize action_identifier(:servers, :edit)
+
+      server1 = FactoryBot.create(:miq_server, :name => "Test Server 1")
+      server2 = FactoryBot.create(:miq_server, :name => "Test Server 2")
+
+      options = [
+        {"href" => api_server_url(nil, server1), "percent_memory" => 27},
+        {"href" => api_server_url(nil, server2), "started_on" => Time.now.utc}
+      ]
+
+      post api_servers_url, :params => gen_request(:edit, options)
+
+      expect_bad_request("Attribute(s) 'percent_memory' should not be specified for updating a server resource")
+    end
+
+    it "forbids edit of a server without an appropriate role" do
+      expect_forbidden_request do
+        server = FactoryBot.create(:miq_server, :name => "Current Server name")
+        post(api_server_url(nil, server), :params => gen_request(:edit, :name => "New Server name"))
+      end
+    end
+  end
+
+  context "delete", :delete do
+    it "can delete a server with POST" do
+      api_basic_authorize action_identifier(:servers, :delete)
+      server = FactoryBot.create(:miq_server)
+
+      pending("Failing delete spec")
+      expect { post api_server_url(nil, server), :params => gen_request(:delete) }.to change(MiqServer, :count).by(-1)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "can delete a server with DELETE" do
+      api_basic_authorize action_identifier(:servers, :delete)
+      server = FactoryBot.create(:miq_server)
+
+      pending("Failing delete spec")
+      expect { delete api_server_url(nil, server) }.to change(MiqServer, :count).by(-1)
+      expect(response).to have_http_status(:no_content)
+    end
+
+    it "can delete multiple servers with POST" do
+      api_basic_authorize action_identifier(:servers, :delete)
+      servers = FactoryBot.create_list(:miq_server, 2)
+
+      options = [
+        {"href" => api_server_url(nil, servers.first)},
+        {"href" => api_server_url(nil, servers.last)}
+      ]
+
+      pending("Failing delete spec")
+      expect { post api_servers_url, :params => gen_request(:delete, options) }.to change(MiqServer, :count).by(-2)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "forbids deletion of a server without an appropriate role" do
+      expect_forbidden_request do
+        server = FactoryBot.create(:miq_server, :name => "Current Server name")
+        delete api_server_url(nil, server)
+      end
+    end
+  end
+
+  describe "/api/servers/:id?expand=settings", :settings do
     it "expands the settings subcollection" do
       api_basic_authorize(:ops_settings, :ops_diagnostics)
 
@@ -30,7 +156,7 @@ RSpec.describe "Servers" do
     end
   end
 
-  describe "/api/servers/:id/settings" do
+  describe "/api/servers/:id/settings", :settings do
     let(:original_timeout) { server.settings_for_resource[:api][:authentication_timeout] }
     let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
 
