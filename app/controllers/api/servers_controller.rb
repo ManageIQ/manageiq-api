@@ -1,20 +1,6 @@
 module Api
   class ServersController < BaseController
-    INVALID_SERVERS_ATTRS = ID_ATTRS + %w[
-      started_on
-      stopped_on
-      percent_memory
-      percent_cpu
-      cpu_time
-      memory_usage
-      memory_size
-      proportional_set_size
-      system_memory_free
-      system_memory_used
-      system_swap_free
-      system_swap_used
-      unique_set_size
-    ].freeze
+    VALID_SERVERS_ATTRS = %w[name zone]
 
     # Edit an existing server (MiqServer). Certain fields are meant for
     # internal use only and may not be edited. Attempting to edit one of
@@ -39,8 +25,7 @@ module Api
     #
     def data_includes_invalid_attrs(data)
       return nil unless data
-
-      data.keys.select { |key| INVALID_SERVERS_ATTRS.include?(key) }.compact.join(", ")
+      (data.keys - VALID_SERVERS_ATTRS).compact.join(', ')
     end
   end
 end
