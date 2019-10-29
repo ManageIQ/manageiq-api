@@ -109,7 +109,7 @@ RSpec.describe "Servers" do
       api_basic_authorize action_identifier(:servers, :delete)
       server = FactoryBot.create(:miq_server, :status => 'started')
 
-      expect { post(api_server_url(nil, server)) }.to change(MiqServer, :count).by(0)
+      expect { post(api_server_url(nil, server), :params => gen_request(:delete)) }.to change(MiqServer, :count).by(0)
     end
 
     it "can delete a server with DELETE if the server is deletable" do
