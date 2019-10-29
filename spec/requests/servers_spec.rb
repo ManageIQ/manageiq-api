@@ -97,34 +97,31 @@ RSpec.describe "Servers" do
   end
 
   context "delete", :delete do
-    it "can delete a server with POST" do
+    it "can delete a server with POST if the server is deletable" do
       api_basic_authorize action_identifier(:servers, :delete)
-      server = FactoryBot.create(:miq_server)
+      server = FactoryBot.create(:miq_server, :status => 'stopped')
 
-      pending("Failing delete spec")
       expect { post api_server_url(nil, server), :params => gen_request(:delete) }.to change(MiqServer, :count).by(-1)
       expect(response).to have_http_status(:ok)
     end
 
-    it "can delete a server with DELETE" do
+    it "can delete a server with DELETE if the server is deletable" do
       api_basic_authorize action_identifier(:servers, :delete)
-      server = FactoryBot.create(:miq_server)
+      server = FactoryBot.create(:miq_server, :status => 'stopped')
 
-      pending("Failing delete spec")
       expect { delete api_server_url(nil, server) }.to change(MiqServer, :count).by(-1)
       expect(response).to have_http_status(:no_content)
     end
 
-    it "can delete multiple servers with POST" do
+    it "can delete multiple servers with POST if the servers are deletable" do
       api_basic_authorize action_identifier(:servers, :delete)
-      servers = FactoryBot.create_list(:miq_server, 2)
+      servers = FactoryBot.create_list(:miq_server, 2, :status => 'stopped')
 
       options = [
         {"href" => api_server_url(nil, servers.first)},
         {"href" => api_server_url(nil, servers.last)}
       ]
 
-      pending("Failing delete spec")
       expect { post api_servers_url, :params => gen_request(:delete, options) }.to change(MiqServer, :count).by(-2)
       expect(response).to have_http_status(:ok)
     end
