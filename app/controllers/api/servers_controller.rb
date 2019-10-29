@@ -1,6 +1,6 @@
 module Api
   class ServersController < BaseController
-    VALID_SERVERS_ATTRS = %w[name zone]
+    VALID_SERVERS_ATTRS = %w[name zone].freeze
 
     # Edit an existing server (MiqServer). Certain fields are meant for
     # internal use only and may not be edited. Attempting to edit one of
@@ -25,6 +25,7 @@ module Api
     #
     def data_includes_invalid_attrs(data)
       return nil unless data
+
       (data.keys - VALID_SERVERS_ATTRS).compact.join(', ')
     end
   end
