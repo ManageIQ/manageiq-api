@@ -26,7 +26,7 @@ RSpec.describe "Servers" do
 
       server = FactoryBot.create(:miq_server, :name => "Current Server name")
 
-      post api_server_url(nil, server), :params => gen_request(:edit, :name => "New Server name")
+      post(api_server_url(nil, server), :params => gen_request(:edit, :name => "New Server name"))
 
       expect(response).to have_http_status(:ok)
       server.reload
@@ -38,10 +38,10 @@ RSpec.describe "Servers" do
 
       server = FactoryBot.create(:miq_server, :name => "Current Server name")
 
-      post api_server_url(nil, server), :params => gen_request(:edit, :started_on => Time.now.utc)
+      post(api_server_url(nil, server), :params => gen_request(:edit, :started_on => Time.now.utc))
       expect_bad_request("Attribute(s) 'started_on' should not be specified for updating a server resource")
 
-      post api_server_url(nil, server), :params => gen_request(:edit, :stopped_on => Time.now.utc)
+      post(api_server_url(nil, server), :params => gen_request(:edit, :stopped_on => Time.now.utc))
       expect_bad_request("Attribute(s) 'stopped_on' should not be specified for updating a server resource")
     end
 
@@ -56,7 +56,7 @@ RSpec.describe "Servers" do
         {"href" => api_server_url(nil, server2), "name" => "Updated Test Server 2"}
       ]
 
-      post api_servers_url, :params => gen_request(:edit, options)
+      post(api_servers_url, :params => gen_request(:edit, options))
 
       expect(response).to have_http_status(:ok)
 
@@ -83,7 +83,7 @@ RSpec.describe "Servers" do
         {"href" => api_server_url(nil, server2), "started_on" => Time.now.utc}
       ]
 
-      post api_servers_url, :params => gen_request(:edit, options)
+      post(api_servers_url, :params => gen_request(:edit, options))
 
       expect_bad_request("Attribute(s) 'percent_memory' should not be specified for updating a server resource")
     end
@@ -101,16 +101,30 @@ RSpec.describe "Servers" do
       api_basic_authorize action_identifier(:servers, :delete)
       server = FactoryBot.create(:miq_server, :status => 'stopped')
 
-      expect { post api_server_url(nil, server), :params => gen_request(:delete) }.to change(MiqServer, :count).by(-1)
+      expect { post(api_server_url(nil, server), :params => gen_request(:delete)) }.to change(MiqServer, :count).by(-1)
       expect(response).to have_http_status(:ok)
+    end
+
+    it "will not delete a server with POST if the server is not deletable" do
+      api_basic_authorize action_identifier(:servers, :delete)
+      server = FactoryBot.create(:miq_server, :status => 'started')
+
+      expect { post(api_server_url(nil, server)) }.to change(MiqServer, :count).by(0)
     end
 
     it "can delete a server with DELETE if the server is deletable" do
       api_basic_authorize action_identifier(:servers, :delete)
       server = FactoryBot.create(:miq_server, :status => 'stopped')
 
-      expect { delete api_server_url(nil, server) }.to change(MiqServer, :count).by(-1)
+      expect { delete(api_server_url(nil, server)) }.to change(MiqServer, :count).by(-1)
       expect(response).to have_http_status(:no_content)
+    end
+
+    it "will not delete a server with DELETE if the server is not deletable" do
+      api_basic_authorize action_identifier(:servers, :delete)
+      server = FactoryBot.create(:miq_server, :status => 'started')
+
+      expect { delete(api_server_url(nil, server)) }.to change(MiqServer, :count).by(0)
     end
 
     it "can delete multiple servers with POST if the servers are deletable" do
@@ -122,14 +136,14 @@ RSpec.describe "Servers" do
         {"href" => api_server_url(nil, servers.last)}
       ]
 
-      expect { post api_servers_url, :params => gen_request(:delete, options) }.to change(MiqServer, :count).by(-2)
+      expect { post(api_servers_url, :params => gen_request(:delete, options)) }.to change(MiqServer, :count).by(-2)
       expect(response).to have_http_status(:ok)
     end
 
     it "forbids deletion of a server without an appropriate role" do
       expect_forbidden_request do
         server = FactoryBot.create(:miq_server, :name => "Current Server name")
-        delete api_server_url(nil, server)
+        delete(api_server_url(nil, server))
       end
     end
   end
