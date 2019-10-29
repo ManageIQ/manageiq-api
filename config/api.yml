@@ -2978,7 +2978,6 @@
         :identifier: security_group_tag
   :servers:
     :description: EVM Servers
-    :identifier: server
     :subcollections:
     - :settings
     :options:
@@ -2992,26 +2991,22 @@
       :post:
       - :name: query
         :identifier: ops_diagnostics
-      - :name: query
-        :identifier: server
       - :name: edit
-        :identifier: server_edit
+        :identifier: ops_settings
       - :name: delete
-        :identifier: server_delete
+        :identifier: ops_settings
     :resource_actions:
       :get:
       - :name: read
         :identifier: ops_diagnostics
-      - :name: read
-        :identifier: server
       :post:
       - :name: edit
-        :identifier: server_edit
+        :identifier: ops_settings
       - :name: delete
-        :identifier: server_delete
+        :identifier: ops_settings
       :delete:
       - :name: delete
-        :identifier: server_delete
+        :identifier: ops_settings
   :service_catalogs:
     :description: Service Catalogs
     :identifier: st_catalog_accord
