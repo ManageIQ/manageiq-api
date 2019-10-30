@@ -110,6 +110,7 @@ RSpec.describe "Servers" do
       server = FactoryBot.create(:miq_server, :status => 'started')
 
       expect { post(api_server_url(nil, server), :params => gen_request(:delete)) }.to change(MiqServer, :count).by(0)
+      expect_single_action_result(:success => false, :message => 'Failed to destroy the record')
     end
 
     it "can delete a server with DELETE if the server is deletable" do
