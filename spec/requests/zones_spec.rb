@@ -97,12 +97,27 @@ RSpec.describe "Zones" do
       expect(response).to have_http_status(:ok)
     end
 
+    it "cannot delete a default zone with POST" do
+      api_basic_authorize action_identifier(:zones, :delete)
+      zone = FactoryBot.create(:zone, :name => 'default')
+
+      expect { post api_zone_url(nil, zone), :params => gen_request(:delete) }.to change(Zone, :count).by(0)
+      expect_single_action_result(:success => false, :message => 'cannot delete default zone')
+    end
+
     it "can delete a zone with DELETE" do
       api_basic_authorize action_identifier(:zones, :delete)
       zone = FactoryBot.create(:zone)
 
       expect { delete api_zone_url(nil, zone) }.to change(Zone, :count).by(-1)
       expect(response).to have_http_status(:no_content)
+    end
+
+    it "cannot delete a default zone with DELETE" do
+      api_basic_authorize action_identifier(:zones, :delete)
+      zone = FactoryBot.create(:zone, :name => 'default')
+
+      expect { delete api_zone_url(nil, zone) }.to change(Zone, :count).by(0)
     end
 
     it "can delete multiple zones with POST" do
