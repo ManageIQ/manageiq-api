@@ -12,8 +12,8 @@ module Api
 
     def generate_widget_content(widget)
       desc = "#{widget_ident(widget)} content generation"
-      task_id = queue_object_action(widget, desc, :method_name => "generate_content", :args => ["User", User.current_user.current_group.description, [User.current_user.userid]])
-      action_result(true, desc, :task_id => task_id)
+      widget.queue_generate_content
+      action_result(true, desc)
     rescue => err
       action_result(false, err.to_s)
     end
