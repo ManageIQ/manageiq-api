@@ -265,12 +265,12 @@ describe "Services API" do
 
       patch(api_service_url(nil, svc), :params => [{"action" => "edit",   "path" => "name", "value" => "updated svc1"},
                                                    {"action" => "remove", "path" => "description"},
-                                                   {"action" => "add",    "path" => "display", "value" => true}])
+                                                   {"action" => "add",    "path" => "visible", "value" => true}])
 
       expect_single_resource_query("id" => svc.id.to_s, "name" => "updated svc1", "visible" => true)
       expect(svc.reload.name).to eq("updated svc1")
       expect(svc.description).to be_nil
-      expect(svc.display).to be_truthy
+      expect(svc.visible).to be_truthy
     end
 
     it "supports edits of single resource via a standard PATCH" do
