@@ -2928,7 +2928,7 @@
     - :settings
     :options:
     - :collection
-    :verbs: *g
+    :verbs: *gpd
     :klass: MiqServer
     :collection_actions:
       :get:
@@ -2937,10 +2937,22 @@
       :post:
       - :name: query
         :identifier: ops_diagnostics
+      - :name: edit
+        :identifier: ops_settings
+      - :name: delete
+        :identifier: ops_settings
     :resource_actions:
       :get:
       - :name: read
         :identifier: ops_diagnostics
+      :post:
+      - :name: edit
+        :identifier: ops_settings
+      - :name: delete
+        :identifier: ops_settings
+      :delete:
+      - :name: delete
+        :identifier: ops_settings
   :service_catalogs:
     :description: Service Catalogs
     :identifier: st_catalog_accord
