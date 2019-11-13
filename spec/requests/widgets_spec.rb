@@ -32,6 +32,18 @@ describe "Widgets API" do
   end
 
   describe "Widgets generate_content action" do
+    let(:miq_widget) { FactoryBot.create(:miq_widget, :visibility => {:roles => '_ALL_'}, :resource => MiqReport.first) }
+    let(:second_miq_widget) { FactoryBot.create(:miq_widget, :visibility => {:roles => '_ALL_'}, :resource => MiqReport.first) }
+    let(:feature1) { MiqProductFeature.find_all_by_identifier("dashboard_admin") }
+    let(:user1) { FactoryBot.create(:user, :role => "role1", :features => feature1) }
+    let(:group1) { user1.current_group }
+    let(:ws) { FactoryBot.create(:miq_widget_set, :name => "Home", :userid => user1.userid, :group_id => group1.id) }
+
+    before do
+      MiqReport.seed_report("Vendor and Guest OS")
+      miq_widget.make_memberof(ws)
+    end
+
     context "with an invalid id" do
       it "it responds with 404 Not Found" do
         api_basic_authorize(action_identifier(:widgets, :generate_content, :resource_actions, :post))
@@ -62,43 +74,54 @@ describe "Widgets API" do
         expect(response).to have_http_status(:not_found)
       end
 
-      it "generate_content of a single Widget" do
-        miq_widget = FactoryBot.create(:miq_widget)
+      context "generate_content for group" do
+        before do
+          api_basic_authorize('widget_generate_content')
+          stub_settings(::Settings.to_hash.merge(:product => {:report_sync => true}))
+        end
 
-        api_basic_authorize('widget_generate_content')
+        it "generates single widget content" do
+          expect(miq_widget.miq_widget_contents.count).to eq(0)
+          post(api_widget_url(nil, miq_widget), :params => gen_request(:generate_content))
+          expect(response).to have_http_status(:ok)
+          expect(miq_widget.miq_widget_contents.count).to eq(1)
+        end
 
-        expect(MiqTask.count).to eq(0)
-        post(api_widget_url(nil, miq_widget), :params => gen_request(:generate_content))
+        it "generates multiple widget contents" do
+          second_miq_widget.make_memberof(ws)
 
-        expect_single_action_result(:success => true, :message => /#{miq_widget.id}.* content generation/i, :href => api_widget_url(nil, miq_widget))
-        expect(MiqTask.first.message).to match(/content generation\]\ being run for user/)
+          post(api_widgets_url, :params => gen_request(:generate_content, [{"href" => api_widget_url(nil, miq_widget)}, {"href" => api_widget_url(nil, second_miq_widget)}]))
+
+          expect(response).to have_http_status(:ok)
+          expect(miq_widget.miq_widget_contents.count).to eq(1)
+          expect(second_miq_widget.miq_widget_contents.count).to eq(1)
+        end
       end
 
-      it "generate_content of multiple Widgets" do
-        first_miq_widget = FactoryBot.create(:miq_widget)
-        second_miq_widget = FactoryBot.create(:miq_widget)
-        api_basic_authorize('widget_generate_content')
-        expect(MiqTask.count).to eq(0)
+      context "generate_content for user" do
+        before do
+          api_basic_authorize('widget_generate_content')
+        end
 
-        post(api_widgets_url, :params => gen_request(:generate_content, [{"href" => api_widget_url(nil, first_miq_widget)}, {"href" => api_widget_url(nil, second_miq_widget)}]))
+        it "generates single widget content" do
+          expect(miq_widget.miq_widget_contents.count).to eq(0)
+          post(api_widget_url(nil, miq_widget), :params => gen_request(:generate_content))
 
-        expected = {
-          "results" => a_collection_containing_exactly(
-            a_hash_including(
-              "message" => a_string_matching(/#{first_miq_widget.id}.* content generation/i),
-              "success" => true,
-              "href"    => api_widget_url(nil, first_miq_widget)
-            ),
-            a_hash_including(
-              "message" => a_string_matching(/#{second_miq_widget.id}.* content generation/i),
-              "success" => true,
-              "href"    => api_widget_url(nil, second_miq_widget)
-            )
-          )
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
-        expect(MiqTask.count).to eq(2)
+          expect(response).to have_http_status(:ok)
+          expect(MiqTask.count).to eq(1)
+          expect(MiqQueue.count).to eq(1)
+        end
+
+        it "generates multiple widget contents" do
+          second_miq_widget.make_memberof(ws)
+
+          expect(MiqTask.count).to eq(0)
+          post(api_widgets_url, :params => gen_request(:generate_content, [{"href" => api_widget_url(nil, miq_widget)}, {"href" => api_widget_url(nil, second_miq_widget)}]))
+
+          expect(response).to have_http_status(:ok)
+          expect(MiqTask.count).to eq(2)
+          expect(MiqQueue.count).to eq(2)
+        end
       end
     end
   end
