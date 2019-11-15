@@ -158,7 +158,7 @@ describe "Authentication API" do
         "role"       => @role.name,
         "role_href"  => "/api/roles/#{group2.miq_user_role.id}",
         "tenant"     => @group.tenant.name,
-        "groups"     => @user.miq_groups.pluck(:description),
+        "groups"     => a_collection_containing_exactly(*@user.miq_groups.pluck(:description)),
         "miq_groups" => a_collection_including(
           hash_including("href" => api_group_url(nil, @user.miq_groups.first))
         )
