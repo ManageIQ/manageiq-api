@@ -1267,6 +1267,18 @@
       :get:
       - :name: read
         :identifier: event
+  :expressions:
+    :description: Expressions
+    :identifier: event
+    :options:
+      - :collection
+      - :subcollection
+    :verbs: *gp
+    :klass: MiqExpression
+    :resource_actions:
+      :get:
+        - :name: read
+          :identifier: miq_expression
   :features:
     :description: Product Features
     :options:
