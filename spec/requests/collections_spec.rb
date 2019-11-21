@@ -98,8 +98,8 @@ describe "Rest API Collections" do
     end
 
     it "query Currencies" do
-      FactoryBot.create(:chargeback_rate_detail_currency)
-      test_collection_query(:currencies, api_currencies_url, ChargebackRateDetailCurrency)
+      FactoryBot.create(:currency)
+      test_collection_query(:currencies, api_currencies_url, Currency)
     end
 
     it "query Measures" do
