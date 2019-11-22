@@ -1031,7 +1031,7 @@
     :options:
     - :collection
     :verbs: *g
-    :klass: ChargebackRateDetailCurrency
+    :klass: Currency
   :custom_attributes:
     :description: Custom Attributes
     :options:
