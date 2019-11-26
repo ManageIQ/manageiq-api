@@ -1323,63 +1323,6 @@ describe "Providers API" do
     end
   end
 
-  context 'load balancers subcollection' do
-    before do
-      @provider = FactoryBot.create(:ems_amazon_network)
-      @load_balancer = FactoryBot.create(:load_balancer_amazon, :ext_management_system => @provider)
-      load_balancer_listener = FactoryBot.create(:load_balancer_listener_amazon,
-                                                  :ext_management_system => @provider)
-      load_balancer_pool = FactoryBot.create(:load_balancer_pool_amazon,
-                                              :ext_management_system => @provider)
-      load_balancer_pool_member = FactoryBot.create(:load_balancer_pool_member_amazon,
-                                                     :ext_management_system => @provider)
-      @load_balancer.load_balancer_listeners << load_balancer_listener
-      load_balancer_listener.load_balancer_pools << load_balancer_pool
-      load_balancer_pool.load_balancer_pool_members << load_balancer_pool_member
-    end
-
-    it 'queries all load balancers' do
-      api_basic_authorize subcollection_action_identifier(:providers, :load_balancers, :read, :get)
-      expected = {
-        'resources' => [
-          {
-            'href' => api_provider_load_balancer_url(nil, @provider, @load_balancer)
-          }
-        ]
-
-      }
-      get(api_provider_load_balancers_url(nil, @provider))
-
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
-    end
-
-    it "will not show a provider's load balancers without the appropriate role" do
-      api_basic_authorize
-
-      get(api_provider_load_balancers_url(nil, @provider))
-
-      expect(response).to have_http_status(:forbidden)
-    end
-
-    it 'queries a single load balancer' do
-      api_basic_authorize subcollection_action_identifier(:providers, :load_balancers, :read, :get)
-
-      get(api_provider_load_balancer_url(nil, @provider, @load_balancer))
-
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => @load_balancer.id.to_s)
-    end
-
-    it "will not show a provider's load balancer without the appropriate role" do
-      api_basic_authorize
-
-      get(api_provider_load_balancer_url(nil, @provider, @load_balancer))
-
-      expect(response).to have_http_status(:forbidden)
-    end
-  end
-
   context 'cloud subnets subcollection' do
     before do
       @provider = FactoryBot.create(:ems_openstack).network_manager

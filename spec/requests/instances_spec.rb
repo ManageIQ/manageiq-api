@@ -480,58 +480,6 @@ RSpec.describe "Instances API" do
     end
   end
 
-  context 'load balancers subcollection' do
-    before do
-      @vm = FactoryBot.create(:vm_amazon)
-      @load_balancer = FactoryBot.create(:load_balancer_amazon)
-      load_balancer_listener = FactoryBot.create(:load_balancer_listener_amazon)
-      load_balancer_pool = FactoryBot.create(:load_balancer_pool_amazon)
-      load_balancer_pool_member = FactoryBot.create(:load_balancer_pool_member_amazon)
-      @load_balancer.load_balancer_listeners << load_balancer_listener
-      load_balancer_listener.load_balancer_pools << load_balancer_pool
-      load_balancer_pool.load_balancer_pool_members << load_balancer_pool_member
-      @vm.load_balancer_pool_members << load_balancer_pool_member
-    end
-
-    it 'queries all load balancers on an instance' do
-      api_basic_authorize subcollection_action_identifier(:instances, :load_balancers, :read, :get)
-      expected = {
-        'name'      => 'load_balancers',
-        'resources' => [
-          { 'href' => api_instance_load_balancer_url(nil, @vm, @load_balancer) }
-        ]
-      }
-      get(api_instance_load_balancers_url(nil, @vm))
-
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
-    end
-
-    it "will not show an instance's load balancers without the appropriate role" do
-      api_basic_authorize
-
-      get(api_instance_load_balancers_url(nil, @vm))
-
-      expect(response).to have_http_status(:forbidden)
-    end
-
-    it 'queries a single load balancer on an instance' do
-      api_basic_authorize subcollection_action_identifier(:instances, :load_balancers, :read, :get)
-      get(api_instance_load_balancer_url(nil, @vm, @load_balancer))
-
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('id' => @load_balancer.id.to_s)
-    end
-
-    it "will not show an instance's load balancer without the appropriate role" do
-      api_basic_authorize
-
-      get(api_instance_load_balancer_url(nil, @vm, @load_balancer))
-
-      expect(response).to have_http_status(:forbidden)
-    end
-  end
-
   context "instance custom_attributes" do
     let(:ca1) { FactoryBot.create(:custom_attribute, :name => "name1", :value => "value1") }
     let(:ca2) { FactoryBot.create(:custom_attribute, :name => "name2", :value => "value2") }

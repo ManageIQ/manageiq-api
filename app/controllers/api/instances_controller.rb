@@ -1,7 +1,6 @@
 module Api
   class InstancesController < BaseController
     include Subcollections::CustomAttributes
-    include Subcollections::LoadBalancers
     include Subcollections::SecurityGroups
     include Subcollections::Snapshots
     extend Api::Mixins::CentralAdmin

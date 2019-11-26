@@ -333,11 +333,6 @@ describe "Rest API Collections" do
       test_collection_query(:cloud_tenants, api_cloud_tenants_url, CloudTenant)
     end
 
-    it 'query LoadBalancers' do
-      FactoryBot.create(:load_balancer)
-      test_collection_query(:load_balancers, api_load_balancers_url, LoadBalancer)
-    end
-
     it 'query Alerts' do
       FactoryBot.create(:miq_alert_status)
       test_collection_query(:alerts, api_alerts_url, MiqAlertStatus)
@@ -643,11 +638,6 @@ describe "Rest API Collections" do
     it "bulk query Zones" do
       FactoryBot.create(:zone, :name => "api zone")
       test_collection_bulk_query(:zones, api_zones_url, Zone)
-    end
-
-    it 'bulk query LoadBalancers' do
-      FactoryBot.create(:load_balancer)
-      test_collection_bulk_query(:load_balancers, api_load_balancers_url, LoadBalancer)
     end
 
     it "bulk query CloudSubnets" do

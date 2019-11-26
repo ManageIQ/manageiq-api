@@ -1690,7 +1690,6 @@
     - :collection
     :subcollections:
     - :custom_attributes
-    - :load_balancers
     - :security_groups
     - :snapshots
     :collection_actions:
@@ -1787,33 +1786,6 @@
         - host_show
         - instance_show
         - vm_show
-  :load_balancers:
-    :description: Load Balancers
-    :options:
-    - :collection
-    - :subcollection
-    - :custom_actions
-    :verbs: *gp
-    :klass: LoadBalancer
-    :collection_actions:
-      :get:
-      - :name: read
-        :identifier: load_balancer_show_list
-      :post:
-      - :name: query
-        :identifier: load_balancer_show_list
-    :resource_actions:
-      :get:
-      - :name: read
-        :identifier: load_balancer_show
-    :subcollection_actions:
-      :get:
-      - :name: read
-        :identifier: load_balancer_show
-    :subresource_actions:
-      :get:
-      - :name: read
-        :identifier: load_balancer_show
   :measures:
     :description: Measures
     :identifier: measure
@@ -2281,7 +2253,6 @@
     - :cloud_subnets
     - :cloud_tenants
     - :custom_attributes
-    - :load_balancers
     - :security_groups
     - :vms
     - :flavors
