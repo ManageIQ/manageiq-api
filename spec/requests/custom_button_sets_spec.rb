@@ -66,12 +66,24 @@ RSpec.describe 'CustomButtonSets API' do
           'display'          => true,
           'applies_to_class' => 'GenericObjectDefinition',
           'applies_to_id'    => '10000000000050',
-        },
+        }
       }
       post(api_custom_button_sets_url, :params => cb_set_rec)
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body['results'].first).to include(cb_set_rec)
+      expect(response.parsed_body['results'].first).to match(
+        hash_including(
+          'name'        => 'Generic Object Custom Button Group',
+          'description' => 'Generic Object Custom Button Group description',
+          'set_data'    => hash_including(
+            'button_icon'      => 'ff ff-view-expanded',
+            'button_color'     => '#4727ff',
+            'display'          => true,
+            'applies_to_class' => 'GenericObjectDefinition',
+            'applies_to_id'    => '10000000000050',
+          )
+        )
+      )
       custom_button_set = CustomButtonSet.find(response.parsed_body['results'].first["id"])
       expect(custom_button_set.set_data[:button_icon]).to eq("ff ff-view-expanded")
     end
