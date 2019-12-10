@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Ivanchuk-2
+
+### Added
+* Expose error messages from ServiceTemplate.orderable?[(#656)](https://github.com/ManageIQ/manageiq-api/pull/656)
+* Add endpoints for widget content generation [(#660)](https://github.com/ManageIQ/manageiq-api/pull/660)
+* Added validations for the input params for conversion hosts. [(#683)](https://github.com/ManageIQ/manageiq-api/pull/683)
+
+
+### Fixed
+* Create TransformationMapping before Item (FIX CI FAILURE) [(#666)](https://github.com/ManageIQ/manageiq-api/pull/666)
+* Fixes the pxe_servers collection actions [(#678)](https://github.com/ManageIQ/manageiq-api/pull/678)
+* Include user info in widget generation [(#679)](https://github.com/ManageIQ/manageiq-api/pull/679)
+
+
 ## Ivanchuk-1
 
 ### Added
