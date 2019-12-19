@@ -9,7 +9,8 @@ module Api
         elsif request.headers[HttpHeaders::AUTH_TOKEN]
           :token
         elsif request.headers["HTTP_AUTHORIZATION"]
-          :basic
+          # For AJAX requests the basic auth type should be distinguished
+          request.headers['X-REQUESTED-WITH'] == 'XMLHttpRequest' ? :basic_async : :basic
         elsif request.x_csrf_token
           # Even if the session cookie is not set, we want to consider a request
           # as a UI authentication request. Otherwise the response would force
@@ -33,7 +34,7 @@ module Api
         when :ui_session
           raise AuthenticationError unless valid_ui_session?
           auth_user(session[:userid])
-        when :basic, nil
+        when :basic, :basic_async, nil
           success = authenticate_with_http_basic do |u, p|
             begin
               timeout = ::Settings.api.authentication_timeout.to_i_with_method
@@ -50,7 +51,7 @@ module Api
         api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
         case auth_mechanism
-        when :system, :token, :ui_session
+        when :system, :token, :ui_session, :basic_async
           render :status => 401, :json => ErrorSerializer.new(:unauthorized, e).serialize(true).to_json
         when :basic, nil
           request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize(true).to_json)
