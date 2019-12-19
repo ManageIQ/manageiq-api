@@ -11,7 +11,8 @@ module Api
         elsif request.headers["HTTP_AUTHORIZATION"] && params[:requester_type] == 'ui'
           :basic_ui
         elsif request.headers["HTTP_AUTHORIZATION"]
-          :basic
+          # For AJAX requests the basic auth type should be distinguished
+          request.headers['X-REQUESTED-WITH'] == 'XMLHttpRequest' ? :basic_async : :basic
         else
           # no attempt at authentication, usually falls back to :basic
           nil
@@ -27,7 +28,7 @@ module Api
           authenticate_with_system_token(request.headers[HttpHeaders::MIQ_TOKEN])
         when :token
           authenticate_with_user_token(request.headers[HttpHeaders::AUTH_TOKEN])
-        when :basic, :basic_ui, nil
+        when :basic, :basic_ui, :basic_async, nil
           success = authenticate_with_http_basic do |u, p|
             begin
               timeout = ::Settings.api.authentication_timeout.to_i_with_method
@@ -44,7 +45,7 @@ module Api
         api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
         case auth_mechanism
-        when :system, :token, :basic_ui
+        when :system, :token, :basic_ui, :basic_async
           render :status => 401, :json => ErrorSerializer.new(:unauthorized, e).serialize(true).to_json
         when :basic, nil
           request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize(true).to_json)
