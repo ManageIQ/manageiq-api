@@ -1,6 +1,6 @@
 module Api
   class ExpressionsController < BaseController
-    AUTOCOMPLETE_ACTIONS = %w[registry_value registry_data registry_key registry_operator tag_value tag_field exp_type entity field category operator tag_operator expression_operator value check_operator].freeze
+    AUTOCOMPLETE_ACTIONS = %w[registry_value registry_data registry_key registry_operator tag_value tag_field exp_type entity field category operator tag_operator expression_operator value check_operator count_operator].freeze
     REQUIRED_PARAMETERS_KEYS = %i[model autocomplete_actions].freeze
 
     def index
@@ -195,6 +195,10 @@ module Api
 
     def autocomplete_action_check_operator(_options)
       ["CHECK ALL", "CHECK ANY", "CHECK COUNT"]
+    end
+
+    def autocomplete_action_count_operator(_options)
+      MiqExpression::NUM_OPERATORS
     end
 
     def autocomplete_action_registry_key(_options)
