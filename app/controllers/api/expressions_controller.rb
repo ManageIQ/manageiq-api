@@ -45,7 +45,7 @@ module Api
       parent = {}
       parent[:assoc_path] = root_model
       parent[:root] = root_model
-      MiqExpression.expression_reflections_for(model, parent).map { |x| [x[:human_name]] } || []
+      MiqExpression.expression_reflections_for(model, parent).map { |x| x[:human_name] } || []
     end
 
     def autocomplete_action_entity(options)
@@ -62,7 +62,7 @@ module Api
         written_input.last == MiqExpression.value2human(model).strip ? relations_in_human_form_for(model, root_model) : []
       when 2
         relation = model_info_from(written_input, model, 1)
-        association_model = relation[:association_klass]
+        association_model = relation&.dig(:association_klass)
 
         if association_model && !MiqExpression.parse_field_or_tag("#{model}.#{relation[:association]}")&.plural?
           relations_in_human_form_for(association_model, root_model)
