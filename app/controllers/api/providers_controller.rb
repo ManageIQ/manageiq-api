@@ -3,6 +3,7 @@ module Api
     TYPE_ATTR         = "type".freeze
     ZONE_ATTR         = "zone".freeze
     CREDENTIALS_ATTR  = "credentials".freeze
+    DDF_ATTR          = 'ddf'.freeze
     AUTH_TYPE_ATTR    = "auth_type".freeze
     DEFAULT_AUTH_TYPE = "default".freeze
     CONNECTION_ATTRS  = %w(connection_configurations).freeze
@@ -29,9 +30,14 @@ module Api
 
     def create_resource(type, _id, data = {})
       assert_id_not_specified(data, type)
-      raise BadRequestError, "Must specify credentials" if data[CREDENTIALS_ATTR].nil? && !data.keys.include?(*CONNECTION_ATTRS)
 
-      create_provider(data)
+      if data.delete(DDF_ATTR)
+        create_provider_ddf(data)
+      else
+        raise BadRequestError, "Must specify credentials" if data[CREDENTIALS_ATTR].nil? && !data.key?(*CONNECTION_ATTRS)
+
+        create_provider(data)
+      end
     end
 
     def edit_resource(type, id = nil, data = {})
@@ -224,6 +230,14 @@ module Api
       provider
     rescue => err
       provider.destroy if provider
+      raise BadRequestError, "Could not create the new provider - #{err}"
+    end
+
+    def create_provider_ddf(data)
+      provider_klass = fetch_provider_klass(collection_class(:providers), data)
+      provider = provider_klass.create_from_params(data)
+    rescue => err
+      provider.try(:destroy)
       raise BadRequestError, "Could not create the new provider - #{err}"
     end
 

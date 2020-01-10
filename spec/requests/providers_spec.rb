@@ -468,6 +468,33 @@ describe "Providers API" do
         .and_return([OvirtSDK4::ProbeResult.new(:version => '3')])
     end
 
+    it 'invokes the DDF creation when ddf=true' do
+      api_basic_authorize collection_action_identifier(:providers, :create)
+
+      expect(ManageIQ::Providers::Amazon::CloudManager).to receive(:create_from_params).and_return('yay')
+
+      post(api_providers_url, :params => {'ddf'             => true,
+                                          'name'            => 'Amazon Test',
+                                          'type'            => 'ManageIQ::Providers::Amazon::CloudManager',
+                                          'zone_name'       => @zone.name,
+                                          'provider_region' => 'us-east-1',
+                                          'endpoints'       => {
+                                            'default' => {
+                                              'userid'   => 'foo',
+                                              'password' => 'bar',
+                                            }
+                                          }})
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq('results' => ['yay'])
+    end
+
+    it 'handles errors when ddf=true' do
+      api_basic_authorize collection_action_identifier(:providers, :create)
+      post(api_providers_url, :params => {'ddf' => true})
+      expect_bad_request(/Could not create the new provider/)
+    end
+
     it 'allows provider specific attributes to be specified' do
       allow(ManageIQ::Providers::Azure::CloudManager).to receive(:api_allowed_attributes).and_return(%w(azure_tenant_id))
       tenant = FactoryBot.create(:cloud_tenant)
