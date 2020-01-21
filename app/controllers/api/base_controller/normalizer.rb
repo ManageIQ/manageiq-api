@@ -24,7 +24,8 @@ module Api
         is_ar = obj.kind_of?(ActiveRecord::Base)
         attrs.each do |k|
           next if Api.encrypted_attribute?(k) && api_resource_action_options.exclude?("include_encrypted_attributes")
-          next if is_ar ? !obj.respond_to?(k) : !obj.key?(k)
+          next if is_ar ? !obj.respond_to?(k) : !obj.try(:key?, k)
+
           result[k] = normalize_attr(k, is_ar ? obj.try(k) : obj[k])
         end
         result
