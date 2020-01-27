@@ -152,12 +152,19 @@ module Api
         validate_method_action(:delete, "delete")
       end
 
+      def validate_deprecation
+        api_log_warn("Collection '%s' is deprecated" % @req.collection) if collection_option?(:deprecated)
+        api_log_warn("Subcollection '%s' is deprecated" % @req.subcollection) if @req.subcollection? && collection_config.option?(@req.subcollection, :deprecated)
+      end
+
       def validate_method_action(method_name, action_name)
+        validate_deprecation
         cname, target = if collection_option?(:arbitrary_resource_path)
                           [@req.collection, (@req.collection_id ? :resource : :collection)]
                         else
                           [@req.subject, request_type_target.last]
                         end
+
         aspec = if @req.subcollection?
                   collection_config.typed_subcollection_actions(@req.collection, cname, target) ||
                     collection_config.typed_collection_actions(cname, target)
