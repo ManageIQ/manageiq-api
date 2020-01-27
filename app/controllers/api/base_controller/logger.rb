@@ -81,6 +81,12 @@ module Api
         $api_log.info("MIQ(#{self.class.name}.#{method}) #{msg}")
       end
 
+      def api_log_warn(msg)
+        method = api_get_method_name(caller.first, __method__)
+
+        $api_log.warn("MIQ(#{self.class.name}.#{method}) #{msg}")
+      end
+
       private
 
       def log_request_body
