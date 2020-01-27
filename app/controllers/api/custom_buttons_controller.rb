@@ -16,8 +16,13 @@ module Api
     def edit_resource(type, id, data)
       custom_button = fetch_custom_button(type, id)
       updated_data = data['resource'] || data
-      updated_data['resource_action'] = find_or_create_resource_action(updated_data['resource_action']) if updated_data.key?('resource_action')
+      resource_action = updated_data["resource_action"]
+      updated_data.except!("resource_action")
       custom_button.update!(updated_data.deep_symbolize_keys) if data.present?
+      if resource_action.present?
+        custom_button.resource_action = find_or_create_resource_action(resource_action)
+        custom_button.save
+      end
       custom_button
     rescue => err
       raise BadRequestError, "Failed to update custom button - #{err}"
