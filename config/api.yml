@@ -1790,6 +1790,7 @@
   :load_balancers:
     :description: Load Balancers
     :options:
+    - :deprecated
     - :collection
     - :subcollection
     - :custom_actions
