@@ -21,7 +21,7 @@ module Api
       custom_button.update!(updated_data.deep_symbolize_keys) if data.present?
       if resource_action.present?
         custom_button.resource_action = find_or_create_resource_action(resource_action)
-        custom_button.save
+        custom_button.save!
       end
       custom_button
     rescue => err

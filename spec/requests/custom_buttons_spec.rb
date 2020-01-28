@@ -131,7 +131,7 @@ RSpec.describe 'CustomButtons API' do
       request = {
         'action'    => 'edit',
         'resources' => [
-          { 'id' => cb.id.to_s, 'resource' => {'name' => 'updated 1', 'resource_action' => {'ae_namespace' => 'SYSTEM2'}, 'visibility' => {'roles' => ['_ALL_']}}},
+          { 'id' => cb.id.to_s, 'resource' => {'name' => 'updated 1', 'resource_action' => {'ae_namespace' => 'SYSTEM2', :ae_attributes => {"attribute" => "is present"}}, 'visibility' => {'roles' => ['_ALL_']}}},
         ]
       }
       post(api_custom_buttons_url, :params => request)
@@ -144,6 +144,7 @@ RSpec.describe 'CustomButtons API' do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
       expect(cb.reload.visibility[:roles]).to eq(['_ALL_'])
+      expect(cb.reload.resource_action.ae_attributes).to include("attribute" => "is present")
     end
   end
 
