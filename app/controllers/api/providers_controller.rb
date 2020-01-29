@@ -134,12 +134,24 @@ module Api
       klass.params_for_create
     end
 
+    def leaf_subclasses
+      ActiveSupport::Dependencies.interlock.loading do
+        ManageIQ::Providers::BaseManager.leaf_subclasses
+      end
+    end
+
+    def supported_types_for_create
+      ActiveSupport::Dependencies.interlock.loading do
+        ExtManagementSystem.supported_types_for_create
+      end
+    end
+
     def providers_options
-      providers_options = ManageIQ::Providers::BaseManager.leaf_subclasses.inject({}) do |po, ems|
+      providers_options = leaf_subclasses.inject({}) do |po, ems|
         po.merge(ems.ems_type => ems.options_description)
       end
 
-      supported_providers = ExtManagementSystem.supported_types_for_create.map do |klass|
+      supported_providers = supported_types_for_create.map do |klass|
         if klass.supports_regions?
           regions = klass.parent::Regions.all.sort_by { |r| r[:description] }.map { |r| r.slice(:name, :description) }
         end
