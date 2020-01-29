@@ -81,7 +81,7 @@ RSpec.describe "Headers" do
       expect(response.headers.to_h).to include(expected)
       expect(content_security_policy_for("default-src")).to include("'self'")
       expect(content_security_policy_for("connect-src")).to include("'self'")
-      expect(content_security_policy_for("frame-src")).to include("'self'")
+      expect(content_security_policy_for("frame-src") || content_security_policy_for("child-src")).to include("'self'")
       expect(content_security_policy_for("script-src")).to include("'unsafe-eval'", "'unsafe-inline'", "'self'")
       expect(content_security_policy_for("style-src")).to include("'unsafe-inline'", "'self'")
     end
