@@ -190,12 +190,8 @@ module Api
       end
 
       def filter_results(miq_expression, res, options)
-        if miq_expression.present? && options.key?(:limit) && options.key?(:offset)
-          subquery_res = Rbac.filtered(res, options.except(:offset, :limit))
-          [Rbac.filtered(res, options), subquery_res.count]
-        else
-          [Rbac.filtered(res, options)]
-        end
+        subquery_res = Rbac.filtered(res, options.except(:offset, :limit))
+        [Rbac.filtered(res, options), subquery_res.count]
       end
 
       def virtual_attribute_search(resource, attribute)
