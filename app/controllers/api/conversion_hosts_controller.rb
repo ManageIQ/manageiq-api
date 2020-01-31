@@ -14,7 +14,7 @@ module Api
     #   * vmware_vddk_package_url
     #   * vmware_ssh_private_key
     #   * conversion_host_ssh_private_key
-    #   * openstack_tls_ca_certs
+    #   * tls_ca_certs
     #   * auth_user
     #
     # Example:
