@@ -123,6 +123,25 @@ RSpec.describe "Snapshots API" do
         expect(response).to have_http_status(:ok)
       end
 
+      it "doesn't render a failed action response if a name is not provided and optional" do
+        api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :create))
+        ems = FactoryBot.create(:ems_redhat)
+        host = FactoryBot.create(:host, :ext_management_system => ems)
+        vm = FactoryBot.create(:vm_redhat, :name => "snapshot_name_optional?", :host => host, :ext_management_system => ems)
+
+        post(api_vm_snapshots_url(nil, vm), :params => { :description => "Alice's snapshot" })
+
+        expected = {
+          "results" => [
+            a_hash_including(
+              "success" => true
+            )
+          ]
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+
       it "will not create a snapshot unless authorized" do
         api_basic_authorize
         vm = FactoryBot.create(:vm_vmware)
