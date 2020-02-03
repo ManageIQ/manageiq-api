@@ -3087,6 +3087,8 @@
       :post:
       - :name: refresh_dialog_fields
         :identifier: svc_catalog_provision
+      - :name: load_dynamic_values
+        :identifier: svc_catalog_provision
       - :name: delete
         :identifier: dialog_delete
       - :name: edit

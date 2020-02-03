@@ -7,6 +7,8 @@ module Api
     TEMPLATE_CLASSES = %w[OrchestrationTemplate ConfigurationScript].freeze
     DIALOG_CLASSES = %w[Dialog::OrchestrationTemplateServiceDialog Dialog::AnsibleTowerJobTemplateDialogService].freeze
 
+    ENTRYPOINT_KEYS = %w[ae_namespace ae_class ae_instance].freeze
+
 
     def refresh_dialog_fields_resource(type, id = nil, data = nil)
       raise BadRequestError, "Must specify an id for Reconfiguring a #{type} resource" unless id
@@ -17,6 +19,45 @@ module Api
 
         refresh_dialog_fields_service_dialog(service_dialog, data)
       end
+    end
+
+    def load_dynamic_values_resource(type, id = nil, data = nil)
+      raise BadRequestError, "Must specify an id for loading a #{type} resource" unless id
+      raise BadRequestError, "Must specify an automate entrypoint" if (data.keys & ENTRYPOINT_KEYS) != ENTRYPOINT_KEYS
+
+      request_hash = {
+        :namespace => data['ae_namespace'],
+        :class_name => data['ae_class'],
+        :instance_name => data['ae_instance'],
+        :automate_message => nil,
+        :open_url_task_id => nil,
+        :attrs => data['attributes'] || {},
+        # :object_type => "ServiceTemplate",
+        # :object_id => 8,
+        :user_id => current_user.id,
+        :miq_group_id => current_user.current_group.id,
+        :tenant_id => current_user.current_tenant.id,
+        :username => current_user.userid
+      }
+
+      result = MiqAeEngine.deliver(request_hash).root.attributes
+
+      validate = [
+        result['required'] && result['required'] == 'true' ? {:type => 'required-validator'} : nil,
+        result['validator_type'] && result['validator_rule'] ? {:type => 'pattern-validator', :pattern => result['validator_rule']} : nil
+      ].compact
+
+      # TODO: show_past_dates
+      {
+        :helperText       => result['description'],
+        :dataType         => result['data_type'],
+        :visible          => result['visible'],
+        :type             => result['protected'] ? 'password' : nil,
+        :initialValue     => result['default_value'],
+        :isReadOnly       => result['read_only'],
+        :isRequired       => result['required'],
+        :validate         => validate.empty? ? nil : validate,
+      }.compact
     end
 
     def fetch_service_dialogs_content(resource)
