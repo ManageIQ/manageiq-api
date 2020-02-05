@@ -52,11 +52,13 @@ module Api
                 # Basic auth, user/password but configured against OpenIDC.
                 # Let's authenticate as such and get a JWT for that user.
                 #
-                authenticate_with_jwt(get_jwt_token(u, p))
-              else
-                user = User.authenticate(u, p, request, :require_user => true, :timeout => timeout)
-                auth_user(user.userid)
+                user_jwt   = get_jwt_token(u, p)
+                token_info = validate_jwt_token(user_jwt)
+                user_data, membership = user_details_from_jwt(token_info)
+                define_jwt_request_headers(user_data, membership)
               end
+              user = User.authenticate(u, p, request, :require_user => true, :timeout => timeout)
+              auth_user(user.userid)
             rescue MiqException::MiqEVMLoginError => e
               raise AuthenticationError, e.message
             end
@@ -114,9 +116,13 @@ module Api
       end
 
       def authenticate_with_jwt(jwt_token)
-        token_data = validate_jwt_token(jwt_token)
+        token_info = validate_jwt_token(jwt_token)
+        user_data, membership = user_details_from_jwt(token_info)
+        define_jwt_request_headers(user_data, membership)
 
-        auth_user(token_data["username"])
+        timeout = ::Settings.api.authentication_timeout.to_i_with_method
+        user = User.authenticate(user_data[:username], "", request, :require_user => true, :timeout => timeout)
+        auth_user(user.userid)
       rescue => e
         raise AuthenticationError, "Failed to Authenticate with JWT - error #{e}"
       end
@@ -246,6 +252,28 @@ module Api
         parsed_response
       rescue => e
         raise AuthenticationError, "Failed to Validate the JWT - error #{e}"
+      end
+
+      def user_details_from_jwt(token_info)
+        user_attrs = {
+          :username  => token_info["username"],
+          :fullname  => token_info["name"],
+          :firstname => token_info["given_name"],
+          :lastname  => token_info["family_name"],
+          :email     => token_info["email"],
+          :domain    => token_info["domain"]
+        }
+        [user_attrs, Array(token_info["groups"])]
+      end
+
+      def define_jwt_request_headers(user_data, membership)
+        request.headers["X-REMOTE-USER"]           = user_data[:username]
+        request.headers["X-REMOTE-USER-FULLNAME"]  = user_data[:fullname]
+        request.headers["X-REMOTE-USER-FIRSTNAME"] = user_data[:firstname]
+        request.headers["X-REMOTE-USER-LASTNAME"]  = user_data[:lastname]
+        request.headers["X-REMOTE-USER-EMAIL"]     = user_data[:email]
+        request.headers["X-REMOTE-USER-DOMAIN"]    = user_data[:domain]
+        request.headers["X-REMOTE-USER-GROUPS"]    = membership.join(',')
       end
     end
   end
