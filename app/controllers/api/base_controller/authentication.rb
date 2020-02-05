@@ -85,6 +85,10 @@ module Api
 
       private
 
+      def clear_cached_current_user
+        User.current_user = nil
+      end
+
       def api_token_mgr
         Environment.user_token_service.token_mgr('api')
       end
