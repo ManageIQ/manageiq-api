@@ -21,6 +21,7 @@ module Api
     include ActionController::RequestForgeryProtection
 
     before_action :log_request_initiated
+    before_action :clear_cached_current_user
     before_action :require_api_user_or_token, :except => [:options, :product_info]
     before_action :set_gettext_locale, :set_access_control_headers, :parse_api_request, :log_api_request
     before_action :validate_api_request, :except => [:product_info]
