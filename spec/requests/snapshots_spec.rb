@@ -69,7 +69,7 @@ RSpec.describe "Snapshots API" do
         host = FactoryBot.create(:host, :ext_management_system => ems)
         vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
 
-        post(api_vm_snapshots_url(nil, vm), :params => { :name => "Alice's snapshot" })
+        post(api_vm_snapshots_url(nil, vm), :params => {:name => "Alice's snapshot"})
 
         expected = {
           "results" => [
@@ -89,7 +89,7 @@ RSpec.describe "Snapshots API" do
         api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :create))
         vm = FactoryBot.create(:vm_vmware)
 
-        post(api_vm_snapshots_url(nil, vm), :params => { :name => "Alice's snapsnot" })
+        post(api_vm_snapshots_url(nil, vm), :params => {:name => "Alice's snapsnot"})
 
         expected = {
           "results" => [
@@ -109,7 +109,7 @@ RSpec.describe "Snapshots API" do
         host = FactoryBot.create(:host, :ext_management_system => ems)
         vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
 
-        post(api_vm_snapshots_url(nil, vm), :params => { :description => "Alice's snapshot" })
+        post(api_vm_snapshots_url(nil, vm), :params => {:description => "Alice's snapshot"})
 
         expected = {
           "results" => [
@@ -123,11 +123,30 @@ RSpec.describe "Snapshots API" do
         expect(response).to have_http_status(:ok)
       end
 
+      it "doesn't render a failed action response if a name is not provided and optional" do
+        api_basic_authorize(subcollection_action_identifier(:vms, :snapshots, :create))
+        ems = FactoryBot.create(:ems_redhat)
+        host = FactoryBot.create(:host, :ext_management_system => ems)
+        vm = FactoryBot.create(:vm_redhat, :name => "snapshot_name_optional?", :host => host, :ext_management_system => ems)
+
+        post(api_vm_snapshots_url(nil, vm), :params => {:description => "Alice's snapshot"})
+
+        expected = {
+          "results" => [
+            a_hash_including(
+              "success" => true
+            )
+          ]
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+
       it "will not create a snapshot unless authorized" do
         api_basic_authorize
         vm = FactoryBot.create(:vm_vmware)
 
-        post(api_vm_snapshots_url(nil, vm), :params => { :description => "Alice's snapshot" })
+        post(api_vm_snapshots_url(nil, vm), :params => {:description => "Alice's snapshot"})
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -141,7 +160,7 @@ RSpec.describe "Snapshots API" do
         vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
         snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
 
-        post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "revert" })
+        post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "revert"})
 
         expected = {
           "message"   => "Reverting to snapshot Alice's snapshot for Virtual Machine id:#{vm.id} name:'Alice's VM'",
@@ -158,7 +177,7 @@ RSpec.describe "Snapshots API" do
         vm = FactoryBot.create(:vm_vmware)
         snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
-        post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "revert" })
+        post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "revert"})
 
         expected = {
           "success" => false,
@@ -173,7 +192,7 @@ RSpec.describe "Snapshots API" do
         vm = FactoryBot.create(:vm_vmware)
         snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
-        post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "revert" })
+        post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "revert"})
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -187,7 +206,7 @@ RSpec.describe "Snapshots API" do
         vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
         snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
 
-        post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "delete" })
+        post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "delete"})
 
         expected = {
           "message"   => "Deleting snapshot Alice's snapshot for Virtual Machine id:#{vm.id} name:'Alice's VM'",
@@ -204,7 +223,7 @@ RSpec.describe "Snapshots API" do
         vm = FactoryBot.create(:vm_vmware)
         snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
-        post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "delete" })
+        post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "delete"})
 
         expected = {
           "success" => false,
@@ -219,7 +238,7 @@ RSpec.describe "Snapshots API" do
         vm = FactoryBot.create(:vm_vmware)
         snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
-        post(api_vm_snapshot_url(nil, vm, snapshot), :params => { :action => "delete" })
+        post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "delete"})
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -228,7 +247,7 @@ RSpec.describe "Snapshots API" do
         api_basic_authorize(action_identifier(:vms, :delete, :snapshots_subresource_actions, :post))
         vm = FactoryBot.create(:vm_vmware)
 
-        post(api_vm_snapshot_url(nil, vm, 0), :params => { :action => "delete" })
+        post(api_vm_snapshot_url(nil, vm, 0), :params => {:action => "delete"})
 
         expected = {
           "error" => a_hash_including(
@@ -416,7 +435,7 @@ RSpec.describe "Snapshots API" do
         host = FactoryBot.create(:host_openstack_infra, :ext_management_system => ems)
         instance = FactoryBot.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
 
-        post(api_instance_snapshots_url(nil, instance), :params => { :name => "Alice's snapshot" })
+        post(api_instance_snapshots_url(nil, instance), :params => {:name => "Alice's snapshot"})
 
         expected = {
           "results" => [
@@ -436,7 +455,7 @@ RSpec.describe "Snapshots API" do
         api_basic_authorize(subcollection_action_identifier(:instances, :snapshots, :create))
         instance = FactoryBot.create(:vm_openstack)
 
-        post(api_instance_snapshots_url(nil, instance), :params => { :name => "Alice's snapsnot" })
+        post(api_instance_snapshots_url(nil, instance), :params => {:name => "Alice's snapsnot"})
 
         expected = {
           "results" => [
@@ -456,7 +475,7 @@ RSpec.describe "Snapshots API" do
         host = FactoryBot.create(:host_openstack_infra, :ext_management_system => ems)
         instance = FactoryBot.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
 
-        post(api_instance_snapshots_url(nil, instance), :params => { :description => "Alice's snapshot" })
+        post(api_instance_snapshots_url(nil, instance), :params => {:description => "Alice's snapshot"})
 
         expected = {
           "results" => [
@@ -474,7 +493,7 @@ RSpec.describe "Snapshots API" do
         api_basic_authorize
         instance = FactoryBot.create(:vm_openstack)
 
-        post(api_instance_snapshots_url(nil, instance), :params => { :description => "Alice's snapshot" })
+        post(api_instance_snapshots_url(nil, instance), :params => {:description => "Alice's snapshot"})
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -489,7 +508,7 @@ RSpec.describe "Snapshots API" do
         instance = FactoryBot.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
         snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => instance)
 
-        post(api_instance_snapshot_url(nil, instance, snapshot), :params => { :action => "delete" })
+        post(api_instance_snapshot_url(nil, instance, snapshot), :params => {:action => "delete"})
 
         expected = {
           "message"   => "Deleting snapshot Alice's snapshot for Instance id:#{instance.id} name:'Alice's Instance'",
@@ -506,7 +525,7 @@ RSpec.describe "Snapshots API" do
         instance = FactoryBot.create(:vm_openstack)
         snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance)
 
-        post(api_instance_snapshot_url(nil, instance, snapshot), :params => { :action => "delete" })
+        post(api_instance_snapshot_url(nil, instance, snapshot), :params => {:action => "delete"})
 
         expected = {
           "success" => false,
@@ -521,7 +540,7 @@ RSpec.describe "Snapshots API" do
         instance = FactoryBot.create(:vm_openstack)
         snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance)
 
-        post(api_instance_snapshot_url(nil, instance, snapshot), :params => { :action => "delete" })
+        post(api_instance_snapshot_url(nil, instance, snapshot), :params => {:action => "delete"})
 
         expect(response).to have_http_status(:forbidden)
       end

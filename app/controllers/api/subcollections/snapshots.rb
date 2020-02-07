@@ -6,7 +6,7 @@ module Api
       end
 
       def snapshots_create_resource(parent, _type, _id, data)
-        raise "Must specify a name for the snapshot" unless data["name"].present?
+        raise "Must specify a name for the snapshot" if data["name"].blank? && !parent.try(:snapshot_name_optional?)
         raise parent.unsupported_reason(:snapshot_create) unless parent.supports_snapshot_create?
 
         message = "Creating snapshot #{data["name"]} for #{snapshot_ident(parent)}"
