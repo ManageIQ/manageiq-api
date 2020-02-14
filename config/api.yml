@@ -2312,10 +2312,6 @@
         - ems_cloud_refresh
       - :name: delete
         :identifier: ems_infra_delete
-      - :name: pause
-        :identifier: ems_infra_edit
-      - :name: resume
-        :identifier: ems_infra_edit
       - :name: verify_credentials
         :identifier: ems_infra_new
     :resource_actions:
@@ -2339,10 +2335,6 @@
         :identifier: ems_infra_import_vm
         :options:
         - :validate_action
-      - :name: pause
-        :identifier: ems_infra_edit
-      - :name: resume
-        :identifier: ems_infra_edit
       :delete:
       - :name: delete
         :identifier: ems_infra_delete
