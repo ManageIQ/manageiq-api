@@ -95,22 +95,6 @@ module Api
       render_options(:providers, options)
     end
 
-    def pause_resource(type, id, _data)
-      provider = resource_search(id, type, collection_class(type))
-      provider.pause!
-      action_result(true, "Paused #{provider_ident(provider)}")
-    rescue => err
-      action_result(false, "Could not pause Provider - #{err}")
-    end
-
-    def resume_resource(type, id, _data)
-      provider = resource_search(id, type, collection_class(type))
-      provider.resume!
-      action_result(true, "Resumed #{provider_ident(provider)}")
-    rescue => err
-      action_result(false, "Could not resume Provider - #{err}")
-    end
-
     # Process change_password action for a single resource or a collection of resources
     def change_password_resource(type, id, data = {})
       if single_resource?
