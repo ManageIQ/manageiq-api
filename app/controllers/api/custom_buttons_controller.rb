@@ -5,7 +5,7 @@ module Api
       custom_button.userid = User.current_user.userid
       custom_button.options = data["options"].deep_symbolize_keys if data["options"]
       custom_button.visibility = data["visibility"].deep_symbolize_keys if data["visibility"]
-      custom_button.resource_action = find_or_create_resource_action(data["resource_action"]) if data.key?("resource_action")
+      custom_button.resource_action = create_or_update_resource_action(data["resource_action"]) if data.key?("resource_action")
       if custom_button.save
         custom_button
       else
@@ -40,11 +40,16 @@ module Api
 
     private
 
-    def find_or_create_resource_action(data)
+    def create_or_update_resource_action(data)
       return nil if data.empty?
-      id = parse_id(data, :resource_actions)
-      return resource_search(id, :resource_actions, collection_class(:resource_actions)) if id
-      ResourceAction.create(data)
+      id = data["id"]
+      if id.present?
+        resource_action = ResourceAction.find(id)
+        data.except!("id")
+        resource_action.update!(data.deep_symbolize_keys)
+      else
+        ResourceAction.create(data)
+      end
     end
 
     def fetch_custom_button(type, id)
