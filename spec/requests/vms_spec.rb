@@ -1117,6 +1117,22 @@ describe "Vms API" do
           expect(response.parsed_body).to include(expected)
         end
 
+        it "queues retirement task" do
+          api_basic_authorize(action_identifier(:vms, :request_retire))
+          message = "VM id:#{vm.id} name:'#{vm.name}' request retire"
+          task_id = MiqTask.find_by(:name => message)&.id
+          expect(task_id).to be_nil
+          expect(MiqRequest.count).to eq(0)
+
+          post(vm_url, :params => gen_request(:request_retire))
+
+          task = MiqTask.find_by(:name => message)
+
+          MiqTask.find(task.id).miq_queue.deliver
+
+          expect(MiqQueue.count).to eq(1)
+        end
+
         it "to multiple Vms" do
           api_basic_authorize(collection_action_identifier(:vms, :request_retire))
           message_vm1 = "VM id:#{vm1.id} name:'#{vm1.name}' request retire"

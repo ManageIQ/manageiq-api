@@ -499,7 +499,7 @@ module Api
     def request_retire(virtual_machine)
       desc = "#{vm_ident(virtual_machine)} request retire"
 
-      task_id = queue_object_action(virtual_machine, desc, queue_options("make_retire_request", "automate"))
+      task_id = queue_object_action(virtual_machine, desc, :method_name => "make_retire_request", :role => "automate", :args => [User.current_user.id])
       action_result(true, desc, :task_id => task_id)
     rescue StandardError => err
       action_result(false, err.to_s)
