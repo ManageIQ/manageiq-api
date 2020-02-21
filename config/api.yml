@@ -2230,12 +2230,10 @@
       :post:
       - :name: query
         :identifier: policy_profile_view
-      - :name: add
+      - :name: create
         :identifier: profile_new
-        :disabled: true
       - :name: edit
         :identifier: profile_edit
-        :disabled: true
       - :name: delete
         :identifier: profile_delete
         :disabled: true
@@ -2246,7 +2244,6 @@
       :post:
       - :name: edit
         :identifier: profile_edit
-        :disabled: true
       :delete:
       - :name: delete
         :identifier: profile_delete
