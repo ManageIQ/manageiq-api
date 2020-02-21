@@ -205,6 +205,8 @@ module Api
 
       def httpd_oidc_config_param(name)
         param_spec = httpd_oidc_config.find { |line| line =~ /#{name} .*/i }
+        return "" if param_spec.blank?
+
         param_match = param_spec.match(/^#{name} (.*)/i)
         param_match ? param_match[1].strip : ""
       end
@@ -212,11 +214,29 @@ module Api
       def oidc_provider_metadata
         @oidc_provider_metadata ||= begin
           oidc_provider_metadata_url = httpd_oidc_config_param("OIDCProviderMetadataURL")
+          return {} if oidc_provider_metadata_url.blank?
+
           uri = URI.parse(oidc_provider_metadata_url)
           http = Net::HTTP.new(uri.host, uri.port)
           response = http.request(Net::HTTP::Get.new(uri.request_uri))
           JSON.parse(response.body)
         end
+      end
+
+      def oidc_metadata_url_endpoint(oidc_param, metadata_url_key)
+        endpoint = httpd_oidc_config_param(oidc_param)
+        endpoint = oidc_provider_metadata[metadata_url_key] if endpoint.blank?
+        raise AuthenticationError, "Invalid #{HTTPD_OPENIDC_CONF} configuration, missing #{oidc_param} or OIDCProviderMetadataURL #{metadata_url_key} entry" if endpoint.blank?
+
+        endpoint
+      end
+
+      def oidc_token_endpoint
+        @oidc_token_endpoint ||= oidc_metadata_url_endpoint("OIDCProviderTokenEndpoint", "token_endpoint")
+      end
+
+      def oidc_token_introspection_endpoint
+        @oidc_token_introspection_endpoint ||= oidc_metadata_url_endpoint("OIDCOAuthIntrospectionEndpoint", "token_introspection_endpoint")
       end
 
       def oidc_client_id
@@ -227,13 +247,22 @@ module Api
         @oidc_client_secret ||= httpd_oidc_config_param("OIDCClientSecret")
       end
 
+      def oidc_scope
+        @oidc_scope ||= httpd_oidc_config_param("OIDCScope")
+      end
+
       def get_jwt_token(username, password)
-        uri = URI.parse(oidc_provider_metadata["token_endpoint"])
-        response = Net::HTTP.post_form(uri, "grant_type"    => "password",
-                                            "client_id"     => oidc_client_id,
-                                            "client_secret" => oidc_client_secret,
-                                            "username"      => username,
-                                            "password"      => password)
+        uri = URI.parse(oidc_token_endpoint)
+        request_params = {
+          "grant_type"    => "password",
+          "client_id"     => oidc_client_id,
+          "client_secret" => oidc_client_secret,
+          "username"      => username,
+          "password"      => password
+        }
+        request_params["scope"] = oidc_scope if oidc_scope.present?
+
+        response = Net::HTTP.post_form(uri, request_params)
 
         parsed_response = JSON.parse(response.body)
         raise parsed_response["error_description"] if parsed_response["error"].present?
@@ -244,10 +273,15 @@ module Api
       end
 
       def validate_jwt_token(jwt_token)
-        uri = URI.parse(oidc_provider_metadata["token_introspection_endpoint"])
-        response = Net::HTTP.post_form(uri, "client_id"     => oidc_client_id,
-                                            "client_secret" => oidc_client_secret,
-                                            "token"         => jwt_token)
+        uri = URI.parse(oidc_token_introspection_endpoint)
+        request_params = {
+          "client_id"     => oidc_client_id,
+          "client_secret" => oidc_client_secret,
+          "token"         => jwt_token
+        }
+        request_params["scope"] = oidc_scope if oidc_scope.present?
+
+        response = Net::HTTP.post_form(uri, request_params)
 
         parsed_response = JSON.parse(response.body)
         raise "Invalid access token, JWT is inactive" if parsed_response["active"] != true
