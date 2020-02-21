@@ -214,12 +214,14 @@ module Api
       def oidc_provider_metadata
         @oidc_provider_metadata ||= begin
           oidc_provider_metadata_url = httpd_oidc_config_param("OIDCProviderMetadataURL")
-          return {} if oidc_provider_metadata_url.blank?
-
-          uri = URI.parse(oidc_provider_metadata_url)
-          http = Net::HTTP.new(uri.host, uri.port)
-          response = http.request(Net::HTTP::Get.new(uri.request_uri))
-          JSON.parse(response.body)
+          if oidc_provider_metadata_url.blank?
+            {}
+          else
+            uri = URI.parse(oidc_provider_metadata_url)
+            http = Net::HTTP.new(uri.host, uri.port)
+            response = http.request(Net::HTTP::Get.new(uri.request_uri))
+            JSON.parse(response.body)
+          end
         end
       end
 
