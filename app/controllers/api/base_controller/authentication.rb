@@ -48,7 +48,7 @@ module Api
             begin
               timeout = ::Settings.api.authentication_timeout.to_i_with_method
 
-              if oidc_configuration?
+              if !User.admin?(u) && oidc_configuration?
                 # Basic auth, user/password but configured against OpenIDC.
                 # Let's authenticate as such and get a JWT for that user.
                 #
