@@ -8,12 +8,13 @@ module Api
       custom_button.resource_action.update!(data["resource_action"].deep_symbolize_keys) if data.key?("resource_action")
       custom_button.save!
       custom_button
-    rescue => err
+    rescue
       raise BadRequestError, "Failed to create new custom button - #{custom_button.errors.full_messages.join(", ")}"
     end
 
     def edit_resource(type, id, data)
       return if data.empty?
+
       custom_button = fetch_custom_button(type, id)
       updated_data = data['resource'] || data
       if updated_data['resource_action'].present?
