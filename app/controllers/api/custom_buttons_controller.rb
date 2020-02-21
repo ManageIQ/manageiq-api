@@ -1,13 +1,15 @@
 module Api
   class CustomButtonsController < BaseController
     def create_resource(_type, _id, data)
-      custom_button = CustomButton.new(data.except("resource_action", "options"))
-      custom_button.userid = User.current_user.userid
-      custom_button.options = data["options"].deep_symbolize_keys if data["options"]
-      custom_button.save!
-      custom_button.resource_action.update!(data["resource_action"].deep_symbolize_keys) if data.key?("resource_action")
-      custom_button.save!
-      custom_button
+      CustomButton.transaction do
+        custom_button = CustomButton.new(data.except("resource_action", "options"))
+        custom_button.userid = User.current_user.userid
+        custom_button.options = data["options"].deep_symbolize_keys if data["options"]
+        custom_button.save!
+        custom_button.resource_action.update!(data["resource_action"].deep_symbolize_keys) if data.key?("resource_action")
+        custom_button.save!
+        custom_button
+      end
     rescue
       raise BadRequestError, "Failed to create new custom button - #{custom_button.errors.full_messages.join(", ")}"
     end
@@ -15,14 +17,16 @@ module Api
     def edit_resource(type, id, data)
       return if data.empty?
 
-      custom_button = fetch_custom_button(type, id)
-      updated_data = data['resource'] || data
-      if updated_data['resource_action'].present?
-        custom_button.resource_action = create_or_update_resource_action(updated_data['resource_action'])
+      CustomButton.transaction do
+        custom_button = fetch_custom_button(type, id)
+        updated_data = data['resource'] || data
+        if updated_data['resource_action'].present?
+          custom_button.resource_action = create_or_update_resource_action(updated_data['resource_action'])
+        end
+        updated_data.except!('resource_action')
+        custom_button.update!(updated_data.deep_symbolize_keys) if updated_data.present?
+        custom_button
       end
-      updated_data.except!('resource_action')
-      custom_button.update!(updated_data.deep_symbolize_keys) if updated_data.present?
-      custom_button
     rescue => err
       raise BadRequestError, "Failed to update custom button - #{err}"
     end
