@@ -301,7 +301,7 @@ module Api
 
       def user_details_from_jwt(token_info)
         user_attrs = {
-          :username  => token_info["username"],
+          :username  => token_info["preferred_username"],
           :fullname  => token_info["name"],
           :firstname => token_info["given_name"],
           :lastname  => token_info["family_name"],
