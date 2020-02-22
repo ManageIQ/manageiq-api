@@ -257,16 +257,18 @@ module Api
       def get_jwt_token(username, password)
         uri = URI.parse(oidc_token_endpoint)
         request_params = {
-          "grant_type"    => "password",
-          "client_id"     => oidc_client_id,
-          "client_secret" => oidc_client_secret,
-          "username"      => username,
-          "password"      => password
+          "grant_type" => "password",
+          "username"   => username,
+          "password"   => password
         }
         request_params["scope"] = oidc_scope if oidc_scope.present?
 
-        response = Net::HTTP.post_form(uri, request_params)
+        request = Net::HTTP::Post.new(uri)
+        request.basic_auth(oidc_client_id, oidc_client_secret)
+        request.form_data = request_params
 
+        http_params     = {:use_ssl => (uri.scheme == "https")}
+        response        = Net::HTTP.start(uri.hostname, uri.port, http_params) { |http| http.request(request) }
         parsed_response = JSON.parse(response.body)
         raise parsed_response["error_description"] if parsed_response["error"].present?
 
@@ -278,14 +280,16 @@ module Api
       def validate_jwt_token(jwt_token)
         uri = URI.parse(oidc_token_introspection_endpoint)
         request_params = {
-          "client_id"     => oidc_client_id,
-          "client_secret" => oidc_client_secret,
-          "token"         => jwt_token
+          "token" => jwt_token
         }
         request_params["scope"] = oidc_scope if oidc_scope.present?
 
-        response = Net::HTTP.post_form(uri, request_params)
+        request = Net::HTTP::Post.new(uri)
+        request.basic_auth(oidc_client_id, oidc_client_secret)
+        request.form_data = request_params
 
+        http_params     = {:use_ssl => (uri.scheme == "https")}
+        response        = Net::HTTP.start(uri.hostname, uri.port, http_params) { |http| http.request(request) }
         parsed_response = JSON.parse(response.body)
         raise "Invalid access token, JWT is inactive" if parsed_response["active"] != true
 
