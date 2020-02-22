@@ -204,7 +204,7 @@ module Api
       end
 
       def httpd_oidc_config_param(name)
-        param_spec = httpd_oidc_config.find { |line| line =~ /#{name} .*/i }
+        param_spec = httpd_oidc_config.find { |line| line =~ /^#{name} .*/i }
         return "" if param_spec.blank?
 
         param_match = param_spec.match(/^#{name} (.*)/i)
