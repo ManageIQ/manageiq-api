@@ -219,6 +219,7 @@ module Api
           else
             uri = URI.parse(oidc_provider_metadata_url)
             http = Net::HTTP.new(uri.host, uri.port)
+            http.use_ssl = (uri.scheme == "https")
             response = http.request(Net::HTTP::Get.new(uri.request_uri))
             JSON.parse(response.body)
           end
