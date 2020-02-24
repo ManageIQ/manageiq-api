@@ -104,9 +104,10 @@ module Api
       end
     end
 
-    def verify_credentials_resource(_type, _id, data = {})
+    def verify_credentials_resource(_type, id = nil, data = {})
       klass = fetch_provider_klass(collection_class(:providers), data)
       zone_name = data.delete('zone_name')
+      data['id'] = id if id
       task_id = klass.verify_credentials_task(current_user, zone_name, data)
       action_result(true, 'Credentials sent for verification', :task_id => task_id)
     rescue => err
