@@ -1,18 +1,18 @@
 module Api
   class VmsController < BaseController
-    include Subcollections::Disks
+    extend Api::Mixins::CentralAdmin
+    include Subcollections::Accounts
+    include Subcollections::Cdroms
     include Subcollections::Compliances
-    include Subcollections::Tags
+    include Subcollections::CustomAttributes
+    include Subcollections::Disks
+    include Subcollections::MetricRollups
     include Subcollections::Policies
     include Subcollections::PolicyProfiles
-    include Subcollections::Accounts
-    include Subcollections::CustomAttributes
     include Subcollections::SecurityGroups
-    include Subcollections::Software
     include Subcollections::Snapshots
-    include Subcollections::MetricRollups
-    include Subcollections::Cdroms
-    extend Api::Mixins::CentralAdmin
+    include Subcollections::Software
+    include Subcollections::Tags
 
     VALID_EDIT_ATTRS = %w(description child_resources parent_resource).freeze
     RELATIONSHIP_COLLECTIONS = %w(vms templates).freeze
