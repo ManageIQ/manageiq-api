@@ -693,6 +693,12 @@
         :identifier: ems_cluster_protect
       - :name: unassign
         :identifier: ems_cluster_protect
+  :compliances:
+    :description: Compliances
+    :options:
+    - :subcollection
+    :verbs: *g
+    :klass: Compliance
   :conditions:
     :description: Conditions
     :identifier: condition
@@ -3881,6 +3887,7 @@
     - :policies
     - :policy_profiles
     - :accounts
+    - :compliances
     - :custom_attributes
     - :security_groups
     - :software
@@ -4042,12 +4049,24 @@
       - :name: read
         :identifier:
         - vm_show
+    :compliances_subcollection_actions:
+      :get:
+      - :name: get
+        :identifier:
+        - vm_show
+        - vm_check_compliance
+        - instance_check_compliance
     :disks_subresource_actions:
       :get:
       - :name: read
         :identifier:
         - vm_show
     :cdroms_subresource_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - vm_show
+    :compliances_subresource_actions:
       :get:
       - :name: read
         :identifier:
