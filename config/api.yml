@@ -2219,7 +2219,7 @@
     :options:
     - :collection
     - :subcollection
-    :verbs: *gp
+    :verbs: *gpppd
     :klass: MiqPolicySet
     :subcollections:
     - :policies
@@ -2236,7 +2236,6 @@
         :identifier: profile_edit
       - :name: delete
         :identifier: profile_delete
-        :disabled: true
     :resource_actions:
       :get:
       - :name: read
@@ -2244,10 +2243,11 @@
       :post:
       - :name: edit
         :identifier: profile_edit
+      - :name: delete
+        :identifier: profile_delete
       :delete:
       - :name: delete
         :identifier: profile_delete
-        :disabled: true
     :policies_subcollection_actions:
       :post:
       - :name: assign

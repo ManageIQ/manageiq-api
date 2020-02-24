@@ -201,13 +201,60 @@ describe "Policies API" do
     it "edits a policy_profile" do
       policy_profile = FactoryBot.create(:miq_policy_set, :description => "Policy Set")
 
-      api_basic_authorize collection_action_identifier(:policy_profiles, :edit)
+      api_basic_authorize resource_action_identifier(:policy_profiles, :edit)
       post(api_policy_profile_url(nil, policy_profile), :params => gen_request(:edit, :name => "New Name"))
 
       expect(response).to have_http_status(:ok)
 
       policy_profile.reload
       expect(policy_profile.name).to eq("New Name")
+    end
+
+    it "editing a non-existing policy_profile" do
+      api_basic_authorize resource_action_identifier(:policy_profiles, :edit)
+      post(api_policy_profile_url(nil, 99_999), :params => gen_request(:edit, :name => "New Name"))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "does not allow editing a read_only policy_profile" do
+      policy_profile = FactoryBot.create(:miq_policy_set, :description => "Policy Set", :read_only => true)
+
+      api_basic_authorize resource_action_identifier(:policy_profiles, :edit)
+      post(api_policy_profile_url(nil, policy_profile), :params => gen_request(:edit, :name => "New Name"))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "POST deletes a policy_profile" do
+      policy_profile = FactoryBot.create(:miq_policy_set, :description => "Policy Set")
+
+      api_basic_authorize resource_action_identifier(:policy_profiles, :delete)
+      post(api_policy_profile_url(nil, policy_profile), :params => gen_request(:delete))
+
+      expect(response).to have_http_status(:ok)
+
+      expect(MiqPolicySet.exists?(policy_profile.id)).to be_falsey
+    end
+
+    it "DELETE deletes a policy_profile" do
+      policy_profile = FactoryBot.create(:miq_policy_set, :description => "Policy Set")
+      api_basic_authorize resource_action_identifier(:policy_profiles, :delete, :delete)
+      delete(api_policy_profile_url(nil, policy_profile))
+
+      expect(response).to have_http_status(:no_content)
+
+      expect(MiqPolicySet.exists?(policy_profile.id)).to be_falsey
+    end
+
+    it "DELETE does not allow deleting a read_only policy_profile" do
+      policy_profile = FactoryBot.create(:miq_policy_set, :description => "Policy Set", :read_only => true)
+      api_basic_authorize resource_action_identifier(:policy_profiles, :delete, :delete)
+      delete(api_policy_profile_url(nil, policy_profile))
+
+      expect(response).to have_http_status(:forbidden)
+
+      expect(MiqPolicySet.exists?(policy_profile.id)).to be_truthy
     end
   end
 
