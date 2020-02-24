@@ -105,6 +105,7 @@ RSpec.describe 'CustomButtons API' do
         'name'             => 'Generic Object Custom Button',
         'description'      => 'Generic Object Custom Button description',
         'applies_to_class' => 'GenericObjectDefinition',
+        'uri_attributes'   => {:request => "automate_method"},
         'options'          => {
           'button_icon'  => 'ff ff-view-expanded',
           'button_color' => '#4727ff',
@@ -121,8 +122,8 @@ RSpec.describe 'CustomButtons API' do
       expect(response).to have_http_status(:ok)
       custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
       expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
-      expect(custom_button.visibility[:roles]).to eq(['_ALL_'])
-      expect(response.parsed_body['results'].first).to include(cb_rec.except('resource_action'))
+      expect(custom_button.visibility['roles']).to eq(['_ALL_'])
+      expect(response.parsed_body['results'].first).to include(cb_rec.except('resource_action', 'uri_attributes'))
     end
 
     it 'can edit custom buttons by id' do
@@ -131,7 +132,7 @@ RSpec.describe 'CustomButtons API' do
       request = {
         'action'    => 'edit',
         'resources' => [
-          { 'id' => cb.id.to_s, 'resource' => {'name' => 'updated 1', 'resource_action' => {'ae_namespace' => 'SYSTEM2'}, 'visibility' => {'roles' => ['_ALL_']}}},
+          {'id' => cb.id.to_s, 'resource' => {'name' => 'updated 1', 'resource_action' => {'ae_namespace' => 'SYSTEM2', :ae_attributes => {"attribute" => "is present"}}, 'visibility' => {'roles' => ['_ALL_']}}},
         ]
       }
       post(api_custom_buttons_url, :params => request)
@@ -144,6 +145,7 @@ RSpec.describe 'CustomButtons API' do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
       expect(cb.reload.visibility[:roles]).to eq(['_ALL_'])
+      expect(cb.reload.resource_action.ae_attributes).to include("attribute" => "is present")
     end
   end
 
