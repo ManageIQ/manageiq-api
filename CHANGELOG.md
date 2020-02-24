@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## Unreleased as of Sprint 130 ending 2020-02-17
+
+### Added
+* Reset the User.current_user upon each incoming request [(#736)](https://github.com/ManageIQ/manageiq-api/pull/736)
+* Extend the existing provider creation with DDF support [(#723)](https://github.com/ManageIQ/manageiq-api/pull/723)
+
+###Fixed
+* Change the zone param to zone_name in DDF provider validation [(#738)](https://github.com/ManageIQ/manageiq-api/pull/738)
+* Remove container provider resume/pause [(#740)](https://github.com/ManageIQ/manageiq-api/pull/740)
+
+## Unreleased as of Sprint 129 ending 2020-02-03
+
+### Added
+* Call the `key?` method on objects safely when trying to normalize [(#733)](https://github.com/ManageIQ/manageiq-api/pull/733)
+
 ## Unreleased as of Sprint 123 ending 2019-10-28
 
 ### Added
