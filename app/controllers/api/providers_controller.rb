@@ -47,7 +47,12 @@ module Api
       raise BadRequestError, "Provider type cannot be updated" if data.key?(TYPE_ATTR)
 
       provider = resource_search(id, type, collection_class(:providers))
-      edit_provider(provider, data)
+
+      if data.delete(DDF_ATTR)
+        edit_provider_ddf(provider, data)
+      else
+        edit_provider(provider, data)
+      end
     end
 
     def refresh_resource(type, id = nil, _data = nil)
@@ -226,6 +231,12 @@ module Api
     rescue => err
       provider.try(:destroy)
       raise BadRequestError, "Could not create the new provider - #{err}"
+    end
+
+    def edit_provider_ddf(provider, data)
+      provider.edit_with_params(data)
+    rescue => err
+      raise BadRequestError, "Could not update the provider - #{err}"
     end
 
     def edit_provider(provider, data)

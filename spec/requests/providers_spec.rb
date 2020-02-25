@@ -731,6 +731,31 @@ describe "Providers API" do
         .and_return([OvirtSDK4::ProbeResult.new(:version => '3')])
     end
 
+    it 'invokes the DDF creation when ddf=true' do
+      api_basic_authorize collection_action_identifier(:providers, :edit)
+
+      provider = FactoryBot.create(:ems_cloud)
+
+      expect_any_instance_of(ManageIQ::Providers::Amazon::CloudManager).to receive(:edit_with_params).and_return(:yay => :yay)
+
+      post(api_provider_url(nil, provider), :params => gen_request(:edit, "name" => "updated provider name", 'ddf' => true))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to eq('yay' => 'yay')
+    end
+
+    it 'handles errors when ddf=true' do
+      api_basic_authorize collection_action_identifier(:providers, :edit)
+
+      provider = FactoryBot.create(:ems_cloud)
+
+      expect_any_instance_of(ManageIQ::Providers::Amazon::CloudManager).to receive(:edit_with_params).and_raise('RandomError')
+
+      post(api_provider_url(nil, provider), :params => gen_request(:edit, "name" => "updated provider name", 'ddf' => true))
+
+      expect_bad_request(/Could not update the provider/)
+    end
+
     it "rejects resource edits without appropriate role" do
       api_basic_authorize
 
