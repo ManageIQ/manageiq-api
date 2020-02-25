@@ -1546,6 +1546,32 @@ describe "Providers API" do
     end
   end
 
+  context 'GET /api/providers/:id' do
+    it 'includes endpoints and authentications attributes when explcitly asked' do
+      ems = FactoryBot.create(:ext_management_system)
+      api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
+
+      get(api_provider_url(nil, ems), :params => {:attributes => 'endpoints,authentications'})
+
+      expect(response.parsed_body['authentications']).to be_an_instance_of(Array)
+      expect(response.parsed_body['endpoints']).to be_an_instance_of(Array)
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'does not include endpoints and authentications attributes by default' do
+      ems = FactoryBot.create(:ext_management_system)
+      api_basic_authorize action_identifier(:providers, :read, :resource_actions, :get)
+
+      get(api_provider_url(nil, ems))
+
+      expect(response.parsed_body['authentications']).to be_nil
+      expect(response.parsed_body['endpoints']).to be_nil
+
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   context 'GET /api/providers/:id/vms' do
     it 'returns the vms for a provider with an appropriate role' do
       ems = FactoryBot.create(:ext_management_system)

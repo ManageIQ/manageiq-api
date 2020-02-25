@@ -10,6 +10,8 @@ module Api
     ENDPOINT_ATTRS    = %w(verify_ssl hostname url ipaddress port security_protocol certificate_authority).freeze
     RESTRICTED_ATTRS  = [TYPE_ATTR, CREDENTIALS_ATTR, ZONE_ATTR, "zone_id"].freeze
 
+    include Subcollections::Authentications
+    include Subcollections::Endpoints
     include Subcollections::Policies
     include Subcollections::PolicyProfiles
     include Subcollections::Tags
