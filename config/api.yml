@@ -275,6 +275,36 @@
       :get:
       - :name: read
         :identifier: miq_ae_domain_view
+  :automate_classes:
+    :description: Automate Classes
+    :identifier: miq_ae_class
+    :options:
+    - :collection
+    :verbs: *gpd
+    :klass: MiqAeClass
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_ae_class
+      :post:
+      - :name: query
+        :identifier: miq_ae_class
+      - :name: edit
+        :identifier: miq_ae_class_edit
+      - :name: delete
+        :identifier: miq_ae_class_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: miq_ae_class
+      :post:
+      - :name: edit
+        :identifier: miq_ae_class_edit
+      - :name: delete
+        :identifier: miq_ae_class_delete
+      :delete:
+      - :name: delete
+        :identifier: miq_ae_class_delete
   :automate_domains:
     :description: Automate Domains
     :options:
