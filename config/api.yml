@@ -2304,7 +2304,7 @@
     :options:
     - :collection
     - :custom_actions
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: ExtManagementSystem
     :subcollections:
     - :tags
@@ -2371,6 +2371,12 @@
       :delete:
       - :name: delete
         :identifier: ems_infra_delete
+      :patch:
+      - :name: edit
+        :identifier: ems_infra_edit
+      :put:
+      - :name: edit
+        :identifier: ems_infra_edit
     :tags_subcollection_actions:
       :post:
       - :name: assign
