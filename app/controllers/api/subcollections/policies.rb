@@ -27,8 +27,8 @@ module Api
       end
 
       def object_policies(object)
-        policy_klass = collection_class(:policies)
-        object.get_policies.select { |p| p.kind_of?(policy_klass) }
+        policy_profile_klass = collection_class(:policy_profiles)
+        object.get_policies.select { |p| p.kind_of?(policy_profile_klass) }
       end
 
       def policy_specified(id, data, collection, klass)
