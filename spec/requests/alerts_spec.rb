@@ -54,7 +54,7 @@ describe "Alerts API" do
       }
     end
 
-    it "forbids access to alerts actions subcolletion without an appropriate role" do
+    it "forbids access to alerts actions subcollection without an appropriate role" do
       FactoryBot.create(
         :miq_alert_status_action,
         :miq_alert_status => alert,
