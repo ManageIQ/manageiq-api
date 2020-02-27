@@ -2656,7 +2656,7 @@
     - :settings
     :options:
     - :collection
-    :verbs: *gpd
+    :verbs: *gp
     :klass: MiqRegion
     :collection_actions:
       :get:
@@ -2667,8 +2667,6 @@
         :identifier: region
       - :name: edit
         :identifier: region_edit
-      - :name: delete
-        :identifier: region_delete
     :resource_actions:
       :get:
       - :name: read
@@ -2676,11 +2674,6 @@
       :post:
       - :name: edit
         :identifier: region_edit
-      - :name: delete
-        :identifier: region_delete
-      :delete:
-      - :name: delete
-        :identifier: region_delete
   :reports:
     :description: Reports
     :identifier: miq_report
