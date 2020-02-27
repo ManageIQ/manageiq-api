@@ -113,40 +113,10 @@ RSpec.describe "Regions API", :regions do
   end
 
   context "delete", :delete do
-    it "can delete a region with POST" do
-      api_basic_authorize action_identifier(:regions, :delete)
-      region = FactoryBot.create(:miq_region)
-
-      expect { post api_region_url(nil, region), :params => gen_request(:delete) }.to change(MiqRegion, :count).by(-1)
-      expect_single_action_result(:success => true, :message => /#{region.id}/)
-    end
-
-    it "can delete a region with DELETE" do
-      api_basic_authorize action_identifier(:regions, :delete)
-      region = FactoryBot.create(:miq_region)
-
-      expect { delete api_region_url(nil, region) }.to change(MiqRegion, :count).by(-1)
-      expect(response).to have_http_status(:no_content)
-    end
-
-    it "can delete multiple regions with POST" do
-      api_basic_authorize action_identifier(:regions, :delete)
-      regions = FactoryBot.create_list(:miq_region, 2)
-
-      options = [
-        {"href" => api_region_url(nil, regions.first)},
-        {"href" => api_region_url(nil, regions.last)}
-      ]
-
-      expect { post api_regions_url, :params => gen_request(:delete, options) }.to change(MiqRegion, :count).by(-2)
-      expect_multiple_action_result(regions.size)
-    end
-
-    it "forbids deletion of a region without an appropriate role" do
-      expect_forbidden_request do
-        region = FactoryBot.create(:miq_region, :description => "Current Region description")
-        delete(api_region_url(nil, region))
-      end
+    it "forbids deletion of a region" do
+      region = FactoryBot.create(:miq_region, :description => "Current Region description")
+      delete(api_region_url(nil, region))
+      expect(response).to have_http_status(:not_found)
     end
   end
 
