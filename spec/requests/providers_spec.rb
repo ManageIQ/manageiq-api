@@ -17,6 +17,8 @@ describe "Providers API" do
   ENDPOINT_ATTRS = Api::ProvidersController::ENDPOINT_ATTRS
   CREDENTIALS_ATTR = Api::ProvidersController::CREDENTIALS_ATTR
 
+  before { Zone.seed }
+
   let(:default_credentials) { {"userid" => "admin1", "password" => "password1"} }
   let(:metrics_credentials) { {"userid" => "admin2", "password" => "password2", "auth_type" => "metrics"} }
   let(:compound_credentials) { [default_credentials, metrics_credentials] }
