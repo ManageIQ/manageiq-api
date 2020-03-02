@@ -1,32 +1,32 @@
 module Api
   class ProvidersController < BaseController
-    TYPE_ATTR         = "type".freeze
-    ZONE_ATTR         = "zone".freeze
+    AUTH_TYPE_ATTR    = "auth_type".freeze
+    CONNECTION_ATTRS  = %w(connection_configurations).freeze
     CREDENTIALS_ATTR  = "credentials".freeze
     DDF_ATTR          = 'ddf'.freeze
-    AUTH_TYPE_ATTR    = "auth_type".freeze
     DEFAULT_AUTH_TYPE = "default".freeze
-    CONNECTION_ATTRS  = %w(connection_configurations).freeze
     ENDPOINT_ATTRS    = %w(verify_ssl hostname url ipaddress port security_protocol certificate_authority).freeze
+    TYPE_ATTR         = "type".freeze
+    ZONE_ATTR         = "zone".freeze
     RESTRICTED_ATTRS  = [TYPE_ATTR, CREDENTIALS_ATTR, ZONE_ATTR, "zone_id"].freeze
 
     include Subcollections::Authentications
-    include Subcollections::Endpoints
-    include Subcollections::Policies
-    include Subcollections::PolicyProfiles
-    include Subcollections::Tags
     include Subcollections::CloudNetworks
     include Subcollections::CloudSubnets
+    include Subcollections::CloudTemplates
     include Subcollections::CloudTenants
     include Subcollections::CustomAttributes
-    include Subcollections::LoadBalancers
-    include Subcollections::SecurityGroups
-    include Subcollections::Vms
+    include Subcollections::Endpoints
     include Subcollections::Flavors
-    include Subcollections::CloudTemplates
     include Subcollections::Folders
-    include Subcollections::Networks
     include Subcollections::Lans
+    include Subcollections::LoadBalancers
+    include Subcollections::Networks
+    include Subcollections::Policies
+    include Subcollections::PolicyProfiles
+    include Subcollections::SecurityGroups
+    include Subcollections::Tags
+    include Subcollections::Vms
 
     before_action :validate_provider_class
 
