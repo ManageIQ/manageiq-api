@@ -2384,7 +2384,17 @@
         - ems_infra_show_list
         - ems_block_storage_show_list
       - :name: create
-        :identifier: ems_infra_new
+        :identifiers:
+        - :klass: ManageIQ::Providers::InfraManager
+          :identifier: ems_infra_new
+        - :klass: ManageIQ::Providers::CloudManager
+          :identifier: ems_cloud_new
+        - :klass: ManageIQ::Providers::ContainerManager
+          :identifier: ems_container_new
+        - :klass: ManageIQ::Providers::NetworkManager
+          :identifier: ems_network_new
+        - :klass: Provider
+          :identifier: provider_foreman_add_provider
       - :name: edit
         :identifier: ems_infra_edit
       - :name: refresh

@@ -125,6 +125,16 @@ module Api
 
     private
 
+    def authorize_provider(typed_provider_klass)
+      create_action = collection_config["providers"].collection_actions.post.detect { |a| a.name == "create" }
+      provider_spec = create_action.identifiers.detect { |i| i.klass.constantize.name == typed_provider_klass.superclass.name }
+      raise BadRequestError, "Unsupported request class #{typed_provider_klass}" if provider_spec.blank?
+
+      if provider_spec.identifier && !api_user_role_allows?(provider_spec.identifier)
+        raise ForbiddenError, "Create action is forbidden for #{typed_provider_klass} requests"
+      end
+    end
+
     def provider_options(type)
       klass = type.safe_constantize
 
@@ -219,12 +229,15 @@ module Api
     def create_provider(data)
       provider_klass = fetch_provider_klass(collection_class(:providers), data)
       create_data    = fetch_provider_data(provider_klass, data, :requires_zone => true)
-      provider       = provider_klass.create!(create_data)
-      update_provider_authentication(provider, data)
-      provider
-    rescue => err
-      provider.destroy if provider
+      authorize_provider(provider_klass)
+      begin
+        provider = provider_klass.create!(create_data)
+        update_provider_authentication(provider, data)
+        provider
+      rescue => err
+        provider&.destroy
       raise BadRequestError, "Could not create the new provider - #{err}"
+      end
     end
 
     def create_provider_ddf(data)
