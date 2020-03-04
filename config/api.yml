@@ -827,6 +827,29 @@
       :delete:
       - :name: delete
         :identifier: condition_delete
+  :configuration_profiles:
+    :description: Configuration Profiles
+    :options:
+    - :collection
+    - :subcollection
+    :verbs: *g
+    :klass: ConfigurationProfile
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: configuration_profile_view
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: configuration_profile_view
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: configuration_profile_view
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: configuration_profile_view
   :configuration_script_payloads:
     :description: Configuration Script Payloads
     :options:
@@ -2377,6 +2400,7 @@
     :verbs: *gpppd
     :klass: ExtManagementSystem
     :subcollections:
+    - :configuration_profiles
     - :configured_systems
     - :tags
     - :policies
@@ -2466,6 +2490,10 @@
       :put:
       - :name: edit
         :identifier: ems_infra_edit
+    :configuration_profiles_subresource_actions:
+      :get:
+      - :name: read
+        :identifier: configuration_profile_view
     :tags_subcollection_actions:
       :post:
       - :name: assign

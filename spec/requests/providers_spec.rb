@@ -1800,6 +1800,52 @@ describe "Providers API" do
     end
   end
 
+  context 'configuration_profiles subcollection' do
+    let(:configuration_profile) { FactoryBot.create(:configuration_profile, :manager => ems) }
+    let(:ems) { FactoryBot.create(:configuration_manager) }
+
+    context 'GET /api/providers/:id/configuration_profiles' do
+      it 'returns the configuration_profiles with an appropriate role' do
+        api_basic_authorize subcollection_action_identifier(:providers, :configuration_profiles, :read, :get)
+
+        expected = {
+          'resources' => [{'href' => api_provider_configuration_profile_url(nil, ems, configuration_profile)}]
+        }
+        get(api_provider_configuration_profiles_url(nil, ems))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it 'does not return the configuration_profiles without an appropriate role' do
+        api_basic_authorize
+
+        get(api_provider_configuration_profiles_url(nil, ems))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'GET /api/providers/:id/configuration_profiles/:s_id' do
+      it 'returns the configuration_profiles with an appropriate role' do
+        api_basic_authorize action_identifier(:configuration_profiles, :read, :subresource_actions, :get)
+
+        get(api_provider_configuration_profile_url(nil, ems, configuration_profile))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('id' => configuration_profile.id.to_s)
+      end
+
+      it 'does not return the configuration_profiles without an appropriate role' do
+        api_basic_authorize
+
+        get(api_provider_configuration_profile_url(nil, ems, configuration_profile))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
   context 'configured_systems subcollection' do
     let(:configured_system) { FactoryBot.create(:configured_system, :manager => ems) }
     let(:ems) { FactoryBot.create(:configuration_manager) }

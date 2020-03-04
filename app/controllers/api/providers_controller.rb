@@ -18,6 +18,7 @@ module Api
     include Subcollections::CloudNetworks
     include Subcollections::CloudSubnets
     include Subcollections::CloudTenants
+    include Subcollections::ConfigurationProfiles
     include Subcollections::ConfiguredSystems
     include Subcollections::CustomAttributes
     include Subcollections::LoadBalancers
