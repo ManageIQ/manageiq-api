@@ -82,6 +82,11 @@ describe "Rest API Collections" do
       test_collection_query(:chargebacks, api_chargebacks_url, ChargebackRate)
     end
 
+    it "query ConfiguredSystems" do
+      FactoryBot.create(:configured_system)
+      test_collection_query(:configured_systems, api_configured_systems_url, ConfiguredSystem)
+    end
+
     it "query Containers" do
       FactoryBot.create(:container)
       test_collection_query(:containers, api_containers_url, Container)

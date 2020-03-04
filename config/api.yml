@@ -891,6 +891,29 @@
       :get:
       - :name: read
         :identifier: configuration_script_view
+  :configured_systems:
+    :description: Configured Systems
+    :options:
+    - :collection
+    - :subcollection
+    :verbs: *g
+    :klass: ConfiguredSystem
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: configured_system_view
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: configured_system_view
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: configured_system_view
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: configured_system_view
   :container_groups:
     :description: Container Groups
     :identifier: container_group
@@ -2316,6 +2339,7 @@
     :verbs: *gpppd
     :klass: ExtManagementSystem
     :subcollections:
+    - :configured_systems
     - :tags
     - :policies
     - :policy_profiles

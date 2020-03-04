@@ -1800,6 +1800,52 @@ describe "Providers API" do
     end
   end
 
+  context 'configured_systems subcollection' do
+    let(:configured_system) { FactoryBot.create(:configured_system, :manager => ems) }
+    let(:ems) { FactoryBot.create(:configuration_manager) }
+
+    context 'GET /api/providers/:id/configured_systems' do
+      it 'returns the configured_systems with an appropriate role' do
+        api_basic_authorize subcollection_action_identifier(:providers, :configured_systems, :read, :get)
+
+        expected = {
+          'resources' => [{'href' => api_provider_configured_system_url(nil, ems, configured_system)}]
+        }
+        get(api_provider_configured_systems_url(nil, ems))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+
+      it 'does not return the configured_systems without an appropriate role' do
+        api_basic_authorize
+
+        get(api_provider_configured_systems_url(nil, ems))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'GET /api/providers/:id/configured_systems/:s_id' do
+      it 'returns the configured_systems with an appropriate role' do
+        api_basic_authorize action_identifier(:configured_systems, :read, :subresource_actions, :get)
+
+        get(api_provider_configured_system_url(nil, ems, configured_system))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('id' => configured_system.id.to_s)
+      end
+
+      it 'does not return the configured_systems without an appropriate role' do
+        api_basic_authorize
+
+        get(api_provider_configured_system_url(nil, ems, configured_system))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
   context "Cloud networks subcollection" do
     it "returns an empty array for providers that return nil" do
       api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :read, :get)
