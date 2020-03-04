@@ -16,6 +16,7 @@ module Api
     include Subcollections::CloudTemplates
     include Subcollections::CloudTenants
     include Subcollections::ConfigurationProfiles
+    include Subcollections::ConfiguredSystems
     include Subcollections::CustomAttributes
     include Subcollections::Endpoints
     include Subcollections::Flavors
