@@ -37,7 +37,7 @@ The `base_controller.rb`
 - Updating resource options
 
 The first part of `manageiq-api` codebase that you should familiarize yourself
-with is the [`app/controllers/api/base_controller.rb`][1] class, and included
+with is the [`app/controllers/api/base_controller.rb`][] class, and included
 modules in it's associated directory.  Almost all (if not all), controllers in
 the API inherit from this controller, and the entry point for each action
 defined in the routes (more on that in a later section), are defined in this
@@ -59,7 +59,7 @@ And so on, but most of these calls are inherited and never modified.  So for
 example, the controller for accessing all of the `MiqServer` records in an
 installation of ManageIQ is defined in the `Api::ServersController`:
 
-[`app/controllers/api/servers_controller.rb`][2]
+[`app/controllers/api/servers_controller.rb`][]
 
 But, that class itself is basically empty:
 
@@ -107,7 +107,7 @@ section.
 
 ### Overriding base functionality  
 
-The [`Api::TenantsController`][3] though is a little more interesting to look
+The [`Api::TenantsController`][] though is a little more interesting to look
 at, and covers the next topic of overriding functionality in the
 `Api::BaseController`.
 
@@ -115,8 +115,8 @@ The first thing you will notice in this file is that we are not overriding any
 of our top level methods that we would expect (`index`, `update`, etc.), but
 two methods that are not attached to any routes directly:
 
-- [`Api::TenantsController#create_resource`][4]
-- [`Api::TenantsController#edit_resource`][5]
+- [`Api::TenantsController#create_resource`][]
+- [`Api::TenantsController#edit_resource`][]
 
 In both of these methods, they are making use of specialized methods to
 validate that there are no bad attributes passed that the API doesn't support,
@@ -130,9 +130,9 @@ going through the arg parsing defined in `Api::BaseController#create_resource`.
 
 ### The `RequestAdapter`
 
-The code for this is actually located in [`lib/api/request_adapter.rb`][6], but this
+The code for this is actually located in [`lib/api/request_adapter.rb`][], but this
 is instantiated as part of every request via the `before_action` of all
-requests and defined in [`Api::BaseController::Parser#parse_api_request`][7].
+requests and defined in [`Api::BaseController::Parser#parse_api_request`][].
 This instance can be accessed via the instance variable `@req`, and will be
 found and used throughout the `manageiq-api` codebase and is used as a shared
 interface for accessing standardized portions of the api request object.
@@ -202,10 +202,10 @@ _TODO_
 
 
 
-[1]: https://github.com/ManageIQ/manageiq-api/blob/97eea82/app/controllers/api/base_controller.rb
-[2]: https://github.com/ManageIQ/manageiq-api/blob/97eea82/app/controllers/api/servers_controller.rb
-[3]: https://github.com/ManageIQ/manageiq-api/blob/97eea82/app/controllers/api/tenants_controller.rb
-[4]: https://github.com/ManageIQ/manageiq-api/blob/97eea82/app/controllers/api/tenants_controller.rb#L8-L20
-[5]: https://github.com/ManageIQ/manageiq-api/blob/97eea82/app/controllers/api/tenants_controller.rb#L22-L29
-[6]: https://github.com/ManageIQ/manageiq-api/blob/97eea82/lib/api/request_adapter.rb
-[7]: https://github.com/ManageIQ/manageiq-api/blob/97eea82/app/controllers/api/base_controller/parser.rb#L4-L6
+[`app/controllers/api/base_controller.rb`]:        https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/base_controller.rb
+[`app/controllers/api/servers_controller.rb`]:     https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/servers_controller.rb
+[`Api::TenantsController`]:                        https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/tenants_controller.rb
+[`Api::TenantsController#create_resource`]:        https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/tenants_controller.rb#L9-L21
+[`Api::TenantsController#edit_resource`]:          https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/tenants_controller.rb#L23-L30
+[`lib/api/request_adapter.rb`]:                    https://github.com/ManageIQ/manageiq-api/blob/d304a6f/lib/api/request_adapter.rb
+[`Api::BaseController::Parser#parse_api_request`]: https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/base_controller/parser.rb#L4-L6
