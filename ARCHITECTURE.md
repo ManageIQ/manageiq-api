@@ -27,6 +27,10 @@ Table of Contents
       - [Validate Action](#validate-action-validate_action)
       - [Custom Actions](#custom-actions-custom_actions)
   - [Drawing Routes (the `config/routes.rb`)](#drawing-routes-the-configroutesrb)
+* [Working with ActiveRecord](#working-with-activerecord)
+  - [How custom result sets are built][#how-custom-result-sets-are-built]
+  - [Attributes and VirtualAttributes][#attributes-and-virtualattributes]
+  - [Rbac][#rbac]
 * [The `manageiq-api-client` gem](#the-manageiq-api-client-gem)
 
 
@@ -193,6 +197,16 @@ displayed in the hypermedia of the response.
 interface using `:action` in the param.  This is a way for defining conditional
 actions for a specific resource in the DB without giving it a direct route to
 call.  Custom buttons attached to VMs are an example of this in practice.
+
+
+Working with ActiveRecord
+-------------------------
+
+### How custom result sets are built
+
+### Attributes and VirtualAttributes
+
+### Rbac
 
 
 The `manageiq-api-client` gem
