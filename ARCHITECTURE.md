@@ -41,7 +41,10 @@ with is the [`app/controllers/api/base_controller.rb`][] class, and included
 modules in it's associated directory.  Almost all (if not all), controllers in
 the API inherit from this controller, and the entry point for each action
 defined in the routes (more on that in a later section), are defined in this
-class
+class.
+
+(Exceptions to this are controllers like the [`Api::PingController`][], which
+just return plain text to confirm the application endpoints are responding)
 
 
 ### The Basics
@@ -203,6 +206,7 @@ _TODO_
 
 
 [`app/controllers/api/base_controller.rb`]:        https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/base_controller.rb
+[`app/controllers/api/ping_controller.rb`]:        https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/ping_controller.rb
 [`app/controllers/api/servers_controller.rb`]:     https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/servers_controller.rb
 [`Api::TenantsController`]:                        https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/tenants_controller.rb
 [`Api::TenantsController#create_resource`]:        https://github.com/ManageIQ/manageiq-api/blob/d304a6f/app/controllers/api/tenants_controller.rb#L9-L21
