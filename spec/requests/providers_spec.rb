@@ -119,21 +119,6 @@ describe "Providers API" do
       }
     }
   end
-  let(:hawkular_connection) do
-    {
-      "endpoint"       => {
-        "role"                  => "hawkular",
-        "hostname"              => "sample-openshift-multi-end-point.provider.com",
-        "port"                  => 1_443,
-        "security_protocol"     => "ssl-without-validation",
-        "certificate_authority" => certificate_authority,
-      },
-      "authentication" => {
-        "role"     => "hawkular",
-        "auth_key" => SecureRandom.hex
-      }
-    }
-  end
   let(:prometheus_connection) do
     {
       "endpoint"       => {
@@ -160,13 +145,6 @@ describe "Providers API" do
         "role"     => "prometheus_alerts",
         "auth_key" => SecureRandom.hex
       }
-    }
-  end
-  let(:sample_containers_multi_end_point_with_hawkular) do
-    {
-      "type"                      => containers_class,
-      "name"                      => "sample containers provider with multiple endpoints and hawkular",
-      "connection_configurations" => [default_connection, hawkular_connection]
     }
   end
   let(:sample_containers_multi_end_point_with_prometheus) do
@@ -669,30 +647,6 @@ describe "Providers API" do
           connection["authentication"]["auth_key"]
         end
 
-        it "supports provider with multiple endpoints creation with hawkular" do
-          api_basic_authorize collection_action_identifier(:providers, :create)
-
-          post(api_providers_url, :params => gen_request(:create, sample_containers_multi_end_point_with_hawkular))
-
-          expect(response).to have_http_status(:ok)
-          expected = {"id"   => a_kind_of(String),
-                      "type" => containers_class,
-                      "name" => "sample containers provider with multiple endpoints and hawkular"}
-
-          results = response.parsed_body["results"]
-          expect(results.first).to include(expected)
-
-          provider_id = results.first["id"]
-          provider = ExtManagementSystem.find(provider_id)
-          expect(provider).to have_endpoint_attributes(default_connection["endpoint"])
-          expect(provider.authentication_token).to eq(token(default_connection))
-
-          expect(provider.connection_configurations.hawkular.endpoint).to have_endpoint_attributes(
-            hawkular_connection["endpoint"]
-          )
-          expect(provider.authentication_token(:hawkular)).to eq(token(hawkular_connection))
-        end
-
         it "supports provider with multiple endpoints creation and prometheus" do
           api_basic_authorize collection_action_identifier(:providers, :create)
 
@@ -832,14 +786,14 @@ describe "Providers API" do
         it "does not schedule a new credentials check if endpoint does not change" do
           api_basic_authorize collection_action_identifier(:providers, :edit)
 
-          provider = FactoryBot.create(:ext_management_system, sample_containers_multi_end_point_with_hawkular)
+          provider = FactoryBot.create(:ext_management_system, sample_containers_multi_end_point_with_prometheus)
           MiqQueue.where(:method_name => "authentication_check_types",
                          :class_name  => "ExtManagementSystem",
                          :instance_id => provider.id).delete_all
 
           post(api_provider_url(nil, provider), :params => gen_request(:edit,
                                                                        "connection_configurations" => [default_connection,
-                                                                                                       hawkular_connection]))
+                                                                                                       prometheus_connection]))
 
           queue_jobs = MiqQueue.where(:method_name => "authentication_check_types",
                                       :class_name  => "ExtManagementSystem",
@@ -848,7 +802,7 @@ describe "Providers API" do
           expect(queue_jobs.length).to eq(0)
         end
 
-        it "schedules a new credentials check if endpoint change" do
+        it "schedules a new credentials check if endpoint changes" do
           api_basic_authorize collection_action_identifier(:providers, :edit)
 
           provider = FactoryBot.create(:ems_kubernetes)
@@ -858,7 +812,7 @@ describe "Providers API" do
 
           post(api_provider_url(nil, provider), :params => gen_request(:edit,
                                                                        "connection_configurations" => [updated_connection,
-                                                                                                       hawkular_connection]))
+                                                                                                       prometheus_connection]))
 
           provider.reload
           expect(provider).to have_endpoint_attributes(updated_connection["endpoint"])
