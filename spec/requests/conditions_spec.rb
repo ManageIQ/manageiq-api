@@ -21,10 +21,10 @@ describe "Conditions API" do
   context "Condition CRUD" do
     let(:sample_condition) do
       {
-        :name        => "name",
-        :description => "description",
-        :expression  => {"=" => {"field" => "ContainerImage-architecture", "value" => "dsa"}},
-        :towhat      => "ExtManagementSystem"
+        :name              => "name",
+        :description       => "description",
+        :expression        => {"=" => {"field" => "ContainerImage-architecture", "value" => "dsa"}},
+        :target_class_name => "ExtManagementSystem"
       }
     end
     let(:condition) { FactoryBot.create(:condition) }
