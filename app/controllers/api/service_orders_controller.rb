@@ -61,7 +61,7 @@ module Api
     end
 
     def create_service_order(data)
-      ServiceOrder.new(data).tap do |service_order|
+      ServiceOrderCart.new(data).tap do |service_order|
         service_order.assign_user
         service_order.save!
       end
