@@ -183,6 +183,18 @@ describe "ConversionHosts API" do
       expect(results['error']['message']).to eql("unsupported resource_type #{azure_vm.type}")
     end
 
+    it "raises an error if the resource is already configured as a conversion host" do
+      FactoryBot.create(:conversion_host, :resource => vm)
+      api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
+      post(api_conversion_hosts_url, :params => sample_conversion_host_from_vm)
+
+      expect(response).to have_http_status(400)
+
+      results = response.parsed_body
+      expect(results['error']['kind']).to eql('bad_request')
+      expect(results['error']['message']).to eql("the resource '#{vm.name}' is already configured as a conversion host")
+    end
+
     it "supports single conversion host creation" do
       api_basic_authorize(collection_action_identifier(:conversion_hosts, :create))
 

@@ -48,6 +48,10 @@ module Api
 
       raise BadRequestError, "unsupported resource_type #{resource_type}" unless resource.supports_conversion_host?
 
+      conversion_host = ConversionHost.where(:resource => resource)
+
+      raise BadRequestError, "the resource '#{resource.name}' is already configured as a conversion host" unless conversion_host.empty?
+
       data['resource'] = resource
 
       api_action(type, id) do
