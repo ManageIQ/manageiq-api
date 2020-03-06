@@ -44,7 +44,7 @@ RSpec.describe "service orders API" do
     expected = {
       'error' => a_hash_including(
         'kind'    => 'bad_request',
-        'message' => /Validation failed: ServiceOrder: State has already been taken/
+        'message' => /Validation failed: ServiceOrderCart: State has already been taken/
       )
     }
     expect(response).to have_http_status(:bad_request)
