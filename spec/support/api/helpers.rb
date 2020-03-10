@@ -40,6 +40,13 @@ module Spec
           allow(::Api::ApiConfig.collections[collection][action_type]).to receive(method) { updated_method }
         end
 
+        def collection_action_classed_identifier(type, action, method, klass)
+          ::Api::ApiConfig
+            .collections[type][:collection_actions][method]
+            .detect { |spec| spec[:name] == action.to_s }[:identifiers]
+            .detect { |spec| spec[:klass] == klass.to_s }[:identifier]
+        end
+
         def action_identifier(type, action, selection = :resource_actions, method = :post)
           ::Api::ApiConfig
             .collections[type][selection][method]
