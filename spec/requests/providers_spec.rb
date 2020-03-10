@@ -415,7 +415,7 @@ describe "Providers API" do
     end
 
     it 'creates valid foreman provider' do
-      api_basic_authorize "provider_foreman_add_provider"
+      api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "Provider")
 
       post(api_providers_url + '?provider_class=provider', :params => gen_request(:create, sample_foreman))
 
@@ -500,7 +500,7 @@ describe "Providers API" do
     it 'allows provider specific attributes to be specified' do
       allow(ManageIQ::Providers::Azure::CloudManager).to receive(:api_allowed_attributes).and_return(%w(azure_tenant_id))
       tenant = FactoryBot.create(:cloud_tenant)
-      api_basic_authorize "ems_cloud_new"
+      api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::CloudManager")
 
       post(api_providers_url, :params => { "type"            => "ManageIQ::Providers::Azure::CloudManager",
                                            "name"            => "sample azure provider",
@@ -541,7 +541,7 @@ describe "Providers API" do
     end
 
     it "supports single provider creation" do
-      api_basic_authorize "ems_infra_new"
+      api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::InfraManager")
 
       post(api_providers_url, :params => sample_rhevm)
 
@@ -563,7 +563,7 @@ describe "Providers API" do
         let(:containers_class) { klass }
 
         it "supports creation with auth_key specified" do
-          api_basic_authorize "ems_container_new"
+          api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::ContainerManager")
 
           post(api_providers_url, :params => sample_containers.merge("credentials" => [containers_credentials]))
 
@@ -584,7 +584,7 @@ describe "Providers API" do
     end
 
     it "supports single provider creation via action" do
-      api_basic_authorize "ems_infra_new"
+      api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::InfraManager")
 
       post(api_providers_url, :params => gen_request(:create, sample_rhevm))
 
@@ -601,7 +601,7 @@ describe "Providers API" do
     end
 
     it "should fail single provider creation via action" do
-      api_basic_authorize "ems_cloud_new"
+      api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::CloudManager")
 
       post(api_providers_url, :params => gen_request(:create, sample_rhevm))
 
@@ -610,7 +610,7 @@ describe "Providers API" do
     end
 
     it "supports single provider creation with simple credentials" do
-      api_basic_authorize "ems_infra_new"
+      api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::InfraManager")
 
       post(api_providers_url, :params => sample_vmware.merge("credentials" => default_credentials))
 
@@ -629,7 +629,7 @@ describe "Providers API" do
     end
 
     it "supports single provider creation with compound credentials" do
-      api_basic_authorize "ems_infra_new"
+      api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::InfraManager")
 
       post(api_providers_url, :params => sample_rhevm.merge("credentials" => compound_credentials))
 
@@ -650,7 +650,7 @@ describe "Providers API" do
     end
 
     it "supports multiple provider creation" do
-      api_basic_authorize "ems_infra_new"
+      api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::InfraManager")
 
       post(api_providers_url, :params => gen_request(:create, [sample_vmware, sample_rhevm]))
 
@@ -679,7 +679,7 @@ describe "Providers API" do
         end
 
         it "supports provider with multiple endpoints creation with hawkular" do
-          api_basic_authorize "ems_container_new"
+          api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::ContainerManager")
 
           post(api_providers_url, :params => gen_request(:create, sample_containers_multi_end_point_with_hawkular))
 
@@ -703,7 +703,7 @@ describe "Providers API" do
         end
 
         it "supports provider with multiple endpoints creation and prometheus" do
-          api_basic_authorize "ems_container_new"
+          api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::ContainerManager")
 
           post(api_providers_url, :params => gen_request(:create, sample_containers_multi_end_point_with_prometheus))
 
