@@ -10,12 +10,11 @@ module Api
           :system
         elsif request.headers[HttpHeaders::AUTH_TOKEN]
           :token
+        elsif if request.headers["HTTP_AUTHORIZATION"].try(:match, /^Bearer (.*)/)
+          :jwt
         elsif request.headers["HTTP_AUTHORIZATION"]
-          if jwt_token_found?
-            :jwt
-          else
-            # For AJAX requests the basic auth type should be distinguished
-            request.headers['X-REQUESTED-WITH'] == 'XMLHttpRequest' ? :basic_async : :basic
+          # For AJAX requests the basic auth type should be distinguished
+          request.headers['X-REQUESTED-WITH'] == 'XMLHttpRequest' ? :basic_async : :basic
           end
         elsif request.x_csrf_token
           # Even if the session cookie is not set, we want to consider a request
@@ -145,10 +144,6 @@ module Api
           session[:userid].present?,                                # session has a userid stored
           request.origin.nil? || request.origin == request.base_url # origin header if set matches base_url
         ].all?
-      end
-
-      def jwt_token_found?
-        request.headers["HTTP_AUTHORIZATION"].match(/^Bearer (.*)/)
       end
 
       def authenticate_with_jwt
