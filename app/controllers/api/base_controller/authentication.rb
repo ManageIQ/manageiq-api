@@ -10,12 +10,11 @@ module Api
           :system
         elsif request.headers[HttpHeaders::AUTH_TOKEN]
           :token
-        elsif if request.headers["HTTP_AUTHORIZATION"].try(:match, /^Bearer (.*)/)
+        elsif request.headers["HTTP_AUTHORIZATION"].try(:match, /^Bearer (.*)/)
           :jwt
         elsif request.headers["HTTP_AUTHORIZATION"]
           # For AJAX requests the basic auth type should be distinguished
           request.headers['X-REQUESTED-WITH'] == 'XMLHttpRequest' ? :basic_async : :basic
-          end
         elsif request.x_csrf_token
           # Even if the session cookie is not set, we want to consider a request
           # as a UI authentication request. Otherwise the response would force
