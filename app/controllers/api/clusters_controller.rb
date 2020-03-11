@@ -5,7 +5,7 @@ module Api
     include Subcollections::Tags
 
     def options
-      render_options(:clusters, :node_types => EmsCluster.node_types)
+      render_options(:clusters, :node_types => "mixed_clusters")
     end
   end
 end

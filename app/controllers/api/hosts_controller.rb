@@ -24,7 +24,7 @@ module Api
     end
 
     def options
-      render_options(:hosts, :node_types => Host.node_types)
+      render_options(:hosts, :node_types => "mixed_hosts")
     end
   end
 end

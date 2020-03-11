@@ -138,7 +138,7 @@ RSpec.describe "hosts API" do
 
     context 'OPTIONS /api/hosts' do
       it 'returns hosts node_types' do
-        expected_data = {"node_types" => Host.node_types.to_s}
+        expected_data = {"node_types" => "mixed_hosts"}
 
         options(api_hosts_url)
         expect_options_results(:hosts, expected_data)
