@@ -41,10 +41,7 @@ module Spec
         end
 
         def collection_action_classed_identifier(type, action, method, klass)
-          ::Api::ApiConfig
-            .collections[type][:collection_actions][method]
-            .detect { |spec| spec[:name] == action.to_s }[:identifiers]
-            .detect { |spec| spec[:klass] == klass.to_s }[:identifier]
+          identifier_from_multiple_class_list(::Api::ApiConfig.collections[type][:collection_actions][method], action, klass)
         end
 
         def action_identifier(type, action, selection = :resource_actions, method = :post)
@@ -70,6 +67,16 @@ module Spec
           end
         end
 
+        def subcollection_action_classed_identifiers(type, subtype, action, klass, method = :post)
+          subtype_actions = "#{subtype}_subcollection_actions".to_sym
+          collection_type = ::Api::ApiConfig.collections[type]
+          if ::Api::ApiConfig.collections[type][subtype_actions]
+            identifier_from_multiple_class_list(collection_type[subtype_actions][method], action, klass)
+          else
+            identifier_from_multiple_class_list(collection_type[:subcollection_actions][method], action, klass)
+          end
+        end
+
         def subresource_action_identifier(type, subtype, action, method = :post)
           subresource_actions = "#{subtype}_subresource_actions".to_sym
           if ::Api::ApiConfig.collections[type][subresource_actions]
@@ -77,6 +84,12 @@ module Spec
           else
             action_identifier(subtype, action, :subresource_actions, method)
           end
+        end
+
+        def identifier_from_multiple_class_list(method_actions, action, klass)
+          method_actions
+            .detect { |spec| spec[:name] == action.to_s }[:identifiers]
+            .detect { |spec| spec[:klass] == klass.to_s }[:identifier]
         end
 
         def gen_request(action, data = nil, *hrefs)
