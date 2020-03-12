@@ -22,9 +22,5 @@ module Api
         host.update_authentication(all_credentials) if all_credentials.present?
       end
     end
-
-    def options
-      render_options(:hosts, :node_types => "mixed_hosts")
-    end
   end
 end
