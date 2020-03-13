@@ -1,8 +1,7 @@
 module Api
   class BaseController
     module Authentication
-      require "net/http"
-      require "uri"
+      class AuthenticationError < StandardError; end
 
       SYSTEM_TOKEN_TTL = 30.seconds
 
@@ -11,13 +10,11 @@ module Api
           :system
         elsif request.headers[HttpHeaders::AUTH_TOKEN]
           :token
+        elsif request.headers["HTTP_AUTHORIZATION"].try(:match, /^Bearer (.*)/)
+          :jwt
         elsif request.headers["HTTP_AUTHORIZATION"]
-          if jwt_token
-            :jwt
-          else
-            # For AJAX requests the basic auth type should be distinguished
-            request.headers['X-REQUESTED-WITH'] == 'XMLHttpRequest' ? :basic_async : :basic
-          end
+          # For AJAX requests the basic auth type should be distinguished
+          request.headers['X-REQUESTED-WITH'] == 'XMLHttpRequest' ? :basic_async : :basic
         elsif request.x_csrf_token
           # Even if the session cookie is not set, we want to consider a request
           # as a UI authentication request. Otherwise the response would force
@@ -42,27 +39,9 @@ module Api
           raise AuthenticationError unless valid_ui_session?
           auth_user(session[:userid])
         when :jwt
-          authenticate_with_jwt(jwt_token)
+          authenticate_with_jwt
         when :basic, :basic_async, nil
-          success = authenticate_with_http_basic do |u, p|
-            begin
-              timeout = ::Settings.api.authentication_timeout.to_i_with_method
-
-              if !User.admin?(u) && oidc_configuration?
-                # Basic auth, user/password but configured against OpenIDC.
-                # Let's authenticate as such and get a JWT for that user.
-                #
-                user_jwt   = get_jwt_token(u, p)
-                token_info = validate_jwt_token(user_jwt)
-                user_data, membership = user_details_from_jwt(token_info)
-                define_jwt_request_headers(user_data, membership)
-              end
-              user = User.authenticate(u, p, request, :require_user => true, :timeout => timeout)
-              auth_user(user.userid)
-            rescue MiqException::MiqEVMLoginError => e
-              raise AuthenticationError, e.message
-            end
-          end
+          success = authenticate_with_http_basic { |u, p| basic_authentication(u, p) }
           raise AuthenticationError unless success
         end
         log_api_auth
@@ -119,18 +98,6 @@ module Api
         User.current_user = auth_user_obj
       end
 
-      def authenticate_with_jwt(jwt_token)
-        token_info = validate_jwt_token(jwt_token)
-        user_data, membership = user_details_from_jwt(token_info)
-        define_jwt_request_headers(user_data, membership)
-
-        timeout = ::Settings.api.authentication_timeout.to_i_with_method
-        user = User.authenticate(user_data[:username], "", request, :require_user => true, :timeout => timeout)
-        auth_user(user.userid)
-      rescue => e
-        raise AuthenticationError, "Failed to Authenticate with JWT - error #{e}"
-      end
-
       def authenticate_with_user_token(auth_token)
         if !api_token_mgr.token_valid?(auth_token)
           raise AuthenticationError, "Invalid Authentication Token #{auth_token} specified"
@@ -178,147 +145,20 @@ module Api
         ].all?
       end
 
-      # Support for OAuth2 Authentication
-      #
-      # Some of this stuff should probably live in manageiq/app/models/authenticator/httpd.rb
-      #
-      HTTPD_OPENIDC_CONF = Pathname.new("/etc/httpd/conf.d/manageiq-external-auth-openidc.conf")
-
-      def jwt_token
-        @jwt_token ||= begin
-          jwt_token_match = request.headers["HTTP_AUTHORIZATION"].match(/^Bearer (.*)/)
-          jwt_token_match[1] if jwt_token_match
-        end
-      end
-
-      def oidc_configuration?
-        auth_config = Settings.authentication
-        auth_config.mode == "httpd"           &&
-          auth_config.oidc_enabled            &&
-          auth_config.provider_type == "oidc" &&
-          HTTPD_OPENIDC_CONF.exist?
-      end
-
-      def httpd_oidc_config
-        @httpd_oidc_config ||= HTTPD_OPENIDC_CONF.readlines.collect(&:chomp)
-      end
-
-      def httpd_oidc_config_param(name)
-        param_spec = httpd_oidc_config.find { |line| line =~ /^#{name} .*/i }
-        return "" if param_spec.blank?
-
-        param_match = param_spec.match(/^#{name} (.*)/i)
-        param_match ? param_match[1].strip : ""
-      end
-
-      def oidc_provider_metadata
-        @oidc_provider_metadata ||= begin
-          oidc_provider_metadata_url = httpd_oidc_config_param("OIDCProviderMetadataURL")
-          if oidc_provider_metadata_url.blank?
-            {}
-          else
-            uri = URI.parse(oidc_provider_metadata_url)
-            http = Net::HTTP.new(uri.host, uri.port)
-            http.use_ssl = (uri.scheme == "https")
-            response = http.request(Net::HTTP::Get.new(uri.request_uri))
-            JSON.parse(response.body)
-          end
-        end
-      end
-
-      def oidc_metadata_url_endpoint(oidc_param, metadata_url_key)
-        endpoint = httpd_oidc_config_param(oidc_param)
-        endpoint = oidc_provider_metadata[metadata_url_key] if endpoint.blank?
-        raise AuthenticationError, "Invalid #{HTTPD_OPENIDC_CONF} configuration, missing #{oidc_param} or OIDCProviderMetadataURL #{metadata_url_key} entry" if endpoint.blank?
-
-        endpoint
-      end
-
-      def oidc_token_endpoint
-        @oidc_token_endpoint ||= oidc_metadata_url_endpoint("OIDCProviderTokenEndpoint", "token_endpoint")
-      end
-
-      def oidc_token_introspection_endpoint
-        @oidc_token_introspection_endpoint ||= oidc_metadata_url_endpoint("OIDCOAuthIntrospectionEndpoint", "token_introspection_endpoint")
-      end
-
-      def oidc_client_id
-        @oidc_client_id ||= httpd_oidc_config_param("OIDCClientId")
-      end
-
-      def oidc_client_secret
-        @oidc_client_secret ||= httpd_oidc_config_param("OIDCClientSecret")
-      end
-
-      def oidc_scope
-        @oidc_scope ||= httpd_oidc_config_param("OIDCScope")
-      end
-
-      def get_jwt_token(username, password)
-        uri = URI.parse(oidc_token_endpoint)
-        request_params = {
-          "grant_type" => "password",
-          "username"   => username,
-          "password"   => password
-        }
-        request_params["scope"] = oidc_scope if oidc_scope.present?
-
-        request = Net::HTTP::Post.new(uri)
-        request.basic_auth(oidc_client_id, oidc_client_secret)
-        request.form_data = request_params
-
-        http_params     = {:use_ssl => (uri.scheme == "https")}
-        response        = Net::HTTP.start(uri.hostname, uri.port, http_params) { |http| http.request(request) }
-        parsed_response = JSON.parse(response.body)
-        raise parsed_response["error_description"] if parsed_response["error"].present?
-
-        parsed_response["access_token"]
+      def authenticate_with_jwt
+        timeout = ::Settings.api.authentication_timeout.to_i_with_method
+        user = User.authenticate("", "", request, :require_user => true, :timeout => timeout)
+        auth_user(user.userid)
       rescue => e
-        raise AuthenticationError, "Failed to get a JWT Token for user #{username} - error #{e}"
+        raise AuthenticationError, "Failed to Authenticate with JWT - error #{e}"
       end
 
-      def validate_jwt_token(jwt_token)
-        uri = URI.parse(oidc_token_introspection_endpoint)
-        request_params = {
-          "token" => jwt_token
-        }
-        request_params["scope"] = oidc_scope if oidc_scope.present?
-
-        request = Net::HTTP::Post.new(uri)
-        request.basic_auth(oidc_client_id, oidc_client_secret)
-        request.form_data = request_params
-
-        http_params     = {:use_ssl => (uri.scheme == "https")}
-        response        = Net::HTTP.start(uri.hostname, uri.port, http_params) { |http| http.request(request) }
-        parsed_response = JSON.parse(response.body)
-        raise "Invalid access token, JWT is inactive" if parsed_response["active"] != true
-
-        # Return the Token Introspection result
-        parsed_response
-      rescue => e
-        raise AuthenticationError, "Failed to Validate the JWT - error #{e}"
-      end
-
-      def user_details_from_jwt(token_info)
-        user_attrs = {
-          :username  => token_info["preferred_username"],
-          :fullname  => token_info["name"],
-          :firstname => token_info["given_name"],
-          :lastname  => token_info["family_name"],
-          :email     => token_info["email"],
-          :domain    => token_info["domain"]
-        }
-        [user_attrs, Array(token_info["groups"])]
-      end
-
-      def define_jwt_request_headers(user_data, membership)
-        request.headers["X-REMOTE-USER"]           = user_data[:username]
-        request.headers["X-REMOTE-USER-FULLNAME"]  = user_data[:fullname]
-        request.headers["X-REMOTE-USER-FIRSTNAME"] = user_data[:firstname]
-        request.headers["X-REMOTE-USER-LASTNAME"]  = user_data[:lastname]
-        request.headers["X-REMOTE-USER-EMAIL"]     = user_data[:email]
-        request.headers["X-REMOTE-USER-DOMAIN"]    = user_data[:domain]
-        request.headers["X-REMOTE-USER-GROUPS"]    = membership.join(',')
+      def basic_authentication(username, password)
+        timeout = ::Settings.api.authentication_timeout.to_i_with_method
+        user = User.authenticate(username, password, request, :require_user => true, :timeout => timeout)
+        auth_user(user.userid)
+      rescue MiqException::MiqEVMLoginError => e
+        raise AuthenticationError, e.message
       end
     end
   end
