@@ -21,6 +21,7 @@ module Api
 
     def edit_resource(type, id, data)
       catalog_item = resource_search(id, type, collection_class(:service_templates))
+      decode_picture(data) if data["picture"]
       catalog_item.update_catalog_item(data.deep_symbolize_keys, User.current_user.userid)
     rescue => err
       raise BadRequestError, "Could not update Service Template - #{err}"
@@ -51,6 +52,10 @@ module Api
 
     def set_additional_attributes
       @additional_attributes = %w(config_info)
+    end
+
+    def decode_picture(data)
+      data["picture"]["content"] = Base64.strict_decode64(data["picture"]["content"])
     end
   end
 end
