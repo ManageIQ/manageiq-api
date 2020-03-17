@@ -134,6 +134,14 @@ describe "Service Templates API" do
         }
       }
     end
+    let(:updated_picture) do
+      {
+        :picture => {
+          :content   => "aW1hZ2U=",
+          :extension => "jpg"
+        }
+      }
+    end
 
     it "rejects requests without appropriate role" do
       api_basic_authorize
@@ -152,6 +160,17 @@ describe "Service Templates API" do
 
       expect_single_resource_query("id" => st.id.to_s, "href" => api_service_template_url(nil, st), "name" => "Updated Template Name")
       expect(st.reload.name).to eq("Updated Template Name")
+    end
+
+    it "supports picture update with base 64 decoded content" do
+      api_basic_authorize collection_action_identifier(:service_templates, :edit)
+
+      st = FactoryBot.create(:service_template)
+      post(api_service_template_url(nil, st), :params => gen_request(:edit, updated_picture))
+
+      st.reload
+      expect(st.picture.md5).to eq("78805a221a988e79ef3f42d7c5bfd418")
+      expect(st.picture.content).to eq("image")
     end
 
     it "supports edits of multiple resources" do
