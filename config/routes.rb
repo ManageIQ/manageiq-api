@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       collection_name_pluralized, resource_name = Api::Routing.inflections_for_named_route_helpers(collection_name.to_s)
 
       scope collection_name, :controller => collection_name do
+        match "/:c_id", :action => :options_resource, :via => :options unless collection.options.include?(:arbitrary_resource_path)
         collection.verbs.each do |verb|
           if collection.options.include?(:primary)
             case verb

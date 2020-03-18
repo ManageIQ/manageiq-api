@@ -112,6 +112,10 @@ module Api
       end
     end
 
+    def options_resource
+      render_resource_options(@req.collection, params[:c_id])
+    end
+
     def settings
       id       = @req.collection_id
       type     = @req.collection

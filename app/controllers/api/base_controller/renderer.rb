@@ -533,6 +533,42 @@ module Api
         klass = collection_class(resource)
         render :json => OptionsSerializer.new(klass, data).serialize
       end
+
+      def render_resource_options(type, c_id)
+        cspec    = collection_config[type]
+        resource = resource_search(c_id, type, collection_class(type))
+
+        actions = {}
+        cspec[:resource_actions].each do |method, action_definitions|
+          next unless render_actions_for_method(cspec[:verbs], method)
+
+          actions[method.to_s] = action_definitions.each_with_object({}) do |action, hash|
+            next if action[:disabled]
+
+            action_name = action.name
+            action_available = true
+            reason           = ""
+            if !api_user_role_allows?(action[:identifier])
+              action_available = false
+              reason           = "Not allowed via user role entitlement"
+            else
+              unless %w[delete edit].include?(action_name)
+                if resource.respond_to?("supports_#{action_name}?")
+                  action_available = resource.public_send("supports_#{action_name}?")
+                  reason           = resource.unsupported_reason(action_name.to_sym)
+                elsif resource.respond_to?("validate_#{action_name}")
+                  available        = resource.send("validate_#{action_name}")
+                  action_available = available[:available]
+                  reason           = available[:message]
+                end
+              end
+            end
+            hash[action_name] = {"available" => action_available}
+            hash[action_name]["reason"] = reason if reason.present?
+          end
+        end
+        render :json => {:actions => actions}
+      end
     end
   end
 end
