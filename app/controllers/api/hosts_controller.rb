@@ -4,6 +4,7 @@ module Api
     AUTH_TYPE_ATTR = "auth_type".freeze
     DEFAULT_AUTH_TYPE = "default".freeze
 
+    include Subcollections::CustomAttributes
     include Subcollections::Lans
     include Subcollections::Policies
     include Subcollections::PolicyProfiles

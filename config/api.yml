@@ -1542,6 +1542,7 @@
     - :policies
     - :policy_profiles
     - :lans
+    - :custom_attributes
     :collection_actions:
       :get:
       - :name: read
@@ -1635,6 +1636,14 @@
       :get:
       - :name: read
         :identifier: host_show
+    :custom_attributes_subcollection_actions:
+      :post:
+      - :name: add
+        :identifier: host_edit
+      - :name: edit
+        :identifier: host_edit
+      - :name: delete
+        :identifier: host_edit
   :instances:
     :description: Instances
     :identifier: instance
