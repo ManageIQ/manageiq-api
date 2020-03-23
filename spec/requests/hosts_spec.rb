@@ -169,20 +169,20 @@ RSpec.describe "hosts API" do
       api_basic_authorize
       host.custom_attributes = [ca1, ca2]
 
-      get api_host_custom_attributes_url(nil, host), :params => { :expand => "resources" }
+      get api_host_custom_attributes_url(nil, host), :params => {:expand => "resources"}
 
       expect_query_result(:custom_attributes, 2)
-      expect_result_resources_to_include_data("resources", "name" => %w(name1 name2))
+      expect_result_resources_to_include_data("resources", "name" => %w[name1 name2])
     end
 
     it "getting custom_attributes from a host using expand" do
       api_basic_authorize action_identifier(:hosts, :read, :resource_actions, :get)
       host.custom_attributes = [ca1, ca2]
 
-      get api_host_url(nil, host), :params => { :expand => "custom_attributes" }
+      get api_host_url(nil, host), :params => {:expand => "custom_attributes"}
 
       expect_single_resource_query("guid" => host.guid)
-      expect_result_resources_to_include_data("custom_attributes", "name" => %w(name1 name2))
+      expect_result_resources_to_include_data("custom_attributes", "name" => %w[name1 name2])
     end
 
     it "delete a custom_attribute without appropriate role" do
@@ -215,13 +215,13 @@ RSpec.describe "hosts API" do
     it "add custom attributes to a host" do
       api_basic_authorize action_identifier(:hosts, :edit)
 
-      post(api_host_custom_attributes_url(nil, host), :params => gen_request(:add, [{"name" => "name1", "value" => "value1"},
-                                                                                {"name" => "name2", "value" => "value2"}]))
+      params = gen_request(:add, [{"name" => "name1", "value" => "value1"}, {"name" => "name2", "value" => "value2"}])
+      post(api_host_custom_attributes_url(nil, host), :params => params)
 
       expect(response).to have_http_status(:ok)
-      expect_result_resources_to_include_data("results", "name" => %w(name1 name2))
+      expect_result_resources_to_include_data("results", "name" => %w[name1 name2])
       expect(host.custom_attributes.size).to eq(2)
-      expect(host.custom_attributes.pluck(:value).sort).to eq(%w(value1 value2))
+      expect(host.custom_attributes.pluck(:value).sort).to eq(%w[value1 value2])
     end
 
     it "edit a custom attribute by name" do
@@ -250,8 +250,8 @@ RSpec.describe "hosts API" do
       api_basic_authorize action_identifier(:hosts, :edit)
       host.custom_attributes = [ca1, ca2]
 
-      post(api_host_custom_attributes_url(nil, host), :params => gen_request(:edit, [{"name" => "name1", "value" => "new value1"},
-                                                                                 {"name" => "name2", "value" => "new value2"}]))
+      params = gen_request(:edit, [{"name" => "name1", "value" => "new value1"}, {"name" => "name2", "value" => "new value2"}])
+      post(api_host_custom_attributes_url(nil, host), :params => params)
 
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_data("results", "value" => ["new value1", "new value2"])
