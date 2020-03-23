@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 * Add tagging for cloud tenants [(#684)](https://github.com/ManageIQ/manageiq-api/pull/684)
 * Add tagging for cloud volumes [(#685)](https://github.com/ManageIQ/manageiq-api/pull/685)
 * Allow miq_regions to be edited [(#690)](https://github.com/ManageIQ/manageiq-api/pull/690)
-* Allow Zones to be deleted [(#691)](https://github.com/ManageIQ/manageiq-api/pull/691)
+* Allow Zones to be edited and deleted [(#691)](https://github.com/ManageIQ/manageiq-api/pull/691)
 * Log exceptions to rails console [(#686)](https://github.com/ManageIQ/manageiq-api/pull/686)
 
 ## Ivanchuk-1
