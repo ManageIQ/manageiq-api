@@ -54,7 +54,7 @@ module Api
       end
 
       #
-      # Timetamps should all be in the XmlSchema form, an ISO 8601
+      # Timestamps should all be in the XmlSchema form, an ISO 8601
       # UTC time representation as follows: 2014-01-30T18:57:55Z
       #
       # Function takes either a Time string or Seconds since Epoch
@@ -68,7 +68,7 @@ module Api
       #
       # Let's normalize a URL
       #
-      # Note, all URL's are baselined as per the request specifying versioning and such.
+      # Note, all URLs are baselined as per the request specifying versioning and such.
       #
       def normalize_url(value)
         svalue = value.to_s
