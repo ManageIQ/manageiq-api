@@ -4,6 +4,9 @@
 # - Refresh dialog fields       /api/service_dialogs/:id "refresh_dialog_fields"
 #
 describe "Service Dialogs API" do
+  let(:dialog_tab)    { FactoryBot.create(:dialog_tab, :label => 'tab') }
+  let(:dialog_group)  { FactoryBot.create(:dialog_group, :label => 'group') }
+  let(:dialog_field) { FactoryBot.create(:dialog_field_tag_control, :label => 'test tag category', :name => 'test tag category', :options => {:id => 3}) }
   let(:dialog1)    { FactoryBot.create(:dialog, :label => "ServiceDialog1") }
   let(:dialog2)    { FactoryBot.create(:dialog, :label => "ServiceDialog2") }
 
@@ -36,6 +39,17 @@ describe "Service Dialogs API" do
       get api_service_dialogs_url
 
       expect(response).to have_http_status(:ok)
+    end
+
+    it "normalizes nested symbol field ids" do
+      dialog_group.dialog_fields << dialog_field
+      dialog_tab.dialog_groups << dialog_group
+      dialog1.dialog_tabs << dialog_tab
+      api_basic_authorize("svc_catalog_provision")
+
+      get api_service_dialog_url(nil, dialog1)
+
+      expect(response.parsed_body["content"][0]["dialog_tabs"][0]["dialog_groups"][0]["dialog_fields"][0]["options"]).to eq("id" => "3")
     end
 
     it "allows read of a single service dialog with the service catalog provision role" do
