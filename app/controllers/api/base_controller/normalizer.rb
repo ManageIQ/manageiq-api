@@ -38,7 +38,7 @@ module Api
           normalize_array(value)
         elsif value.respond_to?(:attributes) || value.respond_to?(:keys)
           normalize_hash(attr, value)
-        elsif attr == "id" || attr.to_s.ends_with?("_id")
+        elsif attr.to_s == "id" || attr.to_s.ends_with?("_id")
           value.to_s
         elsif Api.time_attribute?(attr)
           normalize_time(value)
