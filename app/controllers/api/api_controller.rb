@@ -80,8 +80,8 @@ module Api
         :name                 => Vmdb::Appliance.PRODUCT_NAME,
         :name_full            => I18n.t("product.name_full"),
         :copyright            => I18n.t("product.copyright"),
-        :support_website      => I18n.t("product.support_website"),
-        :support_website_text => I18n.t("product.support_website_text"),
+        :support_website      => ::Settings.docs.product_support_website,
+        :support_website_text => ::Settings.docs.product_support_website_text,
         :branding_info        => branding_info
       }
     end
