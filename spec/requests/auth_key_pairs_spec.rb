@@ -1,5 +1,5 @@
 RSpec.describe "Auth Key Pairs API" do
-  let(:akp) { FactoryBot.create(:auth_key_pair_cloud) }
+  let(:akp) { FactoryBot.create(:auth_key_pair_cloud, :resource => FactoryBot.create(:ems_cloud)) }
 
   describe 'GET /api/auth_key_pairs' do
     before { akp }
@@ -68,6 +68,22 @@ RSpec.describe "Auth Key Pairs API" do
 
       auth_key_pair = ManageIQ::Providers::CloudManager::AuthKeyPair.find(response.parsed_body['results'].first["id"])
       expect(auth_key_pair.name).to eq('foo')
+    end
+
+    it 'can delete auth_key_pairs' do
+      api_basic_authorize action_identifier(:auth_key_pairs, :delete)
+
+      post(api_auth_key_pair_url(nil, akp), :params => {'action' => 'delete'})
+
+      expect_single_action_result(:success => true, :message => "Deleting", :task => true)
+    end
+
+    it 'will not allow unauthorized key pairs delete' do
+      api_basic_authorize action_identifier(:auth_key_pairs, :edit)
+
+      expect_forbidden_request do
+        post(api_auth_key_pair_url(nil, akp), :params => {'action' => 'delete'})
+      end
     end
   end
 
