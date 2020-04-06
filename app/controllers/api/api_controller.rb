@@ -6,14 +6,14 @@ module Api
 
     def index
       res = {
-        :name          => ApiConfig.base.name,
-        :description   => ApiConfig.base.description,
-        :version       => ManageIQ::Api::VERSION,
-        :versions      => entrypoint_versions,
-        :settings      => user_settings,
-        :identity      => auth_identity,
-        :server_info   => server_info,
-        :product_info  => product_info_data
+        :name         => ApiConfig.base.name,
+        :description  => ApiConfig.base.description,
+        :version      => ManageIQ::Api::VERSION,
+        :versions     => entrypoint_versions,
+        :settings     => user_settings,
+        :identity     => auth_identity,
+        :server_info  => server_info,
+        :product_info => product_info_data
       }
       res[:authorization] = auth_authorization if attribute_selection.include?("authorization")
       res[:collections]   = entrypoint_collections
@@ -62,16 +62,17 @@ module Api
 
     def server_info
       {
-        :version         => Vmdb::Appliance.VERSION,
-        :build           => Vmdb::Appliance.BUILD,
-        :release         => Vmdb::Appliance.RELEASE,
-        :appliance       => MiqServer.my_server.name,
-        :time            => Time.now.utc.iso8601,
-        :server_href     => "#{@req.api_prefix}/servers/#{MiqServer.my_server.id}",
-        :zone_href       => "#{@req.api_prefix}/zones/#{MiqServer.my_server.zone.id}",
-        :region_href     => "#{@req.api_prefix}/regions/#{MiqRegion.my_region.id}",
-        :enterprise_href => "#{@req.api_prefix}/enterprises/#{MiqEnterprise.my_enterprise.id}",
-        :plugins         => plugin_info
+        :version                    => Vmdb::Appliance.VERSION,
+        :build                      => Vmdb::Appliance.BUILD,
+        :release                    => Vmdb::Appliance.RELEASE,
+        :appliance                  => MiqServer.my_server.name,
+        :time                       => Time.now.utc.iso8601,
+        :server_href                => "#{@req.api_prefix}/servers/#{MiqServer.my_server.id}",
+        :zone_href                  => "#{@req.api_prefix}/zones/#{MiqServer.my_server.zone.id}",
+        :region_href                => "#{@req.api_prefix}/regions/#{MiqRegion.my_region.id}",
+        :enterprise_href            => "#{@req.api_prefix}/enterprises/#{MiqEnterprise.my_enterprise.id}",
+        :plugins                    => plugin_info,
+        :asynchronous_notifications => ::Settings.server.asynchronous_notifications,
       }
     end
 
