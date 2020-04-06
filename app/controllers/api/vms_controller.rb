@@ -282,6 +282,14 @@ module Api
       end
     end
 
+    def check_compliance_resource(type, id, _data = nil)
+      api_action(type, id) do |klass|
+        vm = resource_search(id, type, klass)
+        api_log_info("Checking compliance of #{vm_ident(vm)}")
+        request_compliance_check(vm)
+      end
+    end
+
     private
 
     def miq_server_message(miq_server)
@@ -501,6 +509,16 @@ module Api
       desc = "#{vm_ident(virtual_machine)} request retire"
 
       task_id = queue_object_action(virtual_machine, desc, :method_name => "make_retire_request", :role => "automate", :args => [User.current_user.id])
+      action_result(true, desc, :task_id => task_id)
+    rescue StandardError => err
+      action_result(false, err.to_s)
+    end
+
+    def request_compliance_check(vm)
+      desc = "#{vm_ident(vm)} check compliance requested"
+      raise "#{vm_ident(vm)} has no compliance policies assigned" unless vm.has_compliance_policies?
+
+      task_id = queue_object_action(vm, desc, :method_name => "check_compliance")
       action_result(true, desc, :task_id => task_id)
     rescue StandardError => err
       action_result(false, err.to_s)
