@@ -122,8 +122,44 @@ RSpec.describe 'CustomButtons API' do
       expect(response).to have_http_status(:ok)
       custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
       expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
+      expect(CustomButton.count).to eq 1
+      expect(ResourceAction.count).to eq 1
       expect(custom_button.visibility['roles']).to eq(['_ALL_'])
       expect(response.parsed_body['results'].first).to include(cb_rec.except('resource_action', 'uri_attributes'))
+    end
+
+    it 'shows validation errors on failure' do
+      api_basic_authorize collection_action_identifier(:custom_buttons, :create)
+
+      cb_rec = {
+        'name'             => 'Generic Object Custom Button',
+        'description'      => 'Generic Object Custom Button description',
+        'applies_to_class' => 'GenericObjectDefinition',
+        'uri_attributes'   => {:request => "automate_method"},
+        'options'          => {
+          'button_icon'  => 'ff ff-view-expanded',
+          'button_color' => '#4727ff',
+          'display'      => true,
+        },
+        'resource_action'  => {
+          'ae_namespace' => 'SYSTEM',
+          'ae_class'     => 'PROCESS'
+        },
+        'visibility'       => {'roles' => ['_ALL_']}
+      }
+      post(api_custom_buttons_url, :params => cb_rec)
+      post(api_custom_buttons_url, :params => cb_rec)
+
+      expected = {
+        'error' => a_hash_including(
+          'kind'    => 'bad_request',
+          'message' => /Validation failed: CustomButton: Name has already been taken, CustomButton: Description has already been taken/
+        )
+      }
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include(expected)
+      expect(CustomButton.count).to eq 1
+      expect(ResourceAction.count).to eq 1
     end
 
     it 'can edit custom buttons by id' do
@@ -146,6 +182,44 @@ RSpec.describe 'CustomButtons API' do
       expect(response.parsed_body).to include(expected)
       expect(cb.reload.visibility[:roles]).to eq(['_ALL_'])
       expect(cb.reload.resource_action.ae_attributes).to include("attribute" => "is present")
+    end
+
+    it 'updates the existing resource action' do
+      cb.resource_action = FactoryBot.create(:resource_action, :with_dialog)
+      api_basic_authorize collection_action_identifier(:custom_buttons, :edit)
+
+      request = {
+        'action'    => 'edit',
+        'resources' => [
+          {'id' => cb.id.to_s, 'resource' => {'name' => 'updated 1', 'resource_action' => {'dialog_id' => 2}}},
+
+        ]
+      }
+
+      expect(cb.resource_action.dialog_id).to eq(ResourceAction.first.dialog_id)
+
+      post(api_custom_buttons_url, :params => request)
+      cb.reload
+
+      expect(ResourceAction.first.dialog_id).to eq(2)
+      expect(cb.name).to eq('updated 1')
+    end
+
+    it 'creates the resource action' do
+      api_basic_authorize collection_action_identifier(:custom_buttons, :edit)
+
+      request = {
+        'action'    => 'edit',
+        'resources' => [
+          {'id' => cb.id.to_s, 'resource' => {'name' => 'updated 1', 'resource_action' => {'dialog_id' => 2}}},
+        ]
+      }
+
+      expect(cb.resource_action).to eq(nil)
+
+      post(api_custom_buttons_url, :params => request)
+
+      expect(ResourceAction.first.dialog_id).to eq(2)
     end
   end
 
