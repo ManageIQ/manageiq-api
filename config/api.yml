@@ -4047,6 +4047,8 @@
         :identifier: vm_edit
       - :name: add_event
         :identifier: vm_edit
+      - :name: check_compliance
+        :identifier: vm_check_compliance
       - :name: refresh
         :identifier: vm_refresh
       - :name: shutdown_guest
@@ -4119,6 +4121,8 @@
         :identifier: vm_edit
       - :name: add_event
         :identifier: vm_edit
+      - :name: check_compliance
+        :identifier: vm_check_compliance
       - :name: refresh
         :identifier: vm_refresh
       - :name: shutdown_guest
