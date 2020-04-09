@@ -98,6 +98,36 @@ describe "Policies API" do
     expect_result_resources_to_include_data("resources", "guid" => Array.wrap(ps2.guid))
   end
 
+  def test_policy_profile_policies_query(object, api_object_policy_profiles_url)
+    api_basic_authorize
+
+    object.add_policy(ps1)
+    object.add_policy(ps2)
+
+    get api_object_policy_profiles_url, :params => {:expand => "resources", :attributes => "miq_policies"}
+
+    expected = {
+      "name"      => "policy_profiles",
+      "count"     => 2,
+      "resources" => a_collection_containing_exactly(
+        a_hash_including(
+          "guid"         => ps1.guid,
+          "miq_policies" => a_collection_containing_exactly(
+            a_hash_including("guid" => p1.guid),
+            a_hash_including("guid" => p2.guid)
+          )
+        ),
+        a_hash_including(
+          "guid"         => ps2.guid,
+          "miq_policies" => a_collection_containing_exactly(
+            a_hash_including("guid" => p3.guid)
+          )
+        )
+      )
+    }
+    expect(response.parsed_body).to include(expected)
+  end
+
   context "Policy collection" do
     it "query invalid policy" do
       api_basic_authorize action_identifier(:policies, :read, :resource_actions, :get)
@@ -376,6 +406,10 @@ describe "Policies API" do
 
     it "query Vm policy profiles" do
       test_policy_profile_query(vm, api_vm_policy_profiles_url(nil, vm))
+    end
+
+    it "query Vm policy profiles and related policies" do
+      test_policy_profile_policies_query(vm, api_vm_policy_profiles_url(nil, vm))
     end
   end
 
