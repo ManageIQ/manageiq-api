@@ -3793,6 +3793,8 @@
       - :name: read
         :identifier: miq_template_show_list
       :post:
+      - :name: check_compliance
+        :identifier: miq_template_check_compliance
       - :name: query
         :identifier: miq_template_show_list
       - :name: refresh
@@ -3810,6 +3812,8 @@
       - :name: read
         :identifier: miq_template_show
       :post:
+      - :name: check_compliance
+        :identifier: miq_template_check_compliance
       - :name: refresh
         :identifier: miq_template_refresh
         :disabled: true
