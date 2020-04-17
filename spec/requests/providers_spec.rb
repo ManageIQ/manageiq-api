@@ -1857,4 +1857,7 @@ describe "Providers API" do
       expect(response.parsed_body).to include("resources" => [])
     end
   end
+
+  it_behaves_like "a check compliance action", "provider", :ems_infra, "ExtManagementSystem"
+  it_behaves_like "a check compliance action", "provider", :ems_cloud, "ExtManagementSystem"
 end

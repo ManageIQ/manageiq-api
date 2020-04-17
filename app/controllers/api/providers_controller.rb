@@ -122,6 +122,14 @@ module Api
       action_result(false, err.to_s)
     end
 
+    def check_compliance_resource(type, id, _data = nil)
+      api_action(type, id) do |klass|
+        provider = resource_search(id, type, klass)
+        api_log_info("Checking compliance of #{provider_ident(provider)}")
+        request_compliance_check(provider)
+      end
+    end
+
     private
 
     def authorize_provider(typed_provider_klass)
@@ -345,6 +353,16 @@ module Api
         end
       end
       @collection_klasses[:providers] = Provider
+    end
+
+    def request_compliance_check(provider)
+      desc = "#{provider_ident(provider)} check compliance requested"
+      raise "#{provider_ident(provider)} has no compliance policies assigned" if provider.compliance_policies.blank?
+
+      task_id = queue_object_action(provider, desc, :method_name => "check_compliance")
+      action_result(true, desc, :task_id => task_id)
+    rescue StandardError => err
+      action_result(false, err.to_s)
     end
   end
 end
