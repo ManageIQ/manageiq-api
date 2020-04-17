@@ -2388,6 +2388,10 @@
       :post:
       - :name: change_password
         :identifier: ems_infra_change_password
+      - :name: check_compliance
+        :identifier:
+        - ems_infra_check_compliance
+        - ems_cloud_check_compliance
       - :name: query
         :identifier:
         - ems_infra_show_list
@@ -2423,6 +2427,10 @@
       :post:
       - :name: change_password
         :identifier: ems_infra_change_password
+      - :name: check_compliance
+        :identifier:
+        - ems_infra_check_compliance
+        - ems_cloud_check_compliance
       - :name: edit
         :identifier: ems_infra_edit
       - :name: refresh
