@@ -1862,6 +1862,8 @@
     - :subcollection
     :verbs: *g
     :klass: Lan
+    :subcollections:
+    - :tags
     :collection_actions:
       :get:
       - :name: read
@@ -1878,6 +1880,20 @@
         - host_show
         - instance_show
         - vm_show
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier:
+        - ems_network_tag
+        - infra_networking_tag
+        - network_port_tag
+        - network_router_tag
+      - :name: unassign
+        :identifier:
+        - ems_network_tag
+        - infra_networking_tag
+        - network_port_tag
+        - network_router_tag
   :load_balancers:
     :description: Load Balancers
     :options:
