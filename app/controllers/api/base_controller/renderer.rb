@@ -514,7 +514,13 @@ module Api
 
         return custom_api_user_role_allows?(action_identifier) if custom_api_user_role_allows_method?(action_identifier)
 
-        Array(action_identifier).any? { |identifier| User.current_user.role_allows?(:identifier => identifier) }
+        @role_allows_cache ||= {}
+        Array(action_identifier).any? do |identifier|
+          unless @role_allows_cache.key?(identifier)
+            @role_allows_cache[identifier] = User.current_user.role_allows?(:identifier => identifier)
+          end
+          @role_allows_cache[identifier]
+        end
       end
 
       def render_actions(physical_attrs)
