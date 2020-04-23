@@ -123,6 +123,7 @@ RSpec.describe "reports API" do
       let(:params) { { :hash_attribute => "result_set" } }
 
       it_behaves_like "paginated and sorted list", :report
+      it_behaves_like "paginated and sorted list", :report_result
     end
 
     it "can fetch a specific result as a primary collection" do
