@@ -258,4 +258,6 @@ RSpec.describe "hosts API" do
       expect(host.reload.custom_attributes.pluck(:value).sort).to eq(["new value1", "new value2"])
     end
   end
+
+  it_behaves_like "a check compliance action", "host", :host, "Host"
 end
