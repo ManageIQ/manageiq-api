@@ -107,10 +107,11 @@ RSpec.describe "reports API" do
       let(:col_formats) { Array.new(columns.count) }
       let(:report_result) { FactoryBot.create(:miq_report_result, :miq_group => user.current_group) }
       let(:report) do
-        FactoryBot.create(:miq_report, :miq_group => user.current_group,
-                          :miq_report_results     => [report_result],
-                          :col_order              => columns,
-                          :col_formats            => col_formats)
+        FactoryBot.create(:miq_report,
+                          :miq_group          => user.current_group,
+                          :miq_report_results => [report_result],
+                          :col_order          => columns,
+                          :col_formats        => col_formats)
       end
 
       before do
@@ -120,7 +121,7 @@ RSpec.describe "reports API" do
         api_basic_authorize action_identifier(:results, :read, :resource_actions, :get)
       end
 
-      let(:params) { { :hash_attribute => "result_set" } }
+      let(:params) { {:hash_attribute => "result_set"} }
 
       it_behaves_like "paginated and sorted list", :report
       it_behaves_like "paginated and sorted list", :report_result

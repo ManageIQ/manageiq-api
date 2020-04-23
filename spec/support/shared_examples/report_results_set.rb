@@ -40,12 +40,12 @@ RSpec.shared_examples "paginated and sorted list" do |collection_route|
 
   let(:result_set_sorted_by_size) do
     [
-        {"name" => "VG1",
-         "size" => "109.6 KB"},
-        {"name" => "VM2",
-         "size" => "112.8 KB"},
-        {"name" => "VM1",
-         "size" => "324.4 KB"}
+      {"name" => "VG1",
+       "size" => "109.6 KB"},
+      {"name" => "VM2",
+       "size" => "112.8 KB"},
+      {"name" => "VM1",
+       "size" => "324.4 KB"}
     ]
   end
 
@@ -66,12 +66,12 @@ RSpec.shared_examples "paginated and sorted list" do |collection_route|
 
   let(:result_set_custom_formatting_for_size) do
     [
-        {"name" => "VM1",
-         "size" => "332,233"},
-        {"name" => "VM2",
-         "size" => "115,533"},
-        {"name" => "VG1",
-         "size" => "112,233"}
+      {"name" => "VM1",
+       "size" => "332,233"},
+      {"name" => "VM2",
+       "size" => "115,533"},
+      {"name" => "VG1",
+       "size" => "112,233"}
     ]
   end
 
