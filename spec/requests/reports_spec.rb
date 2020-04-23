@@ -83,6 +83,23 @@ RSpec.describe "reports API" do
       expect(response).to have_http_status(:ok)
     end
 
+    it "cannot find report to fetch report's result" do
+      report_result = report.miq_report_results.first
+      table = Ruport::Data::Table.new(
+          :column_names => %w(foo),
+          :data         => [%w(bar), %w(baz)]
+      )
+      allow(report).to receive(:table).and_return(table)
+      allow_any_instance_of(MiqReportResult).to receive(:report_results).and_return(report)
+
+      api_basic_authorize
+
+      other_report = FactoryBot.create(:miq_report_with_results)
+      get(api_report_result_url(nil, other_report, report_result))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
     it "can fetch all the results" do
       result = report.miq_report_results.first
       api_basic_authorize collection_action_identifier(:results, :read, :get)
