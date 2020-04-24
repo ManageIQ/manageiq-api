@@ -1653,6 +1653,8 @@
       - :name: read
         :identifier: host_show_list
       :post:
+      - :name: check_compliance
+        :identifier: host_check_compliance
       - :name: query
         :identifier: host_show_list
       - :name: add
@@ -1689,6 +1691,8 @@
       - :name: read
         :identifier: host_show
       :post:
+      - :name: check_compliance
+        :identifier: host_check_compliance
       - :name: edit
         :identifier: host_edit
       - :name: refresh
