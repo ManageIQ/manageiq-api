@@ -122,6 +122,7 @@ describe "Groups API" do
                         "belongsto" => ["/managed/infra/1", "/managed/infra/2"],
                       }
       }
+
       post(api_groups_url, :params => gen_request(:create, sample_group))
 
       expect(response).to have_http_status(:ok)
@@ -133,6 +134,70 @@ describe "Groups API" do
       expect(expected_group.description).to eq(sample_group["description"])
       expect(expected_group.entitlement).to be_present
       expect(expected_group.entitlement.filters).to eq(sample_group["filters"])
+    end
+
+    it "supports single group creation with belongsto filter and a filter expression specified" do
+      api_basic_authorize collection_action_identifier(:groups, :create)
+
+      sample_group = {
+        "description"       => "sample_group3",
+        "filters"           => {
+          "belongsto" => ["/managed/infra/1", "/managed/infra/2"]
+        },
+        "filter_expression" => {
+          "exp" => {
+            "and" => [
+              {
+                "CONTAINS" => {
+                  "tag"   => "managed-location",
+                  "value" => "ny"
+                }
+              },
+              {
+                "CONTAINS" => {
+                  "tag"   => "managed-environment",
+                  "value" => "prod"
+                }
+              }
+            ]
+          }
+        }
+      }
+      post(api_groups_url, :params => gen_request(:create, sample_group))
+
+      expect(response).to have_http_status(:ok)
+      expect_result_resources_to_include_keys("results", expected_attributes)
+
+      group_id = response.parsed_body["results"][0]["id"]
+      expected_group = MiqGroup.find_by(:id => group_id)
+      expect(expected_group).to be_present
+      expect(expected_group.description).to eq(sample_group["description"])
+      expect(expected_group.entitlement).to be_present
+      expect(expected_group.entitlement.filters).to eq(sample_group["filters"])
+      expect(expected_group.entitlement.filter_expression).to eq(sample_group["filter_expression"])
+    end
+
+    it "fails to create group with invalid filter specified" do
+      api_basic_authorize collection_action_identifier(:groups, :create)
+
+      sample_group = {
+        "description"       => "sample_group3",
+        "filters"           => {
+          "managed"   => [["/managed/area/1", "/managed/area/2"]],
+          "belongsto" => ["/managed/infra/1", "/managed/infra/2"]
+        },
+        "filter_expression" => {
+          "exp" => {
+            "CONTAINS" => {
+              "tag"   => "managed-environment",
+              "value" => "quar"
+            }
+          }
+        }
+      }
+      post(api_groups_url, :params => gen_request(:create, sample_group))
+
+      expect_bad_request(/cannot have both managed filters and a filter expression/)
     end
 
     it "supports multiple group creation" do

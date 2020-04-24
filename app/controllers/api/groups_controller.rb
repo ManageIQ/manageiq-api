@@ -55,8 +55,14 @@ module Api
     # HACK: Format attrs to use accepts_nested_attributes_for (Entitlements)
     # Required for backwards compatibility of creating filters via group
     def parse_set_filters(data, entitlement_id: nil)
-      filters = data.delete("filters")
-      data["entitlement_attributes"] = {"id" => entitlement_id, "filters" => filters} if filters
+      filters           = data.delete("filters")
+      filter_expression = data.delete("filter_expression")
+      if filters || filter_expression
+        entitlements = {"id" => entitlement_id}
+        entitlements["filters"]           = filters           if filters
+        entitlements["filter_expression"] = filter_expression if filter_expression
+        data["entitlement_attributes"] = entitlements
+      end
     end
 
     def group_data_includes_invalid_attrs(data)
