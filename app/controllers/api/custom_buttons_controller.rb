@@ -2,6 +2,7 @@ module Api
   class CustomButtonsController < BaseController
     def create_resource(_type, _id, data)
       CustomButton.transaction do
+        data["visibility"] = data["visibility"].deep_symbolize_keys if data["visibility"].present?
         custom_button = CustomButton.new(data.except("resource_action", "options"))
         custom_button.userid = User.current_user.userid
         custom_button.options = data["options"].deep_symbolize_keys if data["options"]
