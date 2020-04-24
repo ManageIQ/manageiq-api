@@ -853,4 +853,6 @@ RSpec.describe "Instances API" do
     include_examples "resource power operations", :vm_amazon, :stop
     include_examples "resource power operations", :vm_amazon, :suspend
   end
+
+  it_behaves_like "a check compliance action", "instance", :vm_openstack, "Vm"
 end

@@ -1766,6 +1766,8 @@
       - :name: read
         :identifier: instance_show_list
       :post:
+      - :name: check_compliance
+        :identifier: instance_check_compliance
       - :name: query
         :identifier: instance_show_list
       - :name: terminate
@@ -1789,6 +1791,8 @@
       - :name: read
         :identifier: instance_show
       :post:
+      - :name: check_compliance
+        :identifier: instance_check_compliance
       - :name: terminate
         :identifier: instance_terminate
       - :name: stop
