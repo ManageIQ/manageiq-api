@@ -78,7 +78,7 @@ module Api
 
       def find_custom_attribute_by_data(object, data)
         object.custom_attributes.detect do |ca|
-          ca.section.to_s == data["section"].to_s && ca.name.downcase == data["name"].downcase
+          ca.name.downcase == data["name"].downcase
         end
       end
 
