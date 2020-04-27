@@ -8,7 +8,9 @@ module Api
       end
 
       def find_results(id)
-        MiqReportResult.for_user(User.current_user).find(id)
+        report_id = @req.collection_id
+        MiqReport.find(report_id)
+        MiqReportResult.with_report(report_id).for_user(User.current_user).find(id)
       end
 
       def results_query_resource(object)
