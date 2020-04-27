@@ -122,7 +122,7 @@ RSpec.describe 'CustomButtons API' do
       expect(response).to have_http_status(:ok)
       custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
       expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
-      expect(custom_button.visibility['roles']).to eq(['_ALL_'])
+      expect(custom_button.visibility[:roles]).to eq(['_ALL_'])
       expect(response.parsed_body['results'].first).to include(cb_rec.except('resource_action', 'uri_attributes'))
     end
 
