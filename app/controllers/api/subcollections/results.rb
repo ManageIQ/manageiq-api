@@ -1,6 +1,12 @@
 module Api
   module Subcollections
     module Results
+      include Api::Mixins::ReportResultSet
+
+      def resource_id
+        @req.subcollection_id
+      end
+
       def find_results(id)
         report_id = @req.collection_id
         MiqReport.find(report_id)
