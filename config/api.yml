@@ -609,12 +609,17 @@
       - :name: read
         :identifier: image_show_list
       :post:
+      - :name: check_compliance
+        :identifier: image_check_compliance
       - :name: query
         :identifier: image_show_list
     :resource_actions:
       :get:
       - :name: read
         :identifier: image_show
+      :post:
+      - :name: check_compliance
+        :identifier: image_check_compliance
     :subcollection_actions:
       :get:
       - :name: read
