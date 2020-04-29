@@ -46,7 +46,7 @@ RSpec.shared_examples "a check compliance action" do |model, factory, event_clas
 
     post(instance_url, :params => gen_request(:check_compliance))
 
-    expect_single_action_result(:success => false, :message => /#{model} id:#{instance.id} .* has no compliance policies assigned/i, :href => instance_url)
+    expect_single_action_result(:success => false, :message => /#{model.camelize} id:#{instance.id} .* has no compliance policies assigned/i, :href => instance_url)
   end
 
   it "to a single #{model} with a compliance policy" do
@@ -56,7 +56,7 @@ RSpec.shared_examples "a check compliance action" do |model, factory, event_clas
 
     post(instance_url, :params => gen_request(:check_compliance))
 
-    expect_single_action_result(:success => true, :message => /#{model} id:#{instance.id} .* check compliance requested/i, :href => instance_url, :task => true)
+    expect_single_action_result(:success => true, :message => /#{model.camelize} id:#{instance.id} .* check compliance requested/i, :href => instance_url, :task => true)
   end
 
   it "to multiple #{model.pluralize} without appropriate role" do
@@ -77,14 +77,14 @@ RSpec.shared_examples "a check compliance action" do |model, factory, event_clas
     expected = {
       "results" => a_collection_containing_exactly(
         a_hash_including(
-          "message"   => a_string_matching(/#{model} id:#{instance1.id} .* check compliance requested/i),
+          "message"   => a_string_matching(/#{model.camelize} id:#{instance1.id} .* check compliance requested/i),
           "task_id"   => a_kind_of(String),
           "task_href" => a_string_matching(api_tasks_url),
           "success"   => true,
           "href"      => instance1_url
         ),
         a_hash_including(
-          "message" => a_string_matching(/#{model} id:#{instance2.id} .* has no compliance policies assigned/i),
+          "message" => a_string_matching(/#{model.camelize} id:#{instance2.id} .* has no compliance policies assigned/i),
           "success" => false,
           "href"    => instance2_url
         )

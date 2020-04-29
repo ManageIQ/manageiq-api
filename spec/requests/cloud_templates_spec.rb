@@ -203,4 +203,6 @@ RSpec.describe "Cloud Templates API" do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  it_behaves_like "a check compliance action", "cloud_template", :template_cloud, "Vm"
 end
