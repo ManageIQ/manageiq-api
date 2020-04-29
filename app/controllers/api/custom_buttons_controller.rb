@@ -6,12 +6,12 @@ module Api
         custom_button = CustomButton.new(data.except("resource_action", "options"))
         custom_button.userid = User.current_user.userid
         custom_button.options = data["options"].deep_symbolize_keys if data["options"]
-        custom_button.resource_action.update!(data["resource_action"].deep_symbolize_keys) if data.key?("resource_action")
+        custom_button.create_resource_action!(data["resource_action"].deep_symbolize_keys) if data.key?("resource_action")
         custom_button.save!
         custom_button
       end
-    rescue
-      raise BadRequestError, "Failed to create new custom button - #{custom_button.errors.full_messages.join(", ")}"
+    rescue => err
+      raise BadRequestError, "Failed to create new custom button - #{err.message}"
     end
 
     def edit_resource(type, id, data)
