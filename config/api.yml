@@ -520,6 +520,8 @@
       :post:
       - :name: query
         :identifier: cloud_network_show_list
+      - :name: delete
+        :identifier: cloud_network_delete
     :resource_actions:
       :get:
       - :name: read
@@ -528,6 +530,15 @@
       :get:
       - :name: read
         :identifier: cloud_network_show_list
+      :post:
+      - :name: add
+        :identifier: instance_add_cloud_network
+      - :name: create
+        :identifier: cloud_network_new
+      - :name: edit
+        :identifier: cloud_network_edit
+      - :name: delete
+        :identifier: cloud_network_delete
     :subresource_actions:
       :get:
       - :name: read
@@ -651,7 +662,9 @@
     :verbs: *gp
     :klass: CloudTenant
     :subcollections:
+    - :network_services
     - :security_groups
+    - :security_policies
     - :tags
     :collection_actions:
       :get:
@@ -1991,6 +2004,47 @@
         :identifier: network_router_tag
       - :name: unassign
         :identifier: network_router_tag
+  :network_services:
+    :description: Network_Services
+    :identifier: network_service
+    :options:
+    - :collection
+    - :custom_actions
+    :verbs: *gpd
+    :klass: NetworkService
+    :subcollections:
+    - :tags
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: network_service_show_list
+      :post:
+      - :name: query
+        :identifier: network_service_show_list
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: network_service_show_list
+      :post:
+      - :name: query
+        :identifier: network_service_show_list
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: network_service_show_list
+      :post:
+      - :name: query
+        :identifier: network_service_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: network_service_show
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: network_service_tag
+      - :name: unassign
+        :identifier: network_service_tag
   :networks:
     :description: Networks
     :options:
@@ -2396,7 +2450,10 @@
     - :cloud_tenants
     - :custom_attributes
     - :load_balancers
+    - :network_services
     - :security_groups
+    - :security_policies
+    - :security_policy_rules
     - :vms
     - :flavors
     - :cloud_templates
@@ -2409,6 +2466,7 @@
         :identifier:
         - ems_infra_show_list
         - ems_block_storage_show_list
+        - api_provider_show_list
       :post:
       - :name: change_password
         :identifier: ems_infra_change_password
@@ -3080,6 +3138,8 @@
       :post:
       - :name: query
         :identifier: security_group_show_list
+      - :name: delete
+        :identifier: security_group_delete
     :resource_actions:
       :get:
       - :name: read
@@ -3089,6 +3149,12 @@
       - :name: read
         :identifier: security_group_show_list
       :post:
+      - :name: create
+        :identifier: security_group_new
+      - :name: edit
+        :identifier: security_group_edit
+      - :name: delete
+        :identifier: security_group_delete
       - :name: add
         :identifier: instance_add_security_group
       - :name: remove
@@ -3103,6 +3169,105 @@
         :identifier: security_group_tag
       - :name: unassign
         :identifier: security_group_tag
+  :security_policies:
+    :description: Security_Policies
+    :identifier: security_policy
+    :options:
+    - :collection
+    - :custom_actions
+    :verbs: *gpd
+    :klass: SecurityPolicy
+    :subcollections:
+    - :tags
+    - :security_policy_rules
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: security_policy_show_list
+      :post:
+      - :name: query
+        :identifier: security_policy_show_list
+      - :name: delete
+        :identifier: security_policy_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: security_policy_show
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: security_policy_show_list
+      :post:
+      - :name: create
+        :identifier: security_policy_new
+      - :name: edit
+        :identifier: security_policy_edit
+      - :name: delete
+        :identifier: security_policy_delete
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: security_policy_show
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: security_policy_tag
+      - :name: unassign
+        :identifier: security_policy_tag
+  :security_policy_rules:
+    :description: Security_Policy_Rules
+    :identifier: security_policy_rule
+    :options:
+    - :collection
+    - :custom_actions
+    :verbs: *gpd
+    :klass: SecurityPolicyRule
+    :subcollections:
+    - :tags
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: security_policy_rule_show_list
+      :post:
+      - :name: query
+        :identifier: security_policy_rule_show_list
+      - :name: delete
+        :identifier: security_policy_rule_delete
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: security_policy_rule_show_list
+      :post:
+      - :name: create
+        :identifier: security_policy_rule_new
+      - :name: edit
+        :identifier: security_policy_rule_edit
+      - :name: delete
+        :identifier: security_policy_rule_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: security_policy_rule_show
+      :post:
+      - :name: edit
+        :identifier: security_policy_rule_edit
+      - :name: delete
+        :identifier: security_policy_rule_delete
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: security_policy_rule_show
+      :post:
+      - :name: edit
+        :identifier: security_policy_rule_edit
+      - :name: delete
+        :identifier: security_policy_rule_delete
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: security_policy_rule_tag
+      - :name: unassign
+        :identifier: security_policy_rule_tag
   :servers:
     :description: EVM Servers
     :subcollections:
