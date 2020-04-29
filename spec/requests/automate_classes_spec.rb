@@ -13,12 +13,16 @@ RSpec.describe "Regions API", :automate_classes do
     FactoryBot.create(:miq_ae_system_domain, :name => 'ns1', :priority => 10)
   end
 
+  let(:namespace) do
+    FactoryBot.create(:miq_ae_namespace, :parent => domain)
+  end
+
   let(:automate_class) do
-    FactoryBot.create(:miq_ae_class, :namespace_id => domain.id, :name => 'foo')
+    FactoryBot.create(:miq_ae_class, :namespace_id => namespace.id, :name => 'foo')
   end
 
   let(:automate_class2) do
-    FactoryBot.create(:miq_ae_class, :namespace_id => domain.id, :name => 'bar')
+    FactoryBot.create(:miq_ae_class, :namespace_id => namespace.id, :name => 'bar')
   end
 
   let(:automate_classes) do
