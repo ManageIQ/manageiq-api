@@ -1,5 +1,7 @@
 module Api
   class ContainerImagesController < BaseController
+    include Subcollections::CustomAttributes
+
     def scan_resource(type, image_id, _payload)
       raise BadRequestError, "Must specify an id for scanning a #{type} resource" unless image_id
       api_action(type, image_id) do |klass|
