@@ -932,12 +932,17 @@
       - :name: read
         :identifier: container_group_show_list
       :post:
+      - :name: check_compliance
+        :identifier: container_group_check_compliance
       - :name: query
         :identifier: container_group_show_list
     :resource_actions:
       :get:
       - :name: read
         :identifier: container_group_show
+      :post:
+      - :name: check_compliance
+        :identifier: container_group_check_compliance
   :container_images:
     :description: Container Images
     :identifier: container_image
@@ -950,11 +955,16 @@
       :get:
       - :name: read
         :identifier: container_image_show_list
+      :post:
+      - :name: check_compliance
+        :identifier: container_image_check_compliance
     :resource_actions:
       :get:
       - :name: read
         :identifier: container_image_show
       :post:
+      - :name: check_compliance
+        :identifier: container_image_check_compliance
       - :name: scan
         :identifier: container_image_scan
   :container_nodes:
@@ -970,12 +980,17 @@
       - :name: read
         :identifier: container_node_show_list
       :post:
+      - :name: check_compliance
+        :identifier: container_node_check_compliance
       - :name: query
         :identifier: container_node_show_list
     :resource_actions:
       :get:
       - :name: read
         :identifier: container_node_show
+      :post:
+      - :name: check_compliance
+        :identifier: container_node_check_compliance
   :container_projects:
     :description: Container Projects
     :identifier: container_project

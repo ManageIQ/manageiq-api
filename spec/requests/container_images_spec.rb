@@ -94,4 +94,6 @@ describe "Container Images API" do
       expect(response.parsed_body).to include(expected)
     end
   end
+
+  it_behaves_like "a check compliance action", "container_image", :container_image, "ContainerImage"
 end
