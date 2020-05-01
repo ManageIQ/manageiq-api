@@ -1117,6 +1117,14 @@ describe "Vms API" do
           expect(response.parsed_body).to include(expected)
         end
 
+        it "in the future" do
+          api_basic_authorize action_identifier(:vms, :request_retire)
+          date = 2.weeks.from_now
+          post(vm_url, :params => gen_request(:request_retire, :date => date.iso8601))
+
+          expect_single_action_result(:success => true, :message => /#{vm.id}.* request retire/i, :href => api_vm_url(nil, vm))
+        end
+
         it "queues retirement task" do
           api_basic_authorize(action_identifier(:vms, :request_retire))
           message = "VM id:#{vm.id} name:'#{vm.name}' request retire"
