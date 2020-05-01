@@ -510,6 +510,33 @@ describe "Services API" do
 
           expect_results_to_match_hash("results", [{"id" => svc1.id.to_s}, {"id" => svc2.id.to_s}])
         end
+
+        it "supports single service future retirement" do
+          api_basic_authorize(action_identifier(:services, :request_retire))
+          ret_date = format_retirement_date(Time.zone.now + 5.days)
+
+          post(api_service_url(nil, svc), :params => gen_request(:request_retire, "date" => ret_date, "warn" => 2))
+
+          expect(response).to have_http_status(:ok)
+          expect(format_retirement_date(svc.reload.retires_on)).to eq(ret_date)
+          expect(svc.retirement_warn).to eq(2)
+        end
+
+        it "supports multiple service retirement in future" do
+          api_basic_authorize collection_action_identifier(:services, :request_retire)
+
+          ret_date = format_retirement_date(Time.zone.now + 3.days)
+
+          post(api_services_url, :params => gen_request(:request_retire,
+                                                        [{"href" => api_service_url(nil, svc1), "date" => ret_date, "warn" => 3},
+                                                         {"href" => api_service_url(nil, svc2), "date" => ret_date, "warn" => 5}]))
+
+          expect(response).to have_http_status(:ok)
+          expect(format_retirement_date(svc1.reload.retires_on)).to eq(ret_date)
+          expect(format_retirement_date(svc2.reload.retires_on)).to eq(ret_date)
+          expect(svc1.retirement_warn).to eq(3)
+          expect(svc2.retirement_warn).to eq(5)
+        end
       end
     end
   end
