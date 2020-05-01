@@ -61,13 +61,23 @@ module Api
         delete_resource_action(klass, type, id)
       end
 
-      def request_retire_resource(type, id, _data = nil)
+      def request_retire_resource(type, id, data = nil)
         klass = collection_class(type)
         if id
-          msg = "#{User.current_user.userid} retiring #{type} id #{id} immediately as a request."
+          msg = "#{User.current_user.userid} retiring #{type} id #{id} as a request"
           resource = resource_search(id, type, klass)
-          api_log_info(msg)
-          klass.make_retire_request(resource.id, User.current_user)
+          if data && data["date"]
+            opts = {}
+            opts[:date] = data["date"]
+            opts[:warn] = data["warn"] if data["warn"]
+            msg << " on: #{opts}"
+            api_log_info(msg)
+            resource.retire(opts)
+          else
+            msg << " immediately."
+            api_log_info(msg)
+            klass.make_retire_request(resource.id, User.current_user)
+          end
         else
           raise BadRequestError, "Must specify an id for retiring a #{type} resource"
         end
