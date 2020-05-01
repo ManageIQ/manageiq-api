@@ -6,10 +6,10 @@ module Api
       end
 
       def security_policy_rules_create_resource(provider, _type, _resource_id, data)
+        data.deep_symbolize_keys!
         raise 'Must specify a name for the security policy rule' unless data[:name]
 
         message = "Creating security policy rule"
-        data.deep_symbolize_keys!
         task_id = queue_object_action(provider, message, :method_name => "create_security_policy_rule", :args => [data])
         action_result(true, message, :task_id => task_id)
       rescue => e

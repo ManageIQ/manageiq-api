@@ -28,9 +28,9 @@ module Api
       end
 
       def security_groups_create_resource(provider, _type, _resource_id, data)
+        data.deep_symbolize_keys!
         raise 'Must specify a name for the security group' unless data[:name]
 
-        data.deep_symbolize_keys!
         message = "Creating security group"
         task_id = queue_object_action(provider, message, :method_name => "create_security_group", :args => [data])
         action_result(true, message, :task_id => task_id)
