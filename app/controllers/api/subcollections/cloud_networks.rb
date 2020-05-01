@@ -5,7 +5,7 @@ module Api
         object.respond_to?(:cloud_networks) ? Array(object.cloud_networks) : []
       end
 
-      def cloud_networks_create_resource(provider, _type, _id, data)
+      def cloud_networks_create_resource(provider, _type, _resource_id, data)
         raise 'Must specify a name for the cloud network' unless data[:name]
 
         data.deep_symbolize_keys!

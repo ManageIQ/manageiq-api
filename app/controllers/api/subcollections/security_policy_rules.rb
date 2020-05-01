@@ -5,7 +5,7 @@ module Api
         object.respond_to?(:security_policy_rules) ? object.security_policy_rules : {}
       end
 
-      def security_policy_rules_create_resource(provider, _type, _id, data)
+      def security_policy_rules_create_resource(provider, _type, _resource_id, data)
         raise 'Must specify a name for the security policy rule' unless data[:name]
 
         message = "Creating security policy rule"
