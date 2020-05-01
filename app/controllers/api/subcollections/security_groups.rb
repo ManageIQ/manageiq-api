@@ -27,7 +27,7 @@ module Api
         action_result(false, e.to_s)
       end
 
-      def security_groups_create_resource(provider, _type, _id, data)
+      def security_groups_create_resource(provider, _type, _resource_id, data)
         raise 'Must specify a name for the security group' unless data[:name]
 
         data.deep_symbolize_keys!
