@@ -46,4 +46,6 @@ RSpec.describe 'Container Nodes API' do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  it_behaves_like "a check compliance action", "container_node", :container_node, "ContainerNode"
 end
