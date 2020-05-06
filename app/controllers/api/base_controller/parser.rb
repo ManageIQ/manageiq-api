@@ -165,7 +165,9 @@ module Api
                           [@req.subject, request_type_target.last]
                         end
 
-        aspec = if @req.subcollection?
+        aspec = if request_is_for_resource_entity?
+                  collection_config.resource_entity_actions(@req.collection, @req.subcollection)
+                elsif @req.subcollection?
                   collection_config.typed_subcollection_actions(@req.collection, cname, target) ||
                     collection_config.typed_collection_actions(cname, target)
                 else
@@ -237,6 +239,7 @@ module Api
         if cname && @req.subcollection
           return [cname, ctype] if @req.subcollection == 'settings' && collection_option?(:settings)
           return [cname, ctype] if collection_option?(:arbitrary_resource_path)
+          return [cname, ctype] if request_is_for_resource_entity?
           ctype = "Sub-Collection"
           unless collection_config.subcollection?(cname, @req.subcollection)
             raise BadRequestError, "Unsupported #{ctype} #{@req.subcollection} specified"
@@ -297,6 +300,10 @@ module Api
         end
 
         raise BadRequestError, "Invalid collection_class #{param} specified for the #{@req.collection} collection"
+      end
+
+      def request_is_for_resource_entity?
+        collection_config.resource_entity?(@req.collection, @req.subcollection) && @req.subcollection_id.blank?
       end
     end
   end

@@ -59,6 +59,21 @@ describe 'API configuration (config/api.yml)' do
               end
             end
           end
+          add_resource_entity_identifiers(cfg, set)
+        end
+      end
+
+      def add_resource_entity_identifiers(cfg, set)
+        return if cfg["resource_entities"].blank?
+
+        cfg["resource_entities"].each do |entity|
+          entity[:entity_actions].each do |_, method_cfg|
+            method_cfg.each do |action_cfg|
+              next unless action_cfg[:identifier]
+
+              Array(action_cfg[:identifier]).each { |id| set.add(id) }
+            end
+          end
         end
       end
     end
