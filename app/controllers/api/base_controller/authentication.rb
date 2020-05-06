@@ -147,7 +147,7 @@ module Api
 
       def authenticate_with_jwt
         timeout = ::Settings.api.authentication_timeout.to_i_with_method
-        user = User.authenticate("", "", request, :require_user => true, :timeout => timeout)
+        user = User.authenticate(request.headers["X-REMOTE-USER"], "", request, :require_user => true)
         auth_user(user.userid)
       rescue => e
         raise AuthenticationError, "Failed to Authenticate with JWT - error #{e}"
