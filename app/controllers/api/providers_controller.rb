@@ -1,6 +1,7 @@
 module Api
   class ProvidersController < BaseController
     AUTH_TYPE_ATTR    = "auth_type".freeze
+    COMMON_DDF_ATTRS  = %w[name zone_id].freeze
     CONNECTION_ATTRS  = %w(connection_configurations).freeze
     CREDENTIALS_ATTR  = "credentials".freeze
     DDF_ATTR          = 'ddf'.freeze
@@ -234,6 +235,52 @@ module Api
       klass.supported_subclasses.detect { |p| p.name == data[TYPE_ATTR] }
     end
 
+    def create_provider_ddf(data)
+      provider_klass = fetch_provider_klass(collection_class(:providers), data)
+      endpoints = data.delete('endpoints') || []
+      authentications = data.delete('authentications') || []
+
+      validate_ddf_params(provider_klass, data.deep_dup, endpoints.deep_dup, authentications.deep_dup, true)
+      provider = provider_klass.create_from_params(data, endpoints, authentications)
+    rescue => err
+      provider.try(:destroy)
+      raise BadRequestError, "Could not create the new provider - #{err}"
+    end
+
+    def edit_provider_ddf(provider, data)
+      endpoints = data.delete('endpoints') || []
+      authentications = data.delete('authentications') || []
+
+      validate_ddf_params(provider.class, data.deep_dup, endpoints.deep_dup, authentications.deep_dup)
+      provider.edit_with_params(data, endpoints, authentications)
+    rescue => err
+      raise BadRequestError, "Could not update the provider - #{err}"
+    end
+
+    def validate_ddf_params(provider, data, endpoints, authentications, allow_type = false)
+      # Convert the endpoints/authentications back to the DDF schema compatible format
+      data['endpoints'] = endpoints.index_by { |endpoint| endpoint['role'] }
+      data['authentications'] = authentications.index_by { |authentication| authentication['authtype'] }
+      # Clean up role/authtype attributes from endpoints/authentications
+      data['endpoints'].keys.each { |role| data['endpoints'].delete_path([role, 'role']) }
+      data['authentications'].keys.each { |authtype| data['authentications'].delete_path([authtype, 'authtype']) }
+
+      common_attrs = COMMON_DDF_ATTRS + (allow_type ? [TYPE_ATTR] : [])
+
+      # Remove all valid fields from the data hash
+      valid_attributes = DDF.extract_attributes(provider.params_for_create, :name) + common_attrs
+      valid_attributes.each do |name|
+        key_path = name.split('.')
+        data.delete_path(key_path) if data.key_path?(key_path)
+      end
+      data.delete_blank_paths
+
+      # Deep-traverse the hash to retrieve a list of all the invalid attributes
+      invalid_keys = fetch_deep_keys(data)
+
+      raise BadRequestError, _("Invalid attributes specified in the request: %{keys}") % {:keys => invalid_keys} if invalid_keys.any?
+    end
+
     def create_provider(data)
       provider_klass = fetch_provider_klass(collection_class(:providers), data)
       create_data    = fetch_provider_data(provider_klass, data, :requires_zone => true)
@@ -246,20 +293,6 @@ module Api
         provider&.destroy
       raise BadRequestError, "Could not create the new provider - #{err}"
       end
-    end
-
-    def create_provider_ddf(data)
-      provider_klass = fetch_provider_klass(collection_class(:providers), data)
-      provider = provider_klass.create_from_params(data)
-    rescue => err
-      provider.try(:destroy)
-      raise BadRequestError, "Could not create the new provider - #{err}"
-    end
-
-    def edit_provider_ddf(provider, data)
-      provider.edit_with_params(data)
-    rescue => err
-      raise BadRequestError, "Could not update the provider - #{err}"
     end
 
     def edit_provider(provider, data)
@@ -364,6 +397,16 @@ module Api
       action_result(true, desc, :task_id => task_id)
     rescue StandardError => err
       action_result(false, err.to_s)
+    end
+
+    def fetch_deep_keys(hash, prefix = nil)
+      hash.flat_map do |key, value|
+        prefixed_key = [prefix, key].compact.join('.')
+
+        children = value.kind_of?(Hash) ? fetch_deep_keys(value, prefixed_key) : []
+
+        [prefixed_key, *children]
+      end
     end
   end
 end

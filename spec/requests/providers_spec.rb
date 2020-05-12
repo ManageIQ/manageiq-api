@@ -478,23 +478,28 @@ describe "Providers API" do
       post(api_providers_url, :params => {'ddf'             => true,
                                           'name'            => 'Amazon Test',
                                           'type'            => 'ManageIQ::Providers::Amazon::CloudManager',
-                                          'zone_name'       => @zone.name,
+                                          'zone_id'         => @zone.id,
                                           'provider_region' => 'us-east-1',
-                                          'endpoints'       => {
-                                            'default' => {
-                                              'userid'   => 'foo',
-                                              'password' => 'bar',
+                                          'endpoints'       => [
+                                            {
+                                              'role' => 'default'
                                             }
-                                          }})
+                                          ]})
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to eq('results' => ['yay'])
     end
 
-    it 'handles errors when ddf=true' do
+    it 'handles generic errors when ddf=true' do
       api_basic_authorize collection_action_identifier(:providers, :create)
       post(api_providers_url, :params => {'ddf' => true})
       expect_bad_request(/Could not create the new provider/)
+    end
+
+    it 'handles validation errors when ddf=true' do
+      api_basic_authorize collection_action_identifier(:providers, :create)
+      post(api_providers_url, :params => {'ddf' => true, 'type' => 'ManageIQ::Providers::Amazon::CloudManager', 'foo' => 'bar'})
+      expect_bad_request(/Invalid attributes specified in the request/)
     end
 
     it 'allows provider specific attributes to be specified' do
