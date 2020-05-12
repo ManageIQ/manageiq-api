@@ -490,6 +490,10 @@
         :identifier: chargeback_rates_edit
       - :name: delete
         :identifier: chargeback_rates_delete
+      - :name: assign
+        :identifier: chargeback_assignments
+      - :name: unassign
+        :identifier: chargeback_assignments
     :resource_actions:
       :get:
       - :name: read
@@ -499,6 +503,10 @@
         :identifier: chargeback_rates_edit
       - :name: delete
         :identifier: chargeback_rates_delete
+      - :name: assign
+        :identifier: chargeback_assignments
+      - :name: unassign
+        :identifier: chargeback_assignments
       :delete:
       - :name: delete
         :identifier: chargeback_rates_delete
@@ -951,6 +959,8 @@
     - :custom_actions
     :verbs: *gp
     :klass: ContainerImage
+    :subcollections:
+    - :custom_attributes
     :collection_actions:
       :get:
       - :name: read
