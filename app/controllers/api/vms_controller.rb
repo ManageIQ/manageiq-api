@@ -14,9 +14,9 @@ module Api
     include Subcollections::Cdroms
     extend Api::Mixins::CentralAdmin
 
-    VALID_EDIT_ATTRS = %w(description child_resources parent_resource).freeze
-    RELATIONSHIP_COLLECTIONS = %w(vms templates).freeze
     DEFAULT_ROLE = 'ems_operations'.freeze
+    RELATIONSHIP_COLLECTIONS = %w[vms templates].freeze
+    VALID_EDIT_ATTRS = %w[description name child_resources parent_resource].freeze
 
     def start_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
