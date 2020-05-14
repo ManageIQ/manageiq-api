@@ -18,7 +18,7 @@ module Api
       TYPES_OF_ASSIGNMENTS = %w[object label tag].freeze
 
       def normalize_attr(attr, value)
-        value = assigments_to_result(value, []) if attr == "assigned_tos"
+        value = assigments_to_result(value, []) if attr == "assigned_to"
 
         super(attr, value)
       end
@@ -201,8 +201,9 @@ module Api
         resource_id = nil
         resource_collection = if key == :tag
                                 tag = record[key][0]&.tag
+                                prefix = record[key][1]
                                 resource_id = tag.id
-                                additional_attributes = {'name' => tag.classification.name, 'category' => tag.category.name}
+                                additional_attributes = {'name' => tag.classification.name, 'category' => tag.category.name, :assignment_prefix => prefix}
                                 :tags
                               elsif key == :object
                                 key = :resource
