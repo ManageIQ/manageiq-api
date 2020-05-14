@@ -4,7 +4,7 @@ ManageIQ::Api is a plugin to be used in the [ManageIQ project][ManageIQ]. It for
 the public REST API for ManageIQ.
 
 [![Gem Version](https://badge.fury.io/rb/manageiq-api.svg)](http://badge.fury.io/rb/manageiq-api)
-[![Build Status](https://travis-ci.org/ManageIQ/manageiq-api.svg?branch=master)](https://travis-ci.org/ManageIQ/manageiq-api)
+[![Build Status](https://travis-ci.com/ManageIQ/manageiq-api.svg?branch=master)](https://travis-ci.com/ManageIQ/manageiq-api)
 [![Code Climate](https://codeclimate.com/github/ManageIQ/manageiq-api.svg)](https://codeclimate.com/github/ManageIQ/manageiq-api)
 [![Test Coverage](https://codeclimate.com/github/ManageIQ/manageiq-api/badges/coverage.svg)](https://codeclimate.com/github/ManageIQ/manageiq-api/coverage)
 [![Dependency Status](https://gemnasium.com/ManageIQ/manageiq-api.svg)](https://gemnasium.com/ManageIQ/manageiq-api)
