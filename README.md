@@ -7,7 +7,6 @@ the public REST API for ManageIQ.
 [![Build Status](https://travis-ci.com/ManageIQ/manageiq-api.svg?branch=master)](https://travis-ci.com/ManageIQ/manageiq-api)
 [![Code Climate](https://codeclimate.com/github/ManageIQ/manageiq-api.svg)](https://codeclimate.com/github/ManageIQ/manageiq-api)
 [![Test Coverage](https://codeclimate.com/github/ManageIQ/manageiq-api/badges/coverage.svg)](https://codeclimate.com/github/ManageIQ/manageiq-api/coverage)
-[![Dependency Status](https://gemnasium.com/ManageIQ/manageiq-api.svg)](https://gemnasium.com/ManageIQ/manageiq-api)
 [![Security](https://hakiri.io/github/ManageIQ/manageiq-api/master.svg)](https://hakiri.io/github/ManageIQ/manageiq-api/master)
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
