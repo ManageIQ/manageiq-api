@@ -99,7 +99,7 @@ module Api
       end
 
       def chargeback_rate(parameter_record)
-        rate_id = parse_id(parameter_record[CHARGEBACK_RATE_KEY], :rates)
+        rate_id = parse_id(parameter_record[CHARGEBACK_RATE_KEY], :chargebacks)
         @chargeback_rate ||= {}
         @chargeback_rate[rate_id] ||= ChargebackRate.find(rate_id)
       end
@@ -242,7 +242,7 @@ module Api
         rates_ids = params_assignments.map do |x|
           raise BadRequestError, "Key 'chargeback' is missing any of target resources." unless x[CHARGEBACK_RATE_KEY]
 
-          parse_id(x[CHARGEBACK_RATE_KEY], :rates)
+          parse_id(x[CHARGEBACK_RATE_KEY], :chargebacks)
         end
         ChargebackRate.where(:id => rates_ids).pluck(:id, :rate_type)
       end
@@ -263,7 +263,7 @@ module Api
           grouped_rates_by_rate_type[id] = rate_type
         end
 
-        params_assignments.group_by { |x| grouped_rates_by_rate_type[x[CHARGEBACK_RATE_KEY]['id']] }
+        params_assignments.group_by { |x| grouped_rates_by_rate_type[parse_id(x[CHARGEBACK_RATE_KEY], :chargebacks)] }
       end
 
       def parse_resource_assignments(params_assignments, rate)
