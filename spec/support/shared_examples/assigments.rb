@@ -4,7 +4,8 @@ RSpec.shared_examples "perform rate assign/unassign action" do |rate_type, colle
 
   let(:chargeback_rate) { FactoryBot.create(:chargeback_rate, :rate_type => rate_type) }
 
-  let(:chargeback_rate_parameters) { {:id => chargeback_rate.id} }
+  let(:chargeback_rate_parameters) { {:href => "/api/chargebacks/#{chargeback_rate.id}"} }
+  let(:chargeback_rate_parameters_2) { {:id => chargeback_rate.id} }
 
   let(:action) { "assign" }
   let(:rate_assign_parameters) do
@@ -81,7 +82,7 @@ RSpec.shared_examples "perform rate assign/unassign action" do |rate_type, colle
   let(:params_target_key) { is_tag ? :tag : :resource }
 
   let(:rate_assignment_1) { {:chargeback => chargeback_rate_parameters, params_target_key => resource_params_1} }
-  let(:rate_assignment_2) { {:chargeback => chargeback_rate_parameters, params_target_key => resource_params_2} }
+  let(:rate_assignment_2) { {:chargeback => chargeback_rate_parameters_2, params_target_key => resource_params_2} }
   let(:rate_assignments) { [rate_assignment_1, rate_assignment_2] }
 
   let(:result_key_1) do
