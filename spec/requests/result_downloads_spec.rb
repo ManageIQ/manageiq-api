@@ -182,11 +182,9 @@ PDF Report"
       task = MiqTask.find(task_id)
       expect(task.context_data).to_not be_nil
       expect(task.context_data).to include(
-        {
-          :result_id   => result_1.id,
-          :result_type => "txt",
-          :session_id  => a_string_matching(/[a-z0-9\-]*/)
-        }
+        :result_id   => result_1.id,
+        :result_type => "txt",
+        :session_id  => a_string_matching(/[a-z0-9\-]*/)
       )
     end
   end

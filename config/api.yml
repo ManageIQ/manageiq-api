@@ -3872,14 +3872,14 @@
       - :name: delete
         :identifier: miq_task_delete
     :resource_entities:
-      - :name: task_results
-        :entity_actions:
-          :get:
-          - :name: read
-            :identifier:
-            - miq_task_all_ui
-            - miq_task_my_ui
-            - miq_report_view
+    - :name: task_results
+      :entity_actions:
+        :get:
+        - :name: read
+          :identifier:
+          - miq_task_all_ui
+          - miq_task_my_ui
+          - miq_report_view
   :templates:
     :description: Templates
     :identifier: miq_template

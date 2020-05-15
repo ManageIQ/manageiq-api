@@ -17,8 +17,8 @@ module Api
       MiqReportResult.for_user(User.current_user).find(id)
     end
 
-    def request_download_resource(_type, id, data)
-      result      = find_results(id)
+    def request_download_resource(_type, result_id, data)
+      result      = find_results(result_id)
       result_type = validate_result_type(data["result_type"])
       desc        = "Requesting a download of a #{result_type} report for #{result_ident(result)}"
       session_id  = "#{request.uuid}-#{SecureRandom.hex(4)}" # Adding a random hex suffix for bulk requests
@@ -35,7 +35,7 @@ module Api
       MiqTask.find(task_id).update_context(:result_id => result.id, :result_type => result_type, :session_id => session_id)
 
       action_result(true, desc, :task_id => task_id, :task_results => task_id)
-    rescue StandardError => err
+    rescue => err
       action_result(false, err.to_s)
     end
 

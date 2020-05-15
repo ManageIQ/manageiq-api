@@ -47,7 +47,7 @@ module Spec
         def entity_action_identifier(type, entity, action, method = :post)
           ::Api::ApiConfig
             .collections[type][:resource_entities]
-            .detect { |spec| spec[:name] == entity.to_s}[:entity_actions][method]
+            .detect { |spec| spec[:name] == entity.to_s }[:entity_actions][method]
             .detect { |spec| spec[:name] == action.to_s }[:identifier]
         end
 

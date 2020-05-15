@@ -240,6 +240,7 @@ module Api
           return [cname, ctype] if @req.subcollection == 'settings' && collection_option?(:settings)
           return [cname, ctype] if collection_option?(:arbitrary_resource_path)
           return [cname, ctype] if request_is_for_resource_entity?
+
           ctype = "Sub-Collection"
           unless collection_config.subcollection?(cname, @req.subcollection)
             raise BadRequestError, "Unsupported #{ctype} #{@req.subcollection} specified"
