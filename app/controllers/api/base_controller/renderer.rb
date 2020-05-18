@@ -482,6 +482,7 @@ module Api
           typed_action_definitions = action_definitions || fetch_typed_subcollection_actions(method, is_subcollection)
           typed_action_definitions.each.collect do |action|
             next unless api_user_role_allows?(action[:identifier]) && action_validated?(resource, action)
+
             build_resource_actions(action, method, href, cspec[:verbs])
           end
         end.flatten.uniq.compact
