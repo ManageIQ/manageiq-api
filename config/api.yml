@@ -760,9 +760,6 @@
       :post:
       - :name: query
         :identifier: ems_cluster_show_list
-      - :name: delete
-        :identifier: ems_cluster_delete
-        :disabled: true
     :resource_actions:
       :get:
       - :name: read
@@ -1710,35 +1707,8 @@
         :identifier: host_check_compliance
       - :name: query
         :identifier: host_show_list
-      - :name: add
-        :identifier: host_new
-        :disabled: true
       - :name: edit
         :identifier: host_edit
-      - :name: refresh
-        :identifier: host_refresh
-        :disabled: true
-      - :name: standby
-        :identifier: host_standby
-        :disabled: true
-      - :name: shutdown
-        :identifier: host_shutdown
-        :disabled: true
-      - :name: restart
-        :identifier: host_reboot
-        :disabled: true
-      - :name: poweron
-        :identifier: host_start
-        :disabled: true
-      - :name: poweroff
-        :identifier: host_stop
-        :disabled: true
-      - :name: reset
-        :identifier: host_reset
-        :disabled: true
-      - :name: delete
-        :identifier: host_delete
-        :disabled: true
     :resource_actions:
       :get:
       - :name: read
@@ -1748,27 +1718,6 @@
         :identifier: host_check_compliance
       - :name: edit
         :identifier: host_edit
-      - :name: refresh
-        :identifier: host_refresh
-        :disabled: true
-      - :name: standby
-        :identifier: host_standby
-        :disabled: true
-      - :name: shutdown
-        :identifier: host_shutdown
-        :disabled: true
-      - :name: restart
-        :identifier: host_reboot
-        :disabled: true
-      - :name: poweron
-        :identifier: host_start
-        :disabled: true
-      - :name: poweroff
-        :identifier: host_stop
-        :disabled: true
-      - :name: reset
-        :identifier: host_reset
-        :disabled: true
       :delete:
       - :name: delete
         :identifier: host_delete
@@ -2954,9 +2903,6 @@
       :post:
       - :name: query
         :identifier: resource_pool_show_list
-      - :name: delete
-        :identifier: resource_pool_delete
-        :disabled: true
     :resource_actions:
       :get:
       - :name: read
@@ -3901,12 +3847,6 @@
         :identifier: miq_template_check_compliance
       - :name: query
         :identifier: miq_template_show_list
-      - :name: refresh
-        :identifier: miq_template_refresh
-        :disabled: true
-      - :name: edit
-        :identifier: miq_template_edit
-        :disabled: true
       - :name: set_ownership
         :identifier: miq_template_ownership
       - :name: delete
@@ -3918,9 +3858,6 @@
       :post:
       - :name: check_compliance
         :identifier: miq_template_check_compliance
-      - :name: refresh
-        :identifier: miq_template_refresh
-        :disabled: true
       - :name: edit
         :identifier: miq_template_edit
       - :name: set_ownership
@@ -4146,9 +4083,6 @@
         :identifier:
         - vm_show_list
         - sui_vm_details_view
-      - :name: add
-        :identifier: vm_miq_request_new
-        :disabled: true
       - :name: edit
         :identifier: vm_edit
       - :name: add_lifecycle_event

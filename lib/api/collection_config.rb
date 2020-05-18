@@ -137,7 +137,7 @@ module Api
           next unless action_definitions.present?
           action_definitions.each do |action|
             identifier = action[:identifier]
-            next if action[:disabled] || result.key?(identifier)
+            next if result.key?(identifier)
             result[identifier] = [collection, method, action]
           end
         end
