@@ -20,6 +20,7 @@ module Api
         res[:message] = message if message.present?
         res[:result]  = options[:result] unless options[:result].nil?
         add_task_to_result(res, options[:task_id]) if options[:task_id].present?
+        add_task_results_href_to_result(res, options[:task_id]) if options[:task_results].present?
         add_tasks_to_result(res, options[:task_ids]) if options[:task_ids].present?
         add_parent_href_to_result(res, options[:parent_id]) if options[:parent_id].present?
         res
@@ -53,6 +54,11 @@ module Api
         hash[:tag_category] = tag_spec[:category] if tag_spec[:category].present?
         hash[:tag_name]     = tag_spec[:name] if tag_spec[:name].present?
         hash[:tag_href]     = "#{@req.api_prefix}/tags/#{tag_spec[:id]}" if tag_spec[:id].present?
+        hash
+      end
+
+      def add_task_results_href_to_result(hash, task_id)
+        hash[:task_results_href] = "#{@req.api_prefix}/tasks/#{task_id}/task_results"
         hash
       end
 
