@@ -461,7 +461,7 @@ module Api
           next unless render_actions_for_method(cspec[:verbs], method)
           typed_action_definitions = fetch_typed_subcollection_actions(method, is_subcollection) || action_definitions
           typed_action_definitions.each.collect do |action|
-            if !action[:disabled] && api_user_role_allows?(action[:identifier])
+            if api_user_role_allows?(action[:identifier])
               {"name" => action[:name], "method" => method, "href" => (href ? href : collection)}
             end
           end
@@ -481,7 +481,8 @@ module Api
           next unless render_actions_for_method(cspec[:verbs], method)
           typed_action_definitions = action_definitions || fetch_typed_subcollection_actions(method, is_subcollection)
           typed_action_definitions.each.collect do |action|
-            next unless !action[:disabled] && api_user_role_allows?(action[:identifier]) && action_validated?(resource, action)
+            next unless api_user_role_allows?(action[:identifier]) && action_validated?(resource, action)
+
             build_resource_actions(action, method, href, cspec[:verbs])
           end
         end.flatten.uniq.compact
