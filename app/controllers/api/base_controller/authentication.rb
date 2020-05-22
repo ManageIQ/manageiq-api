@@ -119,6 +119,7 @@ module Api
         validate_system_token_server(@miq_token_hash[:server_guid])
         validate_system_token_timestamp(@miq_token_hash[:timestamp])
 
+        User.create_from_system_token(@miq_token_hash[:userid], @miq_token_hash[:user_metadata])
         User.authorize_user(@miq_token_hash[:userid])
 
         auth_user(@miq_token_hash[:userid])
