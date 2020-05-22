@@ -293,11 +293,13 @@ module Api
       end
     end
 
-    def check_compliance_resource(type, id, _data = nil)
+    def check_compliance_resource(type, id, data = nil)
       api_action(type, id) do |klass|
         vm = resource_search(id, type, klass)
+        profile = MiqPolicySet.find(data["policy_profile_id"]) if data["policy_profile_id"].present?
+        api_log_info("XXXX: Checking compliance:Profile: #{profile.inspect}")
         api_log_info("Checking compliance of #{vm_ident(vm)}")
-        request_compliance_check(vm)
+        request_compliance_check(vm, profile)
       end
     end
 
@@ -528,11 +530,11 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def request_compliance_check(vm)
+    def request_compliance_check(vm, profile)
       desc = "#{vm_ident(vm)} check compliance requested"
       raise "#{vm_ident(vm)} has no compliance policies assigned" unless vm.has_compliance_policies?
 
-      task_id = queue_object_action(vm, desc, :method_name => "check_compliance")
+      task_id = queue_object_action(vm, desc, :method_name => "check_compliance", :args => { :only_this_profile => profile })
       action_result(true, desc, :task_id => task_id)
     rescue StandardError => err
       action_result(false, err.to_s)
