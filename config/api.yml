@@ -468,6 +468,20 @@
     - :subcollection
     :verbs: *g
     :klass: Disk
+  :chargeable_fields:
+    :description: Chargeable Fields
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: ChargeableField
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: chargeback
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: chargeback
   :chargebacks:
     :description: Chargebacks
     :identifier: chargeback
