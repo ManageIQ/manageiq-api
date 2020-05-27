@@ -2,7 +2,7 @@ module Api
   module Subcollections
     module SecurityPolicyRules
       def security_policy_rules_query_resource(object)
-        object.respond_to?(:security_policy_rules) ? object.security_policy_rules : {}
+        object.respond_to?(:security_policy_rules) ? object.security_policy_rules : []
       end
 
       def security_policy_rules_create_resource(provider, _type, _resource_id, data)
