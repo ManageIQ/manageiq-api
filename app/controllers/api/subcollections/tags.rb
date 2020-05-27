@@ -92,7 +92,7 @@ module Api
         end
         action_result(success, desc, :parent_id => ci.id)
       rescue => err
-        action_result(false, err.to_s)
+        action_result(false, err.to_s, :parent_id => ci.id)
       end
 
       def ci_unset_tag(ci, tag_spec)
