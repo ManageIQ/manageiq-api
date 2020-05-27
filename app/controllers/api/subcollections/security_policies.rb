@@ -2,7 +2,7 @@ module Api
   module Subcollections
     module SecurityPolicies
       def security_policies_query_resource(object)
-        object.respond_to?(:security_policies) ? object.security_policies : []
+        object.try(:security_policies) || []
       end
 
       def security_policies_create_resource(provider, _type, _resource_id, data)

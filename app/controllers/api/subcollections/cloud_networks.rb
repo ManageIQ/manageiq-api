@@ -2,7 +2,7 @@ module Api
   module Subcollections
     module CloudNetworks
       def cloud_networks_query_resource(object)
-        object.respond_to?(:cloud_networks) ? Array(object.cloud_networks) : []
+        object.try(:cloud_networks) || []
       end
 
       def cloud_networks_create_resource(provider, _type, _resource_id, data)
