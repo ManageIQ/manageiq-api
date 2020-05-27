@@ -25,9 +25,12 @@ module Api
     include Subcollections::Lans
     include Subcollections::LoadBalancers
     include Subcollections::Networks
+    include Subcollections::NetworkServices
     include Subcollections::Policies
     include Subcollections::PolicyProfiles
     include Subcollections::SecurityGroups
+    include Subcollections::SecurityPolicies
+    include Subcollections::SecurityPolicyRules
     include Subcollections::Tags
     include Subcollections::Vms
 
