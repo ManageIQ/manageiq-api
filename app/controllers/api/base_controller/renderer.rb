@@ -461,7 +461,7 @@ module Api
           next unless render_actions_for_method(cspec[:verbs], method)
           typed_action_definitions = fetch_typed_subcollection_actions(method, is_subcollection) || action_definitions
           typed_action_definitions.each.collect do |action|
-            if !action[:disabled] && api_user_role_allows?(action[:identifier])
+            if api_user_role_allows?(action[:identifier])
               {"name" => action[:name], "method" => method, "href" => (href ? href : collection)}
             end
           end
@@ -481,7 +481,8 @@ module Api
           next unless render_actions_for_method(cspec[:verbs], method)
           typed_action_definitions = action_definitions || fetch_typed_subcollection_actions(method, is_subcollection)
           typed_action_definitions.each.collect do |action|
-            next unless !action[:disabled] && api_user_role_allows?(action[:identifier]) && action_validated?(resource, action)
+            next unless api_user_role_allows?(action[:identifier]) && action_validated?(resource, action)
+
             build_resource_actions(action, method, href, cspec[:verbs])
           end
         end.flatten.uniq.compact
@@ -514,7 +515,13 @@ module Api
 
         return custom_api_user_role_allows?(action_identifier) if custom_api_user_role_allows_method?(action_identifier)
 
-        Array(action_identifier).any? { |identifier| User.current_user.role_allows?(:identifier => identifier) }
+        @role_allows_cache ||= {}
+        Array(action_identifier).any? do |identifier|
+          unless @role_allows_cache.key?(identifier)
+            @role_allows_cache[identifier] = User.current_user.role_allows?(:identifier => identifier)
+          end
+          @role_allows_cache[identifier]
+        end
       end
 
       def render_actions(physical_attrs)

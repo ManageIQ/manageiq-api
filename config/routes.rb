@@ -40,6 +40,12 @@ Rails.application.routes.draw do
             when :get
               root :action => :index, :as => collection_name
               get "/:c_id", :action => :show, :as => resource_name
+              Array(collection[:resource_entities]).each do |entity|
+                if entity.try(:fetch_path, :entity_actions, :get)
+                  name = entity[:name]
+                  get "/:c_id/#{name}", :action => "render_#{name}_entity".to_sym, :as => "#{name}_entity"
+                end
+              end
             when :put
               put "/:c_id", :action => :update
             when :patch

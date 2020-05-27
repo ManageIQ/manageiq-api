@@ -366,4 +366,19 @@ RSpec.describe "chargebacks API" do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  context "rate assignment" do
+    it_behaves_like "perform rate assign/unassign action", "Compute", :ext_management_system, :providers
+    it_behaves_like "perform rate assign/unassign action", "Compute", :tenant, :tenants
+    it_behaves_like "perform rate assign/unassign action", "Compute", :ems_cluster, :clusters
+    it_behaves_like "perform rate assign/unassign action", "Compute", :miq_enterprise, :enterprises
+    it_behaves_like "perform rate assign/unassign action", "Compute", :custom_attribute, :custom_attributes
+    it_behaves_like "perform rate assign/unassign action", "Compute", :tag, :tags, "vm"
+    it_behaves_like "perform rate assign/unassign action", "Compute", :tag, :tags, "container_image"
+
+    it_behaves_like "perform rate assign/unassign action", "Storage", :miq_enterprise, :enterprises
+    it_behaves_like "perform rate assign/unassign action", "Storage", :storage, :data_stores
+    it_behaves_like "perform rate assign/unassign action", "Storage", :tag, :tags, "storage"
+    it_behaves_like "perform rate assign/unassign action", "Storage", :tenant, :tenants
+  end
 end

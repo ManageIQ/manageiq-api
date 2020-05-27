@@ -45,4 +45,6 @@ describe "Container Groups API" do
       expect(response.parsed_body).to include(expected)
     end
   end
+
+  it_behaves_like "a check compliance action", "container_group", :container_group, "ContainerGroup"
 end

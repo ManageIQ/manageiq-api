@@ -6,8 +6,9 @@ describe "Automate API" do
     before(:each) do
       MiqAeDatastore.reset
       FactoryBot.create(:miq_ae_domain, :name => "ManageIQ", :tenant_id => @group.tenant.id)
-      FactoryBot.create(:miq_ae_domain, :name => "Custom",   :tenant_id => @group.tenant.id)
-      system_class = FactoryBot.create(:miq_ae_class, :name => "System", :namespace => "Custom")
+      custom = FactoryBot.create(:miq_ae_domain, :name => "Custom", :tenant_id => @group.tenant.id)
+      ns = FactoryBot.create(:miq_ae_namespace, :name => "Test", :parent => custom)
+      system_class = FactoryBot.create(:miq_ae_class, :name => "System", :ae_namespace => ns)
       FactoryBot.create(:miq_ae_field, :name    => "on_entry", :class_id => system_class.id,
                                         :aetype  => "state",    :datatype => "string")
     end
@@ -55,8 +56,8 @@ describe "Automate API" do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["resources"]).to match_array(
-        [a_hash_including("name" => "Custom", "fqname" => "/Custom",        "domain_fqname" => "/"),
-         a_hash_including("name" => "System", "fqname" => "/Custom/System", "domain_fqname" => "/System")]
+        [a_hash_including("name" => "Custom", "fqname" => "/Custom", "domain_fqname" => "/"),
+         a_hash_including("name" => "Test", "fqname" => "/Custom/Test", "domain_fqname" => "/Test")]
       )
     end
 
@@ -69,7 +70,8 @@ describe "Automate API" do
       expect(response.parsed_body["resources"]).to match_array(
         [a_hash_including("name" => "ManageIQ", "fqname" => "/ManageIQ"),
          a_hash_including("name" => "Custom",   "fqname" => "/Custom"),
-         a_hash_including("name" => "System",   "fqname" => "/Custom/System")]
+         a_hash_including("name" => "Test",     "fqname" => "/Custom/Test"),
+         a_hash_including("name" => "System",   "fqname" => "/Custom/Test/System")]
       )
     end
 
@@ -80,18 +82,19 @@ describe "Automate API" do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["resources"]).to match_array(
-        [a_hash_including("name" => "Custom",   "fqname" => "/Custom"),
-         a_hash_including("name" => "System",   "fqname" => "/Custom/System")]
+        [a_hash_including("name" => "Custom", "fqname" => "/Custom"),
+         a_hash_including("name" => "Test",   "fqname" => "/Custom/Test"),
+         a_hash_including("name" => "System", "fqname" => "/Custom/Test/System")]
       )
     end
 
     it "always return the fqname" do
       api_basic_authorize action_identifier(:automate, :read, :collection_actions, :get)
 
-      get(api_automate_url(nil, "custom/system"), :params => { :attributes => "name" })
+      get(api_automate_url(nil, "custom/test/system"), :params => {:attributes => "name"})
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body["resources"]).to match_array([{"name" => "System", "fqname" => "/Custom/System"}])
+      expect(response.parsed_body["resources"]).to match_array([{"name" => "System", "fqname" => "/Custom/Test/System"}])
     end
   end
 end

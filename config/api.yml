@@ -490,6 +490,10 @@
         :identifier: chargeback_rates_edit
       - :name: delete
         :identifier: chargeback_rates_delete
+      - :name: assign
+        :identifier: chargeback_assignments
+      - :name: unassign
+        :identifier: chargeback_assignments
     :resource_actions:
       :get:
       - :name: read
@@ -499,6 +503,10 @@
         :identifier: chargeback_rates_edit
       - :name: delete
         :identifier: chargeback_rates_delete
+      - :name: assign
+        :identifier: chargeback_assignments
+      - :name: unassign
+        :identifier: chargeback_assignments
       :delete:
       - :name: delete
         :identifier: chargeback_rates_delete
@@ -620,12 +628,17 @@
       - :name: read
         :identifier: image_show_list
       :post:
+      - :name: check_compliance
+        :identifier: image_check_compliance
       - :name: query
         :identifier: image_show_list
     :resource_actions:
       :get:
       - :name: read
         :identifier: image_show
+      :post:
+      - :name: check_compliance
+        :identifier: image_check_compliance
     :subcollection_actions:
       :get:
       - :name: read
@@ -760,9 +773,6 @@
       :post:
       - :name: query
         :identifier: ems_cluster_show_list
-      - :name: delete
-        :identifier: ems_cluster_delete
-        :disabled: true
     :resource_actions:
       :get:
       - :name: read
@@ -963,12 +973,17 @@
       - :name: read
         :identifier: container_group_show_list
       :post:
+      - :name: check_compliance
+        :identifier: container_group_check_compliance
       - :name: query
         :identifier: container_group_show_list
     :resource_actions:
       :get:
       - :name: read
         :identifier: container_group_show
+      :post:
+      - :name: check_compliance
+        :identifier: container_group_check_compliance
   :container_images:
     :description: Container Images
     :identifier: container_image
@@ -977,15 +992,22 @@
     - :custom_actions
     :verbs: *gp
     :klass: ContainerImage
+    :subcollections:
+    - :custom_attributes
     :collection_actions:
       :get:
       - :name: read
         :identifier: container_image_show_list
+      :post:
+      - :name: check_compliance
+        :identifier: container_image_check_compliance
     :resource_actions:
       :get:
       - :name: read
         :identifier: container_image_show
       :post:
+      - :name: check_compliance
+        :identifier: container_image_check_compliance
       - :name: scan
         :identifier: container_image_scan
   :container_nodes:
@@ -1001,12 +1023,17 @@
       - :name: read
         :identifier: container_node_show_list
       :post:
+      - :name: check_compliance
+        :identifier: container_node_check_compliance
       - :name: query
         :identifier: container_node_show_list
     :resource_actions:
       :get:
       - :name: read
         :identifier: container_node_show
+      :post:
+      - :name: check_compliance
+        :identifier: container_node_check_compliance
   :container_projects:
     :description: Container Projects
     :identifier: container_project
@@ -1693,35 +1720,8 @@
         :identifier: host_check_compliance
       - :name: query
         :identifier: host_show_list
-      - :name: add
-        :identifier: host_new
-        :disabled: true
       - :name: edit
         :identifier: host_edit
-      - :name: refresh
-        :identifier: host_refresh
-        :disabled: true
-      - :name: standby
-        :identifier: host_standby
-        :disabled: true
-      - :name: shutdown
-        :identifier: host_shutdown
-        :disabled: true
-      - :name: restart
-        :identifier: host_reboot
-        :disabled: true
-      - :name: poweron
-        :identifier: host_start
-        :disabled: true
-      - :name: poweroff
-        :identifier: host_stop
-        :disabled: true
-      - :name: reset
-        :identifier: host_reset
-        :disabled: true
-      - :name: delete
-        :identifier: host_delete
-        :disabled: true
     :resource_actions:
       :get:
       - :name: read
@@ -1731,27 +1731,6 @@
         :identifier: host_check_compliance
       - :name: edit
         :identifier: host_edit
-      - :name: refresh
-        :identifier: host_refresh
-        :disabled: true
-      - :name: standby
-        :identifier: host_standby
-        :disabled: true
-      - :name: shutdown
-        :identifier: host_shutdown
-        :disabled: true
-      - :name: restart
-        :identifier: host_reboot
-        :disabled: true
-      - :name: poweron
-        :identifier: host_start
-        :disabled: true
-      - :name: poweroff
-        :identifier: host_stop
-        :disabled: true
-      - :name: reset
-        :identifier: host_reset
-        :disabled: true
       :delete:
       - :name: delete
         :identifier: host_delete
@@ -2982,9 +2961,6 @@
       :post:
       - :name: query
         :identifier: resource_pool_show_list
-      - :name: delete
-        :identifier: resource_pool_delete
-        :disabled: true
     :resource_actions:
       :get:
       - :name: read
@@ -3025,9 +3001,14 @@
       :post:
       - :name: query
         :identifier: miq_report_view
+      - :name: request_download
+        :identifier: miq_report_view
     :resource_actions:
       :get:
       - :name: read
+        :identifier: miq_report_view
+      :post:
+      - :name: request_download
         :identifier: miq_report_view
   :roles:
     :description: Roles
@@ -4001,6 +3982,15 @@
       :delete:
       - :name: delete
         :identifier: miq_task_delete
+    :resource_entities:
+    - :name: task_results
+      :entity_actions:
+        :get:
+        - :name: read
+          :identifier:
+          - miq_task_all_ui
+          - miq_task_my_ui
+          - miq_report_view
   :templates:
     :description: Templates
     :identifier: miq_template
@@ -4022,12 +4012,6 @@
         :identifier: miq_template_check_compliance
       - :name: query
         :identifier: miq_template_show_list
-      - :name: refresh
-        :identifier: miq_template_refresh
-        :disabled: true
-      - :name: edit
-        :identifier: miq_template_edit
-        :disabled: true
       - :name: set_ownership
         :identifier: miq_template_ownership
       - :name: delete
@@ -4039,9 +4023,6 @@
       :post:
       - :name: check_compliance
         :identifier: miq_template_check_compliance
-      - :name: refresh
-        :identifier: miq_template_refresh
-        :disabled: true
       - :name: edit
         :identifier: miq_template_edit
       - :name: set_ownership
@@ -4267,9 +4248,6 @@
         :identifier:
         - vm_show_list
         - sui_vm_details_view
-      - :name: add
-        :identifier: vm_miq_request_new
-        :disabled: true
       - :name: edit
         :identifier: vm_edit
       - :name: add_lifecycle_event

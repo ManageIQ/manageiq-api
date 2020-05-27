@@ -165,7 +165,9 @@ module Api
                           [@req.subject, request_type_target.last]
                         end
 
-        aspec = if @req.subcollection?
+        aspec = if request_is_for_resource_entity?
+                  collection_config.resource_entity_actions(@req.collection, @req.subcollection)
+                elsif @req.subcollection?
                   collection_config.typed_subcollection_actions(@req.collection, cname, target) ||
                     collection_config.typed_collection_actions(cname, target)
                 else
@@ -173,7 +175,6 @@ module Api
                 end
         return if method_name == :get && aspec.nil?
         action_hash = fetch_action_hash(aspec, method_name, action_name)
-        raise BadRequestError, "Disabled action #{action_name}" if action_hash[:disabled]
         unless api_user_role_allows?(action_hash[:identifier])
           raise ForbiddenError, "Use of the #{action_name} action is forbidden"
         end
@@ -206,7 +207,6 @@ module Api
         end
 
         if action_hash.present?
-          raise BadRequestError, "Disabled Action #{aname} for the #{cname} #{type} specified" if action_hash[:disabled]
           unless api_user_role_allows?(action_hash[:identifier])
             raise ForbiddenError, "Use of Action #{aname} is forbidden"
           end
@@ -237,6 +237,8 @@ module Api
         if cname && @req.subcollection
           return [cname, ctype] if @req.subcollection == 'settings' && collection_option?(:settings)
           return [cname, ctype] if collection_option?(:arbitrary_resource_path)
+          return [cname, ctype] if request_is_for_resource_entity?
+
           ctype = "Sub-Collection"
           unless collection_config.subcollection?(cname, @req.subcollection)
             raise BadRequestError, "Unsupported #{ctype} #{@req.subcollection} specified"
@@ -255,7 +257,6 @@ module Api
 
         action_hash = fetch_action_hash(aspec, mname, aname)
         raise BadRequestError, "Unsupported Action #{aname} for the #{cname} sub-collection" if action_hash.blank?
-        raise BadRequestError, "Disabled Action #{aname} for the #{cname} sub-collection" if action_hash[:disabled]
 
         unless api_user_role_allows?(action_hash[:identifier])
           raise ForbiddenError, "Use of Action #{aname} for the #{cname} sub-collection is forbidden"
@@ -297,6 +298,10 @@ module Api
         end
 
         raise BadRequestError, "Invalid collection_class #{param} specified for the #{@req.collection} collection"
+      end
+
+      def request_is_for_resource_entity?
+        collection_config.resource_entity?(@req.collection, @req.subcollection) && @req.subcollection_id.blank?
       end
     end
   end

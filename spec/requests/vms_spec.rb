@@ -66,6 +66,7 @@ describe "Vms API" do
         :params => {
           :action          => 'edit',
           :description     => 'bar',
+          :name            => 'drew was here',
           :child_resources => children,
           :custom_1        => 'foobar',
           :custom_9        => 'fizzbuzz',
@@ -80,11 +81,12 @@ describe "Vms API" do
       expect(response.parsed_body).to include(expected)
       expect(vm.reload.children).to match_array(new_vms)
       expect(vm.parent).to eq(vm_openstack2)
+      expect(vm.name).to eq('drew was here')
       expect(vm.custom_1).to eq('foobar')
       expect(vm.custom_9).to eq('fizzbuzz')
     end
 
-    it 'only allows edit of custom_1, description, parent, and children' do
+    it 'only allows edit of custom_1, description, name, parent, and children' do
       api_basic_authorize collection_action_identifier(:vms, :edit)
 
       post(api_vm_url(nil, vm), :params => { :action => 'edit', :name => 'foo', :autostart => true, :power_state => 'off' })
@@ -92,7 +94,7 @@ describe "Vms API" do
       expected = {
         'error' => a_hash_including(
           'kind'    => 'bad_request',
-          'message' => 'Cannot edit VM - Cannot edit values name, autostart, power_state'
+          'message' => 'Cannot edit VM - Cannot edit values autostart, power_state'
         )
       }
       expect(response).to have_http_status(:bad_request)
@@ -1115,6 +1117,14 @@ describe "Vms API" do
 
           expect(response).to have_http_status(:ok)
           expect(response.parsed_body).to include(expected)
+        end
+
+        it "in the future" do
+          api_basic_authorize action_identifier(:vms, :request_retire)
+          date = 2.weeks.from_now
+          post(vm_url, :params => gen_request(:request_retire, :date => date.iso8601))
+
+          expect_single_action_result(:success => true, :message => /#{vm.id}.* request retire/i, :href => api_vm_url(nil, vm))
         end
 
         it "queues retirement task" do

@@ -14,9 +14,9 @@ module Api
     include Subcollections::Software
     include Subcollections::Tags
 
-    VALID_EDIT_ATTRS = %w(description child_resources parent_resource).freeze
-    RELATIONSHIP_COLLECTIONS = %w(vms templates).freeze
     DEFAULT_ROLE = 'ems_operations'.freeze
+    RELATIONSHIP_COLLECTIONS = %w[vms templates].freeze
+    VALID_EDIT_ATTRS = %w[description name child_resources parent_resource].freeze
 
     def start_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
@@ -274,11 +274,22 @@ module Api
       action_result(false, "Failed to set miq_server - #{err}")
     end
 
-    def request_retire_resource(type, id, _data = nil)
+    def request_retire_resource(type, id, data = nil)
       api_action(type, id) do |klass|
         vm = resource_search(id, type, klass)
-        api_log_info("Retiring request of vm #{vm_ident(vm)}")
-        request_retire(vm)
+        msg = "Retiring request of vm #{vm_ident(vm)}"
+        if data && data["date"]
+          opts = {}
+          opts[:date] = data["date"]
+          opts[:warn] = data["warn"] if data["warn"]
+          msg << " on: #{opts}"
+          api_log_info(msg)
+          request_retire(vm, opts)
+        else
+          msg << " immediately."
+          api_log_info(msg)
+          request_retire(vm)
+        end
       end
     end
 
@@ -505,10 +516,13 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def request_retire(virtual_machine)
+    def request_retire(virtual_machine, opts = nil)
       desc = "#{vm_ident(virtual_machine)} request retire"
-
-      task_id = queue_object_action(virtual_machine, desc, :method_name => "make_retire_request", :role => "automate", :args => [User.current_user.id])
+      task_id = if opts
+                  queue_object_action(virtual_machine, desc, :method_name => "retire", :role => "automate", :args => [opts])
+                else
+                  queue_object_action(virtual_machine, desc, :method_name => "make_retire_request", :role => "automate", :args => [User.current_user.id])
+                end
       action_result(true, desc, :task_id => task_id)
     rescue StandardError => err
       action_result(false, err.to_s)

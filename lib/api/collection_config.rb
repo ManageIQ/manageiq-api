@@ -62,6 +62,22 @@ module Api
       typed_subcollection_actions(collection_name, subcollection_name).try(:fetch_path, method.to_sym)
     end
 
+    def resource_entities(collection_name)
+      Array(self[collection_name][:resource_entities])
+    end
+
+    def resource_entity(collection_name, entity_name)
+      resource_entities(collection_name).find { |entity| entity[:name] == entity_name.to_s }
+    end
+
+    def resource_entity?(collection_name, entity_name)
+      resource_entity(collection_name, entity_name).present?
+    end
+
+    def resource_entity_actions(collection_name, entity_name)
+      resource_entity(collection_name, entity_name).try(:fetch_path, :entity_actions)
+    end
+
     def names_for_feature(product_feature_name)
       names_for_features[product_feature_name]
     end
@@ -121,7 +137,8 @@ module Api
           next unless action_definitions.present?
           action_definitions.each do |action|
             identifier = action[:identifier]
-            next if action[:disabled] || result.key?(identifier)
+            next if result.key?(identifier)
+
             result[identifier] = [collection, method, action]
           end
         end
