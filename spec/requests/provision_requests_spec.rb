@@ -172,7 +172,7 @@ describe "Provision Requests API" do
   let(:dialog)     { FactoryBot.create(:miq_dialog_provision) }
 
   describe "Provision Requests" do
-    let(:hardware) { FactoryBot.create(:hardware, :memory_mb => 1024) }
+    let(:hardware) { FactoryBot.create(:hardware, :ram_size_in_bytes => 1_024_000_000) }
     let(:template) do
       FactoryBot.create(:template_vmware,
                          :name                  => "template1",

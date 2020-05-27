@@ -156,7 +156,7 @@ RSpec.describe Api::Filter do
     end
 
     it "does not support filtering by attributes of associations' associations" do
-      filters = ["host.hardware.memory_mb>1024"]
+      filters = ["host.hardware.ram_size_in_bytes>1024000000"]
 
       expect do
         described_class.parse(filters, Vm)

@@ -496,7 +496,7 @@ describe "Querying" do
     end
 
     it "does not support filtering by attributes of associations' associations" do
-      get api_vms_url, :params => { :expand => "resources", :filter => ["host.hardware.memory_mb>1024"] }
+      get api_vms_url, :params => {:expand => "resources", :filter => ["host.hardware.ram_size_in_bytes>1024000000"]}
 
       expect_bad_request(/Filtering of attributes with more than one association away is not supported/)
     end
