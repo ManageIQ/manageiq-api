@@ -1,5 +1,44 @@
 RSpec.describe "chargebacks API" do
-  let(:field) { FactoryBot.create(:chargeable_field) }
+  let(:field) { FactoryBot.create(:chargeable_field, :chargeback_rate_detail_measure_id => measure.id) }
+  let(:measure) { FactoryBot.create(:chargeback_rate_detail_measure) }
+  let(:chargeback_rate_detail) { FactoryBot.build(:chargeback_rate_detail, :description => "rate_0", :detail_measure => measure, :chargeable_field => field) }
+  let(:chargeback_tier) do
+    FactoryBot.create(:chargeback_tier, :chargeback_rate_detail_id => chargeback_rate_detail.id, :start => 0, :finish => Float::INFINITY, :fixed_rate => 0.0, :variable_rate => 0.0)
+  end
+
+  def convert_to_response_hash(resource)
+    resource.attributes.map do |attribute_name, attribute_value|
+      attribute_value = attribute_value.to_s if attribute_value.present? && (attribute_name.include?("id"))
+      attribute_value = nil if attribute_value == Float::INFINITY
+      attribute_value = attribute_value.strftime("%FT%TZ") if attribute_value.is_a?(ActiveSupport::TimeWithZone)
+      {attribute_name => attribute_value}
+    end.reduce(:merge)
+  end
+
+  let(:expected_tier)             { convert_to_response_hash(chargeback_tier) }
+  let(:expected_chargeable_field) { convert_to_response_hash(chargeback_rate_detail.chargeable_field) }
+  let(:expected_chargeback_rate)  { convert_to_response_hash(chargeback_rate_detail.chargeback_rate) }
+  let(:expected_currency)         { convert_to_response_hash(chargeback_rate_detail.detail_currency) }
+  let(:expected_measure)          { convert_to_response_hash(chargeback_rate_detail.detail_measure) }
+
+  it "can fetch the list of all rates" do
+    chargeback_rate_detail.chargeback_tiers = [chargeback_tier]
+    chargeback_rate_detail.save
+
+    api_basic_authorize collection_action_identifier(:rates, :read, :get)
+    request_attributes = {:expand => 'resources', :attributes => 'chargeback_tiers,chargeback_rate,detail_measure,detail_currency,chargeable_field'}
+
+    get api_rates_url, :params => request_attributes
+
+    expect(response.parsed_body['resources'][0]).to include("chargeback_tiers" => [expected_tier],
+                                                            "chargeable_field" => expected_chargeable_field,
+                                                            "chargeback_rate"  => expected_chargeback_rate,
+                                                            "detail_currency"  => expected_currency,
+                                                            "detail_measure"   => expected_measure)
+
+    expect_result_to_match_hash(response.parsed_body, "count"  => 1)
+    expect(response).to have_http_status(:ok)
+  end
 
   it "can fetch the list of all chargeback rates" do
     chargeback_rate = FactoryBot.create(:chargeback_rate)
@@ -37,7 +76,7 @@ RSpec.describe "chargebacks API" do
                                          :variable_rate => 0.0)
     chargeback_rate_detail.chargeback_tiers = [chargeback_tier]
     chargeback_rate = FactoryBot.create(:chargeback_rate,
-                                         :chargeback_rate_details => [chargeback_rate_detail])
+                                        :chargeback_rate_details => [chargeback_rate_detail])
 
     api_basic_authorize
     get(api_chargeback_rates_url(nil, chargeback_rate))
