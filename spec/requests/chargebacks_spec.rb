@@ -8,9 +8,8 @@ RSpec.describe "chargebacks API" do
 
   def convert_to_response_hash(resource)
     resource.attributes.map do |attribute_name, attribute_value|
-      attribute_value = attribute_value.to_s if attribute_value.present? && (attribute_name.include?("id"))
-      attribute_value = nil if attribute_value == Float::INFINITY
-      attribute_value = attribute_value.strftime("%FT%TZ") if attribute_value.is_a?(ActiveSupport::TimeWithZone)
+      attribute_value = attribute_value.to_s if attribute_value.present? && (attribute_name.include?("id") || attribute_value == Float::INFINITY)
+      attribute_value = attribute_value.strftime("%FT%TZ") if attribute_value.kind_of?(ActiveSupport::TimeWithZone)
       {attribute_name => attribute_value}
     end.reduce(:merge)
   end
@@ -36,7 +35,7 @@ RSpec.describe "chargebacks API" do
                                                             "detail_currency"  => expected_currency,
                                                             "detail_measure"   => expected_measure)
 
-    expect_result_to_match_hash(response.parsed_body, "count"  => 1)
+    expect_result_to_match_hash(response.parsed_body, "count" => 1)
     expect(response).to have_http_status(:ok)
   end
 
