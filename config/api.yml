@@ -2467,6 +2467,8 @@
           :identifier: ems_container_new
         - :klass: ManageIQ::Providers::NetworkManager
           :identifier: ems_network_new
+        - :klass: ManageIQ::Providers::PhysicalInfraManager
+          :identifier: ems_physical_infra_new
         - :klass: Provider
           :identifier: provider_foreman_add_provider
       - :name: edit
