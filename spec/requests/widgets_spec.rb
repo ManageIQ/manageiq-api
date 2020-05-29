@@ -2,7 +2,7 @@ describe "Widgets API" do
   context "GET /api/widgets" do
     it "returns all Widgets" do
       miq_widget = FactoryBot.create(:miq_widget)
-      api_basic_authorize('miq_widget_show_list')
+      api_basic_authorize(collection_action_identifier(:widgets, :read, :get))
 
       get(api_widgets_url)
 
@@ -18,7 +18,7 @@ describe "Widgets API" do
   context "GET /api/miq_widgets/:id" do
     it "returns a single Widget" do
       miq_widget = FactoryBot.create(:miq_widget)
-      api_basic_authorize('miq_widget_show')
+      api_basic_authorize(action_identifier(:widgets, :read, :resource_actions, :get))
 
       get(api_widget_url(nil, miq_widget))
 

@@ -52,9 +52,10 @@ describe 'API configuration (config/api.yml)' do
           end
           keys.each do |action_type|
             next unless cfg[action_type]
-            cfg[action_type].each_value do |_, method_cfg|
+            cfg[action_type].each do |_, method_cfg|
               method_cfg.each do |action_cfg|
                 next unless action_cfg[:identifier]
+
                 Array(action_cfg[:identifier]).each { |id| yield(set, id) }
               end
             end
