@@ -919,11 +919,17 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: configuration_script_view
+        :identifier:
+        - automation_manager_configuration_script_view
+        - ems_infra_show
+        - ems_block_storage_show
     :resource_actions:
       :get:
       - :name: read
-        :identifier: configuration_script_view
+        :identifier:
+        - automation_manager_configuration_script_view
+        - ems_infra_show
+        - ems_block_storage_show
   :configured_systems:
     :description: Configured Systems
     :options:
@@ -1111,23 +1117,23 @@
         :identifier: conversion_host_show_list
       :post:
       - :name: create
-        :identifier: conversion_host_new
+        :identifier: conversion_host_control
       - :name: edit
-        :identifier: conversion_host_edit
+        :identifier: conversion_host_control
       - :name: delete
-        :identifier: conversion_host_delete
+        :identifier: conversion_host_control
     :resource_actions:
       :get:
       - :name: read
         :identifier: conversion_host_show
       :post:
       - :name: edit
-        :identifier: conversion_host_edit
+        :identifier: conversion_host_control
       - :name: delete
-        :identifier: conversion_host_delete
+        :identifier: conversion_host_control
       :delete:
       - :name: delete
-        :identifier: conversion_host_delete
+        :identifier: conversion_host_control
     :tags_subcollection_actions:
       :post:
       - :name: assign
@@ -1876,22 +1882,37 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: load_balancer_show_list
+        :identifier:
+        - ems_infra_show_list
+        - ems_block_storage_show_list
+        - instance_show_list
       :post:
       - :name: query
-        :identifier: load_balancer_show_list
+        :identifier:
+        - ems_infra_show_list
+        - ems_block_storage_show_list
+        - instance_show_list
     :resource_actions:
       :get:
       - :name: read
-        :identifier: load_balancer_show
+        :identifier:
+        - ems_infra_show
+        - ems_block_storage_show
+        - instance_show
     :subcollection_actions:
       :get:
       - :name: read
-        :identifier: load_balancer_show
+        :identifier:
+        - ems_infra_show
+        - ems_block_storage_show
+        - instance_show
     :subresource_actions:
       :get:
       - :name: read
-        :identifier: load_balancer_show
+        :identifier:
+        - ems_infra_show
+        - ems_block_storage_show
+        - instance_show
   :measures:
     :description: Measures
     :identifier: measure
@@ -2600,7 +2621,7 @@
         :identifier: pxe_server_view
       :post:
       - :name: create
-        :identifier: pxe_server_create
+        :identifier: pxe_server_new
     :subresource_actions:
       :get:
       - :name: read
@@ -2611,7 +2632,7 @@
         :identifier: pxe_server_view
       :post:
       - :name: create
-        :identifier: pxe_server_create
+        :identifier: pxe_server_new
   :pxe_servers:
     :description: PXE Servers
     :identifier: pxe_server_accord
@@ -2628,7 +2649,7 @@
         :identifier: pxe_server_view
       :post:
       - :name: create
-        :identifier: pxe_server_create
+        :identifier: pxe_server_new
       - :name: edit
         :identifier: pxe_server_edit
       - :name: delete
@@ -2642,7 +2663,7 @@
         :identifier: pxe_server_edit
       :post:
       - :name: create
-        :identifier: pxe_server_create
+        :identifier: pxe_server_new
       - :name: edit
         :identifier: pxe_server_edit
       :delete:
@@ -4313,16 +4334,16 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: miq_widget_show_list
+        :identifier: miq_report_widget_editor
       :post:
       - :name: query
-        :identifier: miq_widget_show_list
+        :identifier: miq_report_widget_editor
       - :name: generate_content
         :identifier: widget_generate_content
     :resource_actions:
       :get:
       - :name: read
-        :identifier: miq_widget_show
+        :identifier: miq_report_widget_editor
       :post:
       - :name: generate_content
         :identifier: widget_generate_content
