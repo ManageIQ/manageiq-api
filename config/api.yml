@@ -539,8 +539,6 @@
       - :name: read
         :identifier: cloud_network_show_list
       :post:
-      - :name: add
-        :identifier: instance_add_cloud_network
       - :name: create
         :identifier: cloud_network_new
       - :name: edit
@@ -2466,7 +2464,6 @@
         :identifier:
         - ems_infra_show_list
         - ems_block_storage_show_list
-        - api_provider_show_list
       :post:
       - :name: change_password
         :identifier: ems_infra_change_password
