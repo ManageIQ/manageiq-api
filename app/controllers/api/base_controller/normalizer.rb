@@ -32,6 +32,12 @@ module Api
 
       private
 
+      def normalize_input_value(value)
+        value = Float::INFINITY if value.try(:downcase).presence == "infinity"
+
+        value
+      end
+
       def normalize_attr(attr, value)
         return if value.nil?
         if value.kind_of?(Array) || value.kind_of?(ActiveRecord::Relation)
