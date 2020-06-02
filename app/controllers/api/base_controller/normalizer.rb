@@ -52,6 +52,8 @@ module Api
           normalize_url(value)
         elsif Api.encrypted_attribute?(attr)
           normalize_encrypted(value)
+        elsif value == Float::INFINITY
+          Float::INFINITY.to_s
         elsif Api.resource_attribute?(attr)
           normalize_resource(value)
         else
