@@ -11,7 +11,7 @@ shared_examples "resource power operations" do |factory, operation|
     api_basic_authorize(action_identifier(resource_type.pluralize.to_sym, operation))
 
     expect(api_client_connection).to receive(resource_type.pluralize).and_return(api_client_collection)
-    expect(InterRegionApiMethodRelay).to receive(:api_client_connection_for_region).with(region_remote.region).and_return(api_client_connection)
+    expect(InterRegionApiMethodRelay).to receive(:api_client_connection_for_region).with(region_remote.region, @user.userid).and_return(api_client_connection)
     expect(api_client_collection).to receive(:find).with(resource.id).and_return(api_resource)
     expect(api_resource).to receive(operation)
 
