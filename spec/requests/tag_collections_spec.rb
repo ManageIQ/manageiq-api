@@ -795,6 +795,8 @@ describe "Tag Collections API" do
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
+      expect(response.parsed_body["results"][1]['message']).to include("FAILED. Tag name '#{bad_tag[:name]}' not found  in region #{zone.region_id}")
+      expect(response.parsed_body["results"][2]['message']).to include("SUCCESS")
     end
 
     it 'fails without an appropriate role' do

@@ -87,7 +87,7 @@ module Api
           success = true
         else
           desc = "Assigning #{tag_ident(tag_spec)}"
-          Classification.classify(ci, tag_spec[:category], tag_spec[:name])
+          desc += Classification.classify(ci, tag_spec[:category], tag_spec[:name])
           success = ci_is_tagged_with?(ci, tag_spec)
         end
         action_result(success, desc, :parent_id => ci.id)
