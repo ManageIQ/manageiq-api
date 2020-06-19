@@ -81,8 +81,10 @@ module Api
                         :value => data['interval']['value']}
       }
 
-      email_url_prefix = url_for(:controller => "/report",
-                                 :action     => "show_saved") + "/"
+      # FIXME: the ReportController#show_saved route doesn't exist, it has to be reimplemented
+      # for more information see https://github.com/ManageIQ/manageiq-ui-classic/issues/7126
+      # email_url_prefix = url_for_only_path(:controller => "report", :action => "show_saved") + "/"
+      email_url_prefix = "/report/show_saved/"
 
       schedule_options = {
         :send_email       => data['send_email'] || false,
