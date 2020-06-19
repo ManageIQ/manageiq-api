@@ -82,7 +82,8 @@ module Api
         :copyright            => I18n.t("product.copyright"),
         :support_website      => ::Settings.docs.product_support_website,
         :support_website_text => ::Settings.docs.product_support_website_text,
-        :branding_info        => branding_info
+        :branding_info        => branding_info,
+        :authentication       => authentication_info
       }
     end
 
@@ -99,6 +100,17 @@ module Api
         :login_logo => Settings.server.custom_login_logo ? image_path('/upload/custom_login_logo.png') : nil,
         :favicon    => Settings.server.custom_favicon ? image_path('/upload/custom_favicon.ico') : image_path('favicon.ico')
       }.compact
+    end
+
+    def authentication_info
+      as = Settings.authentication
+      is_httpd = as.mode == "httpd" && as.httpd_role
+      {
+        :mode         => as.mode,
+        :oidc_enabled => is_httpd && as.oidc_enabled && as.provider_type == "oidc",
+        :saml_enabled => is_httpd && as.saml_enabled && as.provider_type == "saml",
+        :sso_enabled  => is_httpd && as.sso_enabled
+      }
     end
 
     def plugin_info

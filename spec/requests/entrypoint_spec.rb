@@ -70,11 +70,94 @@ RSpec.describe "API entrypoint" do
         "name_full"            => I18n.t("product.name_full"),
         "copyright"            => I18n.t("product.copyright"),
         "support_website"      => ::Settings.docs.product_support_website,
-        "support_website_text" => ::Settings.docs.product_support_website_text
+        "support_website_text" => ::Settings.docs.product_support_website_text,
+        "authentication"       => a_hash_including("mode" => "database")
       )
     )
 
     expect(response.parsed_body['product_info']['branding_info'].keys).to match_array(%w[brand favicon logo])
+  end
+
+  it "returns product_info with database authentication" do
+    get api_product_info_url
+
+    expect(response.parsed_body).to include(
+      "authentication" => a_hash_including(
+        "mode"         => "database",
+        "oidc_enabled" => false,
+        "saml_enabled" => false,
+        "sso_enabled"  => false
+      )
+    )
+  end
+
+  it "returns product_info with saml authentication" do
+    stub_settings_merge(
+      :authentication => {
+        :mode          => "httpd",
+        :httpd_role    => true,
+        :oidc_enabled  => false,
+        :saml_enabled  => true,
+        :provider_type => "saml",
+        :sso_enabled   => false
+      }
+    )
+    get api_product_info_url
+
+    expect(response.parsed_body).to include(
+      "authentication" => a_hash_including(
+        "mode"         => "httpd",
+        "oidc_enabled" => false,
+        "saml_enabled" => true,
+        "sso_enabled"  => false
+      )
+    )
+  end
+
+  it "returns product_info with oidc authentication" do
+    stub_settings_merge(
+      :authentication => {
+        :mode          => "httpd",
+        :httpd_role    => true,
+        :oidc_enabled  => true,
+        :saml_enabled  => false,
+        :provider_type => "oidc",
+        :sso_enabled   => false,
+      }
+    )
+    get api_product_info_url
+
+    expect(response.parsed_body).to include(
+      "authentication" => a_hash_including(
+        "mode"         => "httpd",
+        "oidc_enabled" => true,
+        "saml_enabled" => false,
+        "sso_enabled"  => false
+      )
+    )
+  end
+
+  it "returns product_info with oidc authentication and sso enabled" do
+    stub_settings_merge(
+      :authentication => {
+        :mode          => "httpd",
+        :httpd_role    => true,
+        :oidc_enabled  => true,
+        :saml_enabled  => false,
+        :provider_type => "oidc",
+        :sso_enabled   => true
+      }
+    )
+    get api_product_info_url
+
+    expect(response.parsed_body).to include(
+      "authentication" => a_hash_including(
+        "mode"         => "httpd",
+        "oidc_enabled" => true,
+        "saml_enabled" => false,
+        "sso_enabled"  => true
+      )
+    )
   end
 
   context 'UI is available' do
