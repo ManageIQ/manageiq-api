@@ -203,7 +203,7 @@ module Api
                                 tag = record[key][0]&.tag
                                 prefix = record[key][1]
                                 resource_id = tag.id
-                                additional_attributes = {'name' => tag.classification.name, 'category' => tag.category.name, :assignment_prefix => prefix}
+                                additional_attributes = {'name' => tag.classification.name, 'description' => tag.classification.description, 'category' => tag.category.name, :assignment_prefix => prefix}
                                 :tags
                               elsif key == :object
                                 key = :resource
