@@ -52,19 +52,39 @@ RSpec.describe "chargebacks API" do
     expect(response).to have_http_status(:ok)
   end
 
+  let(:category)           { FactoryBot.create(:classification, :description => "Environment", :name => "environment", :single_value => true, :show => true) }
+  let(:tag_classification) { FactoryBot.create(:classification, :name => "prod", :description => "Production", :parent_id => category.id) }
+
+  let(:expected_tag) {
+    {
+      "tag" => {
+        "href"              =>  api_tag_url(nil, tag_classification.tag),
+        "name"              => "prod",
+        "description"       => "Production",
+        "category"          => "environment",
+        "assignment_prefix" => "vm"
+      }
+    }
+  }
+
   it "can show an individual chargeback rate" do
     chargeback_rate = FactoryBot.create(:chargeback_rate)
 
+    temp = {:cb_rate => chargeback_rate, :tag => [tag_classification, "vm"]}
+    ChargebackRate.set_assignments(:compute, [temp])
+
     api_basic_authorize action_identifier(:chargebacks, :read, :resource_actions, :get)
-    get api_chargeback_url(nil, chargeback_rate)
+    get api_chargeback_url(nil, chargeback_rate), :params => {'attributes' => 'assigned_to'}
 
     expect_result_to_match_hash(
       response.parsed_body,
       "description" => chargeback_rate.description,
       "guid"        => chargeback_rate.guid,
       "id"          => chargeback_rate.id.to_s,
-      "href"        => api_chargeback_url(nil, chargeback_rate)
+      "href"        => api_chargeback_url(nil, chargeback_rate),
+      "assigned_to" => [expected_tag]
     )
+
     expect(response).to have_http_status(:ok)
   end
 
