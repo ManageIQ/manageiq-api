@@ -16,6 +16,7 @@ module Api
       catalog_item_type = ServiceTemplate.class_from_request_data(data)
       catalog_item_type.create_catalog_item(data.deep_symbolize_keys, User.current_user.userid)
     rescue => err
+      $api_log.error("Service template create failed with #{err} at #{err.backtrace.first}")
       raise BadRequestError, "Could not create Service Template - #{err}"
     end
 
