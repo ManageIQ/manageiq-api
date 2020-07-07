@@ -37,6 +37,7 @@ module Api
     rescue_from(NoMethodError)                  { |e| api_error(:internal_server_error, e) }
     rescue_from(ActiveRecord::RecordNotFound)   { |e| api_error(:not_found, e) }
     rescue_from(ActiveRecord::StatementInvalid) { |e| api_error(:bad_request, e) }
+    rescue_from(ActiveRecord::RecordInvalid)    { |e| api_error(:bad_request, e) }
     rescue_from(JSON::ParserError)              { |e| api_error(:bad_request, e) }
     rescue_from(MultiJson::LoadError)           { |e| api_error(:bad_request, e) }
     rescue_from(ForbiddenError)                 { |e| api_error(:forbidden, e) }

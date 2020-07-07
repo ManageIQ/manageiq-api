@@ -173,6 +173,17 @@ describe "Service Catalogs API" do
       expect(response).to have_http_status(:not_found)
     end
 
+    it "returns a bad_request for invalid edits" do
+      api_basic_authorize collection_action_identifier(:service_catalogs, :edit)
+
+      sc1 = FactoryBot.create(:service_template_catalog, :name => "sc1", :description => "sc description one")
+      FactoryBot.create(:service_template_catalog, :name => "sc2", :description => "sc description two")
+
+      post(api_service_catalog_url(nil, sc1), :params => gen_request(:edit, "name" => "sc2"))
+
+      expect_bad_request("Validation failed: ServiceTemplateCatalog: Name has already been taken")
+    end
+
     it "supports single resource edit" do
       api_basic_authorize collection_action_identifier(:service_catalogs, :edit)
 
