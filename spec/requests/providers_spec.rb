@@ -1808,6 +1808,7 @@ describe "Providers API" do
   context 'configuration_profiles subcollection' do
     let(:configuration_profile) { FactoryBot.create(:configuration_profile, :manager => ems) }
     let(:ems) { FactoryBot.create(:configuration_manager) }
+    let(:ems_vmware) { FactoryBot.create(:ems_vmware) }
 
     context 'GET /api/providers/:id/configuration_profiles' do
       it 'returns the configuration_profiles with an appropriate role' do
@@ -1828,6 +1829,15 @@ describe "Providers API" do
         get(api_provider_configuration_profiles_url(nil, ems))
 
         expect(response).to have_http_status(:forbidden)
+      end
+
+      it "returns a 404 for a provider that does not support configuration_profiles" do
+        api_basic_authorize subcollection_action_identifier(:providers, :configuration_profiles, :read, :get)
+
+        ems_vmware
+        get(api_provider_configuration_profiles_url(nil, ems_vmware))
+
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -1854,6 +1864,7 @@ describe "Providers API" do
   context 'configured_systems subcollection' do
     let(:configured_system) { FactoryBot.create(:configured_system, :manager => ems) }
     let(:ems) { FactoryBot.create(:configuration_manager) }
+    let(:ems_vmware) { FactoryBot.create(:ems_vmware) }
 
     context 'GET /api/providers/:id/configured_systems' do
       it 'returns the configured_systems with an appropriate role' do
@@ -1874,6 +1885,15 @@ describe "Providers API" do
         get(api_provider_configured_systems_url(nil, ems))
 
         expect(response).to have_http_status(:forbidden)
+      end
+
+      it "returns a 404 for a provider that does not support configured_systems" do
+        api_basic_authorize subcollection_action_identifier(:providers, :configured_systems, :read, :get)
+
+        ems_vmware
+        get(api_provider_configured_systems_url(nil, ems_vmware))
+
+        expect(response).to have_http_status(:not_found)
       end
     end
 
