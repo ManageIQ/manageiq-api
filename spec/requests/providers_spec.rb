@@ -1831,13 +1831,14 @@ describe "Providers API" do
         expect(response).to have_http_status(:forbidden)
       end
 
-      it "returns a 404 for a provider that does not support configuration_profiles" do
+      it "returns an empty collection for a provider that does not support configuration_profiles" do
         api_basic_authorize subcollection_action_identifier(:providers, :configuration_profiles, :read, :get)
 
         ems_vmware
         get(api_provider_configuration_profiles_url(nil, ems_vmware))
 
-        expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("resources" => [])
       end
     end
 
@@ -1887,13 +1888,14 @@ describe "Providers API" do
         expect(response).to have_http_status(:forbidden)
       end
 
-      it "returns a 404 for a provider that does not support configured_systems" do
+      it "returns an empty collection for a provider that does not support configured_systems" do
         api_basic_authorize subcollection_action_identifier(:providers, :configured_systems, :read, :get)
 
         ems_vmware
         get(api_provider_configured_systems_url(nil, ems_vmware))
 
-        expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("resources" => [])
       end
     end
 
