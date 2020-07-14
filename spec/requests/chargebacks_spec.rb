@@ -58,11 +58,12 @@ RSpec.describe "chargebacks API" do
   let(:expected_tag) {
     {
       "tag" => {
-        "href"              =>  api_tag_url(nil, tag_classification.tag),
-        "name"              => "prod",
-        "description"       => "Production",
-        "category"          => "environment",
-        "assignment_prefix" => "vm"
+        "assigment_type_description" => "Tagged VMs and Instances",
+        "href"                       => api_tag_url(nil, tag_classification.tag),
+        "name"                       => "prod",
+        "description"                => "Production",
+        "category"                   => "environment",
+        "assignment_prefix"          => "vm"
       }
     }
   }

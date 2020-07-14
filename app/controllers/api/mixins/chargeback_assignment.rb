@@ -218,6 +218,7 @@ module Api
                                 additional_attributes = add_default_attributes_to_result(record[:label][0], collection)
                                 "container_images/#{record[:label][0].resource_id}/custom_attributes"
                               end
+        additional_attributes[:assigment_type_description] = record[:assigment_type_description] if record[:assigment_type_description]
 
         {key => {:href => normalize_href(resource_collection, resource_id)}.merge(additional_attributes)}
       end
