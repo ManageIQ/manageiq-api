@@ -3614,6 +3614,7 @@
     - :subcollection
     - :show
     - :show_as_collection
+    - :custom_actions
     :verbs: *gpppd
     :klass: ServiceTemplate
     :subcollections:
@@ -3643,6 +3644,8 @@
         :identifier: svc_catalog_archive
       - :name: unarchive
         :identifier: svc_catalog_unarchive
+      - :name: set_ownership
+        :identifier: catalogitem_ownership
     :subcollection_actions:
       :post:
       - :name: edit
@@ -3676,6 +3679,8 @@
         :identifier: svc_catalog_archive
       - :name: unarchive
         :identifier: svc_catalog_unarchive
+      - :name: set_ownership
+        :identifier: catalogitem_ownership
       :delete:
       - :name: delete
         :identifier: catalogitem_delete
