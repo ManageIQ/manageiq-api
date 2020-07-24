@@ -208,7 +208,7 @@ module Api
             return resource_attr unless rbac.send(:apply_rbac_directly?, klass)
             Rbac.filtered(resource_attr)
           # Don't re-do an Rbac query if it has already been done
-          elsif collection_class(@req.subject) != resource.class && rbac.send(:apply_rbac_directly?, resource.class)
+          elsif collection_class(@req.subject) != resource.class.base_model && rbac.send(:apply_rbac_directly?, resource.class)
             Rbac.filtered_object(resource).try(:public_send, attribute)
           else
             resource.public_send(attribute)
