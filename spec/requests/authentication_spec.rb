@@ -5,11 +5,13 @@ describe "Authentication API" do
   ENTRYPOINT_KEYS = %w(name description version versions identity collections)
 
   context "Basic Authentication" do
-    example "the user is challenged to use Basic Authentication when no credentials are provided" do
+    # Basic Auth challenge is intentionally not supported due to
+    # possible CSRF security concerns.
+    it "test authentication with no password" do
       get api_entrypoint_url
 
       expect(response).to have_http_status(:unauthorized)
-      expect(response.headers["WWW-Authenticate"]).to match("Basic")
+      expect(response.headers["WWW-Authenticate"]).not_to match(/basic/i)
     end
 
     it "test basic authentication with bad credentials" do
@@ -18,7 +20,6 @@ describe "Authentication API" do
       get api_entrypoint_url
 
       expect(response).to have_http_status(:unauthorized)
-      expect(response.headers["WWW-Authenticate"]).to match("Basic")
     end
 
     it "test basic authentication with correct credentials" do
@@ -40,7 +41,6 @@ describe "Authentication API" do
 
       expect(response.parsed_body).to include_error_with_message("User's Role is missing")
       expect(response).to have_http_status(:unauthorized)
-      expect(response.headers["WWW-Authenticate"]).to match("Basic")
     end
 
     it "test basic authentication with a user without a group" do
@@ -52,7 +52,6 @@ describe "Authentication API" do
       get api_entrypoint_url
 
       expect(response).to have_http_status(:unauthorized)
-      expect(response.headers["WWW-Authenticate"]).to match("Basic")
     end
 
     it "returns a correctly formatted versions href" do
@@ -99,7 +98,6 @@ describe "Authentication API" do
 
       expect(response.parsed_body).to include_error_with_message("Invalid Authorization Group bogus_group specified")
       expect(response).to have_http_status(:unauthorized)
-      expect(response.headers["WWW-Authenticate"]).to match("Basic")
     end
 
     it "test basic authentication with a primary group" do
@@ -226,21 +224,18 @@ describe "Authentication API" do
     it "fails with missing CSRF token" do
       get api_entrypoint_url
       expect(response).to have_http_status(:unauthorized)
-      expect(response.headers['WWW-Authenticate']).not_to be_nil
     end
 
     it "fails with invalid CSRF token" do
       expect_any_instance_of(Api::ApiController).to receive(:valid_authenticity_token?).and_return(false)
       get api_entrypoint_url, :headers => {'X-CSRF-TOKEN' => 'foo'}
       expect(response).to have_http_status(:unauthorized)
-      expect(response.headers['WWW-Authenticate']).to be_nil
     end
 
     it "fails with missing session and valid CSRF token" do
       expect_any_instance_of(Api::ApiController).to receive(:valid_authenticity_token?).and_return(true)
       get api_entrypoint_url, :headers => {'X-CSRF-TOKEN' => 'foo'}
       expect(response).to have_http_status(:unauthorized)
-      expect(response.headers['WWW-Authenticate']).to be_nil
     end
   end
 
