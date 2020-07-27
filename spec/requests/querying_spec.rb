@@ -112,6 +112,41 @@ describe "Querying" do
       expect(response.parsed_body).to include("id" => vm1.id.to_s, "retired" => nil, "smart" => nil)
     end
 
+    it 'returns nil virtual attributes when querying a resource' do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+
+      get(api_vm_url(nil, vm1), :params => {:attributes => 'vmsafe_agent_port'})
+
+      expect(response.parsed_body).to include("id" => vm1.id.to_s, "vmsafe_agent_port" => nil)
+    end
+
+    it 'returns nil relationships when querying a resource' do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+
+      get(api_vm_url(nil, vm1), :params => {:attributes => 'direct_service'})
+
+      expect(response.parsed_body).to include("id" => vm1.id.to_s, "direct_service" => nil)
+    end
+
+    it 'returns nil attributes of relationships when querying a resource' do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+
+      zone = FactoryBot.create(:zone, :name => "query_zone")
+      vm   = FactoryBot.create(:vm_vmware, :host => FactoryBot.create(:host), :ems_id => FactoryBot.create(:ems_vmware, :zone => zone).id)
+
+      get(api_vm_url(nil, vm), :params => {:attributes => 'ext_management_system.last_compliance_status'})
+
+      expect(response.parsed_body).to include("id" => vm.id.to_s, "ext_management_system" => {"last_compliance_status" => nil})
+    end
+
+    it 'returns empty array for one-to-many relationships when querying a resource' do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+
+      get(api_vm_url(nil, vm1), :params => {:attributes => 'files'})
+
+      expect(response.parsed_body).to include("id" => vm1.id.to_s, "files" => [])
+    end
+
     it "returns correct paging links" do
       create_vms_by_name %w(bb ff aa cc ee gg dd)
 
