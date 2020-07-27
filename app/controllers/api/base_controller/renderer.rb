@@ -268,7 +268,7 @@ module Api
                                 else
                                   fetch_indirect_virtual_attribute(type, resource, attr_base, attr_name, object_hash)
                                 end
-          result = result.deep_merge(value_result) unless value.nil?
+          result = result.deep_merge(Hash(value_result))
         end
         add_hash json, result
       end

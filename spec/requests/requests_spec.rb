@@ -322,8 +322,8 @@ RSpec.describe "Requests API" do
       )
 
       expect(response.parsed_body).to match(expected_response)
-      expect(response.parsed_body).not_to include("workflow")
-      expect(response.parsed_body).not_to include("v_allowed_tags")
+      expect(response.parsed_body["workflow"]).to be_nil
+      expect(response.parsed_body["v_allowed_tags"]).to be_nil
       expect(response).to have_http_status(:ok)
     end
   end
