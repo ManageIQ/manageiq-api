@@ -37,6 +37,10 @@ module Api
       @attributes ||= @params['attributes'].to_s.split(',')
     end
 
+    def derived_include_for_find
+      @derived_include_for_find ||= expand_requested.reject { |item| item == "resource" }
+    end
+
     def base
       url.partition(fullpath)[0] # http://target
     end

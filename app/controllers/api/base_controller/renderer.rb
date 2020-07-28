@@ -185,6 +185,7 @@ module Api
         options[:filter] = miq_expression if miq_expression
         options[:offset] = params['offset'] if params['offset']
         options[:limit] = params['limit'] if params['limit']
+        options[:include_for_find] = determine_include_for_find(klass)
 
         filter_results(miq_expression, res, options)
       end

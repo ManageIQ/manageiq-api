@@ -100,6 +100,16 @@ module Api
         end
         arel
       end
+
+      def determine_include_for_find(klass)
+        return nil unless klass.respond_to?(:reflect_on_association)
+
+        relations = @req.derived_include_for_find.select do |relation|
+                      klass.reflect_on_association(relation)
+                    end
+
+        relations.empty? ? nil : relations
+      end
     end
   end
 end

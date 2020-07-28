@@ -82,6 +82,11 @@ describe "Vms API" do
                                    [{"vendor" => "openstack"},
                                     {"vendor" => "openstack"}])
     end
+
+    include_examples "for 'expand' query optimizations" do
+      let!(:includes)   { "hardware" }
+      let!(:attributes) { "num_cpu,name" }
+    end
   end
 
   context 'Vm edit' do
