@@ -39,6 +39,51 @@ describe "Vms API" do
     end
   end
 
+  context 'Vm index' do
+    before do
+      # Will not be included in the result (base model is Vm)
+      FactoryBot.create(:template)
+      FactoryBot.create(:template)
+
+      # Preload records
+      _vms = [vm, vm1, vm2, vm_openstack, vm_openstack1, vm_openstack2]
+
+      # Only once for the main query
+      expect(Rbac).to receive(:filtered).exactly(1).times.and_call_original
+      expect(Rbac).to receive(:filtered_object).never
+    end
+
+    it "lists all of the vms" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      get api_vms_url, :params => {:expand => "resources", :attributes => "num_cpu,name"}
+
+      expect(response.parsed_body["subcount"]).to eq 6
+    end
+
+    it "properly filters with Rbac" do
+      # Add tenant permissions
+      tenant = FactoryBot.create(:tenant)
+      role   = FactoryBot.create(:miq_user_role)
+      group  = FactoryBot.create(:miq_group, :tenant => tenant, :miq_user_role => role)
+
+      # Update user permissions
+      @user.update(:miq_groups => [group])
+      @role = role
+
+      # Assign vms to a particular group
+      vm_openstack1.update(:miq_group => group)
+      vm_openstack2.update(:miq_group => group)
+
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      get api_vms_url, :params => {:expand => "resources", :attributes => "num_cpu,name,vendor"}
+
+      expect(response.parsed_body["subcount"]).to eq 2
+      expect_results_to_match_hash("resources",
+                                   [{"vendor" => "openstack"},
+                                    {"vendor" => "openstack"}])
+    end
+  end
+
   context 'Vm edit' do
     let(:new_vms) { FactoryBot.create_list(:vm_openstack, 2) }
 
