@@ -53,7 +53,7 @@ describe "Alerts Definitions API" do
       "id"          => alert_definition.id.to_s,
       "description" => alert_definition.description,
       "guid"        => alert_definition.guid,
-      "expression"  => {"exp" => {"=" => {"field" => "Vm-name", "value" => "foo"}}, "context_type" => nil}
+      "expression"  => {"col_details" => nil, "context_type" => nil, "exp" => {"=" => {"field" => "Vm-name", "value" => "foo"}}, "ruby" => nil}
     )
   end
 
@@ -256,7 +256,7 @@ describe "Alerts Definitions API" do
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to include(
-      "miq_expression" => {"exp" => exp, "context_type" => nil}
+      "miq_expression" => {"col_details" => nil, "context_type" => nil, "exp" => {"=" => {"field" => "Vm-name", "value" => "foo"}}, "ruby" => nil}
     )
   end
 
