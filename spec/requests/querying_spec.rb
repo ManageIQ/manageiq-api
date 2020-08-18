@@ -245,22 +245,26 @@ describe "Querying" do
   describe "Sorting vms by attribute" do
     before { api_basic_authorize collection_action_identifier(:vms, :read, :get) }
 
-    it "supports ascending order" do
-      create_vms_by_name %w(cc aa bb)
+    %w[asc ascending].each do |sort_order|
+      it "orders with sort_order of #{sort_order}" do
+        create_vms_by_name %w[cc aa bb]
 
-      get api_vms_url, :params => { :sort_by => "name", :sort_order => "asc", :expand => "resources" }
+        get api_vms_url, :params => {:sort_by => "name", :sort_order => sort_order, :expand => "resources"}
 
-      expect_query_result(:vms, 3, 3)
-      expect_result_resources_to_match_hash([{"name" => "aa"}, {"name" => "bb"}, {"name" => "cc"}])
+        expect_query_result(:vms, 3, 3)
+        expect_result_resources_to_match_hash([{"name" => "aa"}, {"name" => "bb"}, {"name" => "cc"}])
+      end
     end
 
-    it "supports decending order" do
-      create_vms_by_name %w(cc aa bb)
+    %w[desc descending].each do |sort_order|
+      it "orders with sort_order of #{sort_order}" do
+        create_vms_by_name %w[cc aa bb]
 
-      get api_vms_url, :params => { :sort_by => "name", :sort_order => "desc", :expand => "resources" }
+        get api_vms_url, :params => {:sort_by => "name", :sort_order => sort_order, :expand => "resources"}
 
-      expect_query_result(:vms, 3, 3)
-      expect_result_resources_to_match_hash([{"name" => "cc"}, {"name" => "bb"}, {"name" => "aa"}])
+        expect_query_result(:vms, 3, 3)
+        expect_result_resources_to_match_hash([{"name" => "cc"}, {"name" => "bb"}, {"name" => "aa"}])
+      end
     end
 
     it "supports case insensitive ordering" do
