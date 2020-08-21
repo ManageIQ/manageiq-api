@@ -82,6 +82,48 @@ describe "Vms API" do
                                    [{"vendor" => "openstack"},
                                     {"vendor" => "openstack"}])
     end
+
+    def add_hardware_to_vms
+      [vm, vm1, vm2, vm_openstack, vm_openstack1, vm_openstack2].each do |vm_record|
+        FactoryBot.create(:hardware, :vm_or_template => vm_record, :host => host)
+      end
+    end
+
+    def query_match_regexp(*tables)
+      /SELECT.*FROM\s"(?:#{tables.flatten.join("|")})"/m
+    end
+
+    context "with indirect virtual attribute ('hardware.cpu_sockets')" do
+      before { add_hardware_to_vms }
+
+      it "removes N+1's from the index query for subcollections/virtual_attributes" do
+        api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+        query_match = query_match_regexp("vms", "hardwares")
+
+        expect {
+          get api_vms_url, :params => {
+            :expand     => "resources",
+            :attributes => "hardware.cpu_sockets,name"
+          }
+        }.to make_database_queries(:count => 3, :matching => query_match)
+      end
+    end
+
+    context "with direct virtual attribute ('num_cpus')" do
+      before { add_hardware_to_vms }
+
+      it "removes N+1's from the index query for subcollections/virtual_attributes" do
+        api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+        query_match = query_match_regexp("vms", "hardwares")
+
+        expect {
+          get api_vms_url, :params => {
+            :expand     => "resources",
+            :attributes => "num_cpu,name"
+          }
+        }.to make_database_queries(:count => 3, :matching => query_match)
+      end
+    end
   end
 
   context 'Vm edit' do
