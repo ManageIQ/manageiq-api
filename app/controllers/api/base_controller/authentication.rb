@@ -69,12 +69,8 @@ module Api
       rescue AuthenticationError => e
         api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
-        case auth_mechanism
-        when :jwt, :system, :token, :ui_session, :basic_async
-          render :status => 401, :json => ErrorSerializer.new(:unauthorized, e).serialize(true).to_json
-        when :basic, nil
-          request_http_basic_authentication("Application", ErrorSerializer.new(:unauthorized, e).serialize(true).to_json)
-        end
+        error_message = ErrorSerializer.new(:unauthorized, e).serialize(true).to_json
+        render :status => 401, :json => error_message
         log_api_response
       end
 
