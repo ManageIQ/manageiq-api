@@ -3,7 +3,7 @@ module Api
     module Parameters
       module ResultsController
         def sort_order
-          params['sort_order'] == 'desc' ? :descending : :ascending
+          %w[desc descending].include?(params['sort_order']) ? :descending : :ascending
         end
 
         def param_result_set?
@@ -93,8 +93,7 @@ module Api
         arel = klass.arel_attribute(attr)
         if order
           arel = arel.lower if options.map(&:downcase).include?("ignore_case")
-          arel = arel.desc if order.downcase == "desc"
-          arel = arel.asc if order.downcase == "asc"
+          arel = %w[desc descending].include?(order.downcase) ? arel.desc : arel.asc
         else
           arel = arel.asc
         end
