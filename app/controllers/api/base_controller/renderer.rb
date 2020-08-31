@@ -350,15 +350,19 @@ module Api
       def attr_virtual?(object, attr)
         return false if ID_ATTRS.include?(attr)
         primary = attr_split(attr).first
-        (object.class.respond_to?(:reflect_on_association) && object.class.reflect_on_association(primary)) ||
-          (object.class.respond_to?(:virtual_attribute?) && object.class.virtual_attribute?(primary)) ||
-          (object.class.respond_to?(:virtual_reflection?) && object.class.virtual_reflection?(primary))
+        klass   = object
+        klass   = object.class if object.kind_of?(ActiveRecord::Base)
+        (klass.respond_to?(:reflect_on_association) && klass.reflect_on_association(primary)) ||
+          (klass.respond_to?(:virtual_attribute?) && klass.virtual_attribute?(primary)) ||
+          (klass.respond_to?(:virtual_reflection?) && klass.virtual_reflection?(primary))
       end
 
       def attr_physical?(object, attr)
         return true if ID_ATTRS.include?(attr)
-        (object.class.respond_to?(:has_attribute?) && object.class.has_attribute?(attr)) &&
-          !(object.class.respond_to?(:virtual_attribute?) && object.class.virtual_attribute?(attr))
+        klass = object
+        klass = object.class if object.kind_of?(ActiveRecord::Base)
+        (klass.respond_to?(:has_attribute?) && klass.has_attribute?(attr)) &&
+          !(klass.respond_to?(:virtual_attribute?) && klass.virtual_attribute?(attr))
       end
 
       def attr_split(attr)
