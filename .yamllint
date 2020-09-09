@@ -1,7 +1,7 @@
 ---
 ignore: |
-  /spec/manageiq/**
   /vendor/**
+  /spec/manageiq/**
 
 extends: relaxed
 

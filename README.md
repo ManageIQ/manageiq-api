@@ -1,83 +1,28 @@
 # ManageIQ::Api
 
-ManageIQ::Api is a plugin to be used in the [ManageIQ project][ManageIQ]. It forms
-the public REST API for ManageIQ.
-
-[![Gem Version](https://badge.fury.io/rb/manageiq-api.svg)](http://badge.fury.io/rb/manageiq-api)
 [![Build Status](https://travis-ci.com/ManageIQ/manageiq-api.svg?branch=master)](https://travis-ci.com/ManageIQ/manageiq-api)
-[![Code Climate](https://codeclimate.com/github/ManageIQ/manageiq-api.svg)](https://codeclimate.com/github/ManageIQ/manageiq-api)
-[![Test Coverage](https://codeclimate.com/github/ManageIQ/manageiq-api/badges/coverage.svg)](https://codeclimate.com/github/ManageIQ/manageiq-api/coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5988df15fb80af02a90003ac/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-api/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/5988df15fb80af02a90003ac/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-api/test_coverage)
 [![Security](https://hakiri.io/github/ManageIQ/manageiq-api/master.svg)](https://hakiri.io/github/ManageIQ/manageiq-api/master)
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-## Contributing
+REST API plugin for ManageIQ.
 
-### Prerequisites
+## Development
 
-It is assumed you have met all prerequisites for installing the
-ManageIQ app, as described
-[here](https://github.com/ManageIQ/guides/blob/master/developer_setup.md)
+See the section on plugins in the [ManageIQ Developer Setup](http://manageiq.org/docs/guides/developer_setup/plugins)
 
-### Setup
-
-First, fork/clone the project, ideally in the same directory where you
-store the main [ManageIQ app][ManageIQ]:
-
-```bash
-git clone git@github.com:username/manageiq-api.git
-```
-
-Next, run the setup script:
-
-```bash
-bin/setup
-```
-
-This should be sufficient to meet all development dependencies, and is
-to be run only once the first time you setup the plugin. During
-development, if you need to update the dependencies you can do so by
-running:
-
-```bash
-bin/update
-```
-
-For more details on the development setup for the ManageIQ ecosystem,
-please refer to the [general guide][plugin guide].
-
-
-### Running the tests
-
-To run the entire suite:
-
-```bash
-bundle exec rake
-```
-
-Or, to run an individual test:
-
-```bash
-bundle exec rspec spec/path/to/spec.rb:<line number>
-```
-
-### Development
-
-Generally development is done by pointing your local clone of the
-[ManageIQ app][ManageIQ] to your local branch of the plugin, as
-described in [this section][local gem guide] of the general developer
-setup guide.
-
-### Submitting a pull request
-
-Please read [CONTRIBUTING.md](/CONTRIBUTING.md) for more details on
-creating and submitting a pull request to ManageIQ::Api.
+For quick local setup run `bin/setup`, which will clone the core ManageIQ repository under the *spec* directory and setup necessary config files. If you have already cloned it, you can run `bin/update` to bring the core ManageIQ code up to date.
 
 ## License
 
-See [LICENSE.txt](/LICENSE.txt).
+The gem is available as open source under the terms of the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
+## Contributing
 
-[ManageIQ]: https://github.com/ManageIQ/manageiq
-[plugin guide]: https://github.com/ManageIQ/guides/blob/master/developer_setup/plugins.md
-[local gem guide]: https://github.com/ManageIQ/guides/blob/master/developer_setup/plugins.md#dependency-on-a-local-gem
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request

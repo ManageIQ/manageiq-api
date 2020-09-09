@@ -1,1 +1,2 @@
-require 'manageiq/api'
+require "manageiq/api/engine"
+require "manageiq/api/version"

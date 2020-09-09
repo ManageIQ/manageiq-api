@@ -2,5 +2,5 @@
 --require spec_helper
 --color
 --order random
---exclude-pattern "spec/manageiq/**/*_spec.rb"
 --profile 25
+--exclude-pattern "spec/manageiq/**/*_spec.rb"
