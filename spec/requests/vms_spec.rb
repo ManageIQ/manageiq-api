@@ -83,8 +83,10 @@ describe "Vms API" do
                                     {"vendor" => "openstack"}])
     end
 
-    def add_hardware_to_vms
+    def add_hardware_and_os_to_vms
       [vm, vm1, vm2, vm_openstack, vm_openstack1, vm_openstack2].each do |vm_record|
+        cs = ComputerSystem.create
+        OperatingSystem.create(:name => "linux", :vm_or_template => vm_record, :computer_system => cs)
         FactoryBot.create(:hardware, :vm_or_template => vm_record, :host => host)
       end
     end
@@ -93,8 +95,24 @@ describe "Vms API" do
       /SELECT.*FROM\s"(?:#{tables.flatten.join("|")})"/m
     end
 
+    context "with nested indirect virtual attribute ('operating_system.computer_system.created_at')" do
+      before { add_hardware_and_os_to_vms }
+
+      it "removes N+1's from the index query for subcollections/virtual_attributes" do
+        api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+        query_match = query_match_regexp("vms", "operating_systems", "computer_systems")
+
+        expect {
+          get api_vms_url, :params => {
+            :expand     => "resources",
+            :attributes => "operating_system.computer_system.created_at,name"
+          }
+        }.to make_database_queries(:count => 3, :matching => query_match)
+      end
+    end
+
     context "with indirect virtual attribute ('hardware.cpu_sockets')" do
-      before { add_hardware_to_vms }
+      before { add_hardware_and_os_to_vms }
 
       it "removes N+1's from the index query for subcollections/virtual_attributes" do
         api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
@@ -110,7 +128,7 @@ describe "Vms API" do
     end
 
     context "with direct virtual attribute ('num_cpus')" do
-      before { add_hardware_to_vms }
+      before { add_hardware_and_os_to_vms }
 
       it "removes N+1's from the index query for subcollections/virtual_attributes" do
         api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
