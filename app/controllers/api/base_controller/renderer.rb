@@ -576,18 +576,26 @@ module Api
 
       def determine_include_for_find(klass)
         attrs = virtual_attributes_for(klass) do |type, attr_name, attr_base|
-          next if attr_base.blank?
-          next if virtual_attribute_accessor(type, attr_name)
-          next if Rbac::Filterer::CLASSES_THAT_PARTICIPATE_IN_RBAC.include?(attr_base)
+          if klass.virtual_includes(attr_name) && attr_base.blank?
+            attr_name
+          else
+            next if attr_base.blank?
+            next if virtual_attribute_accessor(type, attr_name)
+            next if Rbac::Filterer::CLASSES_THAT_PARTICIPATE_IN_RBAC.include?(attr_base)
 
-          attr_base
+            attr_base
+          end
         end
 
         # Handle nested relationships and convert to a hash
         if attrs
           attrs.each_with_object({}) do |key, include_for_find|
-            nested = include_for_find
-            key.split(".").each { |k| nested = nested[k] ||= {} }
+            if (virtual_includes = klass.virtual_includes(key))
+              ActiveRecord::Base.merge_includes(include_for_find, virtual_includes)
+            else
+              nested = include_for_find
+              key.split(".").each { |k| nested = nested[k] ||= {} }
+            end
           end
         end
       end

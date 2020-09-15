@@ -111,6 +111,83 @@ describe "Vms API" do
       end
     end
 
+    context "with direct virtual column with :uses => Array ('os_image_name')" do
+      before { add_hardware_and_os_to_vms }
+
+      it "removes N+1's from the index query for subcollections/virtual_attributes" do
+        api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+        query_match = query_match_regexp("vms", "hardwares", "operating_systems")
+
+        expect {
+          get api_vms_url, :params => {
+            :expand     => "resources",
+            :attributes => "os_image_name,name"
+          }
+        }.to make_database_queries(:count => 3, :matching => query_match)
+      end
+    end
+
+    context "with direct virtual column with :uses => String/Symbol ('v_owning_cluster')" do
+      let!(:vm3) { FactoryBot.create(:vm_vmware, :ems_id => ems.id, :ems_cluster => FactoryBot.create(:ems_cluster)) }
+
+      it "removes N+1's from the index query for subcollections/virtual_attributes" do
+        api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+        query_match = query_match_regexp("vms", "ems_clusters")
+
+        expect {
+          get api_vms_url, :params => {
+            :expand     => "resources",
+            :attributes => "v_owning_cluster,name"
+          }
+        }.to make_database_queries(:count => 3, :matching => query_match)
+      end
+    end
+
+    context "with direct virtual column with :uses => Hash ('has_rdm_disk')" do
+      before do
+        vm3      = FactoryBot.create(:vm_vmware, :name => "myvmware", :ems_id => ems.id)
+        hardware = FactoryBot.create(:hardware, :vm_or_template => vm3, :host => host)
+        Disk.create(:hardware => hardware)
+        Disk.create(:hardware => hardware, :disk_type => "rdm")
+      end
+
+      it "removes N+1's from the index query for subcollections/virtual_attributes" do
+        api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+        query_match = query_match_regexp("vms", "hardwares", "disks")
+
+        expect {
+          get api_vms_url, :params => {
+            :expand     => "resources",
+            :attributes => "has_rdm_disk,name"
+          }
+          # ActiveRecord does a few extra queries when doing this relation + includes
+        }.to make_database_queries(:count => 5, :matching => query_match)
+      end
+    end
+
+    context "with multiple direct virtual columns" do
+      before do
+        add_hardware_and_os_to_vms
+
+        vm3      = FactoryBot.create(:vm_vmware, :name => "myvmware", :ems_id => ems.id)
+        hardware = FactoryBot.create(:hardware, :vm_or_template => vm3, :host => host)
+        Disk.create(:hardware => hardware)
+        Disk.create(:hardware => hardware, :disk_type => "rdm")
+      end
+
+      it "removes N+1's from the index query for subcollections/virtual_attributes" do
+        api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+        query_match = query_match_regexp("vms", "operating_systems", "computer_systems", "hardwares", "disks")
+
+        expect {
+          get api_vms_url, :params => {
+            :expand     => "resources",
+            :attributes => "os_image_name,has_rdm_disk,lans,name"
+          }
+        }.to make_database_queries(:count => 5, :matching => query_match)
+      end
+    end
+
     context "with indirect virtual attribute ('hardware.cpu_sockets')" do
       before { add_hardware_and_os_to_vms }
 
