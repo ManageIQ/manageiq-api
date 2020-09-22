@@ -48,13 +48,14 @@ module Api
     def index
       klass = collection_class(@req.subject)
       res, subquery_count = collection_search(@req.subcollection?, @req.subject, klass)
+      res_count = (res.kind_of?(ActiveRecord::Relation) ? res.except(:select) : res).count
       opts = {
         :name                  => @req.subject,
         :is_subcollection      => @req.subcollection?,
         :expand_actions        => true,
         :expand_custom_actions => false,
         :expand_resources      => @req.expand?(:resources),
-        :counts                => Api::QueryCounts.new(klass.count, res.count, subquery_count)
+        :counts                => Api::QueryCounts.new(klass.count, res_count, subquery_count)
       }
       render_collection(@req.subject, res, opts)
     end

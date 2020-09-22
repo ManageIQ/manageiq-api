@@ -185,6 +185,8 @@ module Api
         options[:filter] = miq_expression if miq_expression
         options[:offset] = params['offset'] if params['offset']
         options[:limit] = params['limit'] if params['limit']
+        options[:extra_cols] = determine_extra_cols(klass)
+        options[:include_for_find] = determine_include_for_find(klass)
 
         filter_results(miq_expression, res, options)
       end
@@ -350,15 +352,19 @@ module Api
       def attr_virtual?(object, attr)
         return false if ID_ATTRS.include?(attr)
         primary = attr_split(attr).first
-        (object.class.respond_to?(:reflect_on_association) && object.class.reflect_on_association(primary)) ||
-          (object.class.respond_to?(:virtual_attribute?) && object.class.virtual_attribute?(primary)) ||
-          (object.class.respond_to?(:virtual_reflection?) && object.class.virtual_reflection?(primary))
+        klass   = object
+        klass   = object.class if object.kind_of?(ActiveRecord::Base)
+        (klass.respond_to?(:reflect_on_association) && klass.reflect_on_association(primary)) ||
+          (klass.respond_to?(:virtual_attribute?) && klass.virtual_attribute?(primary)) ||
+          (klass.respond_to?(:virtual_reflection?) && klass.virtual_reflection?(primary))
       end
 
       def attr_physical?(object, attr)
         return true if ID_ATTRS.include?(attr)
-        (object.class.respond_to?(:has_attribute?) && object.class.has_attribute?(attr)) &&
-          !(object.class.respond_to?(:virtual_attribute?) && object.class.virtual_attribute?(attr))
+        klass = object
+        klass = object.class if object.kind_of?(ActiveRecord::Base)
+        (klass.respond_to?(:has_attribute?) && klass.has_attribute?(attr)) &&
+          !(klass.respond_to?(:virtual_attribute?) && klass.virtual_attribute?(attr))
       end
 
       def attr_split(attr)
@@ -539,6 +545,69 @@ module Api
       def render_options(resource, data = {})
         klass = collection_class(resource)
         render :json => OptionsSerializer.new(klass, data).serialize
+      end
+
+      # This is a helper method used by both .determine_include_for_find and
+      # .determine_extra_cols to collect and filter virtual_attributes for the
+      # :include_for_find and :extra_cols options that are passed to Rbac. The
+      # intent is to reduce a large amount of shared code between those two
+      # shared methods by combining them into this one.
+      #
+      # The required block used by each of aforementioned methods is used to do
+      # custom filtering that pertains to each of those methods.
+      #
+      def virtual_attributes_for(klass)
+        return nil unless klass.respond_to?(:reflect_on_association)
+
+        type    = @req.subject
+        results = []
+
+        validate_attr_selection(klass).last.each do |vattr|
+          next if vattr == "href_slug"
+
+          attr_name, attr_base = split_virtual_attribute(vattr)
+          filtered_attr        = yield type, attr_name, attr_base
+
+          results << filtered_attr if filtered_attr
+        end
+
+        results.empty? ? nil : results
+      end
+
+      def determine_include_for_find(klass)
+        attrs = virtual_attributes_for(klass) do |type, attr_name, attr_base|
+          if klass.virtual_includes(attr_name) && attr_base.blank?
+            attr_name
+          else
+            next if attr_base.blank?
+            next if virtual_attribute_accessor(type, attr_name)
+            next if Rbac::Filterer::CLASSES_THAT_PARTICIPATE_IN_RBAC.include?(attr_base)
+
+            attr_base
+          end
+        end
+
+        # Handle nested relationships and convert to a hash
+        if attrs
+          attrs.each_with_object({}) do |key, include_for_find|
+            if (virtual_includes = klass.virtual_includes(key))
+              ActiveRecord::Base.merge_includes(include_for_find, virtual_includes)
+            else
+              nested = include_for_find
+              key.split(".").each { |k| nested = nested[k] ||= {} }
+            end
+          end
+        end
+      end
+
+      def determine_extra_cols(klass)
+        virtual_attributes_for(klass) do |type, attr_name, attr_base|
+          return if attr_base.present?
+          return if virtual_attribute_accessor(type, attr_name)
+          return unless klass.attribute_supported_by_sql?(attr_name)
+
+          attr_name.to_sym
+        end
       end
     end
   end
