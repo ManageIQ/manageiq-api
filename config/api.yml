@@ -750,6 +750,8 @@
         :identifier: cloud_volume_show_list
       - :name: delete
         :identifier: cloud_volume_delete
+      - :name: delete
+        :identifier: cloud_volume_safe_delete
     :resource_actions:
       :get:
       - :name: read
@@ -757,6 +759,8 @@
       :post:
       - :name: delete
         :identifier: cloud_volume_delete
+      - :name: delete
+        :identifier: cloud_volume_safe_delete
       :delete:
       - :name: delete
         :identifier: cloud_volume_delete
