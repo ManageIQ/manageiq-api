@@ -108,6 +108,29 @@ describe "Vms API" do
             :attributes => "operating_system.computer_system.created_at,name"
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including(
+              "name"             => vm.name,
+              "operating_system" => {
+                "computer_system" => {
+                  "created_at" => vm.operating_system.computer_system.created_at.to_formatted_s(:iso8601)
+                }
+              }
+            ),
+            a_hash_including(
+              "name"             => vm1.name,
+              "operating_system" => {
+                "computer_system" => {
+                  "created_at" => vm1.operating_system.computer_system.created_at.to_formatted_s(:iso8601)
+                }
+              }
+            )
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -124,6 +147,15 @@ describe "Vms API" do
             :attributes => "os_image_name,name"
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "os_image_name" => vm.os_image_name),
+            a_hash_including("name" => vm1.name, "os_image_name" => vm1.os_image_name)
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -140,6 +172,15 @@ describe "Vms API" do
             :attributes => "v_owning_cluster,name"
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "v_owning_cluster" => vm.v_owning_cluster),
+            a_hash_including("name" => vm1.name, "v_owning_cluster" => vm1.v_owning_cluster)
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -162,6 +203,15 @@ describe "Vms API" do
           }
           # ActiveRecord does a few extra queries when doing this relation + includes
         }.to make_database_queries(:count => 5, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "has_rdm_disk" => vm.has_rdm_disk),
+            a_hash_including("name" => vm1.name, "has_rdm_disk" => vm1.has_rdm_disk)
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -185,6 +235,15 @@ describe "Vms API" do
             :attributes => "os_image_name,has_rdm_disk,lans,name"
           }
         }.to make_database_queries(:count => 5, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "os_image_name" => vm.os_image_name, "has_rdm_disk" => vm.has_rdm_disk, "lans" => vm.lans),
+            a_hash_including("name" => vm1.name, "os_image_name" => vm1.os_image_name, "has_rdm_disk" => vm1.has_rdm_disk, "lans" => vm1.lans)
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -201,6 +260,15 @@ describe "Vms API" do
             :attributes => "hardware.cpu_sockets,name"
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "hardware" => {"cpu_sockets" => vm.hardware.cpu_sockets}),
+            a_hash_including("name" => vm1.name, "hardware" => {"cpu_sockets" => vm1.hardware.cpu_sockets})
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -217,6 +285,15 @@ describe "Vms API" do
             :attributes => "num_cpu,name"
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "num_cpu" => vm.num_cpu),
+            a_hash_including("name" => vm1.name, "num_cpu" => vm1.num_cpu)
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
   end
