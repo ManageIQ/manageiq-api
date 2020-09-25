@@ -4553,7 +4553,7 @@
     - :collection
     :subcollections:
     - :settings
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: Zone
     :collection_actions:
       :get:
@@ -4577,6 +4577,12 @@
         :identifier: zone_edit
       - :name: delete
         :identifier: zone_delete
+      :patch:
+      - :name: edit
+        :identifier: zone_edit
+      :put:
+      - :name: edit
+        :identifier: zone_edit
       :delete:
       - :name: delete
         :identifier: zone_delete
