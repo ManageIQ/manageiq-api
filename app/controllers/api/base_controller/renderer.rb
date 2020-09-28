@@ -574,6 +574,13 @@ module Api
         results.empty? ? nil : results
       end
 
+      def attr_base_uses_rbac?(attr_base)
+        attr_base.split(".").any? do |relation|
+          relation_class = relation.singularize.classify
+          Rbac::Filterer::CLASSES_THAT_PARTICIPATE_IN_RBAC.include?(relation_class)
+        end
+      end
+
       def determine_include_for_find(klass)
         attrs = virtual_attributes_for(klass) do |type, attr_name, attr_base|
           if klass.virtual_includes(attr_name) && attr_base.blank?
@@ -581,7 +588,7 @@ module Api
           else
             next if attr_base.blank?
             next if virtual_attribute_accessor(type, attr_name)
-            next if Rbac::Filterer::CLASSES_THAT_PARTICIPATE_IN_RBAC.include?(attr_base)
+            next if attr_base_uses_rbac?(attr_base)
 
             attr_base
           end
