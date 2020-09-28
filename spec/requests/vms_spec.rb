@@ -28,6 +28,18 @@ describe "Vms API" do
     vms.each { |vm| vm.update!(:raw_power_state => state) }
   end
 
+  def add_hardware_and_os_to_vms
+    [vm, vm1, vm2, vm_openstack, vm_openstack1, vm_openstack2].each do |vm_record|
+      cs = ComputerSystem.create
+      OperatingSystem.create(:name => "linux", :vm_or_template => vm_record, :computer_system => cs)
+      FactoryBot.create(:hardware, :vm_or_template => vm_record, :host => host)
+    end
+  end
+
+  def query_match_regexp(*tables)
+    /SELECT.*FROM\s"(?:#{tables.flatten.join("|")})"/m
+  end
+
   context 'href_slug' do
     it 'returns the correct value for cloud instances' do
       vm_cloud = FactoryBot.create(:vm_amazon)
@@ -83,18 +95,6 @@ describe "Vms API" do
                                     {"vendor" => "openstack"}])
     end
 
-    def add_hardware_and_os_to_vms
-      [vm, vm1, vm2, vm_openstack, vm_openstack1, vm_openstack2].each do |vm_record|
-        cs = ComputerSystem.create
-        OperatingSystem.create(:name => "linux", :vm_or_template => vm_record, :computer_system => cs)
-        FactoryBot.create(:hardware, :vm_or_template => vm_record, :host => host)
-      end
-    end
-
-    def query_match_regexp(*tables)
-      /SELECT.*FROM\s"(?:#{tables.flatten.join("|")})"/m
-    end
-
     context "with nested indirect virtual attribute ('operating_system.computer_system.created_at')" do
       before { add_hardware_and_os_to_vms }
 
@@ -108,6 +108,29 @@ describe "Vms API" do
             :attributes => "operating_system.computer_system.created_at,name"
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including(
+              "name"             => vm.name,
+              "operating_system" => {
+                "computer_system" => {
+                  "created_at" => vm.operating_system.computer_system.created_at.to_formatted_s(:iso8601)
+                }
+              }
+            ),
+            a_hash_including(
+              "name"             => vm1.name,
+              "operating_system" => {
+                "computer_system" => {
+                  "created_at" => vm1.operating_system.computer_system.created_at.to_formatted_s(:iso8601)
+                }
+              }
+            )
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -124,6 +147,15 @@ describe "Vms API" do
             :attributes => "os_image_name,name"
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "os_image_name" => vm.os_image_name),
+            a_hash_including("name" => vm1.name, "os_image_name" => vm1.os_image_name)
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -140,6 +172,15 @@ describe "Vms API" do
             :attributes => "v_owning_cluster,name"
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "v_owning_cluster" => vm.v_owning_cluster),
+            a_hash_including("name" => vm1.name, "v_owning_cluster" => vm1.v_owning_cluster)
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -162,6 +203,15 @@ describe "Vms API" do
           }
           # ActiveRecord does a few extra queries when doing this relation + includes
         }.to make_database_queries(:count => 5, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "has_rdm_disk" => vm.has_rdm_disk),
+            a_hash_including("name" => vm1.name, "has_rdm_disk" => vm1.has_rdm_disk)
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -185,6 +235,15 @@ describe "Vms API" do
             :attributes => "os_image_name,has_rdm_disk,lans,name"
           }
         }.to make_database_queries(:count => 5, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "os_image_name" => vm.os_image_name, "has_rdm_disk" => vm.has_rdm_disk, "lans" => vm.lans),
+            a_hash_including("name" => vm1.name, "os_image_name" => vm1.os_image_name, "has_rdm_disk" => vm1.has_rdm_disk, "lans" => vm1.lans)
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -201,6 +260,15 @@ describe "Vms API" do
             :attributes => "hardware.cpu_sockets,name"
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "hardware" => {"cpu_sockets" => vm.hardware.cpu_sockets}),
+            a_hash_including("name" => vm1.name, "hardware" => {"cpu_sockets" => vm1.hardware.cpu_sockets})
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
     end
 
@@ -217,7 +285,63 @@ describe "Vms API" do
             :attributes => "num_cpu,name"
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "num_cpu" => vm.num_cpu),
+            a_hash_including("name" => vm1.name, "num_cpu" => vm1.num_cpu)
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
       end
+    end
+  end
+
+  context "Vm index with nested indirect virtual attribute that participates in Rbac ('hardware.host.name')" do
+    # Can't have `expect(Rbac).to receive(:filtered_object).never` in this block
+    before do
+      # Preload records
+      _vms = [vm, vm1, vm2, vm_openstack, vm_openstack1, vm_openstack2]
+
+      add_hardware_and_os_to_vms
+
+      host.update_attributes(:ext_management_system => ems)
+    end
+
+    it "removes N+1's from the index query for subcollections/virtual_attributes" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      query_match = query_match_regexp("vms", "hardwares", "hosts")
+
+      expect {
+        get api_vms_url, :params => {
+          :expand     => "resources",
+          :attributes => "hardware.host.name,name"
+        }
+      }.to make_database_queries(:count => 21, :matching => query_match)
+
+      expected = {
+        "resources" => a_collection_including(
+          a_hash_including(
+            "name"     => vm.name,
+            "hardware" => {
+              "host" => {
+                "name" => vm.hardware.host.name
+              }
+            }
+          ),
+          a_hash_including(
+            "name"     => vm1.name,
+            "hardware" => {
+              "host" => {
+                "name" => vm1.hardware.host.name
+              }
+            }
+          )
+        )
+      }
+
+      expect(response.parsed_body).to include(expected)
     end
   end
 
