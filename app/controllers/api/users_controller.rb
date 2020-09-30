@@ -62,7 +62,33 @@ module Api
       raise BadRequestError, "Cannot set current_group - #{err}"
     end
 
+    def revoke_sessions_collection(type, data)
+      revoke_sessions_resource(type, current_user.id, data)
+    end
+
+    def revoke_sessions_resource(type, id, _data)
+      api_action(type, id) do |klass|
+        user = target_user(id, type, klass)
+        api_log_info("Revoking all sessions of user #{user.userid}")
+
+        user.revoke_sessions
+        action_result(true, "All sessions revoked successfully for user #{user.userid}.")
+      rescue => err
+        action_result(false, err.to_s)
+      end
+    end
+
     private
+
+    def target_user(id, type, klass)
+      if id == current_user.id
+        current_user
+      elsif current_user.role_allows?(:identifier => 'revoke_user_sessions')
+        resource_search(id, type, klass)
+      else
+        raise ForbiddenError, "The user is not authorized for this task or item."
+      end
+    end
 
     def update_target_is_api_user?
       User.current_user.id == @req.collection_id.to_i

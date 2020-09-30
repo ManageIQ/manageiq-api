@@ -4238,6 +4238,7 @@
         :identifier: rbac_user_tags_edit
       - :name: unassign_tags
         :identifier: rbac_user_tags_edit
+      - :name: revoke_sessions
     :resource_actions:
       :get:
       - :name: read
@@ -4247,6 +4248,7 @@
         :identifier: rbac_user_edit
       - :name: delete
         :identifier: rbac_user_delete
+      - :name: revoke_sessions
       - :name: set_current_group
       :delete:
       - :name: delete
