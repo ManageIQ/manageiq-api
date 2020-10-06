@@ -21,11 +21,13 @@ module Api
         end
         validate_type(klass, data['type']) if data['type']
         resource = klass.new(data)
-        if resource.save
-          add_subcollection_data_to_resource(resource, type, subcollection_data)
-          resource
-        else
-          raise BadRequestError, "Failed to add a new #{type} resource - #{resource.errors.full_messages.join(', ')}"
+        klass.transaction do
+          if resource.save
+            add_subcollection_data_to_resource(resource, type, subcollection_data)
+            resource
+          else
+            raise BadRequestError, "Failed to add a new #{type} resource - #{resource.errors.full_messages.join(', ')}"
+          end
         end
       end
 
