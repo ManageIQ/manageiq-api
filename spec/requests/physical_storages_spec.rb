@@ -1,4 +1,26 @@
 describe "Physical Storages API" do
+  context "POST /api/physical_storages" do
+    it "creates new storage" do
+      api_basic_authorize(collection_action_identifier(:physical_storages, :create))
+      provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+      request = {
+        "action"   => "create",
+        "resource" => {
+          "ems_id"                     => provider.id,
+          "name"                       => "test_storage",
+          "physical_storage_family_id" => "1",
+          "management_ip"              => "1.1.1.1",
+          "user"                       => "user",
+          "password"                   => "password"
+        }
+      }
+
+      post(api_physical_storages_url, :params => request)
+
+      expect_multiple_action_result(1, :success => true, :message => "Creating Physical Storage test_storage for Provider: #{provider.name}", :task => true)
+    end
+  end
+
   context "GET /api/physical_storages" do
     it "returns all physical_storages" do
       physical_storage = FactoryBot.create(:physical_storage)
