@@ -9,5 +9,19 @@ module Api
         action_result(true, "Deleting Cloud Volume #{cloud_volume.name}", :task_id => task_id)
       end
     end
+
+    def options
+      return super unless params[:ems_id]
+
+      ems = ExtManagementSystem.find(params[:ems_id])
+
+      raise BadRequestError, "No CloudVolume support for - #{klass}" unless defined?(ems.class::CloudVolume)
+
+      klass = ems.class::CloudVolume
+
+      raise BadRequestError, "No DDF specified for - #{klass}" unless klass.respond_to?(:params_for_create)
+
+      render_options(:cloud_volumes, :form_schema => klass.params_for_create(ems))
+    end
   end
 end
