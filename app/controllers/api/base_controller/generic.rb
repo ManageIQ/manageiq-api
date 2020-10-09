@@ -46,9 +46,13 @@ module Api
 
       def edit_resource(type, id, data)
         klass = collection_class(type)
+        sc_data = subcollection_data(type, data)
         resource = resource_search(id, type, klass)
-        resource.update!(data.except(*ID_ATTRS))
-        resource
+        klass.transaction do
+          resource.update!(data.except(*ID_ATTRS))
+          add_subcollection_data_to_resource(resource, type, sc_data)
+          resource
+        end
       end
 
       def delete_resource(type, id = nil, _data = nil)
