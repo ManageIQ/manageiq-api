@@ -3,6 +3,7 @@ module Api
     include Subcollections::Authentications
 
     INVALID_ZONES_ATTRS = ID_ATTRS + %w[created_on updated_on].freeze
+    VALID_AUTH_TYPES    = %w[windows_domain].freeze
 
     # Edit an existing zone. Certain fields are meant for internal use only
     # and may not be edited. Attempting to edit one of the forbidden fields
@@ -29,6 +30,10 @@ module Api
       return nil unless data
 
       data.keys.select { |key| INVALID_ZONES_ATTRS.include?(key) }.compact.join(", ")
+    end
+
+    def valid_authentication_types
+      VALID_AUTH_TYPES
     end
   end
 end

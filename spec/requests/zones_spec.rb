@@ -25,6 +25,42 @@ RSpec.describe "Zones" do
   end
 
   context "edit", :edit do
+    it "can create zone authentications" do
+      api_basic_authorize action_identifier(:zones, :edit)
+
+      zone   = FactoryBot.create(:zone, :description => "Current Zone description")
+      params = gen_request(:edit,
+                           "description"     => "Updated Zone Description",
+                           "authentications" => [{"href" => "/", "windows_domain" => {"userid" => "foo", "password" => "bar"}}])
+
+      expect(zone.authentications).to eq([]) # sanity check
+
+      post api_zone_url(nil, zone), :params => params
+      zone.reload
+
+      expect(zone.description).to                    eq("Updated Zone Description")
+      expect(zone.authentications.first.userid).to   eq("foo")
+      expect(zone.authentications.first.password).to eq("bar")
+    end
+
+    it "rejects authentication if not of a valid authentication type" do
+      api_basic_authorize action_identifier(:zones, :edit)
+
+      zone   = FactoryBot.create(:zone, :description => "Current Zone description")
+      params = gen_request(:edit,
+                           "description"     => "Updated Zone Description",
+                           "authentications" => [{"href" => "/", "unix_domain" => {"userid" => "foo", "password" => "bar"}}])
+
+      expect(zone.authentications).to eq([]) # sanity check
+
+      post api_zone_url(nil, zone), :params => params
+      zone.reload
+
+      expect(response).to                   have_http_status(:bad_request)
+      expect(zone.description).to           eq("Current Zone description")
+      expect(zone.authentications.count).to eq(0)
+    end
+
     it "will fail if you try to edit invalid fields" do
       api_basic_authorize action_identifier(:zones, :edit)
 
