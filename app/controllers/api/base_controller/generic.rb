@@ -13,17 +13,12 @@ module Api
       def add_resource(type, _id, data)
         assert_id_not_specified(data, "#{type} resource")
         klass = collection_class(type)
-        subcollection_data = collection_config.subcollections(type).each_with_object({}) do |sc, hash|
-          if data.key?(sc.to_s)
-            hash[sc] = data[sc.to_s]
-            data.delete(sc.to_s)
-          end
-        end
+        sc_data = subcollection_data(type, data)
         validate_type(klass, data['type']) if data['type']
         resource = klass.new(data)
         klass.transaction do
           if resource.save
-            add_subcollection_data_to_resource(resource, type, subcollection_data)
+            add_subcollection_data_to_resource(resource, type, sc_data)
             resource
           else
             raise BadRequestError, "Failed to add a new #{type} resource - #{resource.errors.full_messages.join(', ')}"
@@ -152,6 +147,15 @@ module Api
         klass.descendant_get(type)
       rescue ArgumentError => err
         raise BadRequestError, "Invalid type #{type} specified - #{err}"
+      end
+
+      def subcollection_data(type, data)
+        collection_config.subcollections(type).each_with_object({}) do |sc, hash|
+          if data.key?(sc.to_s)
+            hash[sc] = data[sc.to_s]
+            data.delete(sc.to_s)
+          end
+        end
       end
 
       def add_subcollection_data_to_resource(resource, type, subcollection_data)
