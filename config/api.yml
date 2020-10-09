@@ -275,6 +275,8 @@
       :post:
       - :name: create
         :identifier: embedded_automation_manager_credentials_add
+      - :name: edit
+        :identifier: embedded_automation_manager_credentials_edit
   :automate:
     :description: Automate
     :options:
@@ -4800,6 +4802,7 @@
     - :collection
     :subcollections:
     - :settings
+    - :authentications
     :verbs: *gpppd
     :klass: Zone
     :collection_actions:
