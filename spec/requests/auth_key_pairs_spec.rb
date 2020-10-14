@@ -59,15 +59,50 @@ RSpec.describe "Auth Key Pairs API" do
   end
 
   describe 'POST /api/auth_key_pairs' do
-    it 'can create auth_key_pairs' do
-      api_basic_authorize collection_action_identifier(:auth_key_pairs, :create)
+    context 'auth_key_pair creation is supported' do
+      it 'can create auth_key_pairs' do
+        provider = FactoryBot.create(:ems_cloud, :name => 'foo')
+        api_basic_authorize collection_action_identifier(:auth_key_pairs, :create)
 
-      post(api_auth_key_pairs_url, :params => {'name' => 'foo'})
+        post(api_auth_key_pairs_url, :params => {'name' => 'foo', 'ems_id' => provider.id})
 
-      expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:ok)
 
-      auth_key_pair = ManageIQ::Providers::CloudManager::AuthKeyPair.find(response.parsed_body['results'].first["id"])
-      expect(auth_key_pair.name).to eq('foo')
+        expected = {
+          "results" => [
+            a_hash_including(
+              "success"   => true,
+              "message"   => a_string_matching(/Creating Cloud Key Pair/),
+              "task_id"   => anything,
+              "task_href" => a_string_matching(api_tasks_url)
+            )
+          ]
+        }
+
+        expect(response.parsed_body).to include(expected)
+      end
+    end
+
+    context 'cannot create auth_key_pairs' do
+      it 'raises an error' do
+        provider = FactoryBot.create(:ems_google, :name => 'foo')
+        api_basic_authorize collection_action_identifier(:auth_key_pairs, :create)
+
+        post(api_auth_key_pairs_url, :params => {'name' => 'foo', 'ems_id' => provider.id})
+
+        expect(response).to have_http_status(:ok)
+
+        expected = {
+          "results" => [
+            a_hash_including(
+              "success" => false,
+              "message" => a_string_matching('not available')
+            )
+          ]
+        }
+
+        expect(response.parsed_body).to include(expected)
+      end
     end
 
     it 'can delete auth_key_pairs' do
