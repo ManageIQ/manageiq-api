@@ -20,6 +20,26 @@ module Api
       action_result(false, err.to_s)
     end
 
+    def delete_resource(type, id, _data = nil)
+      raise BadRequestError, "Must specify an id for deleting a #{type} resource" if id.blank?
+
+      api_action(type, id) do |klass|
+        begin
+          physical_storage = resource_search(id, type, klass)
+          unless physical_storage.supports?(:delete)
+            error_msg = "#{physical_storage.type} provider type does not support deleting. #{physical_storage.name} could not be deleted."
+            raise error_msg
+          end
+          msg = "Detaching #{physical_storage_ident(physical_storage)}"
+          api_log_info(msg)
+          task_id = physical_storage.delete_physical_storage_queue(User.current_user)
+          action_result(true, msg, :task_id => task_id)
+        rescue => err
+          action_result(false, err.to_s)
+        end
+      end
+    end
+
     private
 
     def ensure_resource_exists(type, id)
