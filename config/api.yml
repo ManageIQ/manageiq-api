@@ -531,7 +531,7 @@
     - :collection
     - :subcollection
     - :custom_actions
-    :verbs: *gp
+    :verbs: *gpppd
     :klass: CloudNetwork
     :subcollections:
     - :tags
@@ -548,6 +548,15 @@
       :get:
       - :name: read
         :identifier: cloud_network_show
+      :patch:
+      - :name: edit
+        :identifier: cloud_network_edit
+      :put:
+      - :name: edit
+        :identifier: cloud_network_edit
+      :delete:
+      - :name: delete
+        :identifier: cloud_network_delete
     :subcollection_actions:
       :get:
       - :name: read
@@ -563,6 +572,15 @@
       :get:
       - :name: read
         :identifier: cloud_network_show
+      :patch:
+      - :name: edit
+        :identifier: cloud_network_edit
+      :put:
+      - :name: edit
+        :identifier: cloud_network_edit
+      :delete:
+      - :name: delete
+        :identifier: cloud_network_delete
     :tags_subcollection_actions:
       :post:
       - :name: assign
