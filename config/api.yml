@@ -41,7 +41,7 @@
     :identifier: action
     :options:
     - :collection
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: MiqAction
     :collection_actions:
       :get:
@@ -56,6 +56,9 @@
         :identifier: action_edit
       - :name: delete
         :identifier: action_delete
+      :delete:
+      - :name: delete
+        :identifier: action_delete
     :resource_actions:
       :get:
       - :name: read
@@ -65,6 +68,12 @@
         :identifier: action_edit
       - :name: delete
         :identifier: action_delete
+      :patch:
+      - :name: edit
+        :identifier: action_edit
+      :put:
+      - :name: edit
+        :identifier: action_edit
       :delete:
       - :name: delete
         :identifier: action_delete
