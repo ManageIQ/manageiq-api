@@ -613,4 +613,161 @@ RSpec.describe "users API" do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  context "Revoking Sessions" do
+    %w[cache sql memory].each do |session_store|
+      before do
+        ::Settings.server.session_store = session_store
+      end
+
+      it "revokes all own sessions of authenticated user with #{session_store}" do
+        api_basic_authorize
+
+        FactoryBot.create(:session, :user_id => @user.id)
+        expect(Session.where(:user_id => @user.id).count).to eq(1)
+
+        TokenStore.token_caches
+
+        ts = TokenStore.acquire("api", 100)
+
+        ts.create_user_token("my_token", {:userid => @user.userid, :expires_on => Time.zone.now + 100.days}, {:expires_in => 100})
+
+        expect(ts.read("my_token")).not_to be_nil
+
+        if ::Settings.server.session_store == "sql"
+          expect(ts.read("my_token")[:userid]).to eq(@user.userid)
+        else
+          expect(ts.read("tokens_for_#{@user.userid}")).not_to be_nil
+        end
+
+        ts.create_user_token("his_token", {:userid => user1.userid, :expires_on => Time.zone.now + 100.days}, {:expires_in => 100})
+        expect(ts.read("his_token")).not_to be_nil
+
+        if ::Settings.server.session_store == "sql"
+          expect(ts.read("my_token")[:userid]).to eq(@user.userid)
+        else
+          expect(ts.read("tokens_for_#{@user.userid}")).not_to be_nil
+        end
+
+        post(api_users_url, :params => {'action' => "revoke_sessions"})
+
+        expect(Session.where(:user_id => @user.id).count).to eq(0)
+
+        expect(response).to have_http_status(:ok)
+        expect(ts.read("my_token")).to be_nil
+
+        unless ::Settings.server.session_store == "sql"
+          expect(ts.read("tokens_for_#{@user.userid}")).to be_nil
+        end
+
+        expect(ts.read("his_token")).not_to be_nil
+
+        unless ::Settings.server.session_store == "sql"
+          expect(ts.read("tokens_for_#{user1.userid}")).not_to be_nil
+        end
+      end
+
+      context "target user is other than authenticated user with #{session_store}" do
+        it "revokes sessions of resource user" do
+          api_basic_authorize :revoke_user_sessions
+          user1.miq_groups << @user.miq_groups.first
+          user1.save
+
+          post(api_user_url(nil, user1), :params => {'action' => "revoke_sessions"})
+
+          expect(response).to have_http_status(:ok)
+
+          expect(response.parsed_body["success"]).to be_truthy
+          expect(response.parsed_body["message"]).to eq("All sessions revoked successfully for user #{user1.userid}.")
+        end
+
+        it "doesn't allow to revoke resource user sessions when authenticated user doesn't have access to resource user due to RBAC" do
+          api_basic_authorize :revoke_user_sessions
+
+          post(api_user_url(nil, user_admin), :params => {'action' => "revoke_sessions"})
+
+          expect(response.parsed_body["success"]).to be_falsey
+          expect(response.parsed_body["message"]).to eq("Access to the resource users/#{user_admin.id} is forbidden")
+        end
+
+        it "doesn't allow to revoke resource user sessions when authenticated user doesn't have access to resource user due to missing entitlement" do
+          api_basic_authorize
+          user1.miq_groups << @user.miq_groups.first
+          user1.save
+
+          post(api_user_url(nil, user1), :params => {'action' => "revoke_sessions"})
+
+          expect(response.parsed_body["success"]).to be_falsey
+          expect(response.parsed_body["message"]).to eq("The user is not authorized for this task or item.")
+        end
+
+        let(:user_admin) do
+          User.all.detect(&:super_admin_user?) || FactoryBot.create(:user_admin, :userid => "admin")
+        end
+
+        it "does allow to revoke resource user sessions when authenticated user is super_admin" do
+          api_basic_authorize
+          @user = user_admin
+          User.current_user = user_admin
+          allow(User).to receive(:current_user).and_return(user_admin)
+
+          post(api_user_url(nil, user1), :params => {'action' => "revoke_sessions"})
+
+          expect(response.parsed_body["success"]).to be_truthy
+          expect(response.parsed_body["message"]).to eq("All sessions revoked successfully for user #{user1.userid}.")
+        end
+
+        let!(:user3) { FactoryBot.create(:user, :userid => "userX") }
+
+        let!(:resource_parameters) { [{"id" => user3.id.to_s}, {"id" => user1.id.to_s}, {"foo" => "bar"}, {"id" => "999_999"}] }
+
+        let(:expected_result_user3) do
+          {
+            "success" => false,
+            "message" => "Access to the resource users/#{user3.id} is forbidden",
+            "href"    => "http://www.example.com/api/users/#{user3.id}"
+          }
+        end
+
+        let(:expected_result_user1) do
+          {
+            "success" => true,
+            "message" => "All sessions revoked successfully for user #{user1.userid}.",
+            "href"    => "http://www.example.com/api/users/#{user1.id}"
+          }
+        end
+
+        let(:expected_result_invalid_id) do
+          {
+            "success" => false,
+            "message" => "Invalid User id  specified",
+            "href"    => "http://www.example.com/api/users/"
+          }
+        end
+
+        let(:expected_result_not_found) do
+          {
+            "success" => false,
+            "message" => "Couldn't find User with 'id'=999999",
+            "href"    => "http://www.example.com/api/users/999999"
+          }
+        end
+
+        let(:expected_results) do
+          [expected_result_user3, expected_result_user1, expected_result_invalid_id, expected_result_not_found]
+        end
+
+        it "tries to revoke resource users sessions when authenticated user doesn't have access to all users" do
+          api_basic_authorize :revoke_user_sessions
+
+          user1.miq_groups << @user.miq_groups.first
+          user1.save
+
+          post(api_users_url, :params => {"action" => "revoke_sessions", "resources" => resource_parameters})
+
+          expect(response.parsed_body["results"]).to match_array(expected_results)
+        end
+      end
+    end
+  end
 end
