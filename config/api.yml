@@ -3857,6 +3857,16 @@
         - sui_services_edit
       - :name: queue_chargeback_report
         :identifier: service_admin
+      :patch:
+      - :name: edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
+      :put:
+      - :name: edit
+        :identifier:
+        - service_edit
+        - sui_services_edit
       :delete:
       - :name: delete
         :identifier:
