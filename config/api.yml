@@ -2849,6 +2849,12 @@
         :identifier: chargeback_rates_edit
       - :name: delete
         :identifier: chargeback_rates_delete
+      :patch:
+      - :name: edit
+        :identifier: chargeback_rates_edit
+      :put:
+      - :name: edit
+        :identifier: chargeback_rates_edit
       :delete:
       - :name: delete
         :identifier: chargeback_rates_delete
