@@ -583,7 +583,7 @@ module Api
 
       def determine_include_for_find(klass)
         attrs = virtual_attributes_for(klass) do |type, attr_name, attr_base|
-          if klass.virtual_includes(attr_name) && attr_base.blank?
+          if klass.virtual_includes(attr_name) && !klass.attribute_supported_by_sql?(attr_name) && attr_base.blank?
             attr_name
           else
             next if attr_base.blank?

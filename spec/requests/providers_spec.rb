@@ -1587,6 +1587,30 @@ describe "Providers API" do
     end
   end
 
+  context 'GET /api/providers' do
+    # Make sure we don't add :include_for_find for columns that end up in
+    # :extra_cols, since that is wasted includes.
+    it "loads multiple direct virtual attributes with includes properly" do
+      ems_1 = FactoryBot.create(:ext_management_system)
+      ems_2 = FactoryBot.create(:ext_management_system)
+      vm_1  = FactoryBot.create(:vm_vmware, :name => "myvmware_1", :ems_id => ems_1.id)
+      vm_2  = FactoryBot.create(:vm_vmware, :name => "myvmware_2", :ems_id => ems_2.id)
+      vm_3  = FactoryBot.create(:vm_vmware, :name => "myvmware_3", :ems_id => ems_2.id)
+
+      query_match = /SELECT.*FROM\s"(?:ext_management_systems|vms)"(?!(?:.+LEFT OUTER JOIN))/m
+
+      api_basic_authorize action_identifier(:providers, :read, :collection_actions, :get)
+
+      expect {
+        get api_providers_url, :params => {
+          :expand     => "resources",
+          :attributes => "name,aggregate_vm_cpus,total_vms"
+        }
+
+      }.to make_database_queries(:count => 3, :matching => query_match)
+    end
+  end
+
   context 'GET /api/providers/:id' do
     it 'includes endpoints and authentications attributes when explcitly asked' do
       ems = FactoryBot.create(:ext_management_system)
