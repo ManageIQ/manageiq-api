@@ -96,7 +96,7 @@
     :identifier: alert_definition_profile
     :options:
     - :collection
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: MiqAlertSet
     :subcollections:
     - :alert_definitions
@@ -129,6 +129,12 @@
       - :name: assign
         :identifier: alert_definition_profile_edit
       - :name: unassign
+        :identifier: alert_definition_profile_edit
+      :patch:
+      - :name: edit
+        :identifier: alert_definition_profile_edit
+      :put:
+      - :name: edit
         :identifier: alert_definition_profile_edit
       :delete:
       - :name: delete
