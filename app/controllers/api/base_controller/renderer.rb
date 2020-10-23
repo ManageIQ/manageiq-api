@@ -609,9 +609,9 @@ module Api
 
       def determine_extra_cols(klass)
         virtual_attributes_for(klass) do |type, attr_name, attr_base|
-          return if attr_base.present?
-          return if virtual_attribute_accessor(type, attr_name)
-          return unless klass.attribute_supported_by_sql?(attr_name)
+          next if attr_base.present?
+          next if virtual_attribute_accessor(type, attr_name)
+          next unless klass.attribute_supported_by_sql?(attr_name)
 
           attr_name.to_sym
         end
