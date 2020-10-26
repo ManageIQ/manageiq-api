@@ -1589,6 +1589,8 @@ describe "Providers API" do
 
   context 'GET /api/providers' do
     context "with multiple direct virtual attributes" do
+      let(:api_attributes) { "name,total_vms,total_vms_and_templates" }
+
       before do
         api_basic_authorize action_identifier(:providers, :read, :collection_actions, :get)
 
@@ -1609,7 +1611,7 @@ describe "Providers API" do
         expect {
           get api_providers_url, :params => {
             :expand     => "resources",
-            :attributes => "name,aggregate_vm_cpus,total_vms"
+            :attributes => api_attributes
           }
         }.to make_database_queries(:count => 0, :matching => query_match)
       end
@@ -1620,7 +1622,7 @@ describe "Providers API" do
         expect {
           get api_providers_url, :params => {
             :expand     => "resources",
-            :attributes => "name,aggregate_vm_cpus,total_vms"
+            :attributes => api_attributes
           }
         }.to make_database_queries(:count => 3, :matching => query_match)
       end
