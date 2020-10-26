@@ -47,6 +47,12 @@ module Api
         action_result(false, e.to_s)
       end
 
+      def snapshots_subcollection_options(parent)
+        raise BadRequestError, "No DDF specified for snapshots in #{parent}" unless parent.respond_to?(:params_for_create_snapshot)
+
+        {:snapshot_form_schema => parent.params_for_create_snapshot}
+      end
+
       private
 
       def snapshot_ident(parent)

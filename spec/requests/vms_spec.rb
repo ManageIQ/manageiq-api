@@ -2153,6 +2153,19 @@ describe "Vms API" do
     end
   end
 
+  describe "/api/vms/:id/options" do
+    it 'returns the snapshot DDF schema for the given VM' do
+      api_basic_authorize
+
+      vm = FactoryBot.create(:vm_vmware)
+
+      options(api_vm_snapshots_url(nil, vm))
+
+      expect(response.parsed_body['data']['snapshot_form_schema']).to be_an_instance_of(Hash)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   describe "/api/vms central admin" do
     let(:resource_type) { "vm" }
 
