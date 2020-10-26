@@ -2458,6 +2458,12 @@
       :delete:
       - :name: delete
         :identifier: profile_delete
+      :patch:
+      - :name: edit
+        :identifier: profile_edit
+      :put:
+      - :name: edit
+        :identifier: profile_edit
     :policies_subcollection_actions:
       :post:
       - :name: assign
