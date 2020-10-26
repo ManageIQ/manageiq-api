@@ -1,9 +1,9 @@
 # ManageIQ::Api
 
-[![Build Status](https://travis-ci.com/ManageIQ/manageiq-api.svg?branch=master)](https://travis-ci.com/ManageIQ/manageiq-api)
+[![Build Status](https://travis-ci.com/ManageIQ/manageiq-api.svg?branch=kasparov)](https://travis-ci.com/ManageIQ/manageiq-api)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5988df15fb80af02a90003ac/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-api/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5988df15fb80af02a90003ac/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-api/test_coverage)
-[![Security](https://hakiri.io/github/ManageIQ/manageiq-api/master.svg)](https://hakiri.io/github/ManageIQ/manageiq-api/master)
+[![Security](https://hakiri.io/github/ManageIQ/manageiq-api/kasparov.svg)](https://hakiri.io/github/ManageIQ/manageiq-api/kasparov)
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
