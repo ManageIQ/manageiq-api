@@ -618,6 +618,7 @@ RSpec.describe "users API" do
     %w[cache sql memory].each do |session_store|
       before do
         ::Settings.server.session_store = session_store
+        puts "\n#{session_store} test\n"
       end
 
       it "revokes all own sessions of authenticated user with #{session_store}" do
