@@ -1583,26 +1583,42 @@ describe "Providers API" do
   end
 
   context 'GET /api/providers' do
-    # Make sure we don't add :include_for_find for columns that end up in
-    # :extra_cols, since that is wasted includes.
-    it "loads multiple direct virtual attributes with includes properly" do
-      ems_1 = FactoryBot.create(:ext_management_system)
-      ems_2 = FactoryBot.create(:ext_management_system)
-      vm_1  = FactoryBot.create(:vm_vmware, :name => "myvmware_1", :ems_id => ems_1.id)
-      vm_2  = FactoryBot.create(:vm_vmware, :name => "myvmware_2", :ems_id => ems_2.id)
-      vm_3  = FactoryBot.create(:vm_vmware, :name => "myvmware_3", :ems_id => ems_2.id)
+    context "with multiple direct virtual attributes" do
+      before do
+        api_basic_authorize action_identifier(:providers, :read, :collection_actions, :get)
 
-      query_match = /SELECT.*FROM\s"(?:ext_management_systems|vms)"(?!(?:.+LEFT OUTER JOIN))/m
+        ems_1 = FactoryBot.create(:ext_management_system)
+        ems_2 = FactoryBot.create(:ext_management_system)
+        FactoryBot.create(:vm_vmware, :name => "myvmware_1", :ems_id => ems_1.id)
+        FactoryBot.create(:vm_vmware, :name => "myvmware_2", :ems_id => ems_1.id)
+        FactoryBot.create(:vm_vmware, :name => "myvmware_3", :ems_id => ems_2.id)
+        FactoryBot.create(:vm_vmware, :name => "myvmware_4", :ems_id => ems_2.id)
+        FactoryBot.create(:vm_vmware, :name => "myvmware_5", :ems_id => ems_2.id)
+      end
 
-      api_basic_authorize action_identifier(:providers, :read, :collection_actions, :get)
+      # Make sure we don't add :include_for_find for columns that end up in
+      # :extra_cols, since that is wasted includes.
+      it "avoids doing a LEFT OUTER JOIN" do
+        query_match = /^SELECT.*FROM\s"(?:ext_management_systems|vms)".+LEFT OUTER JOIN/m
 
-      expect {
-        get api_providers_url, :params => {
-          :expand     => "resources",
-          :attributes => "name,aggregate_vm_cpus,total_vms"
-        }
+        expect {
+          get api_providers_url, :params => {
+            :expand     => "resources",
+            :attributes => "name,aggregate_vm_cpus,total_vms"
+          }
+        }.to make_database_queries(:count => 0, :matching => query_match)
+      end
 
-      }.to make_database_queries(:count => 3, :matching => query_match)
+      it "avoids an N+1" do
+        query_match = /^SELECT.*FROM\s"(?:ext_management_systems|vms)"/m
+
+        expect {
+          get api_providers_url, :params => {
+            :expand     => "resources",
+            :attributes => "name,aggregate_vm_cpus,total_vms"
+          }
+        }.to make_database_queries(:count => 3, :matching => query_match)
+      end
     end
   end
 
