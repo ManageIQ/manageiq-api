@@ -156,9 +156,9 @@ module Api
       klass.params_for_create
     end
 
-    def leaf_subclasses
+    def supported_subclasses
       ActiveSupport::Dependencies.interlock.loading do
-        ManageIQ::Providers::BaseManager.leaf_subclasses
+        ManageIQ::Providers::BaseManager.supported_subclasses
       end
     end
 
@@ -169,7 +169,7 @@ module Api
     end
 
     def providers_options
-      providers_options = leaf_subclasses.inject({}) do |po, ems|
+      providers_options = supported_subclasses.inject({}) do |po, ems|
         po.merge(ems.ems_type => ems.options_description)
       end
 

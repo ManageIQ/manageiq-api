@@ -1553,12 +1553,21 @@ describe "Providers API" do
     it "returns options for all providers when no query" do
       options(api_providers_url)
       expect(response.parsed_body["data"]["provider_settings"].keys.count).to eq(
-        ManageIQ::Providers::BaseManager.leaf_subclasses.count
+        ManageIQ::Providers::BaseManager.supported_subclasses.count
       )
       expect(response.parsed_body["data"]["supported_providers"].count).to eq(
         ExtManagementSystem.supported_types_for_create.count
       )
       expect(response.parsed_body["data"]["provider_settings"]["kubernetes"]["proxy_settings"]["settings"]["http_proxy"]["label"]).to eq('HTTP Proxy')
+    end
+
+    it "returns options for supported providers only" do
+      allow(Vmdb::PermissionStores.instance).to receive(:supported_ems_type?).and_return(false)
+      allow(Vmdb::PermissionStores.instance).to receive(:supported_ems_type?).with("vmwarews").and_return(true)
+
+      options(api_providers_url)
+      expect(response.parsed_body["data"]["provider_settings"].keys.count).to eq(1)
+      expect(response.parsed_body["data"]["supported_providers"].count).to eq(1)
     end
 
     context 'single provider queried' do
