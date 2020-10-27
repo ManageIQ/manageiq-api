@@ -1576,6 +1576,11 @@ describe "Providers API" do
         expect_bad_request("Invalid provider - foo")
       end
 
+      it 'raises an error if the provider is not an EMS' do
+        options("#{api_providers_url}?type=Vm")
+        expect_bad_request("Invalid provider - Vm")
+      end
+
       it 'raises an error if the provider is not supported' do
         allow(Vmdb::PermissionStores.instance).to receive(:supported_ems_type?).and_return(false)
         allow(Vmdb::PermissionStores.instance).to receive(:supported_ems_type?).with("vmwarews").and_return(true)
