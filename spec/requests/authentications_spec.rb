@@ -507,7 +507,7 @@ RSpec.describe 'Authentications API' do
         next unless defined? subklass::API_OPTIONS
         subklass::API_OPTIONS.tap do |options|
           options[:attributes].each do |_k, val|
-            val[:type] = val[:type].to_s if val[:type]
+            val[:type] = val[:type].to_s if val && val[:type]
           end
           fields[subklass.name] = options
         end
