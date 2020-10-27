@@ -1576,10 +1576,35 @@ describe "Providers API" do
         expect_bad_request("Invalid provider - foo")
       end
 
+      it 'raises an error if the provider is not supported' do
+        allow(Vmdb::PermissionStores.instance).to receive(:supported_ems_type?).and_return(false)
+        allow(Vmdb::PermissionStores.instance).to receive(:supported_ems_type?).with("vmwarews").and_return(true)
+
+        options("#{api_providers_url}?type=ManageIQ::Providers::Amazon::CloudManager")
+        expect_bad_request("Invalid provider - ManageIQ::Providers::Amazon::CloudManager")
+      end
+
+      it 'works with a valid provider' do
+        allow(Vmdb::PermissionStores.instance).to receive(:supported_ems_type?).and_return(false)
+        allow(Vmdb::PermissionStores.instance).to receive(:supported_ems_type?).with("vmwarews").and_return(true)
+
+        options("#{api_providers_url}?type=ManageIQ::Providers::Vmware::InfraManager")
+        expect(response.parsed_body["data"]["provider_settings"].keys.count).to eq(1)
+        expect(response.parsed_body["data"]["supported_providers"].count).to eq(1)
+      end
+
       context 'valid provider' do
         before do
-          class DummyProvider; end
+          class DummyProvider
+            def self.permitted?
+              true
+            end
+          end
           allow(DummyProvider).to receive(:<).with(ExtManagementSystem).and_return(true)
+        end
+
+        after do
+          Object.send(:remove_const, :DummyProvider)
         end
 
         it 'raises an error if the provider has no DDF' do

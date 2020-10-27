@@ -150,7 +150,7 @@ module Api
     def provider_options(type)
       klass = type.safe_constantize
 
-      raise BadRequestError, "Invalid provider - #{type}" unless klass.try(:<, ExtManagementSystem)
+      raise BadRequestError, "Invalid provider - #{type}" unless klass.try(:<, ExtManagementSystem) && klass.permitted?
       raise BadRequestError, "No DDF specified for - #{type}" unless klass.respond_to?(:params_for_create)
 
       klass.params_for_create
