@@ -23,6 +23,8 @@ module Api
     def delete_resource(type, id, _data = nil)
       raise BadRequestError, "Must specify an id for deleting a #{type} resource" if id.blank?
 
+      ensure_resource_exists(type, id) if single_resource?
+
       api_action(type, id) do |klass|
         begin
           physical_storage = resource_search(id, type, klass)
