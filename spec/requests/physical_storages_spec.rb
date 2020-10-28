@@ -21,7 +21,24 @@ describe "Physical Storages API" do
     end
   end
 
-  context "Delete physical storage" do
+  context "Physical Storages delete action" do
+    it "with an invalid id" do
+      api_basic_authorize(action_identifier(:physical_storages, :delete, :resource_actions, :post))
+
+      post(api_physical_storage_url(nil, 999_999), :params => gen_request(:delete))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "rejects Delete for unsupported physical storage" do
+      physical_storage = FactoryBot.create(:physical_storage, :name => 'test_storage')
+      api_basic_authorize('physical_storage_delete')
+
+      post(api_physical_storage_url(nil, physical_storage), :params => gen_request(:delete))
+
+      expect_single_action_result(:success => false, :message => /Feature not available/i, :href => api_physical_storage_url(nil, physical_storage))
+    end
+
     it "Deletion of a single Physical Storage" do
       provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
       physical_storage = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::PhysicalStorage", :name => 'test_storage', :ext_management_system => provider)
