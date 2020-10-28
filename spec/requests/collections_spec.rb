@@ -147,6 +147,11 @@ describe "Rest API Collections" do
       test_collection_query(:data_stores, api_data_stores_url, Storage)
     end
 
+    it "query Event Definition Sets" do
+      FactoryBot.create(:miq_event_definition_set)
+      test_collection_query(:event_definition_sets, api_event_definition_sets_url, MiqEventDefinitionSet)
+    end
+
     it "query Events" do
       FactoryBot.create(:miq_event_definition)
       test_collection_query(:events, api_events_url, MiqEventDefinition)
@@ -463,6 +468,11 @@ describe "Rest API Collections" do
     it "bulk query Data Stores" do
       FactoryBot.create(:storage)
       test_collection_bulk_query(:data_stores, api_data_stores_url, Storage)
+    end
+
+    it "bulk query Event Definition Sets" do
+      FactoryBot.create(:miq_event_definition_set)
+      test_collection_bulk_query(:event_definition_sets, api_event_definition_sets_url, MiqEventDefinitionSet)
     end
 
     it "bulk query Events" do
