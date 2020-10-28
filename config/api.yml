@@ -2305,7 +2305,7 @@
     :identifier: physical_storage
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpd
     :klass: PhysicalStorage
     :subcollections:
     :collection_actions:
