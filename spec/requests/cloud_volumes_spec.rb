@@ -128,4 +128,38 @@ describe "Cloud Volumes API" do
     expect(response.parsed_body).to include(expected)
     expect(response).to have_http_status(:ok)
   end
+
+  it 'it can create cloud volumes through POST' do
+    zone = FactoryBot.create(:zone, :name => "api_zone")
+    provider = FactoryBot.create(:ems_autosde, :zone => zone)
+
+    api_basic_authorize collection_action_identifier(:cloud_volumes, :create, :post)
+
+    post(api_cloud_volumes_url, :params => {:ems_id => provider.id, :name => 'foo', :size => 1234})
+
+    expected = {
+      'results' => a_collection_containing_exactly(
+        a_hash_including(
+          'success' => true,
+          'message' => a_string_including('Creating Cloud Volume')
+        )
+      )
+    }
+
+    expect(response.parsed_body).to include(expected)
+    expect(response).to have_http_status(:ok)
+  end
+
+  it 'returns a DDF schema when available via OPTIONS' do
+    zone = FactoryBot.create(:zone, :name => "api_zone")
+    provider = FactoryBot.create(:ems_autosde, :zone => zone)
+
+    allow(provider.class::CloudVolume).to receive(:params_for_create).and_return('foo')
+
+    options(api_cloud_volumes_url, :params => {:ems_id => provider.id})
+    options("#{api_cloud_volumes_url}?ems_id=#{provider.id}")
+
+    expect(response.parsed_body['data']['form_schema']).to eq('foo')
+    expect(response).to have_http_status(:ok)
+  end
 end
