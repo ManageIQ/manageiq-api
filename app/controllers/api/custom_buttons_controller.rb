@@ -8,6 +8,8 @@ module Api
         custom_button.options = data["options"].deep_symbolize_keys if data["options"]
         custom_button.save!
         custom_button.create_resource_action!(data["resource_action"].deep_symbolize_keys) if data.key?("resource_action")
+        data.except!('resource_action')
+        custom_button.update!(data.deep_symbolize_keys) if data.present?
         custom_button
       end
     rescue => err
