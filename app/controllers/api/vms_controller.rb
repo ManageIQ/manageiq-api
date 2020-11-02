@@ -211,6 +211,23 @@ module Api
     end
     central_admin :reboot_guest_resource, :reboot_guest
 
+    def rename_resource(type, id, data = {})
+      raise BadRequestError, "Must specify an id for renaming a #{type} resource" unless id
+
+      new_name = data.blank? ? "" : data["new_name"].strip
+      raise BadRequestError, "Must specify a new_name" if new_name.blank?
+
+      api_action(type, id) do |klass|
+        vm = resource_search(id, type, klass)
+        api_log_info("Renaming #{vm_ident(vm)} to #{new_name}")
+
+        result = validate_vm_for_action(vm, "rename")
+        result = rename_vm(vm, new_name) if result[:success]
+        result
+      end
+    end
+    central_admin :rename_resource, :rename
+
     def shutdown_guest_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for shutting down a #{type} resource" unless id
 
@@ -495,6 +512,14 @@ module Api
     def reboot_guest_vm(vm)
       desc = "#{vm_ident(vm)} rebooting"
       task_id = queue_object_action(vm, desc, :method_name => "reboot_guest", :role => "ems_operations")
+      action_result(true, desc, :task_id => task_id)
+    rescue => err
+      action_result(false, err.to_s)
+    end
+
+    def rename_vm(vm, new_name)
+      desc = "#{vm_ident(vm)} renaming to #{new_name}"
+      task_id = vm.rename_queue(User.current_user.userid, new_name)
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
