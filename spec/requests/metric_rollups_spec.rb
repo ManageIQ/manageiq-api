@@ -72,6 +72,39 @@ RSpec.describe 'MetricRollups API' do
       expect(response.parsed_body).to include(expected)
     end
 
+    let(:today)     { Time.zone.today }
+    let(:tomorrow)  { today + 1.day }
+    let(:next_week) { today + 7.days }
+
+    it 'returns metric_rollups between specific dates' do
+      vm = FactoryBot.create(:vm_or_template)
+      vm_daily = FactoryBot.create(:metric_rollup_vm_daily, :resource => vm)
+      FactoryBot.create(:metric_rollup_vm_daily, :resource => vm, :timestamp => next_week)
+
+      api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
+
+      get(
+        api_metric_rollups_url,
+        :params => {
+          :resource_type    => 'VmOrTemplate',
+          :resource_ids     => [vm.id],
+          :capture_interval => 'daily',
+          :start_date       => today.to_s,
+          :end_date         => tomorrow.to_s,
+        }
+      )
+
+      expected = {
+        'count'     => 5,
+        'subcount'  => 1,
+        'resources' => [
+          {'href' => a_string_including(api_metric_rollup_url(nil, vm_daily))}
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
     it 'requires parameters' do
       api_basic_authorize collection_action_identifier(:metric_rollups, :read, :get)
 
