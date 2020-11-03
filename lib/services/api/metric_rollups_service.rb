@@ -1,7 +1,7 @@
 module Api
   class MetricRollupsService
-    REQUIRED_FILTER_PARAMETERS = %w(resource_type capture_interval start_date).freeze
-    QUERY_FILTER_PARAMETERS = %w(resource_ids end_date).freeze
+    REQUIRED_FILTER_PARAMETERS = %w[resource_type capture_interval start_date].freeze
+    QUERY_FILTER_PARAMETERS = %w[resource_ids end_date].freeze
 
     attr_reader :filter_parameters
 
