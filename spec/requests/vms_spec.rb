@@ -745,7 +745,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm))
+      expect_single_action_result(:success => false, :message => "Feature not available/supported", :href => api_vm_url(nil, vm))
     end
 
     it "pauses a pauseed vm" do
@@ -754,17 +754,17 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_vm_url(nil, vm))
+      expect_single_action_result(:success => false, :message => "Feature not available/supported", :href => api_vm_url(nil, vm))
     end
 
     it "pauses a vm" do
       api_basic_authorize action_identifier(:vms, :pause)
 
-      post(vm_url, :params => gen_request(:pause))
+      post(vm_openstack_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => true, :message => "pausing", :href => api_vm_url(nil, vm), :task => true)
-      expect(MiqQueue.where(:class_name  => vm.class.name,
-                            :instance_id => vm.id,
+      expect_single_action_result(:success => true, :message => "pausing", :href => api_vm_url(nil, vm_openstack), :task => true)
+      expect(MiqQueue.where(:class_name  => vm_openstack.class.name,
+                            :instance_id => vm_openstack.id,
                             :method_name => "pause",
                             :zone        => zone.name,
                             :user_id     => @user.id,
@@ -775,10 +775,10 @@ describe "Vms API" do
     it "pauses multiple vms" do
       api_basic_authorize action_identifier(:vms, :pause)
 
-      post(api_vms_url, :params => gen_request(:pause, nil, vm1_url, vm2_url))
+      post(api_vms_url, :params => gen_request(:pause, nil, vm_openstack1_url, vm_openstack2_url))
 
       expect_multiple_action_result(2, :task => true)
-      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm_openstack1), api_vm_url(nil, vm_openstack2)])
     end
   end
 
