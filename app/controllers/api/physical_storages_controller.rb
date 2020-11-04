@@ -29,7 +29,7 @@ module Api
         begin
           physical_storage = resource_search(id, type, klass)
           unless physical_storage.supports?(:delete)
-            error_msg = "#{physical_storage.name} raised the following error: " + physical_storage.unsupported_reason(:delete)
+            error_msg = "Failed to delete #{physical_storage.name}: #{physical_storage.unsupported_reason(:delete)}"
             raise error_msg
           end
           msg = "Detaching #{physical_storage_ident(physical_storage)}"
