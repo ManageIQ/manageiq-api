@@ -2046,7 +2046,7 @@
     :options:
     - :collection
     - :custom_actions
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: NetworkRouter
     :subcollections:
     - :tags
@@ -2057,6 +2057,8 @@
       :post:
       - :name: query
         :identifier: network_router_show_list
+      - :name: edit
+        :identifier: network_router_edit
       - :name: delete
         :identifier: network_router_delete
     :resource_actions:
@@ -2064,8 +2066,16 @@
       - :name: read
         :identifier: network_router_show
       :post:
+      - :name: edit
+        :identifier: network_router_edit
       - :name: delete
         :identifier: network_router_delete
+      :patch:
+      - :name: edit
+        :identifier: network_router_edit
+      :put:
+      - :name: edit
+        :identifier: network_router_edit
       :delete:
       - :name: delete
         :identifier: network_router_delete
