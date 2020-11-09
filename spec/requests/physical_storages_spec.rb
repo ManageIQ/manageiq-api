@@ -21,6 +21,61 @@ describe "Physical Storages API" do
     end
   end
 
+  context "Physical Storages delete action" do
+    it "with an invalid id" do
+      api_basic_authorize(action_identifier(:physical_storages, :delete, :resource_actions, :post))
+
+      post(api_physical_storage_url(nil, 999_999), :params => gen_request(:delete))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "rejects Delete for unsupported physical storage" do
+      physical_storage = FactoryBot.create(:physical_storage, :name => 'test_storage')
+      api_basic_authorize('physical_storage_delete')
+
+      post(api_physical_storage_url(nil, physical_storage), :params => gen_request(:delete))
+
+      expect_single_action_result(:success => false, :message => /Feature not available/i, :href => api_physical_storage_url(nil, physical_storage))
+    end
+
+    it "Deletion of a single Physical Storage" do
+      provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+      physical_storage = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::PhysicalStorage", :name => 'test_storage', :ext_management_system => provider)
+      api_basic_authorize('physical_storage_delete')
+
+      post(api_physical_storage_url(nil, physical_storage), :params => gen_request(:delete))
+
+      expect_single_action_result(:success => true, :message => /Detaching Physical Storage id:#{physical_storage.id}/i, :href => api_physical_storage_url(nil, physical_storage))
+    end
+
+    it "Delete of multiple Physical Storages" do
+      provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+      physical_storage = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::PhysicalStorage", :name => 'test_storage', :ext_management_system => provider)
+      physical_storage_two = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::PhysicalStorage", :name => 'test_storage', :ext_management_system => provider)
+      api_basic_authorize('physical_storage_delete')
+
+      post(api_physical_storages_url, :params => gen_request(:delete, [{"href" => api_physical_storage_url(nil, physical_storage)}, {"href" => api_physical_storage_url(nil, physical_storage_two)}]))
+
+      expected = {
+        "results" => a_collection_containing_exactly(
+          a_hash_including(
+            "href"    => api_physical_storage_url(nil, physical_storage),
+            "message" => a_string_matching(/Detaching Physical Storage id:#{physical_storage.id}/i),
+            "success" => true
+          ),
+          a_hash_including(
+            "href"    => api_physical_storage_url(nil, physical_storage_two),
+            "message" => a_string_matching(/Detaching Physical Storage id:#{physical_storage_two.id}/i),
+            "success" => true
+          )
+        )
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   context "GET /api/physical_storages" do
     it "returns all physical_storages" do
       physical_storage = FactoryBot.create(:physical_storage)
