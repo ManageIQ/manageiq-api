@@ -265,7 +265,7 @@ PDF Report"
 
       expect(response).to have_http_status(:ok)
       expect(response.header["Content-Type"]).to eq("application/text")
-      expect(response.header["Content-Disposition"]).to eq("attachment; filename=\"results_#{result_1.id}_report.txt\"")
+      expect(response.header["Content-Disposition"]).to eq("attachment; filename=\"results_#{result_1.id}_report.txt\"; filename*=UTF-8''results_#{result_1.id}_report.txt")
       expect(response.body).to eq(task_results_1_txt)
     end
 
@@ -278,7 +278,7 @@ PDF Report"
 
       expect(response).to have_http_status(:ok)
       expect(response.header["Content-Type"]).to eq("application/csv")
-      expect(response.header["Content-Disposition"]).to eq("attachment; filename=\"results_#{result_1.id}_report.csv\"")
+      expect(response.header["Content-Disposition"]).to eq("attachment; filename=\"results_#{result_1.id}_report.csv\"; filename*=UTF-8''results_#{result_1.id}_report.csv")
       expect(response.body).to eq(task_results_1_csv)
     end
 
@@ -304,7 +304,7 @@ PDF Report"
 
       expect(response).to have_http_status(:ok)
       expect(response.header["Content-Type"]).to eq("application/pdf")
-      expect(response.header["Content-Disposition"]).to eq("attachment; filename=\"results_#{result_1.id}_report.pdf\"")
+      expect(response.header["Content-Disposition"]).to eq("attachment; filename=\"results_#{result_1.id}_report.pdf\"; filename*=UTF-8''results_#{result_1.id}_report.pdf")
       expect(response.body).to eq(task_results_1_pdf)
     end
   end
