@@ -47,6 +47,58 @@ RSpec.describe 'CloudTenants API' do
     end
   end
 
+  describe 'POST /api/cloud_tenants' do
+    it 'creates a cloud tenant' do
+      ems = FactoryBot.create(:ems_openstack)
+      api_basic_authorize collection_action_identifier(:cloud_tenants, :create, :post)
+
+      post(api_cloud_tenants_url, :params => {:name => 'foo', :ems_id => ems.id})
+
+      expected = {
+        'results' => [a_hash_including(
+          'success' => true,
+          'message' => a_string_including('Creating Cloud Tenant'),
+          'task_id' => a_kind_of(String)
+        )]
+      }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
+
+  [:patch, :put].each do |request|
+    describe "#{request.to_s.upcase} /api/cloud_tenants/:id" do
+      it 'updates a cloud tenant' do
+        cloud_tenant = FactoryBot.create(:cloud_tenant, :ext_management_system => FactoryBot.create(:ems_openstack))
+        api_basic_authorize action_identifier(:cloud_tenants, :edit)
+
+        send(request, api_cloud_tenant_url(nil, cloud_tenant), :params => [:name => 'foo'])
+
+        expected = {
+          'success' => true,
+          'message' => a_string_including('Updating Cloud Tenant'),
+          'task_id' => a_kind_of(String)
+        }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
+    end
+  end
+
+  describe 'DELETE /api/cloud_tenants/:id' do
+    it 'deletes a cloud tenant' do
+      cloud_tenant = FactoryBot.create(:cloud_tenant, :ext_management_system => FactoryBot.create(:ems_openstack))
+
+      api_basic_authorize action_identifier(:cloud_tenants, :delete, :resource_actions, :delete)
+
+      delete(api_cloud_tenant_url(nil, cloud_tenant))
+
+      expect(response).to have_http_status(:no_content)
+    end
+  end
+
   context 'security groups subcollection' do
     before do
       @cloud_tenant = FactoryBot.create(:cloud_tenant)

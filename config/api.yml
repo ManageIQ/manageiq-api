@@ -717,7 +717,7 @@
     - :collection
     - :subcollection
     - :custom_actions
-    :verbs: *gp
+    :verbs: *gpppd
     :klass: CloudTenant
     :subcollections:
     - :network_services
@@ -731,10 +731,28 @@
       :post:
       - :name: query
         :identifier: cloud_tenant_show_list
+      - :name: create
+        :identifier: cloud_tenant_new
+      - :name: delete
+        :identifier: cloud_tenant_delete
     :resource_actions:
       :get:
       - :name: read
         :identifier: cloud_tenant_show
+      :post:
+      - :name: edit
+        :identifier: cloud_tenant_edit
+      - :name: delete
+        :identifier: cloud_tenant_delete
+      :patch:
+      - :name: edit
+        :identifier: cloud_tenant_edit
+      :put:
+      - :name: edit
+        :identifier: cloud_tenant_edit
+      :delete:
+      - :name: delete
+        :identifier: cloud_tenant_delete
     :subcollection_actions:
       :get:
       - :name: read
