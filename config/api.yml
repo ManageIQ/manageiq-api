@@ -38,7 +38,7 @@
     :klass: Account
   :actions:
     :description: Actions
-    :identifier: action
+    :identifier: miq_action
     :options:
     - :collection
     :verbs: *gpppd
@@ -46,37 +46,37 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: action_show_list
+        :identifier: miq_action_show_list
       :post:
       - :name: query
-        :identifier: action_show_list
+        :identifier: miq_action_show_list
       - :name: create
-        :identifier: action_new
+        :identifier: miq_action_new
       - :name: edit
-        :identifier: action_edit
+        :identifier: miq_action_edit
       - :name: delete
-        :identifier: action_delete
+        :identifier: miq_action_delete
       :delete:
       - :name: delete
-        :identifier: action_delete
+        :identifier: miq_action_delete
     :resource_actions:
       :get:
       - :name: read
-        :identifier: action_show
+        :identifier: miq_action_show
       :post:
       - :name: edit
-        :identifier: action_edit
+        :identifier: miq_action_edit
       - :name: delete
-        :identifier: action_delete
+        :identifier: miq_action_delete
       :patch:
       - :name: edit
-        :identifier: action_edit
+        :identifier: miq_action_edit
       :put:
       - :name: edit
-        :identifier: action_edit
+        :identifier: miq_action_edit
       :delete:
       - :name: delete
-        :identifier: action_delete
+        :identifier: miq_action_delete
   :alert_actions:
     :description: Alert Actions
     :identifier: alert_action
@@ -177,7 +177,7 @@
         :identifier: alert_definition_delete
   :alerts:
     :description: Alerts
-    :identifier: alert
+    :identifier: miq_alert
     :options:
     - :collection
     :verbs: *g
@@ -1441,7 +1441,7 @@
         :identifier: event_streams_show
   :events:
     :description: Events
-    :identifier: event
+    :identifier: miq_event
     :options:
     - :collection
     - :subcollection
@@ -1450,14 +1450,14 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: event
+        :identifier: miq_event
       :post:
       - :name: query
-        :identifier: event
+        :identifier: miq_event
     :resource_actions:
       :get:
       - :name: read
-        :identifier: event
+        :identifier: miq_event
   :features:
     :description: Product Features
     :options:
@@ -2387,7 +2387,7 @@
         :identifier: picture_new
   :policies:
     :description: Policies
-    :identifier: policy
+    :identifier: miq_policy
     :options:
     - :collection
     - :subcollection
@@ -2400,28 +2400,28 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: policy_view
+        :identifier: miq_policy_view
       :post:
       - :name: query
-        :identifier: policy_view
+        :identifier: miq_policy_view
       - :name: create
-        :identifier: policy_new
+        :identifier: miq_policy_new
       - :name: edit
-        :identifier: policy_edit
+        :identifier: miq_policy_edit
       - :name: delete
-        :identifier: policy_delete
+        :identifier: miq_policy_delete
     :resource_actions:
       :get:
       - :name: read
-        :identifier: policy_view
+        :identifier: miq_policy_view
       :post:
       - :name: edit
-        :identifier: policy_edit
+        :identifier: miq_policy_edit
       - :name: delete
-        :identifier: policy_delete
+        :identifier: miq_policy_delete
       :delete:
       - :name: delete
-        :identifier: policy_delete
+        :identifier: miq_policy_delete
     :subcollection_actions:
       :post:
       - :name: assign
@@ -2434,7 +2434,7 @@
       - :name: resolve
   :policy_actions:
     :description: Actions
-    :identifier: control_explorer
+    :identifier: control
     :options:
     - :collection
     - :subcollection
@@ -2453,7 +2453,7 @@
         :identifier: control_explorer_view
   :policy_profiles:
     :description: Policy Profiles
-    :identifier: policy_profile
+    :identifier: miq_policy_set
     :options:
     - :collection
     - :subcollection
@@ -2464,47 +2464,47 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: policy_profile_view
+        :identifier: miq_policy_set_view
       :post:
       - :name: query
-        :identifier: policy_profile_view
+        :identifier: miq_policy_set_view
       - :name: create
-        :identifier: profile_new
+        :identifier: miq_policy_set_new
       - :name: edit
-        :identifier: profile_edit
+        :identifier: miq_policy_set_edit
       - :name: delete
-        :identifier: profile_delete
+        :identifier: miq_policy_set_delete
     :resource_actions:
       :get:
       - :name: read
-        :identifier: policy_profile_view
+        :identifier: miq_policy_set_view
       :post:
       - :name: edit
-        :identifier: profile_edit
+        :identifier: miq_policy_set_edit
       - :name: delete
-        :identifier: profile_delete
+        :identifier: miq_policy_set_delete
       :delete:
       - :name: delete
-        :identifier: profile_delete
+        :identifier: miq_policy_set_delete
       :patch:
       - :name: edit
-        :identifier: profile_edit
+        :identifier: miq_policy_set_edit
       :put:
       - :name: edit
-        :identifier: profile_edit
+        :identifier: miq_policy_set_edit
     :policies_subcollection_actions:
       :post:
       - :name: assign
-        :identifier: policy_profile_assign
+        :identifier: miq_policy_set_view
       - :name: unassign
-        :identifier: policy_profile_assign
+        :identifier: miq_policy_set_view
       - :name: resolve
     :policies_subresource_actions:
       :post:
       - :name: assign
-        :identifier: policy_profile_assign
+        :identifier: miq_policy_set_view
       - :name: unassign
-        :identifier: policy_profile_assign
+        :identifier: miq_policy_set_view
       - :name: resolve
   :providers:
     :description: Providers
