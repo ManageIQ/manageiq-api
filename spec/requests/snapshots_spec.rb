@@ -100,7 +100,7 @@ RSpec.describe "Snapshots API" do
           ]
         }
         expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "renders a failed action response if a name is not provided" do
@@ -120,7 +120,7 @@ RSpec.describe "Snapshots API" do
           ]
         }
         expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "doesn't render a failed action response if a name is not provided and optional" do
@@ -184,7 +184,7 @@ RSpec.describe "Snapshots API" do
           "message" => "The VM is not connected to a Host"
         }
         expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "will not revert to a snapshot unless authorized" do
@@ -230,7 +230,7 @@ RSpec.describe "Snapshots API" do
           "message" => "The VM is not connected to a Host"
         }
         expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "will not delete a snapshot unless authorized" do
@@ -466,7 +466,7 @@ RSpec.describe "Snapshots API" do
           ]
         }
         expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "renders a failed action response if a name is not provided" do
@@ -486,7 +486,7 @@ RSpec.describe "Snapshots API" do
           ]
         }
         expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "will not create a snapshot unless authorized" do
@@ -532,7 +532,7 @@ RSpec.describe "Snapshots API" do
           "message" => "The VM is not connected to an active Provider"
         }
         expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "will not delete a snapshot unless authorized" do

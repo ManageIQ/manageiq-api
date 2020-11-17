@@ -91,7 +91,7 @@ RSpec.describe 'Configuration Script Payloads API' do
           { 'success' => false, 'message' => 'type not currently supported' }
         ]
       }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
 

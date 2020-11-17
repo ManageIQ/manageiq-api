@@ -504,7 +504,7 @@ describe "Alerts Definition Profiles API" do
 
     post(api_alert_definition_profile_alert_definitions_url(nil, alert_definition_profile), :params => gen_request(:unassign, alert_definition))
 
-    expect(response).to have_http_status(:ok)
+    expect(response).to have_http_status(:bad_request)
     expect(response.parsed_body["results"].count).to eq(1)
     expect(response.parsed_body["results"]).to include(a_hash_including("success" => false,
                                                                         "message" => "Unassigning alert_definition #{alert_definition.id} from profile #{alert_definition_profile.id}"))

@@ -234,7 +234,7 @@ RSpec.describe 'Configuration Script Sources API' do
         'success' => false,
         'message' => "Update not supported for ConfigurationScriptSource id:#{config_script_src.id} name: '#{config_script_src.name}'"
       }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
 
@@ -294,7 +294,7 @@ RSpec.describe 'Configuration Script Sources API' do
         'success' => false,
         'message' => "Delete not supported for ConfigurationScriptSource id:#{config_script_src.id} name: '#{config_script_src.name}'"
       }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
 

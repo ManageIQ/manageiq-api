@@ -213,7 +213,7 @@ RSpec.describe 'Authentications API' do
           { 'success' => false, 'message' => 'must supply a manager resource' }
         ]
       }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
 
@@ -227,7 +227,7 @@ RSpec.describe 'Authentications API' do
           { 'success' => false, 'message' => 'type not currently supported' }
         ]
       }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
 
@@ -247,7 +247,7 @@ RSpec.describe 'Authentications API' do
       expect(response.parsed_body).to include(expected)
     end
 
-    it 'can create authentications in bulk' do
+    it 'creates and fails in a single request' do
       api_basic_authorize collection_action_identifier(:authentications, :create, :post)
 
       expected = {
@@ -258,13 +258,12 @@ RSpec.describe 'Authentications API' do
             'task_id' => a_kind_of(String)
           ),
           a_hash_including(
-            'success' => true,
-            'message' => 'Creating Authentication',
-            'task_id' => a_kind_of(String)
+            'success' => false,
+            'message' => 'must supply a manager resource'
           )
         ]
       }
-      post(api_authentications_url, :params => { :resources => [create_params, create_params] })
+      post(api_authentications_url, :params => {:resources => [create_params, create_params.except(:manager_resource)]})
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
@@ -425,7 +424,7 @@ RSpec.describe 'Authentications API' do
         'success' => false,
         'message' => "Update not supported for Authentication id:#{auth.id} name: '#{auth.name}'"
       }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
 

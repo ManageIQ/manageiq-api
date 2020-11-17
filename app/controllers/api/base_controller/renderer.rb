@@ -14,7 +14,7 @@ module Api
       # Helper proc to render a single resource
       #
       def render_resource(type, resource, opts = {})
-        render :json => resource_to_jbuilder(type, gen_reftype(type, opts), resource, opts).target!
+        render :json => resource_to_jbuilder(type, gen_reftype(type, opts), resource, opts).target!, :status => status_from_resource(resource)
       end
 
       #
@@ -614,6 +614,32 @@ module Api
           next unless klass.attribute_supported_by_sql?(attr_name)
 
           attr_name.to_sym
+        end
+      end
+
+      # given a response to render, determine the proper return code
+      # index pages have a response array of objects or hash that represents an object
+      # show pages have resource as an object, or a hash representing an object
+      # all of these pages just want to return ok
+      #
+      # the create and update pages are the ones we want to give a status
+      # if there are multiple response entries, we just return ok
+      # but if there is a single response, we'll use status to determine the resposne code
+      #
+      # So there are many ways we want to render and only a fraction of them will
+      # use success to determine the return status - that is why so much short circuit logic
+      #
+      # @param [Object,Array[Object],Hash,Hash{String=>Array[Hash]}] resource
+      # @return [Symbol] http status code
+      def status_from_resource(resource)
+        return :ok if @req.bulk? || !resource.kind_of?(Hash)
+        return resource[:success] ? :ok : :bad_request if resource.key?(:success)
+
+        results = resource["results"]
+        if !results.kind_of?(Array) || !results.first.kind_of?(Hash) || !results.first.key?(:success) || results.first[:success]
+          :ok
+        else
+          :bad_request
         end
       end
     end

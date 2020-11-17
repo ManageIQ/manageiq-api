@@ -107,7 +107,8 @@ RSpec.describe 'Lans API' do
       post(api_lan_tags_url(nil, lan1), :params => gen_request(:assign, :name => "/managed/bad_category/bad_name"))
 
       expect_tagging_result(
-        [{:success => false, :href => api_lan_url(nil, lan1), :tag_category => "bad_category", :tag_name => "bad_name"}]
+        [{:success => false, :href => api_lan_url(nil, lan1), :tag_category => "bad_category", :tag_name => "bad_name"}],
+        :bad_request
       )
     end
 

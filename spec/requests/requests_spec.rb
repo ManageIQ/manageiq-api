@@ -540,13 +540,13 @@ RSpec.describe "Requests API" do
     context "SubResource#cancel" do
       let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for MiqRequestTask"} }
       let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for MiqRequestTask"} }
-      include_context "SubResource#cancel", [:request, :request_task], :service_template_provision_request, :miq_request_task
+      include_context "SubResource#cancel", [:request, :request_task], :service_template_provision_request, :miq_request_task, false
     end
   end
 
   context "Resource#cancel" do
     let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for VmMigrateRequest"} }
     let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for VmMigrateRequest"} }
-    include_context "Resource#cancel", "request", :vm_migrate_request
+    include_context "Resource#cancel", "request", :vm_migrate_request, false
   end
 end
