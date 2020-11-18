@@ -105,7 +105,7 @@ RSpec.describe 'CustomButtons API' do
         'name'             => 'Generic Object Custom Button',
         'description'      => 'Generic Object Custom Button description',
         'applies_to_class' => 'GenericObjectDefinition',
-        'uri_attributes'   => {:request => "automate_method"},
+        'uri_attributes'   => {'request' => 'automate_method'},
         'options'          => {
           'button_icon'  => 'ff ff-view-expanded',
           'button_color' => '#4727ff',
@@ -123,6 +123,7 @@ RSpec.describe 'CustomButtons API' do
       custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
       expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
       expect(custom_button.visibility[:roles]).to eq(['_ALL_'])
+      expect(custom_button.uri_attributes).to eq('request' => 'automate_method')
       expect(response.parsed_body['results'].first).to include(cb_rec.except('resource_action', 'uri_attributes'))
     end
 
