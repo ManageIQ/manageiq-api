@@ -128,6 +128,21 @@ RSpec.describe 'CustomButtons API' do
       expect(response.parsed_body['results'].first).to include(custom_button_params.except('resource_action', 'uri_attributes'))
     end
 
+    let(:custom_button) { FactoryBot.create(:custom_button, :name => 'editable', :applies_to_class => 'GenericObjectDefinition', :applies_to_id => object_def.id) }
+
+    it 'can edit custom button' do
+      api_basic_authorize collection_action_identifier(:custom_buttons, :edit)
+      custom_button_params_for_edit = custom_button_params.merge('id' => custom_button.id)
+      post(api_custom_buttons_url, :params => {'action' => 'edit', 'resources' => [custom_button_params_for_edit]})
+      expect(response).to have_http_status(:ok)
+      custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
+      expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
+      expect(custom_button.visibility[:roles]).to eq(['_ALL_'])
+      expect(custom_button.uri_attributes).to eq(:request => 'automate_method')
+      expect(custom_button.resource_action.attributes).to include(custom_button_params['resource_action'])
+      expect(response.parsed_body['results'].first).to include(custom_button_params.except('resource_action', 'uri_attributes'))
+    end
+
     it 'can edit custom buttons by id' do
       api_basic_authorize collection_action_identifier(:custom_buttons, :edit)
 
