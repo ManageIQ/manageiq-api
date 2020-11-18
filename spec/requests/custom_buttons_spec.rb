@@ -98,33 +98,34 @@ RSpec.describe 'CustomButtons API' do
   end
 
   describe 'POST /api/custom_buttons' do
-    it 'can create a new custom button' do
-      api_basic_authorize collection_action_identifier(:custom_buttons, :create)
-
-      cb_rec = {
+    let(:uri_attributes) { {'uri_attributes' => {'request' => 'automate_method'} } }
+    let(:resource_action) { { 'resource_action'=> { 'ae_namespace' => 'SYSTEM', 'ae_class'     => 'PROCESS'} } }
+    let(:custom_button_params) do
+      {
         'name'             => 'Generic Object Custom Button',
         'description'      => 'Generic Object Custom Button description',
         'applies_to_class' => 'GenericObjectDefinition',
-        'uri_attributes'   => {'request' => 'automate_method'},
         'options'          => {
           'button_icon'  => 'ff ff-view-expanded',
           'button_color' => '#4727ff',
           'display'      => true,
         },
-        'resource_action'  => {
-          'ae_namespace' => 'SYSTEM',
-          'ae_class'     => 'PROCESS'
-        },
-        'visibility'       => {'roles' => ['_ALL_']}
-      }
-      post(api_custom_buttons_url, :params => cb_rec)
+        'visibility' => {'roles' => ['_ALL_']}
+      }.merge(uri_attributes).merge(resource_action)
+    end
+
+    it 'can create a new custom button' do
+      api_basic_authorize collection_action_identifier(:custom_buttons, :create)
+
+      post(api_custom_buttons_url, :params => custom_button_params)
 
       expect(response).to have_http_status(:ok)
       custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
       expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
       expect(custom_button.visibility[:roles]).to eq(['_ALL_'])
       expect(custom_button.uri_attributes).to eq('request' => 'automate_method')
-      expect(response.parsed_body['results'].first).to include(cb_rec.except('resource_action', 'uri_attributes'))
+      expect(custom_button.resource_action.attributes).to include(custom_button_params['resource_action'])
+      expect(response.parsed_body['results'].first).to include(custom_button_params.except('resource_action', 'uri_attributes'))
     end
 
     it 'can edit custom buttons by id' do
