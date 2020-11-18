@@ -98,8 +98,8 @@ RSpec.describe 'CustomButtons API' do
   end
 
   describe 'POST /api/custom_buttons' do
-    let(:uri_attributes) { {'uri_attributes' => {'request' => 'automate_method'} } }
-    let(:resource_action) { { 'resource_action'=> {'ae_namespace' => 'SYSTEM', 'ae_class' => 'PROCESS'} } }
+    let(:uri_attributes) { {'uri_attributes' => {'request' => 'automate_method'}} }
+    let(:resource_action) { {'resource_action'=> {'ae_namespace' => 'SYSTEM', 'ae_class' => 'PROCESS'}} }
     let(:custom_button_params) do
       {
         'name'             => 'Generic Object Custom Button',
@@ -110,7 +110,7 @@ RSpec.describe 'CustomButtons API' do
           'button_color' => '#4727ff',
           'display'      => true,
         },
-        'visibility' => {'roles' => ['_ALL_']}
+        'visibility'       => {'roles' => ['_ALL_']}
       }.merge(uri_attributes).merge(resource_action)
     end
 
