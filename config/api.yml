@@ -4619,6 +4619,51 @@
         :identifier:
         - vm_snapshot_delete
         - sui_vm_snapshot_delete
+  :widget_sets:
+    :description: Dashboards
+    :identifier: miq_report_dashboard_editor
+    :options:
+    - :collection
+    :verbs: *gpppd
+    :klass: MiqWidgetSet
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_report_dashboard_editor
+      :post:
+      - :name: query
+        :identifier: miq_report_dashboard_editor
+      - :name: create
+        :identifier: db_new
+      - :name: edit
+        :identifier: db_edit
+      - :name: delete
+        :identifier: db_delete
+      - :name: copy
+        :identifier: db_copy
+      :delete:
+      - :name: delete
+        :identifier: db_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: miq_report_dashboard_editor
+      :post:
+      - :name: edit
+        :identifier: db_edit
+      - :name: delete
+        :identifier: db_delete
+      - :name: copy
+        :identifier: db_copy
+      :patch:
+      - :name: edit
+        :identifier: db_edit
+      :put:
+      - :name: edit
+        :identifier: db_edit
+      :delete:
+      - :name: delete
+        :identifier: db_delete
   :widgets:
     :description: Miq Widgets
     :identifier: miq_report_widget_admin
