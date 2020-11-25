@@ -12,6 +12,7 @@ describe "Set Ownership" do
                :vms               => :vm,
                :instances         => :vm_azure,
                :templates         => :template_vmware,
+               :cloud_templates   => :template_amazon,
                :service_templates => :service_template}.freeze
 
   RESOURCES.each do |collection_name, factory_name|

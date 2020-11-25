@@ -677,6 +677,8 @@
         :identifier: image_check_compliance
       - :name: query
         :identifier: image_show_list
+      - :name: set_ownership
+        :identifier: image_ownership
     :resource_actions:
       :get:
       - :name: read
@@ -684,6 +686,8 @@
       :post:
       - :name: check_compliance
         :identifier: image_check_compliance
+      - :name: set_ownership
+        :identifier: image_ownership
     :subcollection_actions:
       :get:
       - :name: read
