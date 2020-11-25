@@ -1874,6 +1874,8 @@
         :identifier: instance_guest_restart
       - :name: reset
         :identifier: instance_reset
+      - :name: set_ownership
+        :identifier: vm_ownership
     :resource_actions:
       :get:
       - :name: read
@@ -1897,6 +1899,8 @@
         :identifier: instance_guest_restart
       - :name: reset
         :identifier: instance_reset
+      - :name: set_ownership
+        :identifier: vm_ownership
     :snapshots_subcollection_actions:
       :get:
       - :name: read
