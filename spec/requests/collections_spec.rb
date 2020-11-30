@@ -402,6 +402,11 @@ describe "Rest API Collections" do
       FactoryBot.create(:miq_search)
       test_collection_query(:search_filters, api_search_filters_url, MiqSearch)
     end
+
+    it 'query shortcuts' do
+      FactoryBot.create(:miq_shortcut, :rbac_feature_name => 'shortcuts')
+      test_collection_query(:shortcuts, api_shortcuts_url, MiqShortcut)
+    end
   end
 
   context "Collections Bulk Queries" do
