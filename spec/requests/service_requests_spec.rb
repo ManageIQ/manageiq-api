@@ -631,17 +631,5 @@ describe "Service Requests API" do
       expect(response.parsed_body['options']).to match(hash_including(options))
       expect(task.reload.options.keys).to all(be_kind_of(Symbol))
     end
-
-    context "SubResource#cancel" do
-      let(:resource_1_response) { {"success" => true, "message" => "RequestTask #{resource_1.id} canceled"} }
-      let(:resource_2_response) { {"success" => true, "message" => "RequestTask #{resource_2.id} canceled"} }
-      include_context "SubResource#cancel", [:service_request, :request_task], :service_template_transformation_plan_request, :service_template_transformation_plan_task
-    end
-  end
-
-  context "Resource#cancel" do
-    let(:resource_1_response) { {"success" => true, "message" => "ServiceTemplateProvisionRequest #{resource_1.id} canceled", "href" => instance_url(resource_1)} }
-    let(:resource_2_response) { {"success" => true, "message" => "ServiceTemplateProvisionRequest #{resource_2.id} canceled", "href" => instance_url(resource_2)} }
-    include_context "Resource#cancel", "service_request", :service_template_transformation_plan_request
   end
 end
