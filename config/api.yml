@@ -2474,6 +2474,30 @@
         :identifier: physical_storage_refresh
       - :name: delete
         :identifier: physical_storage_delete
+  :physical_storage_consumers:
+    :description: Physical Storage Consumers
+    :identifier: physical_storage_consumer
+    :options:
+      - :collection
+    :verbs: *gp
+    :klass: PhysicalStorageConsumer
+    :subcollections:
+    :collection_actions:
+      :get:
+        - :name: read
+          :identifier: physical_storage_consumer_show_list
+      :post:
+        - :name: create
+          :identifier: physical_storage_consumer_new
+        - :name: refresh
+          :identifier: physical_storage_consumer_refresh
+    :resource_actions:
+      :get:
+        - :name: read
+          :identifier: physical_storage_consumer_show
+      :post:
+        - :name: refresh
+          :identifier: physical_storage_consumer_refresh
   :physical_switches:
     :description: Physical Switches
     :identifier: physical_switch
