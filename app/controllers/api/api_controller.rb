@@ -6,14 +6,15 @@ module Api
 
     def index
       res = {
-        :name          => ApiConfig.base.name,
-        :description   => ApiConfig.base.description,
-        :version       => ManageIQ::Api::VERSION,
-        :versions      => entrypoint_versions,
-        :settings      => user_settings,
-        :identity      => auth_identity,
-        :server_info   => server_info,
-        :product_info  => product_info_data
+        :name         => ApiConfig.base.name,
+        :description  => ApiConfig.base.description,
+        :version      => ManageIQ::Api::VERSION,
+        :versions     => entrypoint_versions,
+        :settings     => user_settings,
+        :identity     => auth_identity,
+        :server_info  => server_info,
+        :timezones    => timezone_list,
+        :product_info => product_info_data
       }
       res[:authorization] = auth_authorization if attribute_selection.include?("authorization")
       res[:collections]   = entrypoint_collections
@@ -174,6 +175,15 @@ module Api
         "method" => method,
         "href"   => "#{@req.api_prefix}/#{collection}"
       }
+    end
+
+    def timezone_list
+      ActiveSupport::TimeZone.all.map do |tz|
+        {
+          :name        => tz.name,
+          :description => "(GMT#{tz.formatted_offset}) #{tz.name}",
+        }
+      end
     end
   end
 end
