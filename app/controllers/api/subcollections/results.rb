@@ -16,6 +16,11 @@ module Api
       def results_query_resource(object)
         object.miq_report_results.for_user(User.current_user)
       end
+
+      def results_delete_resource(_parent, type, miq_result_id, data)
+        delete_resource(type, miq_result_id, data)
+      end
+      alias delete_resource_results results_delete_resource
     end
   end
 end

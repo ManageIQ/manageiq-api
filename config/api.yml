@@ -3014,6 +3014,13 @@
       :post:
       - :name: import
         :identifier: miq_report_export
+    :results_subresource_actions:
+      :post:
+      - :name: delete
+        :identifier: saved_report_delete
+      :delete:
+      - :name: delete
+        :identifier: saved_report_delete
   :request_tasks:
     :description: Request Tasks
     :options:
@@ -3166,7 +3173,7 @@
     :options:
     - :collection
     - :subcollection
-    :verbs: *gp
+    :verbs: *gpd
     :klass: MiqReportResult
     :collection_actions:
       :get:
@@ -3184,6 +3191,10 @@
       :post:
       - :name: request_download
         :identifier: miq_report_view
+    :subcollection_actions:
+      :post:
+      - :name: delete
+        :identifier: saved_report_delete
   :roles:
     :description: Roles
     :identifier: rbac_role

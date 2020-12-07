@@ -416,4 +416,153 @@ RSpec.describe "reports API" do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  context "report results" do
+    let(:report)       { FactoryBot.create(:miq_report_with_results, :number_of_results => 2, :miq_group => report_group) }
+    let(:report_group) { @user.current_group }
+    let(:results)      { report.miq_report_results }
+
+    describe "POST /api/reports/:c_id/results/:s_id with delete action" do
+      it "can delete a report results" do
+        api_basic_authorize(action_identifier(:reports, :delete, :results_subresource_actions, :post))
+        result = results.first
+
+        post(api_report_result_url(nil, report, result), :params => {:action => "delete"})
+
+        expected = {
+          "href"    => "http://www.example.com/api/results/#{result.id}",
+          "message" => "results id: #{result.id} deleting",
+          "success" => true,
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "will not delete a report result unless authorized" do
+        api_basic_authorize
+        result = results.first
+
+        post(api_report_result_url(nil, report, result), :params => {:action => "delete"})
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      context "with an unauthorized user group" do
+        let(:report_group) { nil }
+
+        it "raises a 404 with a message that the resource isn't found" do
+          api_basic_authorize(action_identifier(:reports, :delete, :results_subresource_actions, :post))
+          result = results.first
+
+          post(api_report_result_url(nil, report, result), :params => {:action => "delete"})
+
+          expected = {
+            "error" => a_hash_including(
+              "kind"  => "not_found",
+              "klass" => "ActiveRecord::RecordNotFound"
+            )
+          }
+          expect(response.parsed_body).to include(expected)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    describe "POST /api/reports/:c_id/results with delete action" do
+      it "can queue multiple snapshots for deletion" do
+        api_basic_authorize(action_identifier(:reports, :delete, :results_subresource_actions, :post))
+
+        post(
+          api_report_results_url(nil, report),
+          :params => {
+            :action    => "delete",
+            :resources => [
+              {:href => api_report_result_url(nil, report, results.first)},
+              {:href => api_report_result_url(nil, report, results.last)}
+            ]
+          }
+        )
+
+        expected = {
+          "results" => a_collection_containing_exactly(
+            a_hash_including(
+              "success" => true,
+              "message" => "results id: #{results.first.id} deleting",
+              "href"    => api_result_url(nil, results.first)
+            ),
+            a_hash_including(
+              "success" => true,
+              "message" => "results id: #{results.last.id} deleting",
+              "href"    => api_result_url(nil, results.last)
+            )
+          )
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "raises a 404 with proper message if a resource isn't found" do
+        api_basic_authorize(action_identifier(:reports, :delete, :results_subresource_actions, :post))
+        fake_id = results.last.id + 1
+
+        post(
+          api_report_results_url(nil, report),
+          :params => {
+            :action    => "delete",
+            :resources => [{:href => api_report_result_url(nil, report, fake_id)}]
+          }
+        )
+
+        expected = {
+          "results" => [{
+            "message" => a_string_starting_with("Couldn't find MiqReportResult with 'id'=#{fake_id}"),
+            "success" => false
+          }]
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    describe "DELETE /api/vms/:c_id/snapshots/:s_id" do
+      it "can delete a report results" do
+        api_basic_authorize(action_identifier(:reports, :delete, :results_subresource_actions, :delete))
+        result = results.first
+
+        delete(api_report_result_url(nil, report, result))
+
+        expect(response).to have_http_status(:no_content)
+        expect(report.reload.miq_report_results.count).to eq(1)
+      end
+
+      it "will not delete a report result unless authorized" do
+        api_basic_authorize
+        result = results.first
+
+        post(api_report_result_url(nil, report, result), :params => {:action => "delete"})
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      context "with an unauthorized user group" do
+        let(:report_group) { nil }
+
+        it "raises a 404 with a message that the resource isn't found" do
+          api_basic_authorize(action_identifier(:reports, :delete, :results_subresource_actions, :post))
+          result = results.first
+
+          post(api_report_result_url(nil, report, result), :params => {:action => "delete"})
+
+          expected = {
+            "error" => a_hash_including(
+              "kind"  => "not_found",
+              "klass" => "ActiveRecord::RecordNotFound"
+            )
+          }
+          expect(response.parsed_body).to include(expected)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+  end
 end
