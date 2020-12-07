@@ -1703,6 +1703,64 @@ describe "Vms API" do
     end
   end
 
+  context "Vm rename action" do
+    it "to an invalid vm" do
+      api_basic_authorize action_identifier(:vms, :rename)
+
+      post(invalid_vm_url, :params => gen_request(:rename, "new_name" => "test"))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "to an invalid vm without appropriate role" do
+      api_basic_authorize
+
+      post(invalid_vm_url, :params => gen_request(:rename, "new_name" => "test"))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "to a vm with missing new_name" do
+      api_basic_authorize action_identifier(:vms, :rename)
+
+      post(vm_url, :params => gen_request(:rename))
+
+      expect_bad_request("Must specify a new_name")
+    end
+
+    it "to a single vm" do
+      api_basic_authorize action_identifier(:vms, :rename)
+
+      post(vm_url, :params => gen_request(:rename, "new_name" => "new_vm"))
+
+      expect_single_action_result(:success => true, :message => /#{vm.id}.* renaming to new_vm/i, :href => api_vm_url(nil, vm))
+    end
+
+    it "to multiple vms" do
+      api_basic_authorize collection_action_identifier(:vms, :rename)
+
+      post(api_vms_url, :params => gen_request(:rename, [{"href" => vm1_url, "new_name" => "new_1"}, {"href" => vm2_url, "new_name" => "new_2"}]))
+
+      expected = {
+        "results" => a_collection_containing_exactly(
+          a_hash_including(
+            "message" => a_string_matching(/#{vm1.id}.* renaming to new_1/i),
+            "success" => true,
+            "href"    => api_vm_url(nil, vm1)
+          ),
+          a_hash_including(
+            "message" => a_string_matching(/#{vm2.id}.* renaming to new_2/i),
+            "success" => true,
+            "href"    => api_vm_url(nil, vm2)
+          )
+        )
+      }
+
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   context "Vm request console action" do
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :request_console)
@@ -2157,6 +2215,7 @@ describe "Vms API" do
     let(:resource_type) { "vm" }
 
     include_examples "resource power operations", :vm_vmware, :reboot_guest
+    include_examples "resource power operations", :vm_vmware, :rename
     include_examples "resource power operations", :vm_vmware, :reset
     include_examples "resource power operations", :vm_vmware, :shutdown_guest
     include_examples "resource power operations", :vm_vmware, :start
