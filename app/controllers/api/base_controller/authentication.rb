@@ -15,10 +15,9 @@ module Api
         elsif request.headers["HTTP_AUTHORIZATION"]
           # For AJAX requests the basic auth type should be distinguished
           request.headers['X-REQUESTED-WITH'] == 'XMLHttpRequest' ? :basic_async : :basic
-        elsif request.x_csrf_token
+        elsif request.cookies['_vmdb_session'] || request.x_csrf_token
           # Even if the session cookie is not set, we want to consider a request
-          # as a UI authentication request. Otherwise the response would force
-          # the browser to throw an undesired HTTP basic authentication dialog.
+          # as a UI authentication request. (Previously that would force a login popup.)
           :ui_session
         else
           # no attempt at authentication, usually falls back to :basic
@@ -139,8 +138,8 @@ module Api
 
       def valid_ui_session?
         [
-          valid_authenticity_token?(session, request.x_csrf_token), # CSRF token be set and valid
-          session[:userid].present?,                                # session has a userid stored
+          valid_authenticity_token?(session, request.x_csrf_token) || request.method == 'GET', # CSRF token be set and valid (or GET)
+          session[:userid].present?, # session has a userid stored
           request.origin.nil? || request.origin == request.base_url # origin header if set matches base_url
         ].all?
       end
