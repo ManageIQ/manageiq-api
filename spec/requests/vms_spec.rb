@@ -1900,7 +1900,8 @@ describe "Vms API" do
       post(api_vm_tags_url(nil, vm1), :params => gen_request(:assign, :name => "/managed/bad_category/bad_name"))
 
       expect_tagging_result(
-        [{:success => false, :href => api_vm_url(nil, vm1), :tag_category => "bad_category", :tag_name => "bad_name"}]
+        [{:success => false, :href => api_vm_url(nil, vm1), :tag_category => "bad_category", :tag_name => "bad_name"}],
+        :bad_request
       )
     end
 
@@ -2109,11 +2110,11 @@ describe "Vms API" do
 
       expected = { 'success' => false, 'message' => 'Failed to set miq_server - Must specify a valid miq_server href or id' }
       expect(response.parsed_body).to eq(expected)
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
 
       post(api_vm_url(nil, vm), :params => { :action => 'set_miq_server', :miq_server => { :id => nil } })
       expect(response.parsed_body).to eq(expected)
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
     end
 
     it "can unassign a server if an empty hash is passed" do

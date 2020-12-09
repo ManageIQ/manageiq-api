@@ -749,7 +749,7 @@ RSpec.describe "Instances API" do
       post(api_instance_security_groups_url(nil, instance_vmware),
            :params => gen_request(:add, "name" => "security_group_name"))
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expected = {
         "results" => [
           a_hash_including(
@@ -767,7 +767,7 @@ RSpec.describe "Instances API" do
       post(api_instance_security_groups_url(nil, instance_vmware),
            :params => gen_request(:remove, "name" => "security_group_name"))
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expected = {
         "results" => [
           a_hash_including(

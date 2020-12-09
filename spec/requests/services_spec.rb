@@ -960,7 +960,7 @@ describe "Services API" do
 
       expected = { 'success' => false, 'message' => "Invalid resource href specified 1"}
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to eq(expected)
     end
 
@@ -977,7 +977,7 @@ describe "Services API" do
 
       expected = { 'success' => false, 'message' => "Cannot assign users to Service id:#{svc.id} name:'#{svc.name}'"}
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to eq(expected)
     end
 
@@ -992,7 +992,7 @@ describe "Services API" do
 
       expected = { 'success' => false, 'message' => "Must specify a resource reference"}
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to eq(expected)
     end
 
@@ -1278,7 +1278,7 @@ describe "Services API" do
         'success' => false,
         'message' => a_string_including('Must specify a valid provider href or id')
       }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
 
@@ -1293,7 +1293,7 @@ describe "Services API" do
         'success' => false,
         'message' => a_string_including('Must specify a valid provider href or id')
       }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
 

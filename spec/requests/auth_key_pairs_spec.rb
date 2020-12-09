@@ -90,7 +90,7 @@ RSpec.describe "Auth Key Pairs API" do
 
         post(api_auth_key_pairs_url, :params => {'name' => 'foo', 'ems_id' => provider.id})
 
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:bad_request)
 
         expected = {
           "results" => [

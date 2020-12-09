@@ -65,7 +65,7 @@ describe "Policies Assignment API" do
 
     post(api_object_policies_url, :params => gen_request(:assign, :guid => "xyzzy"))
 
-    expect(response).to have_http_status(:ok)
+    expect(response).to have_http_status(:bad_request)
     results_hash = [{"success" => false, "href" => object_url, "message" => /must specify a valid/i}]
     expect_results_to_match_hash("results", results_hash)
   end
@@ -109,7 +109,7 @@ describe "Policies Assignment API" do
 
     post(api_object_policies_url, :params => gen_request(:unassign, :guid => "xyzzy"))
 
-    expect(response).to have_http_status(:ok)
+    expect(response).to have_http_status(:bad_request)
     results_hash = [{"success" => false, "href" => object_url, "message" => /must specify a valid/i}]
     expect_results_to_match_hash("results", results_hash)
   end

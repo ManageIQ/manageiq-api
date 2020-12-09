@@ -99,6 +99,13 @@ module Api
       json_body.fetch("resource", json_body.except("action"))
     end
 
+    # A bulk request is of the form:
+    # {:action => :create, resources => [{},{}]}
+    # @returns true if this is a bulk request
+    def bulk?
+      json_body.kind_of?(Hash) && json_body.key?("resources")
+    end
+
     private
 
     def expand_requested

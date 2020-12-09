@@ -134,7 +134,7 @@ RSpec.describe 'NetworkRouters API' do
         'success' => false,
         'message' => a_string_including('Delete not supported for Network Router')
       }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
     end
   end

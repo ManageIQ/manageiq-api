@@ -1,4 +1,4 @@
-RSpec.shared_context "SubResource#cancel" do |ns, request_factory, factory|
+RSpec.shared_context "SubResource#cancel" do |ns, request_factory, factory, success = true|
   let(:base_namespace) { ns.first.to_s.pluralize.to_sym }
   let(:sub_namespace)  { ns[1].to_s.pluralize.to_sym }
   let(:namespace)      { ns.join("_") }
@@ -17,7 +17,7 @@ RSpec.shared_context "SubResource#cancel" do |ns, request_factory, factory|
       api_basic_authorize subcollection_action_identifier(base_namespace, sub_namespace, :cancel)
       post(send(instance_url, nil, request, resource_1.id), :params => gen_request(:cancel))
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(success ? :ok : :bad_request)
       expect(response.parsed_body).to eq(resource_1_response)
     end
   end

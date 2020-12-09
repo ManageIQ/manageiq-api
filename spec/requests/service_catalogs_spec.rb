@@ -317,7 +317,7 @@ describe "Service Catalogs API" do
 
       post(sc_template_url(sc.id), :params => gen_request(:assign, "href" => api_service_template_url(nil, 999_999)))
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect_results_to_match_hash("results", [{"success" => false, "href" => api_service_catalog_url(nil, sc)}])
     end
 

@@ -200,7 +200,12 @@ module Spec
         end
 
         def expect_single_action_result(options = {})
-          expect(response).to have_http_status(:ok)
+          if options.key?(:success) || options.key?("success")
+            status = options[:success] || options["success"] ? :ok : :bad_request
+            expect(response).to have_http_status(status)
+          else
+            expect(response).to have_http_status(:ok)
+          end
           expected = options.slice("href", "message", "success")
           expected["success"] = options[:success] if options.key?(:success)
           expected["message"] = a_string_matching(options[:message]) if options[:message]
@@ -222,8 +227,8 @@ module Spec
           {"task_id" => anything, "task_href" => anything}
         end
 
-        def expect_tagging_result(tag_results)
-          expect(response).to have_http_status(:ok)
+        def expect_tagging_result(tag_results, status = :ok)
+          expect(response).to have_http_status(status)
           expect(response.parsed_body).to have_key("results")
           results = response.parsed_body["results"]
           expect(results.size).to eq(tag_results.size)
