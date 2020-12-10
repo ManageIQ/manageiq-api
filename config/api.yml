@@ -4003,6 +4003,21 @@
       :get:
       - :name: read
         :identifier: ops_settings
+  :shortcuts:
+    :description: Shortcuts
+    :options:
+    - :collection
+    :identifier: shortcuts
+    :klass: MiqShortcut
+    :verbs: *g
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: shortcuts
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: shortcuts
   :snapshots:
     :description: Snapshots
     :options:
