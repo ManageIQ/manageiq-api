@@ -58,6 +58,34 @@ RSpec.describe 'NetworkRouters API' do
     end
   end
 
+  describe "POST /api/network_routers/:id" do
+    let(:ems) { FactoryBot.create(:ems_openstack) }
+    let(:tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
+    let(:network_router) { FactoryBot.create(:network_router_openstack, :ext_management_system => ems.network_manager, :cloud_tenant => tenant) }
+
+    it "can queue the updating of a network router" do
+      api_basic_authorize(action_identifier(:network_routers, :edit))
+
+      post(api_network_router_url(nil, network_router), :params => {:action => 'edit', :status => "inactive"})
+
+      expected = {
+        'success'   => true,
+        'message'   => a_string_including('Updating Network Router'),
+        'task_href' => a_string_matching(api_tasks_url),
+        'task_id'   => a_kind_of(String)
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "can't queue the updating of a network router unless authorized" do
+      api_basic_authorize
+
+      post(api_network_router_url(nil, network_router), :params => {:action => 'edit', :status => "inactive"})
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   describe "DELETE /api/network_routers" do
     it "can delete a router" do
       network_router = FactoryBot.create(:network_router)
