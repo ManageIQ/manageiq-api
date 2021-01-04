@@ -1770,6 +1770,51 @@
       :get:
       - :name: read
         :identifier: guest_device_show
+  :host_aggregates:
+    :description: Host Aggregates
+    :identifier: host_aggregate
+    :options:
+    - :collection
+    - :subcollection
+    :verbs: *gpppd
+    :klass: HostAggregate
+    :subcollections:
+    - :tags
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: host_aggregate_show_list
+      :post:
+      - :name: query
+        :identifier: host_aggregate_show_list
+      - :name: create
+        :identifier: host_aggregate_new
+      - :name: delete
+        :identifier: host_aggregate_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: host_aggregate_show
+      :post:
+      - :name: edit
+        :identifier: host_aggregate_edit
+      - :name: delete
+        :identifier: host_aggregate_delete
+      :patch:
+      - :name: edit
+        :identifier: host_aggregate_edit
+      :put:
+      - :name: edit
+        :identifier: host_aggregate_edit
+      :delete:
+      - :name: delete
+        :identifier: host_aggregate_delete
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: host_aggregate_tag
+      - :name: unassign
+        :identifier: host_aggregate_tag
   :hosts:
     :description: Hosts
     :identifier: host
