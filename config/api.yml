@@ -1586,19 +1586,39 @@
     :identifier: floating_ip
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpppd
     :klass: FloatingIp
     :collection_actions:
       :get:
       - :name: read
         :identifier: floating_ip_show_list
       :post:
+      - :name: create
+        :identifier: floating_ip_new
       - :name: query
         :identifier: floating_ip_show_list
+      - :name: edit
+        :identifier: floating_ip_edit
+      - :name: delete
+        :identifier: floating_ip_delete
     :resource_actions:
       :get:
       - :name: read
         :identifier: floating_ip_show
+      :post:
+      - :name: edit
+        :identifier: floating_ip_edit
+      - :name: delete
+        :identifier: floating_ip_delete
+      :patch:
+      - :name: edit
+        :identifier: floating_ip_edit
+      :put:
+      - :name: edit
+        :identifier: floating_ip_edit
+      :delete:
+      - :name: delete
+        :identifier: floating_ip_delete
   :folders:
     :description: Folders
     :options:
