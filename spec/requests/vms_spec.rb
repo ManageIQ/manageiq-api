@@ -306,7 +306,7 @@ describe "Vms API" do
 
       add_hardware_and_os_to_vms
 
-      host.update_attributes(:ext_management_system => ems)
+      host.update(:ext_management_system => ems)
     end
 
     it "removes N+1's from the index query for subcollections/virtual_attributes" do

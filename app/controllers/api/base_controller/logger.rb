@@ -29,7 +29,7 @@ module Api
       end
 
       def log_api_request
-        @parameter_filter ||= ActionDispatch::Http::ParameterFilter.new(Rails.application.config.filter_parameters)
+        @parameter_filter ||= ActiveSupport::ParameterFilter.new(Rails.application.config.filter_parameters)
         return unless api_log_info?
         log_request("Request", @req.to_hash)
         unfiltered_params = request.query_parameters
