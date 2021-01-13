@@ -1346,17 +1346,40 @@
     :identifier: customization_template_accord
     :options:
     - :collection
-    :verbs: *g
+    :verbs: *gpppd
     :klass: CustomizationTemplate
     :collection_actions:
       :get:
       - :name: read
         :identifier: customization_template_view
-    :subcollection_actions:
+      :post:
+      - :name: query
+        :identifier: customization_template_view
+      - :name: create
+        :identifier: customization_template_new
+      - :name: edit
+        :identifier: customization_template_edit
+      - :name: delete
+        :identifier: customization_template_delete
+    :resource_actions:
       :get:
       - :name: read
         :identifier: customization_template_view
-    :resource_actions:
+      :post:
+      - :name: edit
+        :identifier: customization_template_edit
+      - :name: delete
+        :identifier: customization_template_delete
+      :patch:
+      - :name: edit
+        :identifier: customization_template_edit
+      :put:
+      - :name: edit
+        :identifier: customization_template_edit
+      :delete:
+      - :name: delete
+        :identifier: customization_template_delete
+    :subcollection_actions:
       :get:
       - :name: read
         :identifier: customization_template_view
