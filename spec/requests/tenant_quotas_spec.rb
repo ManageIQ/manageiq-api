@@ -177,7 +177,6 @@ describe "tenant quotas API" do
     it "supports OPTIONS requests on a subcollection without authorization" do
       options api_tenant_quotas_url(nil, tenant)
       expect(response).to have_http_status(:ok)
-      expect(response.body).to be_empty
     end
 
     it "can delete multiple quotas from a tenant with POST" do
