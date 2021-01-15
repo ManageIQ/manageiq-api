@@ -1419,6 +1419,26 @@
       :get:
       - :name: read
         :identifier: ems_infra
+  :event_definition_sets:
+    :description: Event Definition Sets
+    :identifier: policy_simulation
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: MiqEventDefinitionSet
+    :subcollections:
+    - :events
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: policy_simulation
+      :post:
+      - :name: query
+        :identifier: policy_simulation
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: policy_simulation
   :event_streams:
     :description: Event Streams
     :options:
