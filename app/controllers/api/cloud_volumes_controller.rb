@@ -29,7 +29,7 @@ module Api
 
       ems = ExtManagementSystem.find(params[:ems_id])
 
-      raise BadRequestError, "No CloudVolume support for - #{klass}" unless defined?(ems.class::CloudVolume)
+      raise BadRequestError, "No CloudVolume support for - #{ems.class}" unless defined?(ems.class::CloudVolume)
 
       klass = ems.class::CloudVolume
 
