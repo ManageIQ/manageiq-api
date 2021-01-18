@@ -139,7 +139,7 @@ module Api
 
     def authorize_provider(typed_provider_klass)
       create_action = collection_config["providers"].collection_actions.post.detect { |a| a.name == "create" }
-      provider_spec = create_action.identifiers.detect { |i| i.klass.constantize.name == typed_provider_klass.superclass.name }
+      provider_spec = create_action.identifiers.detect { |i| typed_provider_klass < i.klass.constantize }
       raise BadRequestError, "Unsupported request class #{typed_provider_klass}" if provider_spec.blank?
 
       if provider_spec.identifier && !api_user_role_allows?(provider_spec.identifier)
