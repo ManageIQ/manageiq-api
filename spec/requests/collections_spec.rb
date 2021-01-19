@@ -216,6 +216,11 @@ describe "Rest API Collections" do
       test_collection_query(:provision_requests, api_provision_requests_url, MiqProvisionRequest)
     end
 
+    it "query PxeImageTypes" do
+      FactoryBot.create(:pxe_image_type)
+      test_collection_query(:pxe_image_types, api_pxe_image_types_url, PxeImageType)
+    end
+
     it "query Rates" do
       FactoryBot.build(:chargeback_rate_detail)
       test_collection_query(:rates, api_rates_url, ChargebackRateDetail)
@@ -539,6 +544,11 @@ describe "Rest API Collections" do
     it "bulk query Provision Requests" do
       FactoryBot.create(:miq_provision_request, :source => template, :requester => @user)
       test_collection_bulk_query(:provision_requests, api_provision_requests_url, MiqProvisionRequest)
+    end
+
+    it "bulk query PxeImageTypes" do
+      FactoryBot.create(:pxe_image_type)
+      test_collection_bulk_query(:pxe_image_types, api_pxe_image_types_url, PxeImageType)
     end
 
     it "bulk query Rates" do

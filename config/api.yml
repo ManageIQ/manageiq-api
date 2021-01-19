@@ -2869,6 +2869,44 @@
         :identifier: miq_request_control
       - :name: edit
         :identifier: miq_request_edit
+  :pxe_image_types:
+    :description: PXE Image Types
+    :identifier: pxe_image_type_accord
+    :options:
+    - :collection
+    :verbs: *gpppd
+    :klass: PxeImageType
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_image_type_view
+      :post:
+      - :name: query
+        :identifier: pxe_image_type_view
+      - :name: create
+        :identifier: pxe_image_type_new
+      - :name: edit
+        :identifier: pxe_image_type_edit
+      - :name: delete
+        :identifier: pxe_image_type_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: pxe_image_type_view
+      :post:
+      - :name: edit
+        :identifier: pxe_image_type_edit
+      - :name: delete
+        :identifier: pxe_image_type_delete
+      :patch:
+      - :name: edit
+        :identifier: pxe_image_type_edit
+      :put:
+      - :name: edit
+        :identifier: pxe_image_type_edit
+      :delete:
+      - :name: delete
+        :identifier: pxe_image_type_delete
   :pxe_images:
     :description: PXE Images
     :identifier: pxe_server_accord
