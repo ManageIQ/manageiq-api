@@ -378,6 +378,11 @@ describe "Rest API Collections" do
       test_collection_query(:customization_scripts, api_customization_scripts_url, CustomizationScript)
     end
 
+    it 'query CustomizationTemplates' do
+      FactoryBot.create(:customization_template)
+      test_collection_query(:customization_templates, api_customization_templates_url, CustomizationTemplate)
+    end
+
     it 'query GuestDevices' do
       FactoryBot.create(:guest_device)
       test_collection_query(:guest_devices, api_guest_devices_url, GuestDevice)
@@ -713,6 +718,11 @@ describe "Rest API Collections" do
     it 'bulk query CustomizationScripts' do
       FactoryBot.create(:customization_script)
       test_collection_bulk_query(:customization_scripts, api_customization_scripts_url, CustomizationScript)
+    end
+
+    it 'bulk query CustomizationTemplates' do
+      FactoryBot.create(:customization_template)
+      test_collection_bulk_query(:customization_templates, api_customization_templates_url, CustomizationTemplate)
     end
 
     it 'bulk query GuestDevices' do
