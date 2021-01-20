@@ -7,7 +7,7 @@ module Api
         custom_button.userid = User.current_user.userid
         custom_button.options = data["options"].deep_symbolize_keys if data["options"]
         custom_button.save!
-        custom_button.create_resource_action!(data["resource_action"].deep_symbolize_keys) if data.key?("resource_action")
+        custom_button.get_resource_action.update!(data["resource_action"].deep_symbolize_keys) if data.key?("resource_action")
         custom_button
       end
     rescue => err
