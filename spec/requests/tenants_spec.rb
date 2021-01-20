@@ -317,4 +317,15 @@ RSpec.describe "tenants API" do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  describe 'OPTIONS /tenants' do
+    it 'includes tenant quota definitions' do
+      api_basic_authorize action_identifier(:tenants, :read, :collection_actions, :get)
+
+      options(api_tenants_url)
+
+      expect(response.parsed_body['data']).to have_key("quota_definitions")
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end

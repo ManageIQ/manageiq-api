@@ -29,6 +29,10 @@ module Api
       super
     end
 
+    def options
+      render_options(:tenants, :quota_definitions => TenantQuota.quota_definitions)
+    end
+
     private
 
     def parse_set_parent(data)
