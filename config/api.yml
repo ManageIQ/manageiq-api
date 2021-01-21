@@ -2042,6 +2042,34 @@
         :identifier: instance_edit
       - :name: delete
         :identifier: instance_edit
+  :iso_datastores:
+    :description: ISO Datastores
+    :identifier: iso_datastore_accord
+    :options:
+    - :collection
+    :verbs: *gpd
+    :klass: IsoDatastore
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: iso_datastore_view
+      :post:
+      - :name: query
+        :identifier: iso_datastore_view
+      - :name: create
+        :identifier: iso_datastore_new
+      - :name: delete
+        :identifier: iso_datastore_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: iso_datastore_view
+      :post:
+      - :name: delete
+        :identifier: iso_datastore_delete
+      :delete:
+      - :name: delete
+        :identifier: iso_datastore_delete
   :lans:
     :description: Lans
     :options:
