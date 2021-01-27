@@ -1,6 +1,7 @@
 module Api
   class VmsController < BaseController
     extend Api::Mixins::CentralAdmin
+    include Api::Mixins::PolicySimulation
     include Subcollections::Accounts
     include Subcollections::Cdroms
     include Subcollections::Compliances
