@@ -37,7 +37,7 @@ describe "Widgets API" do
     let(:feature1) { MiqProductFeature.find_all_by_identifier("dashboard_admin") }
     let(:user1) { FactoryBot.create(:user, :role => "role1", :features => feature1) }
     let(:group1) { user1.current_group }
-    let(:ws) { FactoryBot.create(:miq_widget_set, :name => "Home", :userid => user1.userid, :group_id => group1.id) }
+    let(:ws) { FactoryBot.create(:miq_widget_set, :name => "Home", :userid => user1.userid, :owner => group1) }
 
     before do
       MiqReport.seed_report("Vendor and Guest OS")
@@ -106,7 +106,6 @@ describe "Widgets API" do
         it "generates single widget content" do
           expect(miq_widget.miq_widget_contents.count).to eq(0)
           post(api_widget_url(nil, miq_widget), :params => gen_request(:generate_content))
-
           expect(response).to have_http_status(:ok)
           expect(MiqTask.count).to eq(1)
           expect(MiqQueue.count).to eq(1)
@@ -117,7 +116,6 @@ describe "Widgets API" do
 
           expect(MiqTask.count).to eq(0)
           post(api_widgets_url, :params => gen_request(:generate_content, [{"href" => api_widget_url(nil, miq_widget)}, {"href" => api_widget_url(nil, second_miq_widget)}]))
-
           expect(response).to have_http_status(:ok)
           expect(MiqTask.count).to eq(2)
           expect(MiqQueue.count).to eq(2)
