@@ -27,22 +27,15 @@ module Api
     end
 
     def refresh_host_initiator(host_initiator)
-      method_name = "refresh_ems"
-      role = "ems_operations"
-
-      act_refresh(host_initiator, method_name, role)
+      desc = "#{host_initiator_ident(host_initiator)} refreshing"
+      task_id = queue_object_action(host_initiator, desc, :method_name => "refresh_ems", :role => "ems_operations")
+      action_result(true, "#{host_initiator_ident(host_initiator)} refreshing", :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
     end
 
     def host_initiator_ident(host_initiator)
       "Host Initiator id:#{host_initiator.id} name:'#{host_initiator.name}'"
-    end
-
-    def act_refresh(host_initiator, method_name, role)
-      desc = "#{host_initiator_ident(host_initiator)} refreshing"
-      task_id = queue_object_action(host_initiator, desc, :method_name => method_name, :role => role)
-      action_result(true, desc, :task_id => task_id)
     end
   end
 end
