@@ -312,6 +312,11 @@ describe "Rest API Collections" do
       test_collection_query(:tenants, api_tenants_url, Tenant)
     end
 
+    it "query TimeProfiles" do
+      FactoryBot.create(:time_profile)
+      test_collection_query(:time_profiles, api_time_profiles_url, TimeProfile)
+    end
+
     it "query Users" do
       user = FactoryBot.create(:user)
       user.miq_groups << @user.current_group
@@ -625,6 +630,11 @@ describe "Rest API Collections" do
       api_basic_authorize "rbac_tenant_view"
       Tenant.seed
       test_collection_bulk_query(:tenants, api_tenants_url, Tenant)
+    end
+
+    it "bulk query TimeProfiles" do
+      FactoryBot.create(:time_profile)
+      test_collection_bulk_query(:time_profiles, api_time_profiles_url, TimeProfile)
     end
 
     it "bulk query Users" do
