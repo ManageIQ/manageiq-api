@@ -73,7 +73,7 @@ RSpec.describe 'HostAggregates API' do
         host_aggregate = FactoryBot.create(:host_aggregate_openstack, :ext_management_system => FactoryBot.create(:ems_openstack))
         api_basic_authorize action_identifier(:host_aggregates, :edit)
 
-        send(request, api_host_aggregate_url(nil, host_aggregate), :params => [:name => 'foo'])
+        send(request, api_host_aggregate_url(nil, host_aggregate), :params => {:name => 'foo'})
 
         expected = {
           'success' => true,

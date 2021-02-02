@@ -8,7 +8,7 @@ module Api
 
       raise "Creation of Host Aggregates is not supported for this provider" unless ext_management_system.supports_create_host_aggregate?
 
-      task_id = ext_management_system.create_host_aggregate_queue(session[:userid], data)
+      task_id = ext_management_system.create_host_aggregate_queue(session[:userid], data.symbolize_keys)
       action_result(true, "Creating Host Aggregate #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
@@ -20,7 +20,7 @@ module Api
       host_aggregate = resource_search(id, type, collection_class(:host_aggregates))
       raise "Edit not supported for #{host_aggregate.name}" unless host_aggregate.supports_update_aggregate?
 
-      task_id = host_aggregate.update_aggregate_queue(current_user.userid, data)
+      task_id = host_aggregate.update_aggregate_queue(current_user.userid, data.symbolize_keys)
       action_result(true, "Updating #{host_aggregate_ident(host_aggregate)}", :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
