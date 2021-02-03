@@ -54,4 +54,24 @@ RSpec.describe 'EventDefinitionSets API' do
       expect(response.parsed_body).to include(expected)
     end
   end
+
+  describe 'GET /api/event_definition_sets/:id/events' do
+    it 'can list all events in the event definition set ' do
+      FactoryBot.create(:miq_event_definition, :name => "other_event")
+      expected = {
+        "count"     => 2,
+        "name"      => "events",
+        "subcount"  => 1,
+        "resources" => [
+          {"href" => api_event_definition_set_event_url(nil, event_definition_set, event)}
+        ]
+      }
+      api_basic_authorize
+
+      get(api_event_definition_set_events_url(nil, event_definition_set))
+
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
