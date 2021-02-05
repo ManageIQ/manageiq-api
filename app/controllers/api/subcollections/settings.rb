@@ -35,17 +35,11 @@ module Api
 
       def resource_settings(resource)
         if super_admin? || current_user.role_allows?(:identifier => 'ops_settings')
-          whitelist_settings(resource.settings_for_resource.to_hash)
+          settings = resource.settings_for_resource.to_hash.deep_stringify_keys
+          SettingsFilterer.filter_for(current_user, :settings => settings)
         else
           raise ForbiddenError, "You are not authorized to view settings."
         end
-      end
-
-      def whitelist_settings(settings)
-        return settings if super_admin?
-
-        whitelisted_categories = ApiConfig.collections[:settings][:categories]
-        settings.with_indifferent_access.slice(*whitelisted_categories)
       end
     end
   end
