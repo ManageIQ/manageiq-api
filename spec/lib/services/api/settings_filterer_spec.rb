@@ -1,4 +1,26 @@
 RSpec.describe Api::SettingsFilterer do
+  describe ".filter_for" do
+    context "with opt[:settings]" do
+      it "filters on the custom settings that are passed" do
+        user     = instance_double("User", :super_admin_user? => true)
+        settings = { "api" => {"authentication" => "1337.minutes"} }
+        actual   = described_class.filter_for(user, :settings => settings)
+
+        expect(actual["api"]).to eq(settings["api"])
+      end
+    end
+
+    context "with opt[:whitelist]" do
+      it "uses the custom whitelist to filter settings" do
+        # whitelist only used on non-super-admin users
+        user   = instance_double("User", :super_admin_user? => false)
+        actual = described_class.filter_for(user, :whitelist => %w[api])
+
+        expect(actual.keys).to eq(%w[api])
+      end
+    end
+  end
+
   describe "#fetch" do
     context "given an admin user" do
       let(:user) { instance_double("User", :super_admin_user? => true) }

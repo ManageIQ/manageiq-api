@@ -1,5 +1,7 @@
 module Api
   class ServersController < BaseController
+    include Subcollections::Settings
+
     VALID_SERVERS_ATTRS = %w[name zone].freeze
 
     # Edit an existing server (MiqServer). Certain fields are meant for

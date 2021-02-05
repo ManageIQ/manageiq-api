@@ -2,7 +2,7 @@ module Api
   class SettingsFilterer
     def self.filter_for(user, opts = {})
       subtree = opts.fetch(:subtree, nil)
-      filterer = new(user)
+      filterer = new(user, opts[:settings], opts[:whitelist])
       if subtree
         filterer.fetch(:subtree => subtree)
       else
@@ -12,10 +12,10 @@ module Api
 
     attr_reader :user, :settings, :whitelist
 
-    def initialize(user, settings = Settings.to_hash.deep_stringify_keys, whitelist = ApiConfig.collections[:settings][:categories])
-      @user = user
-      @settings = settings
-      @whitelist = whitelist
+    def initialize(user, settings = nil, whitelist = nil)
+      @user      = user
+      @settings  = settings || Settings.to_hash.deep_stringify_keys
+      @whitelist = whitelist || ApiConfig.collections[:settings][:categories]
     end
 
     def fetch(opts = {})
