@@ -1,5 +1,7 @@
 module Api
   class RegionsController < BaseController
+    include Subcollections::Settings
+
     INVALID_REGIONS_ATTRS = ID_ATTRS + %w[created_at updated_at region guid migrations_ran maintenance_zone_id].freeze
 
     # Edit an existing region (MiqRegion). Certain fields are meant for

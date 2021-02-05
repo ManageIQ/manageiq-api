@@ -1,5 +1,7 @@
 module Api
   class ZonesController < BaseController
+    include Subcollections::Settings
+
     INVALID_ZONES_ATTRS = ID_ATTRS + %w[created_on updated_on].freeze
 
     # Edit an existing zone. Certain fields are meant for internal use only
