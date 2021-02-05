@@ -24,7 +24,7 @@ module Api
           return
         end
 
-        render :json => resource_settings(resource)
+        render_resource :settings, resource_settings(resource)
       end
 
       def settings_query_resource(resource)
