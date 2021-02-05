@@ -1,13 +1,7 @@
 module Api
   class SettingsFilterer
     def self.filter_for(user, opts = {})
-      subtree = opts.fetch(:subtree, nil)
-      filterer = new(user, opts[:settings], opts[:whitelist])
-      if subtree
-        filterer.fetch(:subtree => subtree)
-      else
-        filterer.fetch
-      end
+      new(user, opts[:settings], opts[:whitelist]).fetch(opts.slice(:subtree))
     end
 
     attr_reader :user, :settings, :whitelist
