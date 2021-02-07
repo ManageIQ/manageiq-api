@@ -1,6 +1,27 @@
 describe "Host Initiators API" do
   context "POST /api/host_initiators" do
-    it "creates new storage" do
+    it "with an invalid ems_id it responds with 404 Not Found" do
+      api_basic_authorize(collection_action_identifier(:host_initiators, :create))
+
+      request = {
+        "action"   => "create",
+        "resource" => {
+          "ems_id"              => nil,
+          "name"                => "test_host_initiator",
+          "physical_storage_id" => "1",
+          "port_type"           => "ISCSI",
+          "iqn"                 => "test_iqn",
+          "chap_name"           => "test_chap_name",
+          "chap_secret"         => "test_chap_secret",
+        }
+      }
+
+      post(api_host_initiators_url, :params => request)
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "creates new Host Initiator" do
       api_basic_authorize(collection_action_identifier(:host_initiators, :create))
       provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
       request = {
