@@ -4859,6 +4859,30 @@
         :identifier:
         - vm_snapshot_delete
         - sui_vm_snapshot_delete
+  :volume_mappings:
+    :description: Volume Mappings
+    :identifier: volume_mapping
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: VolumeMapping
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: volume_mapping_show_list
+      :post:
+      - :name: create
+        :identifier: volume_mapping_new
+      - :name: refresh
+        :identifier: volume_mapping_refresh
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: volume_mapping_show
+      :post:
+      - :name: refresh
+        :identifier: volume_mapping_refresh
   :widgets:
     :description: Miq Widgets
     :identifier: miq_report_widget_admin
