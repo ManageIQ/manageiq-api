@@ -1880,6 +1880,30 @@
         :identifier: host_aggregate_tag
       - :name: unassign
         :identifier: host_aggregate_tag
+  :host_initiators:
+    :description: Host Initiators
+    :identifier: host_initiator
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: HostInitiator
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: host_initiator_show_list
+      :post:
+      - :name: create
+        :identifier: host_initiator_new
+      - :name: refresh
+        :identifier: host_initiator_refresh
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: host_initiator_show
+      :post:
+      - :name: refresh
+        :identifier: host_initiator_refresh
   :hosts:
     :description: Hosts
     :identifier: host
