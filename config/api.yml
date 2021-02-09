@@ -1490,7 +1490,7 @@
         :identifier: event_streams_show
   :events:
     :description: Events
-    :identifier: miq_event
+    :identifier: miq_event_definition
     :options:
     - :collection
     - :subcollection
@@ -1499,14 +1499,14 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: miq_event
+        :identifier: miq_event_definition_show_list
       :post:
       - :name: query
-        :identifier: miq_event
+        :identifier: miq_event_definition
     :resource_actions:
       :get:
       - :name: read
-        :identifier: miq_event
+        :identifier: miq_event_definition_show
   :features:
     :description: Product Features
     :options:
