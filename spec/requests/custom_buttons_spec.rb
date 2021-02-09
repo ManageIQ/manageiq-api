@@ -94,32 +94,172 @@ RSpec.describe 'CustomButtons API' do
   end
 
   describe 'POST /api/custom_buttons' do
-    it 'can create a new custom button' do
-      api_basic_authorize collection_action_identifier(:custom_buttons, :create)
-
-      cb_rec = {
+    let(:uri_attributes) { {'uri_attributes' => {'request' => 'automate_method'}} }
+    let(:resource_action) { {'resource_action'=> {'ae_namespace' => 'SYSTEM', 'ae_class' => 'PROCESS'}} }
+    let(:custom_button_params) do
+      {
         'name'             => 'Generic Object Custom Button',
         'description'      => 'Generic Object Custom Button description',
         'applies_to_class' => 'GenericObjectDefinition',
-        'uri_attributes'   => {:request => "automate_method"},
         'options'          => {
           'button_icon'  => 'ff ff-view-expanded',
           'button_color' => '#4727ff',
           'display'      => true,
         },
-        'resource_action'  => {
-          'ae_namespace' => 'SYSTEM',
-          'ae_class'     => 'PROCESS'
-        },
         'visibility'       => {'roles' => ['_ALL_']}
-      }
-      post(api_custom_buttons_url, :params => cb_rec)
+      }.merge(uri_attributes).merge(resource_action)
+    end
+
+    let(:edit_custom_button) { FactoryBot.create(:custom_button, :name => 'XXX', :applies_to_class => 'GenericObjectDefinition', :applies_to_id => object_def.id) }
+
+    let(:request_params)     { custom_button_params }
+    let(:edit_request_params) { {'action' => 'edit', 'resources' => [custom_button_params.merge('id' => edit_custom_button.id)]} }
+
+    subject do
+      post(api_custom_buttons_url, :params => request_params)
+    end
+
+    def expect_custom_button
+      expect(response).to have_http_status(:ok)
+      custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
+      expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
+      expect(custom_button.visibility[:roles]).to eq(['_ALL_'])
+      if uri_attributes['uri_attributes'].present?
+        expect(custom_button.uri_attributes.deep_symbolize_keys).to eq(uri_attributes['uri_attributes'].deep_symbolize_keys)
+        expect(custom_button.resource_action[:ae_attributes].deep_symbolize_keys).to eq(uri_attributes['uri_attributes'].deep_symbolize_keys)
+      end
+
+      if resource_action['resource_action'].present?
+        expect(custom_button.resource_action.attributes).to include(resource_action['resource_action'])
+      end
+      expect(response.parsed_body['results'].first).to include(custom_button_params.except('resource_action', 'uri_attributes'))
+    end
+
+    context "with resource_action in params" do
+      context "with uri_attributes in params" do
+        it "creates custom_button" do
+          api_basic_authorize collection_action_identifier(:custom_buttons, :create)
+
+          subject
+
+          expect_custom_button
+        end
+
+        context "update" do
+          let(:request_params) { edit_request_params }
+
+          it "update custom_button" do
+            api_basic_authorize collection_action_identifier(:custom_buttons, :edit)
+
+            subject
+
+            expect_custom_button
+          end
+        end
+      end
+
+      context "without uri_attributes in params" do
+        let(:uri_attributes) { {} }
+
+        it "creates custom_button" do
+          api_basic_authorize collection_action_identifier(:custom_buttons, :create)
+
+          subject
+
+          expect_custom_button
+        end
+
+        context "update" do
+          let(:request_params) { edit_request_params }
+
+          it "update custom_button" do
+            api_basic_authorize collection_action_identifier(:custom_buttons, :edit)
+
+            subject
+
+            expect_custom_button
+          end
+        end
+      end
+    end
+
+    context "without resource_action in params" do
+      let(:resource_action) { {} }
+
+      context "with uri_attributes in params" do
+        it "creates custom_button" do
+          api_basic_authorize collection_action_identifier(:custom_buttons, :create)
+
+          subject
+
+          expect_custom_button
+        end
+
+        context "update" do
+          let(:request_params) { edit_request_params }
+
+          it "update custom_button" do
+            api_basic_authorize collection_action_identifier(:custom_buttons, :edit)
+
+            subject
+
+            expect_custom_button
+          end
+        end
+      end
+
+      context "without uri_attributes in params" do
+        let(:uri_attributes) { {} }
+
+        it "creates custom_button" do
+          api_basic_authorize collection_action_identifier(:custom_buttons, :create)
+
+          subject
+
+          expect_custom_button
+        end
+
+        context "update" do
+          let(:request_params) { edit_request_params }
+
+          it "update custom_button" do
+            api_basic_authorize collection_action_identifier(:custom_buttons, :edit)
+
+            subject
+
+            expect_custom_button
+          end
+        end
+      end
+    end
+
+    it 'can create a new custom button' do
+      api_basic_authorize collection_action_identifier(:custom_buttons, :create)
+
+      post(api_custom_buttons_url, :params => request_params)
 
       expect(response).to have_http_status(:ok)
       custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
       expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
-      expect(custom_button.visibility['roles']).to eq(['_ALL_'])
-      expect(response.parsed_body['results'].first).to include(cb_rec.except('resource_action', 'uri_attributes'))
+      expect(custom_button.visibility[:roles]).to eq(['_ALL_'])
+      expect(custom_button.uri_attributes.deep_symbolize_keys).to eq(:request => 'automate_method')
+      expect(custom_button.resource_action.attributes).to include(custom_button_params['resource_action'])
+      expect(response.parsed_body['results'].first).to include(custom_button_params.except('resource_action', 'uri_attributes'))
+    end
+
+    let(:custom_button) { FactoryBot.create(:custom_button, :name => 'editable', :applies_to_class => 'GenericObjectDefinition', :applies_to_id => object_def.id) }
+
+    it 'can edit custom button' do
+      api_basic_authorize collection_action_identifier(:custom_buttons, :edit)
+      custom_button_params_for_edit = {'action' => 'edit', 'resources' => [custom_button_params.merge('id' => custom_button.id)]}
+      post(api_custom_buttons_url, :params => custom_button_params_for_edit)
+      expect(response).to have_http_status(:ok)
+      custom_button = CustomButton.find(response.parsed_body['results'].first["id"])
+      expect(custom_button.options[:button_icon]).to eq("ff ff-view-expanded")
+      expect(custom_button.visibility[:roles]).to eq(['_ALL_'])
+      expect(custom_button.uri_attributes).to eq(:request => 'automate_method')
+      expect(custom_button.resource_action.attributes).to include(custom_button_params['resource_action'])
+      expect(response.parsed_body['results'].first).to include(custom_button_params.except('resource_action', 'uri_attributes'))
     end
 
     it 'can edit custom buttons by id' do
