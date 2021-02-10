@@ -65,7 +65,7 @@ Rails.application.routes.draw do
 
           if subcollection_name == :settings
             match(
-              "/:c_id/settings",
+              "/:c_id/settings(/*c_suffix)",
               :to  => "#{collection_name}#settings",
               :via => %w(get patch delete),
               :as  => "#{resource_name}_settings",

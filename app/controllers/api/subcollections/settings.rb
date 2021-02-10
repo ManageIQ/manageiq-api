@@ -35,8 +35,10 @@ module Api
 
       def resource_settings(resource)
         if super_admin? || current_user.role_allows?(:identifier => 'ops_settings')
-          settings = resource.settings_for_resource.to_hash.deep_stringify_keys
-          SettingsFilterer.filter_for(current_user, :settings => settings)
+          filter_opts           = {:settings => resource.settings_for_resource.to_hash.deep_stringify_keys}
+          filter_opts[:subtree] = @req.c_suffix if @req.method == :get
+
+          SettingsFilterer.filter_for(current_user, filter_opts)
         else
           raise ForbiddenError, "You are not authorized to view settings."
         end

@@ -172,6 +172,15 @@ RSpec.describe "Zones" do
       expect(response).to have_http_status(:ok)
     end
 
+    it "shows a subset of the settings when passing a nested route" do
+      api_basic_authorize(:ops_settings)
+
+      get(api_zone_settings_url(nil, zone, "product"))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("product" => a_hash_including("maindb" => "ExtManagementSystem"))
+    end
+
     it "does not allow an authenticated user who doesn't have the proper role to view the settings" do
       expect_forbidden_request { get(api_zone_settings_url(nil, zone)) }
     end
