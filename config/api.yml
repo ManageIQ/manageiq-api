@@ -4504,6 +4504,44 @@
       :delete:
       - :name: delete
         :identifier: rbac_tenant_manage_quotas
+  :time_profiles:
+    :description: Time Profiles
+    :identifier: my_settings_time_profiles
+    :options:
+    - :collection
+    :verbs: *gpppd
+    :klass: TimeProfile
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: my_settings_time_profiles
+      :post:
+      - :name: query
+        :identifier: my_settings_time_profiles
+      - :name: create
+        :identifier: timeprofile_new
+      - :name: edit
+        :identifier: tp_edit
+      - :name: delete
+        :identifier: tp_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: my_settings_time_profiles
+      :post:
+      - :name: edit
+        :identifier: tp_edit
+      - :name: delete
+        :identifier: tp_delete
+      :patch:
+      - :name: edit
+        :identifier: tp_edit
+      :put:
+      - :name: edit
+        :identifier: tp_edit
+      :delete:
+      - :name: delete
+        :identifier: tp_delete
   :transformation_mappings:
     :description: Transformation Mappings
     :identifier: transformation_mapping
