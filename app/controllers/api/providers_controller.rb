@@ -174,7 +174,7 @@ module Api
       end
 
       supported_providers = supported_types_for_create.map do |klass|
-        if klass.supports_regions?
+        if klass.supports?(:regions)
           regions = klass.module_parent::Regions.all.sort_by { |r| r[:description] }.map { |r| r.slice(:name, :description) }
         end
 
