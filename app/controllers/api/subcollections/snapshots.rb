@@ -7,7 +7,7 @@ module Api
 
       def snapshots_create_resource(parent, _type, _id, data)
         raise "Must specify a name for the snapshot" if data["name"].blank? && !parent.try(:snapshot_name_optional?)
-        raise parent.unsupported_reason(:snapshot_create) unless parent.supports_snapshot_create?
+        raise parent.unsupported_reason(:snapshot_create) unless parent.supports?(:snapshot_create)
 
         message = "Creating snapshot #{data["name"]} for #{snapshot_ident(parent)}"
         task_id = queue_object_action(
@@ -25,7 +25,7 @@ module Api
       def delete_resource_snapshots(parent, type, id, _data)
         snapshot = resource_search(id, type, collection_class(type))
         begin
-          raise parent.unsupported_reason(:remove_snapshot) unless parent.supports_remove_snapshot?
+          raise parent.unsupported_reason(:remove_snapshot) unless parent.supports?(:remove_snapshot)
 
           message = "Deleting snapshot #{snapshot.name} for #{snapshot_ident(parent)}"
           task_id = queue_object_action(parent, message, :method_name => "remove_snapshot", :args => [id])
@@ -37,7 +37,7 @@ module Api
       alias snapshots_delete_resource delete_resource_snapshots
 
       def snapshots_revert_resource(parent, type, id, _data)
-        raise parent.unsupported_reason(:revert_to_snapshot) unless parent.supports_revert_to_snapshot?
+        raise parent.unsupported_reason(:revert_to_snapshot) unless parent.supports?(:revert_to_snapshot)
         snapshot = resource_search(id, type, collection_class(type))
 
         message = "Reverting to snapshot #{snapshot.name} for #{snapshot_ident(parent)}"
