@@ -25,6 +25,42 @@ RSpec.describe "Zones" do
   end
 
   context "edit", :edit do
+    it "can create zone authentication" do
+      api_basic_authorize action_identifier(:zones, :edit)
+
+      zone   = FactoryBot.create(:zone, :description => "Current Zone description")
+      params = gen_request(:edit,
+                           "description"               => "Updated Zone Description",
+                           "authentication_attributes" => {"userid" => "foo", "password" => "bar"})
+
+      expect(zone.authentication).to eq(nil) # sanity check
+
+      post api_zone_url(nil, zone), :params => params
+      zone.reload
+
+      expect(zone.description).to             eq("Updated Zone Description")
+      expect(zone.authentication.userid).to   eq("foo")
+      expect(zone.authentication.password).to eq("bar")
+    end
+
+    it "can delete an existing authentication" do
+      api_basic_authorize action_identifier(:zones, :edit)
+
+      zone   = FactoryBot.create(:zone, :description               => "Current Zone description",
+                                        :authentication_attributes => {:userid => "foo", :password => "bar"})
+      params = gen_request(:edit,
+                           "description"               => "Updated Zone Description",
+                           "authentication_attributes" => {"_destroy" => "true"})
+
+      expect(zone.authentication.userid).to eq("foo") # sanity check
+
+      post api_zone_url(nil, zone), :params => params
+      zone.reload
+
+      expect(zone.description).to    eq("Updated Zone Description")
+      expect(zone.authentication).to eq(nil)
+    end
+
     it "will fail if you try to edit invalid fields" do
       api_basic_authorize action_identifier(:zones, :edit)
 
