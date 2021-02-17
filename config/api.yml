@@ -3030,6 +3030,8 @@
         :identifier: pxe_server_edit
       - :name: delete
         :identifier: pxe_server_delete
+      - :name: verify_credentials
+        :identifier: pxe_server_new
     :resource_actions:
       :get:
       - :name: read
