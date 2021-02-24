@@ -1006,14 +1006,14 @@
       :get:
       - :name: read
         :identifier:
-        - automation_manager_configuration_script_view
+        - configuration_script_view
         - ems_infra_show
         - ems_block_storage_show
     :resource_actions:
       :get:
       - :name: read
         :identifier:
-        - automation_manager_configuration_script_view
+        - configuration_script_view
         - ems_infra_show
         - ems_block_storage_show
   :configured_systems:
