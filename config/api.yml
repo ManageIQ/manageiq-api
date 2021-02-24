@@ -2098,6 +2098,28 @@
       :delete:
       - :name: delete
         :identifier: iso_datastore_delete
+  :iso_images:
+    :description: ISO Images
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: IsoImage
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: iso_image_view
+      :post:
+      - :name: query
+        :identifier: iso_image_view
+      - :name: edit
+        :identifier: iso_image_edit
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: iso_image_view
+      :post:
+      - :name: edit
+        :identifier: iso_image_edit
   :lans:
     :description: Lans
     :options:
