@@ -4753,6 +4753,8 @@
         :identifier:
         - vm_tag
         - sui_vm_tags
+      - :name: simulate_policy
+        :identifier: policy_simulation
     :resource_actions:
       :get:
       - :name: read
@@ -4821,6 +4823,8 @@
         :identifier: vm_edit
       - :name: scan
         :identifier: vm_scan
+      - :name: simulate_policy
+        :identifier: policy_simulation
       :delete:
       - :name: delete
         :identifier: vm_delete

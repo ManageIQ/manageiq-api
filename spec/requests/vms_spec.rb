@@ -1791,6 +1791,7 @@ describe "Vms API" do
   end
 
   it_behaves_like "a check compliance action", "vm", :vm_vmware, "Vm"
+  it_behaves_like "simulate policy action", "vm", :vm_vmware, "request_vm_poweroff"
 
   context "Vm Tag subcollection" do
     let(:tag1)         { {:category => "department", :name => "finance", :path => "/managed/department/finance"} }
