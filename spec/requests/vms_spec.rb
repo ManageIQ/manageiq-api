@@ -1367,7 +1367,7 @@ describe "Vms API" do
 
         post(vm_url, :params => gen_request(:retire))
 
-        expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm))
+        expect_single_action_result(:success => true, :message => /#{vm.id}.* request retire/i, :href => api_vm_url(nil, vm))
       end
 
       it "to multiple Vms" do
@@ -1375,17 +1375,24 @@ describe "Vms API" do
 
         post(api_vms_url, :params => gen_request(:retire, [{"href" => vm1_url}, {"href" => vm2_url}]))
 
+        vm1_task = MiqTask.find_by(:name => "VM id:#{vm1.id} name:'#{vm1.name}' request retire")
+        vm2_task = MiqTask.find_by(:name => "VM id:#{vm2.id} name:'#{vm2.name}' request retire")
+
         expected = {
           "results" => a_collection_containing_exactly(
             {
-              "message" => a_string_matching(/#{vm1.id}.* retiring/i),
-              "success" => true,
-              "href"    => api_vm_url(nil, vm1)
+              "message"   => a_string_matching(/#{vm1.id}.* request retire/i),
+              "task_id"   => vm1_task.id.to_s,
+              "task_href" => api_task_url(nil, vm1_task),
+              "success"   => true,
+              "href"      => api_vm_url(nil, vm1)
             },
             {
-              "message" => a_string_matching(/#{vm2.id}.* retiring/ii),
-              "success" => true,
-              "href"    => api_vm_url(nil, vm2)
+              "message"   => a_string_matching(/#{vm2.id}.* request retire/ii),
+              "task_id"   => vm2_task.id.to_s,
+              "task_href" => api_task_url(nil, vm2_task),
+              "success"   => true,
+              "href"      => api_vm_url(nil, vm2)
             }
           )
         }
@@ -1398,7 +1405,7 @@ describe "Vms API" do
         date = 2.weeks.from_now
         post(vm_url, :params => gen_request(:retire, :date => date.iso8601))
 
-        expect_single_action_result(:success => true, :message => /#{vm.id}.* retiring/i, :href => api_vm_url(nil, vm))
+        expect_single_action_result(:success => true, :message => /#{vm.id}.* request retire/i, :href => api_vm_url(nil, vm))
       end
     end
 

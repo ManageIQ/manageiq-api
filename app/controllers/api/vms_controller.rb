@@ -174,16 +174,6 @@ module Api
       end
     end
 
-    def retire_resource(type, id = nil, data = nil)
-      raise BadRequestError, "Must specify an id for retiring a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Retiring #{vm_ident(vm)}")
-        retire_vm(vm, id, data)
-      end
-    end
-
     def reset_resource(type, id = nil, _data = nil)
       raise BadRequestError, "Must specify an id for resetting a #{type} resource" unless id
 
@@ -292,7 +282,9 @@ module Api
       action_result(false, "Failed to set miq_server - #{err}")
     end
 
-    def request_retire_resource(type, id, data = nil)
+    def request_retire_resource(type, id = nil, data = nil)
+      raise BadRequestError, "Must specify an id for retiring a #{type} resource" unless id
+
       api_action(type, id) do |klass|
         vm = resource_search(id, type, klass)
         msg = "Retiring request of vm #{vm_ident(vm)}"
@@ -310,6 +302,7 @@ module Api
         end
       end
     end
+    alias retire_resource request_retire_resource
 
     def check_compliance_resource(type, id, _data = nil)
       api_action(type, id) do |klass|
@@ -483,15 +476,6 @@ module Api
       event_timestamp = event_time.blank? ? Time.now.utc : event_time.to_time(:utc)
 
       vm.add_ems_event(event_type, event_message, event_timestamp)
-      action_result(true, desc)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def retire_vm(vm, id, data)
-      desc = "#{vm_ident(vm)} retiring"
-      desc << " on #{data['date']}" if Hash(data)['date'].present?
-      generic_retire_resource(:vms, id, data)
       action_result(true, desc)
     rescue => err
       action_result(false, err.to_s)
