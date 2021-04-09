@@ -658,7 +658,7 @@
     - :collection
     - :subcollection
     - :custom_actions
-    :verbs: *gp
+    :verbs: *gpppd
     :klass: CloudSubnet
     :subcollections:
     - :tags
@@ -667,12 +667,32 @@
       - :name: read
         :identifier: cloud_subnet_show_list
       :post:
+      - :name: create
+        :identifier: cloud_subnet_new
       - :name: query
         :identifier: cloud_subnet_show_list
+      - :name: edit
+        :identifier: cloud_subnet_edit
+      - :name: delete
+        :identifier: cloud_subnet_delete
     :resource_actions:
       :get:
       - :name: read
         :identifier: cloud_subnet_show
+      :post:
+      - :name: edit
+        :identifier: cloud_subnet_edit
+      - :name: delete
+        :identifier: cloud_subnet_delete
+      :patch:
+      - :name: edit
+        :identifier: cloud_subnet_edit
+      :put:
+      - :name: edit
+        :identifier: cloud_subnet_edit
+      :delete:
+      - :name: delete
+        :identifier: cloud_subnet_delete
     :subcollection_actions:
       :get:
       - :name: read
