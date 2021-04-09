@@ -699,6 +699,8 @@
         :identifier: image_show_list
       - :name: set_ownership
         :identifier: image_ownership
+      - :name: import
+        :identifier: image_import
     :resource_actions:
       :get:
       - :name: read
