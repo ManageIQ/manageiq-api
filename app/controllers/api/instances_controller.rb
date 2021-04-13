@@ -122,6 +122,17 @@ module Api
       end
     end
 
+    def options
+      return super unless @req.subcollection?
+  
+      # Try to look for subcollection specific options
+      subcollection_options_method = "#{@req.subject}_subcollection_options"
+      return super unless respond_to?(subcollection_options_method)
+  
+      vm = resource_search(params[:c_id], @req.collection, collection_class(@req.collection))
+      render_options(@req.collection.to_sym, send(subcollection_options_method, vm))
+    end
+
     private
 
     def instance_ident(instance)
