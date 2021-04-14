@@ -121,7 +121,7 @@ module Api
       klass = fetch_provider_klass(collection_class(:providers), data)
       zone_name = data.delete('zone_name')
       data['id'] = id if id
-      task_id = klass.verify_credentials_task(current_user, zone_name, data)
+      task_id = klass.verify_credentials_task(current_user.userid, zone_name, data)
       action_result(true, 'Credentials sent for verification', :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
