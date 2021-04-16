@@ -16,6 +16,16 @@ module Api
       action_result(false, err.to_s)
     end
 
+    def edit_resource(type, id, data = {})
+      raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
+      cloud_volume = resource_search(id, type, collection_class(:cloud_volumes))
+  
+      task_id = cloud_volume.update_volume_queue(User.current_user, data)
+      action_result(true, "Updating #{cloud_volume.name}", :task_id => task_id)
+    rescue => err
+      action_result(false, err.to_s)
+    end
+  
     def safe_delete_resource(type, id, _data = {})
       delete_action_handler do
         cloud_volume = resource_search(id, type, collection_class(:cloud_volumes))

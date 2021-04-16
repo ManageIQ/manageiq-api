@@ -814,7 +814,7 @@
     :options:
     - :collection
     - :custom_actions
-    :verbs: *gpd
+    :verbs: *gpppd
     :subcollections:
     - :tags
     :klass: CloudVolume
@@ -825,6 +825,8 @@
       :post:
       - :name: create
         :identifier: cloud_volume_new
+      - :name: edit
+        :identifier: cloud_volume_edit
       - :name: query
         :identifier: cloud_volume_show_list
       - :name: delete
@@ -835,6 +837,9 @@
       :get:
       - :name: read
         :identifier: cloud_volume_show
+      :patch:
+      - :name: edit
+        :identifier: cloud_volume_edit
       :post:
       - :name: delete
         :identifier: cloud_volume_delete
