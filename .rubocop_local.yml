@@ -1,3 +1,6 @@
+Naming/MethodParameterName:
+  AllowedNames:
+  - id
 Style/GlobalVars:
   AllowedVariables:
   - $api_log
