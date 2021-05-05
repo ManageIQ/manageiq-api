@@ -2795,6 +2795,8 @@
         - ems_block_storage_show_list
       - :name: create
         :identifiers:
+        - :klass: ManageIQ::Providers::AutomationManager
+          :identifier: ems_automation_add_provider
         - :klass: ManageIQ::Providers::InfraManager
           :identifier: ems_infra_new
         - :klass: ManageIQ::Providers::CloudManager
