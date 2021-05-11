@@ -24,6 +24,34 @@ RSpec.describe "Zones" do
     end
   end
 
+  context "create", :create do
+    it 'creates a new Zone' do
+      api_basic_authorize collection_action_identifier(:zones, :create)
+
+      expected = {'results' => [a_hash_including("name", "description", "settings")]}
+
+      expect do
+        post api_zones_url, :params => {:name => "sads", :description => ":sob:"}
+      end.to change(Zone, :count).by(1)
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'allows setting the "settings" hash on a Zone' do
+      api_basic_authorize collection_action_identifier(:zones, :create)
+
+      expected = {'results' => [a_hash_including("name", "description", "settings")]}
+      settings = {"proxy_server_ip" => "1.2.3.4"}
+
+      expect do
+        post api_zones_url, :params => {:name => "sads", :description => ":sob:", :settings => settings}
+      end.to change(Zone, :count).by(1)
+      expect(response.parsed_body).to include(expected)
+      expect(response.parsed_body["results"].first["settings"]).to eq({"proxy_server_ip" => "1.2.3.4"})
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   context "edit", :edit do
     it "will fail if you try to edit invalid fields" do
       api_basic_authorize action_identifier(:zones, :edit)
