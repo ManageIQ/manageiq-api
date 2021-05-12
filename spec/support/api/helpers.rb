@@ -22,7 +22,14 @@ module Spec
         def api_basic_authorize(*identifiers, user: @user.userid, password: @user.password)
           if identifiers.present?
             identifiers.flatten.collect do |identifier|
-              @role.miq_product_features << MiqProductFeature.find_or_create_by(:identifier => identifier) if identifier
+              if identifier
+                # TODO:  We create product features on demand for various tests instead of seeding the correct features.
+                # We shouldn't hardcode a feature_type here but since it's a UI concern and it's now required, it shouldn't affect the API.
+                # See also: https://github.com/ManageIQ/manageiq/pull/21207
+                feature = MiqProductFeature.find_by(:identifier => identifier)
+                feature ||= MiqProductFeature.create(:identifier => identifier, :feature_type => "view")
+                @role.miq_product_features << feature
+              end
             end
             @role.save
 
