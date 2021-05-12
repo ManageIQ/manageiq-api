@@ -18,7 +18,7 @@
 describe "Roles API" do
   let(:feature_identifiers) do
     %w(vm_explorer ems_infra_tag my_settings_time_profiles
-       miq_request_view miq_report_run storage_manager_show_list rbac_role_show)
+       miq_request_view miq_report_run ems_storage_show_list rbac_role_show)
   end
   let(:expected_attributes) { %w(id name read_only settings) }
   let(:sample_role1) do
@@ -39,7 +39,7 @@ describe "Roles API" do
       "features" => [
         {:identifier => "miq_request_view"},
         {:identifier => "miq_report_run"},
-        {:identifier => "storage_manager_show_list"}
+        {:identifier => "ems_storage_show_list"}
       ]
     }
   end
@@ -48,36 +48,31 @@ describe "Roles API" do
       "features"  => [
         {:identifier => "miq_request_view"},
         {:identifier => "miq_report_run"},
-        {:identifier => "storage_manager_show_list"}
+        {:identifier => "ems_storage_show_list"}
       ]
     }
   end
 
-  before(:each) do
-    @product_features = feature_identifiers.collect do |identifier|
-      FactoryBot.create(:miq_product_feature, :identifier => identifier)
-    end
-  end
-
-  def test_features_query(role, role_url, klass, attr = :id)
-    api_basic_authorize action_identifier(:roles, :read, :resource_actions, :get)
-
-    get role_url, :params => { :expand => "features" }
-    expect(response).to have_http_status(:ok)
-
-    expect(response.parsed_body).to have_key("name")
-    expect(response.parsed_body["name"]).to eq(role.name)
-    expect(response.parsed_body).to have_key("features")
-    expect(response.parsed_body["features"].size).to eq(role.miq_product_features.count)
-
-    expect_result_resources_to_include_data("features", attr.to_s => klass.pluck(attr))
+  before do
+    EvmSpecHelper.seed_specific_product_features(*feature_identifiers)
+    @product_features = MiqProductFeature.where(:identifier => feature_identifiers)
   end
 
   describe "Features" do
     let(:role) { FactoryBot.create(:miq_user_role, :name => "Test Role", :miq_product_features => @product_features) }
 
     it "query available features" do
-      test_features_query(role, api_role_url(nil, role), MiqProductFeature, :identifier)
+      api_basic_authorize action_identifier(:roles, :read, :resource_actions, :get)
+
+      get api_role_url(nil, role), :params => { :expand => "features" }
+      expect(response).to have_http_status(:ok)
+
+      expect(response.parsed_body).to have_key("name")
+      expect(response.parsed_body["name"]).to eq(role.name)
+      expect(response.parsed_body).to have_key("features")
+      expect(response.parsed_body["features"].size).to eq(role.miq_product_features.count)
+
+      expect_result_resources_to_include_data("features", "identifier" => feature_identifiers)
     end
 
     it 'returns only the requested attributes' do

@@ -444,7 +444,7 @@ describe "Authentication API" do
 
     context "actions with single role identifier" do
       it "are rejected when user is not authorized with the single role identifier" do
-        stub_api_action_role(:vms, :collection_actions, :get, :read, "vm_view_role1")
+        stub_api_action_role(:vms, :collection_actions, :get, :read, "vm_show_list")
         api_basic_authorize
 
         get api_vms_url
@@ -453,8 +453,8 @@ describe "Authentication API" do
       end
 
       it "are accepted when user is authorized with the single role identifier" do
-        stub_api_action_role(:vms, :collection_actions, :get, :read, "vm_view_role1")
-        api_basic_authorize "vm_view_role1"
+        stub_api_action_role(:vms, :collection_actions, :get, :read, "vm_show_list")
+        api_basic_authorize "vm_show_list"
 
         get api_vms_url
 
@@ -464,7 +464,7 @@ describe "Authentication API" do
 
     context "actions with multiple role identifiers" do
       it "are rejected when user is not authorized with any of the role identifiers" do
-        stub_api_action_role(:vms, :collection_actions, :get, :read, %w(vm_view_role1 vm_view_role2))
+        stub_api_action_role(:vms, :collection_actions, :get, :read, %w[vm_show_list sui_vm_details_view])
         api_basic_authorize
 
         get api_vms_url
@@ -473,8 +473,8 @@ describe "Authentication API" do
       end
 
       it "are accepted when user is authorized with at least one of the role identifiers" do
-        stub_api_action_role(:vms, :collection_actions, :get, :read, %w(vm_view_role1 vm_view_role2))
-        api_basic_authorize "vm_view_role2"
+        stub_api_action_role(:vms, :collection_actions, :get, :read, %w[vm_show_list sui_vm_details_view])
+        api_basic_authorize "sui_vm_details_view"
 
         get api_vms_url
 
