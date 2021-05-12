@@ -2808,7 +2808,7 @@
         - :klass: ManageIQ::Providers::PhysicalInfraManager
           :identifier: ems_physical_infra_new
         - :klass: Provider
-          :identifier: provider_foreman_add_provider
+          :identifier: ems_configuration_add_provider
       - :name: edit
         :identifier: ems_infra_edit
       - :name: refresh
