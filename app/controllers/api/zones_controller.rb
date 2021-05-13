@@ -30,5 +30,16 @@ module Api
 
       data.keys.select { |key| INVALID_ZONES_ATTRS.include?(key) }.compact.join(", ")
     end
+
+    # Since there is a `settings` attribute on Zone, and a subcollection for
+    # zones called `settings`, allow "setting" of the `:settings` column, and
+    # don't allow setting the "settings" subcollection data on this particular
+    # resource.
+    #
+    def extract_subcollection_data!(subcollections, data)
+      subcollection_keys = subcollections.reject { |subc| subc.to_s == "settings" }
+
+      super(subcollection_keys, data)
+    end
   end
 end
