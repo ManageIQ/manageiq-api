@@ -1856,6 +1856,17 @@ describe "Vms API" do
       expect_result_resources_to_include_hrefs("resources", [api_vm_url(nil, vm2)])
     end
 
+    it "handles counts properly with virtual_attributes" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      get api_vms_url, :params => {
+        :expand     => "resources",
+        :filter     => ["ems_id!=null"],
+        :attributes => "name,provisioned_storage"
+      }
+
+      expect(response.parsed_body["subcount"]).to eq 1
+    end
+
     it "assigns a tag to a Vm without appropriate role" do
       api_basic_authorize
 
