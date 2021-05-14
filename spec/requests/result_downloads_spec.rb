@@ -71,7 +71,7 @@ PDF Report"
     it "fail with unrelated authorization" do
       result = FactoryBot.create(:miq_report_with_results, :miq_group => @group).miq_report_results.first
 
-      api_basic_authorize :some_unrelated_entitlement
+      api_basic_authorize "vm_show_list"
 
       post(api_result_url(nil, result), :params => gen_request(:request_download, :result_type => "txt"))
       expect(response).to have_http_status(:forbidden)
@@ -199,7 +199,7 @@ PDF Report"
     end
 
     it "fail if authorized with an unrelated entitlement" do
-      api_basic_authorize :some_unrelated_entitlement
+      api_basic_authorize "vm_show_list"
 
       get(task_results_url(task_1))
 

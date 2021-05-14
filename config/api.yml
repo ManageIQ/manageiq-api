@@ -3292,7 +3292,7 @@
         - :klass: VmReconfigureRequest
           :identifier: vm_reconfigure
         - :klass: VmCloudReconfigureRequest
-          :identifier: vm_cloud_reconfigure
+          :identifier: instance_resize
         - :klass: VmMigrateRequest
           :identifier: vm_migrate
         - :klass: ServiceTemplateProvisionRequest
