@@ -20,20 +20,11 @@ module Spec
         end
 
         def api_basic_authorize(*identifiers, user: @user.userid, password: @user.password)
+          identifiers = identifiers.flatten.compact.map(&:to_s)
           if identifiers.present?
-            identifiers.flatten.collect do |identifier|
-              if identifier
-                # TODO:  We create product features on demand for various tests instead of seeding the correct features.
-                # We shouldn't hardcode a feature_type here but since it's a UI concern and it's now required, it shouldn't affect the API.
-                # See also: https://github.com/ManageIQ/manageiq/pull/21207
-                feature = MiqProductFeature.find_by(:identifier => identifier)
-                feature ||= MiqProductFeature.create(:identifier => identifier, :feature_type => "view")
-                @role.miq_product_features << feature
-              end
-            end
-            @role.save
-
-            MiqProductFeature.seed_tenant_miq_product_features if identifiers & MiqProductFeature::TENANT_FEATURE_ROOT_IDENTIFIERS == identifiers
+            EvmSpecHelper.seed_specific_product_features(*identifiers)
+            @role.miq_product_features += MiqProductFeature.where(:identifier => identifiers).to_a
+            @role.save!
           end
 
           request_headers["HTTP_AUTHORIZATION"] = ActionController::HttpAuthentication::Basic.encode_credentials(user, password)

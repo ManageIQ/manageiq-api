@@ -41,23 +41,16 @@ describe "tenant quotas API" do
     end
 
     context 'with dynamic tenant features' do
-      let!(:tenant_alpha) { FactoryBot.create(:tenant, :parent => Tenant.root_tenant) }
-      let!(:tenant_omega) { FactoryBot.create(:tenant, :parent => tenant_alpha) }
-
-      let(:feature) { MiqProductFeature.find_all_by_identifier(["rbac_tenant_manage_quotas_tenant_#{tenant_omega.id}"]) }
-      let(:role_with_access_to_omega_rbac_tenant_manage_quota_permission) { FactoryBot.create(:miq_user_role, :miq_product_features => feature) }
-
-      let(:group_alpha) { FactoryBot.create(:miq_group, :tenant => tenant_alpha, :miq_user_role => role_with_access_to_omega_rbac_tenant_manage_quota_permission) }
-      let(:user_alpha)  { FactoryBot.create(:user, :miq_groups => [group_alpha]) }
+      let!(:tenant_alpha) { FactoryBot.create(:tenant, :name => "alpha", :parent => Tenant.root_tenant) }
+      let!(:tenant_omega) { FactoryBot.create(:tenant, :name => "omega", :parent => tenant_alpha) }
 
       before do
-        Tenant.seed
-        @user.update(:miq_groups => [group_alpha])
-        @role = role_with_access_to_omega_rbac_tenant_manage_quota_permission
+        EvmSpecHelper.seed_specific_product_features("rbac_tenant_manage_quotas")
+        @group.update(:tenant => tenant_alpha)
       end
 
       it "cannot create a quota for alpha tenant without tenant product permission for alpha tenant" do
-        api_basic_authorize ["rbac_tenant_manage_quotas_tenant_#{tenant_omega.id}"]
+        api_basic_authorize "rbac_tenant_manage_quotas_tenant_#{tenant_omega.id}"
 
         expect do
           post "/api/tenants/#{tenant_alpha.id}/quotas/", :params => { :name => :cpu_allocated, :value => 1 }
@@ -67,7 +60,7 @@ describe "tenant quotas API" do
       end
 
       it "can create a quota from a tenant omega with tenant product permission for omega" do
-        api_basic_authorize ["rbac_tenant_manage_quotas_tenant_#{tenant_omega.id}"]
+        api_basic_authorize "rbac_tenant_manage_quotas_tenant_#{tenant_omega.id}"
 
         expected = {
           'results' => [
