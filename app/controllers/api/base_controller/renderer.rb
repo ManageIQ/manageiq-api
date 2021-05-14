@@ -193,7 +193,7 @@ module Api
 
       def filter_results(miq_expression, res, options)
         if miq_expression.present? && options.key?(:limit) && options.key?(:offset)
-          subquery_res = Rbac.filtered(res, options.except(:offset, :limit))
+          subquery_res = Rbac.filtered(res, options.except(:offset, :limit, :extra_cols))
           [Rbac.filtered(res, options), subquery_res.count]
         else
           [Rbac.filtered(res, options)]
