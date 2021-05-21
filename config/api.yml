@@ -2809,6 +2809,8 @@
           :identifier: ems_physical_infra_new
         - :klass: Provider
           :identifier: ems_configuration_add_provider
+        - :klass: ManageIQ::Providers::StorageManager
+          :identifier: ems_storage_new
       - :name: edit
         :identifier: ems_infra_edit
       - :name: refresh
