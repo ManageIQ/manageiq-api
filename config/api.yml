@@ -1035,14 +1035,14 @@
         :identifier:
         - configuration_script_view
         - ems_infra_show
-        - ems_block_storage_show
+        - ems_storage_show
     :resource_actions:
       :get:
       - :name: read
         :identifier:
         - configuration_script_view
         - ems_infra_show
-        - ems_block_storage_show
+        - ems_storage_show
   :configured_systems:
     :description: Configured Systems
     :options:
@@ -2199,34 +2199,34 @@
       - :name: read
         :identifier:
         - ems_infra_show_list
-        - ems_block_storage_show_list
+        - ems_storage_show_list
         - instance_show_list
       :post:
       - :name: query
         :identifier:
         - ems_infra_show_list
-        - ems_block_storage_show_list
+        - ems_storage_show_list
         - instance_show_list
     :resource_actions:
       :get:
       - :name: read
         :identifier:
         - ems_infra_show
-        - ems_block_storage_show
+        - ems_storage_show
         - instance_show
     :subcollection_actions:
       :get:
       - :name: read
         :identifier:
         - ems_infra_show
-        - ems_block_storage_show
+        - ems_storage_show
         - instance_show
     :subresource_actions:
       :get:
       - :name: read
         :identifier:
         - ems_infra_show
-        - ems_block_storage_show
+        - ems_storage_show
         - instance_show
   :measures:
     :description: Measures
@@ -2781,7 +2781,7 @@
       - :name: read
         :identifier:
         - ems_infra_show_list
-        - ems_block_storage_show_list
+        - ems_storage_show_list
       :post:
       - :name: change_password
         :identifier: ems_infra_change_password
@@ -2792,7 +2792,7 @@
       - :name: query
         :identifier:
         - ems_infra_show_list
-        - ems_block_storage_show_list
+        - ems_storage_show_list
       - :name: create
         :identifiers:
         - :klass: ManageIQ::Providers::AutomationManager
@@ -2824,7 +2824,7 @@
       - :name: read
         :identifier:
         - ems_infra_show
-        - ems_block_storage_show
+        - ems_storage_show
       :post:
       - :name: change_password
         :identifier: ems_infra_change_password
@@ -2888,37 +2888,37 @@
       - :name: read
         :identifier:
         - ems_infra_show_list
-        - ems_block_storage_show_list
+        - ems_storage_show_list
     :folders_subresource_actions:
       :get:
       - :name: read
         :identifier:
         - ems_infra_show
-        - ems_block_storage_show
+        - ems_storage_show
     :networks_subcollection_actions:
       :get:
       - :name: read
         :identifier:
         - ems_infra_show_list
-        - ems_block_storage_show_list
+        - ems_storage_show_list
     :networks_subresource_actions:
       :get:
       - :name: read
         :identifier:
         - ems_infra_show
-        - ems_block_storage_show
+        - ems_storage_show
     :lans_subcollection_actions:
       :get:
       - :name: read
         :identifier:
         - ems_infra_show_list
-        - ems_block_storage_show_list
+        - ems_storage_show_list
     :lans_subresource_actions:
       :get:
       - :name: read
         :identifier:
         - ems_infra_show
-        - ems_block_storage_show
+        - ems_storage_show
   :provision_dialogs:
     :description: Provisioning Dialogs
     :identifier: miq_ae_customization_explorer
