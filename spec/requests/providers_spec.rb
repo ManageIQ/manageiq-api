@@ -1561,6 +1561,15 @@ describe "Providers API" do
       expect(response.parsed_body["data"]["provider_settings"]["kubernetes"]["proxy_settings"]["settings"]["http_proxy"]["label"]).to eq('HTTP Proxy')
     end
 
+    it "translates options using user settings if auth passed" do
+      api_basic_authorize
+      @user.update(:settings => {:display => {:locale => "es"}})
+      options("#{api_providers_url}?type=ManageIQ::Providers::Openstack::CloudManager")
+
+      field = response.parsed_body["data"]["provider_form_schema"]["fields"].detect { |f| f["id"] == "provider_region" }
+      expect(field["label"]).to eq("Regi\u00f3n del proveedor")
+    end
+
     it "returns options for supported providers only" do
       allow(Vmdb::PermissionStores.instance).to receive(:supported_ems_type?).and_return(false)
       allow(Vmdb::PermissionStores.instance).to receive(:supported_ems_type?).with("vmwarews").and_return(true)
