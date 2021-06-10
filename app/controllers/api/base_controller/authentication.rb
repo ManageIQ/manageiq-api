@@ -25,10 +25,7 @@ module Api
         end
       end
 
-      #
-      # REST APIs Authenticator and Redirector
-      #
-      def require_api_user_or_token
+      def authenticate_user
         case auth_mechanism
         when :system
           authenticate_with_system_token(request.headers[HttpHeaders::MIQ_TOKEN])
@@ -44,12 +41,28 @@ module Api
           raise AuthenticationError unless success
         end
         log_api_auth
+      end
+
+      #
+      # REST APIs Authenticator and Redirector
+      #
+      def require_api_user_or_token
+        authenticate_user
       rescue AuthenticationError => e
         api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
         error_message = ErrorSerializer.new(:unauthorized, e).serialize(true).to_json
         render :status => 401, :json => error_message
         log_api_response
+      end
+
+      #
+      # Attempt auth if desired, but flow through on failure
+      #
+      def optional_api_user_or_token
+        authenticate_user
+      rescue AuthenticationError => e
+        api_log_warn("AuthenticationError: #{e.message} (on #{request.method} that doesn't require it... ignoring)")
       end
 
       def user_settings
