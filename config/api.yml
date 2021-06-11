@@ -4300,12 +4300,6 @@
     - :subcollection
     :verbs: *gpd
     :klass: Snapshot
-  :snmp_options:
-    :description: Snmp Options
-    :identifier: miq_snmp
-    :options:
-    - :collection 
-    :verbs: *gpd
   :software:
     :description: Software
     :options:

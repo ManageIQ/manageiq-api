@@ -11,7 +11,14 @@ module Api
     end
 
     def options
-      render_options(:actions, :action_types => MiqAction::TYPES)
+      render_options(:actions, build_action_options)
+    end
+
+    def build_action_options
+      {
+        :action_types => MiqAction::TYPES,
+        :snmp_trap    => MiqSnmp.available_types
+      }
     end
   end
 end
