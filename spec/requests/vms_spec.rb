@@ -855,7 +855,7 @@ describe "Vms API" do
       post(vm_url, :params => gen_request(:shelve))
 
       expect_single_action_result(:success => false,
-                                  :message => "Shelve Operation is not available for Vmware VM.",
+                                  :message => "Feature not available/supported",
                                   :href    => api_vm_url(nil, vm),
                                   :task    => false)
     end
@@ -962,7 +962,7 @@ describe "Vms API" do
       post(vm_url, :params => gen_request(:shelve_offload))
 
       expect_single_action_result(:success => false,
-                                  :message => "Shelve Offload Operation is not available for Vmware VM.",
+                                  :message => "Feature not available/supported",
                                   :href    => api_vm_url(nil, vm),
                                   :task    => false)
     end
