@@ -102,5 +102,13 @@ describe "Actions API" do
       expect(actions.first.reload.description).to eq("change")
       expect(actions.second.reload.description).to eq("change2")
     end
+
+    describe 'OPTIONS /api/actions' do
+      it 'returns action_types data' do
+        options(api_actions_url)
+        expected_data = {'action_types' => MiqAction::TYPES, 'snmp_trap' => MiqSnmp.available_types}
+        expect_options_results(:actions, expected_data)
+      end
+    end
   end
 end
