@@ -155,7 +155,7 @@ module Api
         vm = resource_search(id, type, klass)
         api_log_info("Scanning #{vm_ident(vm)}")
 
-        result = validate_vm_for_action(vm, "scan")
+        result = validate_vm_for_action(vm, "smartstate_analysis")
         result = scan_vm(vm) if result[:success]
         result
       end
