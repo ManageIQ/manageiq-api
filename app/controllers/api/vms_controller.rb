@@ -155,7 +155,7 @@ module Api
         vm = resource_search(id, type, klass)
         api_log_info("Scanning #{vm_ident(vm)}")
 
-        result = validate_vm_for_action(vm, "scan")
+        result = validate_vm_for_action(vm, "smartstate_analysis")
         result = scan_vm(vm) if result[:success]
         result
       end
@@ -364,12 +364,7 @@ module Api
     end
 
     def validate_vm_for_action(vm, action)
-      if vm.respond_to?("supports_#{action}?")
-        action_result(vm.public_send("supports_#{action}?"), vm.unsupported_reason(action.to_sym))
-      else
-        validation = vm.send("validate_#{action}")
-        action_result(validation[:available], validation[:message].to_s)
-      end
+      action_result(vm.supports?(action), vm.unsupported_reason(action.to_sym))
     end
 
     def validate_vm_for_remote_console(vm, protocol = nil)

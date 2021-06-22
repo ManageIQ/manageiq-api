@@ -172,12 +172,7 @@ module Api
     end
 
     def validate_instance_for_action(instance, action)
-      if instance.respond_to?("supports_#{action}?")
-        action_result(instance.public_send("supports_#{action}?"), instance.unsupported_reason(action.to_sym))
-      else
-        validation = instance.send("validate_#{action}")
-        action_result(validation[:available], validation[:message].to_s)
-      end
+      action_result(instance.supports?(action), instance.unsupported_reason(action.to_sym))
     end
 
     def suspend_instance(instance)
