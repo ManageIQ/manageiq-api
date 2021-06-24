@@ -32,23 +32,36 @@ RSpec.describe 'Configuration Script Sources API' do
   end
 
   describe 'GET /api/configuration_script_sources/:id' do
-    it 'will show a configuration script source with an appropriate role' do
-      repository = FactoryBot.create(:configuration_script_source)
-      api_basic_authorize collection_action_identifier(:configuration_script_sources, :read, :get)
+    let(:repository) { FactoryBot.create(:configuration_script_source) }
 
+    it 'will show a configuration script source with an appropriate role' do
+      api_basic_authorize collection_action_identifier(:configuration_script_sources, :read, :get)
       get(api_configuration_script_source_url(nil, repository))
 
+      expected = {'href' => api_configuration_script_source_url(nil, repository)}
+
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'allows accessing verify_ssl for EmbeddedAnsible::AutomationManager::ConfigurationScriptSource' do
+      embedded_ansible_repository = FactoryBot.create(:embedded_ansible_configuration_script_source)
+      api_basic_authorize collection_action_identifier(:configuration_script_sources, :read, :get)
+      get(api_configuration_script_source_url(nil, embedded_ansible_repository,
+                                              :attributes => "name,description,verify_ssl"))
+
       expected = {
-        'href' => api_configuration_script_source_url(nil, repository)
+        'name'        => embedded_ansible_repository.name,
+        'description' => embedded_ansible_repository.description,
+        'verify_ssl'  => 0
       }
+
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
     end
 
     it 'forbids access to a configuration script source without an appropriate role' do
-      repository = FactoryBot.create(:configuration_script_source)
       api_basic_authorize
-
       get(api_configuration_script_source_url(nil, repository))
 
       expect(response).to have_http_status(:forbidden)
