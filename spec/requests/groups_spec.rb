@@ -174,7 +174,8 @@ describe "Groups API" do
       expect(expected_group.description).to eq(sample_group["description"])
       expect(expected_group.entitlement).to be_present
       expect(expected_group.entitlement.filters).to eq(sample_group["filters"])
-      expect(expected_group.entitlement.filter_expression).to eq(sample_group["filter_expression"])
+      expect(expected_group.entitlement.filter_expression.class).to be(MiqExpression)
+      expect(expected_group.entitlement.filter_expression.exp).to eq(sample_group["filter_expression"]["exp"])
     end
 
     it "fails to create group with invalid filter specified" do
