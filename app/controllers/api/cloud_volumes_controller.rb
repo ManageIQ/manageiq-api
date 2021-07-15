@@ -59,7 +59,11 @@ module Api
 
       raise BadRequestError, "No DDF specified for - #{klass}" unless klass.respond_to?(:params_for_create)
 
-      render_options(:cloud_volumes, :form_schema => klass.params_for_create(ems))
+      if params["record_id"]
+        render_options(:cloud_volumes, :form_schema => klass.params_for_update(ems, params))
+      else
+        render_options(:cloud_volumes, :form_schema => klass.params_for_create(ems))
+      end
     end
   end
 end
