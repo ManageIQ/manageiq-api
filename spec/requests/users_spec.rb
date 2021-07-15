@@ -633,8 +633,6 @@ RSpec.describe "users API" do
         FactoryBot.create(:session, :user_id => @user.id)
         expect(Session.where(:user_id => @user.id).count).to eq(1)
 
-        TokenStore.token_caches
-
         ts = TokenStore.acquire("api", 100)
 
         ts.create_user_token("my_token", {:userid => @user.userid, :expires_on => Time.zone.now + 100.days}, {:expires_in => 100})
