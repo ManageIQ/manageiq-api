@@ -615,10 +615,14 @@ RSpec.describe "users API" do
   end
 
   context "Revoking Sessions" do
+    before do
+      # Keep this outside of the loop below with the `let` providing the value
+      # for the stub, otherwise it will not work as expected
+      stub_settings_merge(:server => {:session_store => session_store_value})
+    end
+
     %w[cache sql memory].each do |session_store|
-      before do
-        ::Settings.server.session_store = session_store
-      end
+      let(:session_store_value) { session_store }
 
       it "revokes all own sessions of authenticated user with #{session_store}" do
         api_basic_authorize
