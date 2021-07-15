@@ -619,7 +619,10 @@ RSpec.describe "users API" do
       # Keep this outside of the loop below with the `let` providing the value
       # for the stub, otherwise it will not work as expected
       stub_settings_merge(:server => {:session_store => session_store_value})
+      TokenStore.token_caches.clear
     end
+
+    after { TokenStore.token_caches.clear }
 
     %w[cache sql memory].each do |session_store|
       let(:session_store_value) { session_store }
