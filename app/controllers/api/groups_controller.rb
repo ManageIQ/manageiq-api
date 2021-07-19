@@ -18,7 +18,7 @@ module Api
       parse_set_role(data)
       parse_set_tenant(data)
       parse_set_filters(data)
-      group = collection_class(:groups).create(data)
+      group = collection_class(:groups).create(data.to_h)
       if group.invalid?
         raise BadRequestError, "Failed to add a new group - #{group.errors.full_messages.join(', ')}"
       end
@@ -57,10 +57,11 @@ module Api
     def parse_set_filters(data, entitlement_id: nil)
       filters           = data.delete("filters")
       filter_expression = data.delete("filter_expression")
+      filter_expression = filter_expression["exp"] if filter_expression && filter_expression["exp"]
       if filters || filter_expression
         entitlements = {"id" => entitlement_id}
-        entitlements["filters"]           = filters           if filters
-        entitlements["filter_expression"] = filter_expression if filter_expression
+        entitlements["filters"]           = filters.stringify_keys.to_h          if filters
+        entitlements["filter_expression"] = MiqExpression.new(filter_expression) if filter_expression
         data["entitlement_attributes"] = entitlements
       end
     end
