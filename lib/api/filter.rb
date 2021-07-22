@@ -17,21 +17,20 @@ module Api
       "!~"  => {:default => "REGULAR EXPRESSION DOES NOT MATCH"},
     }.freeze
 
-    attr_reader :filters, :model
+    attr_reader :filters, :model, :and_expressions, :or_expressions
 
     def self.parse(filters, model)
       new(filters, model).parse
     end
 
     def initialize(filters, model)
-      @filters = filters
-      @model = model
+      @filters         = filters
+      @model           = model
+      @and_expressions = []
+      @or_expressions  = []
     end
 
     def parse
-      and_expressions = []
-      or_expressions = []
-
       filters.select(&:present?).each do |filter|
         parsed_filter = parse_filter(filter)
         *associations, attr = parsed_filter[:attr].split(".")
