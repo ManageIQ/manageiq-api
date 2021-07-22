@@ -1,6 +1,7 @@
 module Api
   class Filter
-    OPERATORS = {
+    VALID_OPTIONS = [:and_priority, :or_priority]
+    OPERATORS     = {
       "!="  => {:default => "!=", :regex => "REGULAR EXPRESSION DOES NOT MATCH", :null => "IS NOT NULL"},
       "<="  => {:default => "<="},
       ">="  => {:default => ">="},
@@ -48,6 +49,7 @@ module Api
         expr  = {parsed_filter[:operator] => {"field" => field, "value" => parsed_filter[:value]}}
 
         if parsed_filter[:logical_or]
+          or_expressions << and_expressions.pop if options[:and_priority]
           or_expressions << expr
         else
           and_expressions << expr
@@ -62,9 +64,11 @@ module Api
     private
 
     def parse_options(options)
-      return [] if options.nil?
+      return {} if options.nil?
 
-      Array(options.split(","))
+      opts = options.to_s.split(",").map(&:to_sym) & VALID_OPTIONS
+
+      opts.map {|opt| [opt, true]}.to_h
     end
 
     def parse_filter(filter)
@@ -125,8 +129,13 @@ module Api
     end
 
     def composite_expression
-      and_part = and_expressions.one? ? and_expressions.first : {"AND" => and_expressions}
-      or_expressions.empty? ? and_part : {"OR" => [and_part, *or_expressions]}
+      if options[:and_priority]
+        or_part = or_expressions.one? ? or_expressions.first : {"OR" => or_expressions}
+        and_expressions.empty? ? or_part : {"AND" => [or_part, *and_expressions]}
+      else
+        and_part = and_expressions.one? ? and_expressions.first : {"AND" => and_expressions}
+        or_expressions.empty? ? and_part : {"OR" => [and_part, *or_expressions]}
+      end
     end
 
     def target_class(klass, reflections)

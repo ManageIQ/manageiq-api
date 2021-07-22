@@ -146,6 +146,25 @@ RSpec.describe Api::Filter do
       expect(actual.exp).to eq(expected)
     end
 
+    it "supports favoring AND with multiple comparisons of both AND and OR" do
+      filters = ["id = 1000000000123", "name = foo", "or id > 1000000000456"]
+
+      actual = described_class.parse(filters, Vm, "and_priority")
+
+      expected = {
+        "AND" => [
+          {
+            "OR" => [
+              {"=" => {"field" => "Vm-name", "value" => "foo"}},
+              {">" => {"field" => "Vm-id", "value" => "1000000000456"}}
+            ]
+          },
+          {"=" => {"field" => "Vm-id", "value" => "1000000000123"}}
+        ]
+      }
+      expect(actual.exp).to eq(expected)
+    end
+
     it "supports filtering by attributes of associations" do
       filters = ["host.name='foo'"]
 
