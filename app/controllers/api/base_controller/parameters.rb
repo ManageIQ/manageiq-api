@@ -24,7 +24,7 @@ module Api
       #
       def filter_param(klass)
         return nil if params['filter'].blank?
-        Filter.parse(params["filter"], klass)
+        Filter.parse(params["filter"], klass, params["filter_options"])
       end
 
       def by_tag_param

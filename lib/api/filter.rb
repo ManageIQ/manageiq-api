@@ -17,15 +17,16 @@ module Api
       "!~"  => {:default => "REGULAR EXPRESSION DOES NOT MATCH"},
     }.freeze
 
-    attr_reader :filters, :model, :and_expressions, :or_expressions
+    attr_reader :filters, :model, :options, :and_expressions, :or_expressions
 
-    def self.parse(filters, model)
-      new(filters, model).parse
+    def self.parse(filters, model, options=nil)
+      new(filters, model, options).parse
     end
 
-    def initialize(filters, model)
+    def initialize(filters, model, options=nil)
       @filters         = filters
       @model           = model
+      @options         = parse_options(options)
       @and_expressions = []
       @or_expressions  = []
     end
@@ -59,6 +60,12 @@ module Api
     end
 
     private
+
+    def parse_options(options)
+      return [] if options.nil?
+
+      Array(options.split(","))
+    end
 
     def parse_filter(filter)
       logical_or = filter.gsub!(/^or /i, '').present?
