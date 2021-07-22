@@ -43,9 +43,15 @@ module Api
         end
 
         associations.map! { |assoc| ".#{assoc}" }
+
         field = "#{model.name}#{associations.join}-#{attr}"
-        target = parsed_filter[:logical_or] ? or_expressions : and_expressions
-        target << {parsed_filter[:operator] => {"field" => field, "value" => parsed_filter[:value]}}
+        expr  = {parsed_filter[:operator] => {"field" => field, "value" => parsed_filter[:value]}}
+
+        if parsed_filter[:logical_or]
+          or_expressions << expr
+        else
+          and_expressions << expr
+        end
       end
 
       and_part = and_expressions.one? ? and_expressions.first : {"AND" => and_expressions}
