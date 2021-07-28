@@ -97,4 +97,35 @@ RSpec.describe 'Cloud Networks API' do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  describe 'OPTIONS /api/cloud_networks' do
+    it 'returns a DDF schema for add when available via OPTIONS' do
+      zone = FactoryBot.create(:zone, :name => "api_zone")
+      provider = FactoryBot.create(:ems_network, :zone => zone)
+
+      allow(provider.class::CloudNetwork).to receive(:params_for_create).and_return('foo')
+
+      options(api_cloud_networks_url, :params => {:ems_id => provider.id})
+      options("#{api_cloud_networks_url}?ems_id=#{provider.id}")
+
+      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe 'OPTIONS /api/cloud_networks/:id' do
+    it 'returns a DDF schema for edit when available via OPTIONS' do
+      provider = FactoryBot.create(:ems_amazon_with_cloud_networks)
+
+      cloud_network = provider.cloud_networks.first
+
+      allow(CloudNetwork).to receive(:find).with(cloud_network.id.to_s).and_return(cloud_network)
+      allow(Rbac).to receive(:filtered_object).and_return(cloud_network)
+      expect(cloud_network).to receive(:params_for_edit).and_return('foo')
+      options("#{api_cloud_networks_url}/#{cloud_network.id}")
+
+      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
