@@ -15,12 +15,13 @@ module Api
 
       if params.key?("ems_id")
         ems = resource_search(params["ems_id"], :ext_management_systems, ExtManagementSystem)
+        klass = CloudNetwork.class_by_ems(ems)
+
         raise BadRequestError, "No Cloud Network support for - #{ems.class}" unless defined?(ems.class::CloudNetwork)
 
-        klass = ems.class::CloudNetwork
-        raise BadRequestError, "No DDF specified for - #{klass}" unless klass.respond_to?(:params_for_create)
+        raise BadRequestError, "No DDF specified for - #{klass}" unless klass.supports?(:create)
 
-        render_options(:cloud_networks, :form_schema => CloudNetwork.class_by_ems(ems).params_for_create(ems))
+        render_options(:cloud_networks, :form_schema => klass.params_for_create(ems))
       else
         cloud_network = resource_search(params["id"], :cloud_networks, CloudNetwork)
         render_options(:cloud_networks, :form_schema => cloud_network.params_for_edit)
