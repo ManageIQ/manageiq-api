@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
     Api::ApiConfig.collections.each do |collection_name, collection|
       # OPTIONS action for each collection
-      match collection_name.to_s, :controller => collection_name, :action => :options, :via => :options, :as => nil
+      match "#{collection_name}(/:id)", :controller => collection_name, :action => :options, :via => :options, :as => nil
 
       collection_name_pluralized, resource_name = Api::Routing.inflections_for_named_route_helpers(collection_name.to_s)
 
