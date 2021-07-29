@@ -105,7 +105,6 @@ RSpec.describe 'Cloud Networks API' do
 
       allow(provider.class::CloudNetwork).to receive(:params_for_create).and_return('foo')
 
-      options(api_cloud_networks_url, :params => {:ems_id => provider.id})
       options("#{api_cloud_networks_url}?ems_id=#{provider.id}")
 
       expect(response.parsed_body['data']['form_schema']).to eq('foo')
