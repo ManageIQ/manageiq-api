@@ -539,6 +539,36 @@
       :delete:
       - :name: delete
         :identifier: chargeback_rates_delete
+  :cloud_database_flavors:
+    :description: Cloud Database Flavors
+    :identifier: cloud_database_flavor
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: CloudDatabaseFlavor
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_database_flavor_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_database_flavor_show
+  :cloud_databases:
+    :description: Cloud Databases
+    :identifier: cloud_database
+    :options:
+    - :collection
+    :verbs: *g
+    :klass: CloudDatabase
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_database_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_database_show
   :cloud_networks:
     :description: Cloud Networks
     :identifier: cloud_network
