@@ -45,6 +45,20 @@ RSpec.describe Api::Filter do
       expect(actual.exp).to eq(expected)
     end
 
+    it "supports multiple possible values using arrays with =" do
+      filters  = ["name=[foo,bar,baz]"]
+      actual   = described_class.parse(filters, Vm)
+      expected = {
+        "OR" => [
+          {"=" => {"field" => "Vm-name", "value" => "foo"}},
+          {"=" => {"field" => "Vm-name", "value" => "bar"}},
+          {"=" => {"field" => "Vm-name", "value" => "baz"}}
+        ]
+      }
+
+      expect(actual.exp).to eq(expected)
+    end
+
     it "supports NULL/nil equality test via =" do
       filters = ["retired=NULL"]
 

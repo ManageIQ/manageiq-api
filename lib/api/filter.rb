@@ -6,7 +6,7 @@ module Api
       ">="  => {:default => ">="},
       "<"   => {:default => "<", :datetime => "BEFORE"},
       ">"   => {:default => ">", :datetime => "AFTER"},
-      "="   => {:default => "=", :datetime => "IS", :regex => "REGULAR EXPRESSION MATCHES", :string_set => "includes all", :null => "IS NULL"},
+      "="   => {:default => "=", :datetime => "IS", :regex => "REGULAR EXPRESSION MATCHES", :string_set => "includes all", :array => "=", :null => "IS NULL"},
 
       # string-only matching, use quotes
       "=="  => {:default => "="},
@@ -17,21 +17,20 @@ module Api
       "!~"  => {:default => "REGULAR EXPRESSION DOES NOT MATCH"},
     }.freeze
 
-    attr_reader :filters, :model
+    attr_reader :filters, :model, :and_expressions, :or_expressions
 
     def self.parse(filters, model)
       new(filters, model).parse
     end
 
     def initialize(filters, model)
-      @filters = filters
-      @model = model
+      @filters         = filters
+      @model           = model
+      @and_expressions = []
+      @or_expressions  = []
     end
 
     def parse
-      and_expressions = []
-      or_expressions = []
-
       filters.select(&:present?).each do |filter|
         parsed_filter = parse_filter(filter)
         *associations, attr = parsed_filter[:attr].split(".")
@@ -43,13 +42,22 @@ module Api
         end
 
         associations.map! { |assoc| ".#{assoc}" }
+
         field = "#{model.name}#{associations.join}-#{attr}"
-        target = parsed_filter[:logical_or] ? or_expressions : and_expressions
-        target << {parsed_filter[:operator] => {"field" => field, "value" => parsed_filter[:value]}}
+        op    = parsed_filter[:operator]
+        expr  = if parsed_filter[:value].kind_of?(Array)
+                  {"OR" => parsed_filter[:value].map { |val| single_expression(field, op, val) }}
+                else
+                  single_expression(field, op, parsed_filter[:value])
+                end
+
+        if parsed_filter[:logical_or]
+          or_expressions << expr
+        else
+          and_expressions << expr
+        end
       end
 
-      and_part = and_expressions.one? ? and_expressions.first : {"AND" => and_expressions}
-      composite_expression = or_expressions.empty? ? and_part : {"OR" => [and_part, *or_expressions]}
       MiqExpression.new(composite_expression).tap do |expression|
         raise BadRequestError, "Must filter on valid attributes for resource" unless expression.valid?
       end
@@ -82,6 +90,13 @@ module Api
       str_method = is_regex ? methods[:regex] : methods[:default]
 
       filter_value, method = case filter_value
+                             when /^\[(.*)\]$/
+                               unless methods[:array]
+                                 raise BadRequestError, "Unsupported operator for arrays: #{operator}"
+                               end
+
+                               array_value = $1.split(",")
+                               [array_value, methods[:array]]
                              when /^'(.*)'$/, /^"(.*)"$/
                                unquoted_filter_value = $1
                                if column_type(model, filter_attr) == :string_set && methods[:string_set]
@@ -112,6 +127,15 @@ module Api
       end
 
       {:logical_or => logical_or, :operator => method, :attr => filter_attr, :value => filter_value}
+    end
+
+    def composite_expression
+      and_part = and_expressions.one? ? and_expressions.first : {"AND" => and_expressions}
+      or_expressions.empty? ? and_part : {"OR" => [and_part, *or_expressions]}
+    end
+
+    def single_expression(field, operator, value)
+      {operator => {"field" => field, "value" => value}}
     end
 
     def target_class(klass, reflections)
