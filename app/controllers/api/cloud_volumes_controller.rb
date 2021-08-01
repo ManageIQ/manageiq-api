@@ -49,20 +49,19 @@ module Api
     end
 
     def options
-      return super unless params[:ems_id]
+      if params[:id]
+        cloud_volume = resource_search(params[:id], :cloud_volumes, CloudVolume)
+        render_options(:cloud_volumes, :form_schema => cloud_volume.params_for_update)
+      elsif params[:ems_id]
+        ems = resource_search(params[:ems_id], :ext_management_systems, ExtManagementSystem)
+        raise BadRequestError, "No CloudVolume support for - #{ems.class}" unless defined?(ems.class::CloudVolume)
 
-      ems = ExtManagementSystem.find(params[:ems_id])
+        klass = ems.class::CloudVolume
+        raise BadRequestError, "No DDF specified for - #{klass}" unless klass.respond_to?(:params_for_create)
 
-      raise BadRequestError, "No CloudVolume support for - #{ems.class}" unless defined?(ems.class::CloudVolume)
-
-      klass = ems.class::CloudVolume
-
-      raise BadRequestError, "No DDF specified for - #{klass}" unless klass.respond_to?(:params_for_create)
-
-      if params["record_id"]
-        render_options(:cloud_volumes, :form_schema => klass.params_for_update(ems, params))
-      else
         render_options(:cloud_volumes, :form_schema => klass.params_for_create(ems))
+      else
+        super
       end
     end
   end
