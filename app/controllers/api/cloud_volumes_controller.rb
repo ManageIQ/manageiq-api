@@ -57,7 +57,7 @@ module Api
         raise BadRequestError, "No CloudVolume support for - #{ems.class}" unless defined?(ems.class::CloudVolume)
 
         klass = ems.class::CloudVolume
-        raise BadRequestError, "No DDF specified for - #{klass}" unless klass.respond_to?(:params_for_create)
+        raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
 
         render_options(:cloud_volumes, :form_schema => klass.params_for_create(ems))
       else
