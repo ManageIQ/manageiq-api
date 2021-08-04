@@ -8,7 +8,7 @@
 # GET /api/cloud_volumes/:id
 #
 
-fdescribe "Cloud Volumes API" do
+describe "Cloud Volumes API" do
   it "forbids access to cloud volumes without an appropriate role" do
     api_basic_authorize
 
@@ -203,7 +203,7 @@ fdescribe "Cloud Volumes API" do
 
   describe 'OPTIONS /api/cloud_volumes' do
     it 'returns a DDF schema for add when available via OPTIONS' do
-      zone = FactoryBot.create(:zone, :name => "api_zone")
+      zone = FactoryBot.create(:zone)
       provider = FactoryBot.create(:ems_autosde, :zone => zone)
 
       allow(provider.class::CloudVolume).to receive(:params_for_create).and_return('foo')
@@ -218,11 +218,9 @@ fdescribe "Cloud Volumes API" do
 
   describe 'OPTIONS /api/cloud_volumes/:id' do
     it 'returns a DDF schema for edit when available via OPTIONS' do
-      zone = FactoryBot.create(:zone, :name => "api_zone")
+      zone = FactoryBot.create(:zone)
       provider = FactoryBot.create(:ems_autosde, :zone => zone)
-      volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => provider, :name => "my_volume")
-
-      cloud_volume = provider.cloud_volumes.first
+      cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => provider)
 
       allow(CloudVolume).to receive(:find).with(cloud_volume.id.to_s).and_return(cloud_volume)
       allow(Rbac).to receive(:filtered_object).and_return(cloud_volume)
