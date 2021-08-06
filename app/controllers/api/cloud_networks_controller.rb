@@ -11,14 +11,18 @@ module Api
     end
 
     private def options_by_ems_id
-      ems = resource_search(params["ems_id"], :ext_management_systems, ExtManagementSystem)
-      klass = CloudNetwork.class_by_ems(ems)
+      if params["ems_id"] == "nil"
+        render_options(:cloud_networks, :form_schema => {:fields => []})
+      else
+        ems = resource_search(params["ems_id"], :ext_management_systems, ExtManagementSystem)
+        klass = CloudNetwork.class_by_ems(ems)
 
-      raise BadRequestError, "No Cloud Network support for - #{ems.class}" unless defined?(ems.class::CloudNetwork)
+        raise BadRequestError, "No Cloud Network support for - #{ems.class}" unless defined?(ems.class::CloudNetwork)
 
-      raise BadRequestError, "No DDF specified for - #{klass}" unless klass.supports?(:create)
+        raise BadRequestError, "No DDF specified for - #{klass}" unless klass.supports?(:create)
 
-      render_options(:cloud_networks, :form_schema => klass.params_for_create(ems))
+        render_options(:cloud_networks, :form_schema => klass.params_for_create(ems))
+      end
     end
 
     private def options_by_id

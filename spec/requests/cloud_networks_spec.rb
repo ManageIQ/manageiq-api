@@ -127,4 +127,13 @@ RSpec.describe 'Cloud Networks API' do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  describe 'OPTIONS /api/cloud_networks?ems_id=nil' do
+    it 'returns an empty ddf schema with no fields' do
+      options("#{api_cloud_networks_url}?ems_id=nil")
+
+      expect(response.parsed_body['data']['form_schema']).to eq("fields" => [])
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
