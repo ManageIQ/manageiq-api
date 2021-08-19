@@ -6,5 +6,7 @@ rvm:
 - 2.7.2
 addons:
   postgresql: '10'
+services:
+- memcached
 install: bin/setup
 after_script: bin/ci/after_script
