@@ -174,4 +174,16 @@ describe "Physical Storages API" do
       end
     end
   end
+
+  context 'Physical Storages edit action' do
+    it "PUT /api/physical_storages/:id'" do
+      provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+      physical_storage = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::PhysicalStorage", :ext_management_system => provider)
+
+      api_basic_authorize('physical_storage_edit')
+      put(api_physical_storage_url(nil, physical_storage))
+      expect(response.parsed_body["message"]).to include("Updating")
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end

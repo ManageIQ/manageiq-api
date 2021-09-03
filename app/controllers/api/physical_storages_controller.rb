@@ -20,6 +20,19 @@ module Api
       action_result(false, err.to_s)
     end
 
+    def edit_resource(type, id, data = {})
+      raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
+
+      physical_storage = resource_search(id, type, collection_class(:physical_storages))
+
+      raise BadRequestError, physical_storage.unsupported_reason(:update) unless physical_storage.supports?(:update)
+
+      task_id = physical_storage.update_physical_storage_queue(User.current_user, data)
+      action_result(true, "Updating #{physical_storage.name}", :task_id => task_id)
+    rescue => err
+      action_result(false, err.to_s)
+    end
+
     def delete_resource(type, id, _data = nil)
       raise BadRequestError, "Must specify an id for deleting a #{type} resource" if id.blank?
 
