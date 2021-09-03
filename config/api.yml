@@ -2542,7 +2542,7 @@
     :identifier: physical_storage
     :options:
     - :collection
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: PhysicalStorage
     :subcollections:
     :collection_actions:
@@ -2552,6 +2552,8 @@
       :post:
       - :name: create
         :identifier: physical_storage_new
+      - :name: edit
+        :identifier: physical_storage_edit
       - :name: refresh
         :identifier: physical_storage_refresh
       - :name: delete
@@ -2560,6 +2562,9 @@
       :get:
       - :name: read
         :identifier: physical_storage_show
+      :patch:
+      - :name: edit
+        :identifier: physical_storage_edit
       :post:
       - :name: refresh
         :identifier: physical_storage_refresh
