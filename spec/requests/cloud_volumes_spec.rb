@@ -222,7 +222,6 @@ describe "Cloud Volumes API" do
       provider = FactoryBot.create(:ems_autosde, :zone => zone)
       cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => provider)
 
-      allow(CloudVolume).to receive(:find).with(cloud_volume.id.to_s).and_return(cloud_volume)
       allow(Rbac).to receive(:filtered_object).and_return(cloud_volume)
       expect(cloud_volume).to receive(:params_for_update).and_return('foo')
       options("#{api_cloud_volumes_url}/#{cloud_volume.id}")
