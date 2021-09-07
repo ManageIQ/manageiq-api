@@ -201,16 +201,33 @@ describe "Cloud Volumes API" do
     end
   end
 
-  it 'returns a DDF schema when available via OPTIONS' do
-    zone = FactoryBot.create(:zone, :name => "api_zone")
-    provider = FactoryBot.create(:ems_autosde, :zone => zone)
+  describe 'OPTIONS /api/cloud_volumes' do
+    it 'returns a DDF schema for add when available via OPTIONS' do
+      zone = FactoryBot.create(:zone)
+      provider = FactoryBot.create(:ems_autosde, :zone => zone)
 
-    allow(provider.class::CloudVolume).to receive(:params_for_create).and_return('foo')
+      allow(provider.class::CloudVolume).to receive(:params_for_create).and_return('foo')
 
-    options(api_cloud_volumes_url, :params => {:ems_id => provider.id})
-    options("#{api_cloud_volumes_url}?ems_id=#{provider.id}")
+      options(api_cloud_volumes_url, :params => {:ems_id => provider.id})
+      options("#{api_cloud_volumes_url}?ems_id=#{provider.id}")
 
-    expect(response.parsed_body['data']['form_schema']).to eq('foo')
-    expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe 'OPTIONS /api/cloud_volumes/:id' do
+    it 'returns a DDF schema for edit when available via OPTIONS' do
+      zone = FactoryBot.create(:zone)
+      provider = FactoryBot.create(:ems_autosde, :zone => zone)
+      cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => provider)
+
+      allow(Rbac).to receive(:filtered_object).and_return(cloud_volume)
+      expect(cloud_volume).to receive(:params_for_update).and_return('foo')
+      options("#{api_cloud_volumes_url}/#{cloud_volume.id}")
+
+      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      expect(response).to have_http_status(:ok)
+    end
   end
 end
