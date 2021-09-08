@@ -166,4 +166,31 @@ RSpec.describe 'NetworkRouters API' do
       expect(response.parsed_body).to include(expected)
     end
   end
+
+  describe 'OPTIONS /api/network_routers' do
+    it 'returns a DDF schema for add when available via OPTIONS' do
+      zone = FactoryBot.create(:zone, :name => "api_zone")
+      provider = FactoryBot.create(:ems_network, :zone => zone)
+
+      allow(provider.class::NetworkRouter).to receive(:params_for_create).and_return('foo')
+
+      options("#{api_network_routers_url}?ems_id=#{provider.id}")
+
+      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe 'OPTIONS /api/network_routers/:id' do
+    it 'returns a DDF schema for edit when available via OPTIONS' do
+      network_router = FactoryBot.create(:network_routers)
+
+      allow(NetworkRouter).to receive(:find).with(network_router.id.to_s).and_return(network_router)
+      allow(Rbac).to receive(:filtered_object).and_return(network_router)
+      expect(network_router).to receive(:params_for_edit).and_return('foo')
+      options("#{api_network_routers_url}/#{network_router.id}")
+      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end

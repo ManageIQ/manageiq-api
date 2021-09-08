@@ -2302,6 +2302,8 @@
       :post:
       - :name: query
         :identifier: network_router_show_list
+      - :name: create
+        :identifier: network_router_create
       - :name: edit
         :identifier: network_router_edit
       - :name: delete
