@@ -1,4 +1,7 @@
 RSpec.describe 'NetworkRouters API' do
+  let(:ems) { FactoryBot.create(:ems_openstack) }
+  let(:cloud_tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
+
   describe 'GET /api/network_routers' do
     it 'lists all cloud subnets with an appropriate role' do
       network_router = FactoryBot.create(:network_router)
@@ -56,12 +59,47 @@ RSpec.describe 'NetworkRouters API' do
 
       expect(response).to have_http_status(:forbidden)
     end
+
+    it "queues the creating of network router" do
+      api_basic_authorize collection_action_identifier(:network_routers, :create)
+
+      request = {
+        "action"   => "create",
+        "resource" => {
+          "ems_id" => ems.network_manager.id,
+          "name"   => "test_network_router"
+        }
+      }
+
+      post(api_network_routers_url, :params => request)
+
+      expect_multiple_action_result(1, :success => true, :message => "Creating Network Router test_network_router for Provider: #{ems.name}", :task => true)
+    end
+
+    it "raises error when provider does not support creating of network routers" do
+      api_basic_authorize collection_action_identifier(:network_routers, :create)
+      ems = FactoryBot.create(:ems_amazon, :name => 'test_provider')
+      request = {
+        "action"   => "create",
+        "resource" => {
+          "ems_id" => ems.network_manager.id,
+          "name"   => "test_network_router"
+        }
+      }
+
+      post(api_network_routers_url, :params => request)
+
+      expected = {
+        "success" => false,
+        "message" => a_string_including("Create network router for Provider #{ems.name}")
+      }
+      expect(response.parsed_body["results"].first).to include(expected)
+      expect(response).to have_http_status(:bad_request)
+    end
   end
 
   describe "POST /api/network_routers/:id" do
-    let(:ems) { FactoryBot.create(:ems_openstack) }
-    let(:tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
-    let(:network_router) { FactoryBot.create(:network_router_openstack, :ext_management_system => ems.network_manager, :cloud_tenant => tenant) }
+    let(:network_router) { FactoryBot.create(:network_router_openstack, :ext_management_system => ems.network_manager, :cloud_tenant => cloud_tenant) }
 
     it "can queue the updating of a network router" do
       api_basic_authorize(action_identifier(:network_routers, :edit))
