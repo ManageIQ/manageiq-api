@@ -2300,6 +2300,8 @@
       - :name: read
         :identifier: network_router_show_list
       :post:
+      - :name: create
+        :identifier: network_router_new
       - :name: query
         :identifier: network_router_show_list
       - :name: edit
