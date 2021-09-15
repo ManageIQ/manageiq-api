@@ -30,7 +30,6 @@ module Api
       ensure_resource_exists(type, id) if single_resource?
 
       api_action(type, id) do |klass|
-        begin
           volume_mapping = resource_search(id, type, klass)
           unless volume_mapping.supports?(:delete)
             error_msg = "Failed to delete volume mapping: #{volume_mapping.unsupported_reason(:delete)}"
@@ -62,6 +61,5 @@ module Api
     def volume_mapping_ident(volume_mapping)
       "Volume Mapping id:#{volume_mapping.id}"
     end
-
   end
 end
