@@ -6,7 +6,7 @@ module Api
       end
 
       def cloud_templates_create_resource(parent, _type, _id, data)
-        task_id = ManageIQ::Providers::CloudManager::Template.create_image_queue(User.current_user.id, parent, data)
+        task_id = ManageIQ::Providers::CloudManager::Template.create_image_queue(User.current_userid, parent, data)
         action_result(true, 'Creating Image', :task_id => task_id)
       rescue => err
         action_result(false, err.to_s)
@@ -16,7 +16,7 @@ module Api
         raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
         image = resource_search(id, type, collection_class(:cloud_templates))
 
-        task_id = image.update_image_queue(User.current_user.id, data)
+        task_id = image.update_image_queue(User.current_userid, data)
         action_result(true, "Updating #{image_ident(image)}", :task_id => task_id)
       rescue => err
         action_result(false, err.to_s)
@@ -24,7 +24,7 @@ module Api
 
       def cloud_templates_delete_resource(_parent, type, id, _data)
         image = resource_search(id, type, collection_class(type))
-        task_id = image.delete_image_queue(User.current_user.id)
+        task_id = image.delete_image_queue(User.current_userid)
         action_result(true, "Deleting #{image_ident(image)}", :task_id => task_id)
       rescue => err
         action_result(false, err.to_s)

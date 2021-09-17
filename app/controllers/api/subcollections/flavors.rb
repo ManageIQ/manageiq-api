@@ -6,7 +6,7 @@ module Api
       end
 
       def flavors_create_resource(parent, _type, _id, data)
-        task_id = Flavor.create_flavor_queue(User.current_user.id, parent, data)
+        task_id = Flavor.create_flavor_queue(User.current_userid, parent, data)
         action_result(true, 'Creating Flavor', :task_id => task_id)
       rescue => err
         action_result(false, err.to_s)
@@ -14,7 +14,7 @@ module Api
 
       def delete_resource_flavors(_parent, type, id, _data)
         flavor = resource_search(id, type, collection_class(type))
-        task_id = flavor.delete_flavor_queue(User.current_user.id)
+        task_id = flavor.delete_flavor_queue(User.current_userid)
         action_result(true, "Deleting #{flavor_ident(flavor)}", :task_id => task_id)
       rescue => err
         action_result(false, err.to_s)
