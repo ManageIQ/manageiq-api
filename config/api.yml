@@ -2075,6 +2075,10 @@
         :identifier: instance_reset
       - :name: set_ownership
         :identifier: vm_ownership
+      - :name: retire
+        :identifier: instance_retire_now
+      - :name: request_retire
+        :identifier: instance_retire
     :resource_actions:
       :get:
       - :name: read
@@ -2100,6 +2104,10 @@
         :identifier: instance_reset
       - :name: set_ownership
         :identifier: vm_ownership
+      - :name: retire
+        :identifier: instance_retire_now
+      - :name: request_retire
+        :identifier: instance_retire
     :snapshots_subcollection_actions:
       :get:
       - :name: read
