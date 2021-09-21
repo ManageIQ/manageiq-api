@@ -91,7 +91,7 @@ RSpec.describe 'NetworkRouters API' do
 
       expected = {
         "success" => false,
-        "message" => a_string_including("Create network router for Provider #{ems.name}")
+        "message" => a_string_including("Create Network Routers for Provider #{ems.name}")
       }
       expect(response.parsed_body["results"].first).to include(expected)
       expect(response).to have_http_status(:bad_request)
@@ -198,7 +198,7 @@ RSpec.describe 'NetworkRouters API' do
 
       expected = {
         'success' => false,
-        'message' => a_string_including('Delete not supported for Network Router')
+        'message' => a_string_matching(/Delete for Network Router.*not.*supported/)
       }
       expect(response).to have_http_status(:bad_request)
       expect(response.parsed_body).to include(expected)
