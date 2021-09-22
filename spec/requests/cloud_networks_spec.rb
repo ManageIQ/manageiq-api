@@ -120,7 +120,7 @@ RSpec.describe 'Cloud Networks API' do
 
       allow(CloudNetwork).to receive(:find).with(cloud_network.id.to_s).and_return(cloud_network)
       allow(Rbac).to receive(:filtered_object).and_return(cloud_network)
-      expect(cloud_network).to receive(:params_for_edit).and_return('foo')
+      expect(cloud_network).to receive(:params_for_update).and_return('foo')
       options("#{api_cloud_networks_url}/#{cloud_network.id}")
 
       expect(response.parsed_body['data']['form_schema']).to eq('foo')
