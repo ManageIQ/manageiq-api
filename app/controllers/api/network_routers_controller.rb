@@ -48,7 +48,7 @@ module Api
 
       raise BadRequestError, "No DDF specified for - #{klass}" unless klass.supports?(:create)
 
-      render_options(:cloud_networks, :form_schema => klass.params_for_create(ems, params["cn_id"]))
+      render_options(:cloud_networks, :form_schema => klass.params_for_create(ems))
     end
 
     def options_by_id

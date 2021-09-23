@@ -1,6 +1,8 @@
 RSpec.describe 'NetworkRouters API' do
   let(:ems) { FactoryBot.create(:ems_openstack) }
+  let(:network_manager) { ems.network_manager }
   let(:cloud_tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
+  let(:network_router) { FactoryBot.create(:network_router_openstack, :ext_management_system => network_manager, :cloud_tenant => cloud_tenant) }
 
   describe 'GET /api/network_routers' do
     it 'lists all cloud subnets with an appropriate role' do
@@ -192,18 +194,14 @@ RSpec.describe 'NetworkRouters API' do
 
   describe 'OPTIONS /api/network_routers' do
     it 'with ems_id="..." returns a DDF schema for add when available via OPTIONS' do
-      provider = FactoryBot.create(:ems_network)
+      options(api_network_routers_url(:ems_id => network_manager.id))
 
-      allow(provider.class::NetworkRouter).to receive(:params_for_create).and_return('foo')
-
-      options("#{api_network_routers_url}?ems_id=#{provider.id}")
-
-      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      expect(response.parsed_body['data']).to(match("form_schema" => hash_including("fields" => array_including())))
       expect(response).to have_http_status(:ok)
     end
 
     it 'with no ems_id returns no data' do
-      options(api_network_routers_url.to_s)
+      options(api_network_routers_url)
 
       expect(response.parsed_body['data']).to eq({})
       expect(response).to have_http_status(:ok)
@@ -212,12 +210,9 @@ RSpec.describe 'NetworkRouters API' do
 
   describe 'OPTIONS /api/network_routers/:id' do
     it 'returns a DDF schema for edit when available via OPTIONS' do
-      network_router = FactoryBot.create(:network_routers)
-      allow(NetworkRouter).to receive(:find).with(network_router.id.to_s).and_return(network_router)
-      allow(Rbac).to receive(:filtered_object).and_return(network_router)
-      expect(network_router).to receive(:params_for_update).and_return('foo')
-      options("#{api_network_routers_url}/#{network_router.id}")
-      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      options(api_network_router_url(nil, network_router))
+
+      expect(response.parsed_body['data']).to(match("form_schema" => hash_including("fields" => array_including())))
       expect(response).to have_http_status(:ok)
     end
   end
