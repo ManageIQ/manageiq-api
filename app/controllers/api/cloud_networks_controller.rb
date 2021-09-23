@@ -23,7 +23,7 @@ module Api
 
     private def options_by_id
       cloud_network = resource_search(params["id"], :cloud_networks, CloudNetwork)
-      render_options(:cloud_networks, :form_schema => cloud_network.params_for_edit)
+      render_options(:cloud_networks, :form_schema => cloud_network.params_for_update)
     end
 
     def options
