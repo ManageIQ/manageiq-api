@@ -7,8 +7,7 @@ module Api
 
       klass = CloudVolume.class_by_ems(ext_management_system)
 
-      validate = klass.validate_create_volume(ext_management_system)
-      raise validate[:message] unless validate[:available]
+      raise BadRequestError, ext_management_system.unsupported_reason(:cloud_volume_create) unless ext_management_system.supports?(:cloud_volume_create)
 
       task_id = klass.create_volume_queue(session[:userid], ext_management_system, data)
       action_result(true, "Creating Cloud Volume #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
