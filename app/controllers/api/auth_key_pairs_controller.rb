@@ -5,8 +5,7 @@ module Api
 
       klass = ManageIQ::Providers::CloudManager::AuthKeyPair.class_by_ems(ext_management_system)
 
-      validate = klass.validate_create_key_pair(ext_management_system)
-      raise validate[:message] unless validate[:available]
+      raise ext_management_system.unsupported_reason(:auth_key_pair_create) unless ext_management_system.supports?(:auth_key_pair_create)
 
       task_id = klass.create_key_pair_queue(session[:userid], ext_management_system, data)
       action_result(true, "Creating Cloud Key Pair #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
