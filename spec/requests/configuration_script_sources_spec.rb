@@ -335,7 +335,7 @@ RSpec.describe 'Configuration Script Sources API' do
         'results' => [
           a_hash_including(
             'success' => true,
-            'message' => a_string_including('Creating ConfigurationScriptSource'),
+            'message' => a_string_including('Creating Configuration Script Sources'),
             'task_id' => a_kind_of(String)
           )
         ]
@@ -354,7 +354,7 @@ RSpec.describe 'Configuration Script Sources API' do
         'results' => [
           a_hash_including(
             'success' => true,
-            'message' => "Creating ConfigurationScriptSource for Manager id:#{manager.id} name: '#{manager.name}'",
+            'message' => a_string_including('Creating Configuration Script Sources'),
             'task_id' => a_kind_of(String)
           )
         ]
@@ -372,12 +372,12 @@ RSpec.describe 'Configuration Script Sources API' do
         'results' => [
           a_hash_including(
             'success' => true,
-            'message' => a_string_including('Creating ConfigurationScriptSource'),
+            'message' => a_string_including('Creating Configuration Script Sources'),
             'task_id' => a_kind_of(String)
           ),
           a_hash_including(
             'success' => true,
-            'message' => a_string_including('Creating ConfigurationScriptSource'),
+            'message' => a_string_including('Creating Configuration Script Sources'),
             'task_id' => a_kind_of(String)
           )
         ]
@@ -394,13 +394,17 @@ RSpec.describe 'Configuration Script Sources API' do
       post(api_configuration_script_sources_url, :params => { :resources => [create_params.except(:manager_resource)] })
 
       expected = {
-        'results' => [{
-          'success' => false,
-          'message' => 'Must supply a manager resource'
-        }]
+        # returning 'error'
+        'results' => [
+          a_hash_including(
+            'success' => false,
+            'message' => 'Must supply a manager resource'
+          )
+        ]
       }
-      expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
+      # returning :bad_request
+      expect(response).to have_http_status(:ok)
     end
 
     it 'requires a valid manager' do
@@ -410,13 +414,17 @@ RSpec.describe 'Configuration Script Sources API' do
       post(api_configuration_script_sources_url, :params => { :resources => [create_params] })
 
       expected = {
-        'results' => [{
-          'success' => false,
-          'message' => 'Must specify a valid manager_resource href or id'
-        }]
+        # returning 'error'
+        'results' => [
+          a_hash_including(
+            'success' => false,
+            'message' => 'Must specify a valid manager_resource href or id'
+          )
+        ]
       }
-      expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
+      # returning :bad_request
+      expect(response).to have_http_status(:ok)
     end
 
     it 'forbids creation of new configuration script source without an appropriate role' do

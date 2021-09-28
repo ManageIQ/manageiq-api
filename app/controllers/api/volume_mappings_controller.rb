@@ -13,15 +13,9 @@ module Api
     end
 
     def create_resource(_type, _id = nil, data = {})
-      ext_management_system = ExtManagementSystem.find(data['ems_id'])
-
-      klass = VolumeMapping.class_by_ems(ext_management_system)
-      raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
-
-      task_id = VolumeMapping.create_volume_mapping_queue(session[:userid], ext_management_system, data)
-      action_result(true, "Creating Volume Mapping for Provider: #{ext_management_system.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+      create_resource_task_result(type, data['ems_id'], :name => data['name']) do |ems|
+        VolumeMapping.create_volume_mapping_queue(User.current_userid, ems, data) # returns task_id
+      end
     end
 
     private

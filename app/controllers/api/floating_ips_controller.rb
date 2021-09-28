@@ -1,14 +1,9 @@
 module Api
   class FloatingIpsController < BaseController
     def create_resource(_type, _id = nil, data = {})
-      ems = ExtManagementSystem.find(data['ems_id'])
-      klass = FloatingIp.class_by_ems(ems)
-      raise BadRequestError, "Create floating ip for Provider #{ems.name}: #{klass.unsupported_reason(:create)}" unless klass.supports?(:create)
-
-      task_id = ems.create_floating_ip_queue(session[:userid], data.deep_symbolize_keys)
-      action_result(true, "Creating Floating Ip #{data['name']} for Provider: #{ems.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+      create_resource_task_result(type, data['ems_id'], :name => data['name']) do |ems|
+        ems.create_floating_ip_queue(User.current_userid, data.deep_symbolize_keys) # returns task_id
+      end
     end
 
     def edit_resource(type, id, data)

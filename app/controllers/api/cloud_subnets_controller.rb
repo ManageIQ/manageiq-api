@@ -16,41 +16,22 @@ module Api
       render_options(:cloud_subnets, :form_schema => klass.params_for_create(ems))
     end
 
-    def create_resource(_type, _id = nil, data = {})
-      ems = ExtManagementSystem.find(data['ems_id'])
-      klass = CloudSubnet.class_by_ems(ems)
-      raise BadRequestError, "Cannot create cloud subnet for Provider #{ems.name}: #{klass.unsupported_reason(:create)}" unless klass.supports?(:create)
-
-      task_id = ems.create_cloud_subnet_queue(session[:userid], data.deep_symbolize_keys)
-      action_result(true, "Creating Cloud Subnet #{data['name']} for Provider: #{ems.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def edit_resource(type, id, data)
-      cloud_subnet = resource_search(id, type, collection_class(:cloud_subnets))
-      raise BadRequestError, "Cannot update #{cloud_subnet_ident(cloud_subnet)}: #{cloud_subnet.unsupported_reason(:update)}" unless cloud_subnet.supports?(:update)
-
-      task_id = cloud_subnet.update_cloud_subnet_queue(session[:userid], data.deep_symbolize_keys)
-      action_result(true, "Updating #{cloud_subnet_ident(cloud_subnet)}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        cloud_subnet = resource_search(id, type, collection_class(:cloud_subnets))
-        raise BadRequestError, "Cannot delete #{cloud_subnet_ident(cloud_subnet)}: #{cloud_subnet.unsupported_reason(:delete)}" unless cloud_subnet.supports?(:delete)
-
-        task_id = cloud_subnet.delete_cloud_subnet_queue(session[:userid])
-        action_result(true, "Deleting #{cloud_subnet_ident(cloud_subnet)}", :task_id => task_id)
+    def create_resource(type, _id = nil, data = {})
+      create_resource_task_result(type, data['ems_id'], :name => data['name']) do |ems|
+        ems.create_cloud_subnet_queue(User.current_userid, data.deep_symbolize_keys) # returns task_id
       end
     end
 
-    private
+    def edit_resource(type, id, data)
+      resource_task_result(type, id, :update) do |cloud_subnet|
+        cloud_subnet.update_cloud_subnet_queue(User.current_userid, data.deep_symbolize_keys) # returns task_id
+      end
+    end
 
-    def cloud_subnet_ident(cloud_subnet)
-      "Cloud Subnet id: #{cloud_subnet.id} name: '#{cloud_subnet.name}'"
+    def delete_resource(type, id, _data = {})
+      resource_task_result(type, id, :delete) do |cloud_subnet|
+        cloud_subnet.delete_cloud_subnet_queue(User.current_userid) # returns task_id
+      end
     end
   end
 end

@@ -13,11 +13,9 @@ module Api
     end
 
     def create_resource(_type, _id = nil, data = {})
-      ext_management_system = ExtManagementSystem.find(data['ems_id'])
-      task_id = PhysicalStorage.create_physical_storage_queue(session[:userid], ext_management_system, data)
-      action_result(true, "Creating Physical Storage #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+      create_resource_task_result(type, data['ems_id'], :name => data['name']) do |ems|
+        PhysicalStorage.create_physical_storage_queue(User.current_userid, ems, data) # returns task_id
+      end
     end
 
     def edit_resource(type, id, data = {})

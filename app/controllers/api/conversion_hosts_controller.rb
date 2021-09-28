@@ -28,6 +28,7 @@ module Api
     # }
     #
     def create_resource(type, id, data)
+      ### this feels like it should live in the options/
       raise BadRequestError, "resource_id must be specified" unless data['resource_id']
       raise BadRequestError, "resource_type must be specified" unless data['resource_type']
       raise BadRequestError, "auth_user must be specified" unless data['auth_user']
@@ -50,6 +51,7 @@ module Api
 
       data['resource'] = resource
 
+      # resouce_task_result
       api_action(type, id) do
         begin
           message = "Enabling resource id:#{resource.id} type:#{resource.type}"

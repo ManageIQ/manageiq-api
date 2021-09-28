@@ -3,40 +3,24 @@ module Api
     include Subcollections::SecurityGroups
     include Subcollections::Tags
 
-    def create_resource(_type, _id, data = {})
-      ext_management_system = resource_search(data['ems_id'], :providers, collection_class(:providers))
-      data.delete('ems_id')
-
-      task_id = CloudTenant.create_cloud_tenant_queue(session[:userid], ext_management_system, data)
-      action_result(true, "Creating Cloud Tenant #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def edit_resource(type, id, data = {})
-      raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
-      cloud_tenant = resource_search(id, type, collection_class(:cloud_tenants))
-
-      task_id = cloud_tenant.update_cloud_tenant_queue(current_user.userid, data)
-      action_result(true, "Updating #{cloud_tenant_ident(cloud_tenant)}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        cloud_tenant = resource_search(id, type, collection_class(type))
-        raise "Delete not supported for #{cloud_tenant.name}" unless cloud_tenant.respond_to?(:delete_cloud_tenant_queue)
-
-        task_id = cloud_tenant.delete_key_pair_queue(current_user.userid)
-        action_result(true, "Deleting #{cloud_tenant.name}", :task_id => task_id)
+    def create_resource(type, _id, data = {})
+      create_resource_task_result(type, data['ems_id'], :name => data['name']) do |manager|
+        data.delete('ems_id') # do for all create resources?
+        # data.delete('id')
+        CloudTenant.create_cloud_tenant_queue(User.current_userid, manager, data) # returns task_id
       end
     end
 
-    private
+    def edit_resource(type, id, data = {})
+      resource_task_result(type, id, :safe_delete) do |cloud_tenant|
+        cloud_tenant.update_cloud_tenant_queue(User.current_userid, data) # returns task_id
+      end
+    end
 
-    def cloud_tenant_ident(cloud_tenant)
-      "Cloud Tenant id:#{cloud_tenant.id} name: '#{cloud_tenant.name}'"
+    def delete_resource(type, id, _data = {})
+      resource_task_result(type, id, :safe_delete) do |cloud_tenant|
+        cloud_tenant.delete_key_pair_queue(User.current_userid, data) # returns task_id
+      end
     end
   end
 end

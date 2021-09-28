@@ -1,16 +1,21 @@
 module Api
   class AuthenticationsController < BaseController
     def edit_resource(type, id, data)
-      auth = resource_search(id, type, collection_class(:authentications))
-      raise "Update not supported for #{authentication_ident(auth)}" unless auth.respond_to?(:update_in_provider_queue)
-      task_id = auth.update_in_provider_queue(data.deep_symbolize_keys)
-      action_result(true, "Updating #{authentication_ident(auth)}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+      resource_task_result(type, id, :update) do |auth|
+        auth.update_in_provider_queue(data.deep_symbolize_keys)
+      end
     end
 
+    # very similar, but not quite right. probably need to extend create_resource_task_result
     def create_resource(_type, _id, data)
-      manager_resource, attrs = validate_auth_attrs(data)
+      attrs = data.dup.except('manager_resource')
+
+      # href = manager_info(data)
+      # create_resource_task_result(href.subject, href.subject_id) do |manager_resource|
+      #   AuthenticationService.create_authentication_task(manager_resource, attrs)
+      # end
+
+      manager_resource = validate_auth_attrs(data)
       task_id = AuthenticationService.create_authentication_task(manager_resource, attrs)
       action_result(true, 'Creating Authentication', :task_id => task_id)
     rescue => err
@@ -18,20 +23,15 @@ module Api
     end
 
     def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        auth = resource_search(id, type, collection_class(:authentications))
-        raise "Delete not supported for #{authentication_ident(auth)}" unless auth.respond_to?(:delete_in_provider_queue)
-        task_id = auth.delete_in_provider_queue
-        action_result(true, "Deleting #{authentication_ident(auth)}", :task_id => task_id)
+      resource_task_result(type, id, :update) do |auth|
+        auth.update_in_provider_queue(data.deep_symbolize_keys)
       end
     end
 
     def refresh_resource(type, id, _data)
-      auth = resource_search(id, type, collection_class(type))
-      task_ids = EmsRefresh.queue_refresh_task(auth)
-      action_result(true, "Refreshing #{authentication_ident(auth)}", :task_ids => task_ids)
-    rescue => err
-      action_result(false, err.to_s)
+      resource_task_result(type, id, :refresh) do |auth|
+        EmsRefresh.queue_refresh_task(auth)
+      end
     end
 
     def options
@@ -50,13 +50,16 @@ module Api
       }
     end
 
-    def validate_auth_attrs(data)
-      raise 'must supply a manager resource' unless data['manager_resource']
-      attrs = data.dup.except('manager_resource')
+    def manager_info(data)
+      raise BadRequestError, 'must supply a manager resource' unless data['manager_resource']
       href = Href.new(data['manager_resource']['href'])
-      raise 'invalid manager_resource href specified' unless href.subject && href.subject_id
-      manager_resource = resource_search(href.subject_id, href.subject, collection_class(href.subject))
-      [manager_resource, attrs]
+      raise BadRequestError, 'invalid manager_resource href specified' unless href.subject && href.subject_id
+      href
+    end
+
+    def validate_auth_attrs(data)
+      href = manager_info(data)
+      resource_search(href.subject_id, href.subject, collection_class(href.subject))
     end
   end
 end
