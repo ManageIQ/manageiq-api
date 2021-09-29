@@ -59,7 +59,7 @@ describe "Volume Mappings API" do
 
     api_basic_authorize action_identifier(:volume_mapping, :delete, :resource_actions, :post)
 
-    post(api_cloud_volume_url(nil, volume_mapping), :params => { :action => "delete" })
+    post(api_volume_mapping_url(nil, volume_mapping), :params => {:action => "delete"})
 
     expected = {
       'message' => "Deleting Volume Mapping id:#{volume_mapping.id}",
@@ -76,7 +76,7 @@ describe "Volume Mappings API" do
 
     api_basic_authorize action_identifier(:volume_mapping, :delete, :resource_actions, :delete)
 
-    delete api_cloud_volume_url(nil, volume_mapping)
+    delete api_volume_mapping_url(nil, volume_mapping)
 
     expect(response).to have_http_status(:no_content)
   end
@@ -86,7 +86,7 @@ describe "Volume Mappings API" do
 
     api_basic_authorize
 
-    delete api_cloud_volume_url(nil, volume_mapping)
+    delete api_volume_mapping_url(nil, volume_mapping)
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -94,7 +94,7 @@ describe "Volume Mappings API" do
   it 'DELETE will raise an error if the cloud volume does not exist' do
     api_basic_authorize action_identifier(:volume_mappings, :delete, :resource_actions, :delete)
 
-    delete(api_cloud_volume_url(nil, 999_999))
+    delete(api_volume_mapping_url(nil, 999_999))
 
     expect(response).to have_http_status(:not_found)
   end
