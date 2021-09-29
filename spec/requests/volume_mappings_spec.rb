@@ -106,6 +106,7 @@ describe "Volume Mappings API" do
       api_basic_authorize collection_action_identifier(:volume_mappings, :delete, :post)
 
       expect_any_instance_of(volume_mapping.class).to receive(:supports?).with(:delete).and_return(true)
+      expect_any_instance_of(volume_mapping_two.class).to receive(:supports?).with(:delete).and_return(true)
       post(api_volume_mappings_url, :params => gen_request(:delete, [{"href" => api_volume_mapping_url(nil, volume_mapping)}, {"href" => api_volume_mapping_url(nil, volume_mapping_two)}]))
 
       expected = {
