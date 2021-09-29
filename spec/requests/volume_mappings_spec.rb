@@ -54,6 +54,51 @@ describe "Volume Mappings API" do
     end
   end
 
+  it "can delete a single volume mapiing" do
+    volume_mapping = FactoryBot.create(:volume_mapping)
+
+    api_basic_authorize action_identifier(:volume_mapping, :delete, :resource_actions, :post)
+
+    post(api_cloud_volume_url(nil, volume_mapping), :params => { :action => "delete" })
+
+    expected = {
+      'message' => "Deleting Volume Mapping id:#{volume_mapping.id}",
+      'success' => true,
+      'task_id' => a_kind_of(String)
+    }
+
+    expect(response.parsed_body).to include(expected)
+    expect(response).to have_http_status(:ok)
+  end
+
+  it "can delete volume mapping with DELETE as a resource action" do
+    volume_mapping = FactoryBot.create(:volume_mapping)
+
+    api_basic_authorize action_identifier(:volume_mapping, :delete, :resource_actions, :delete)
+
+    delete api_cloud_volume_url(nil, volume_mapping)
+
+    expect(response).to have_http_status(:no_content)
+  end
+
+  it "rejects delete request with DELETE as a resource action without appropriate role" do
+    volume_mapping = FactoryBot.create(:volume_mapping)
+
+    api_basic_authorize
+
+    delete api_cloud_volume_url(nil, volume_mapping)
+
+    expect(response).to have_http_status(:forbidden)
+  end
+
+  it 'DELETE will raise an error if the cloud volume does not exist' do
+    api_basic_authorize action_identifier(:volume_mappings, :delete, :resource_actions, :delete)
+
+    delete(api_cloud_volume_url(nil, 999_999))
+
+    expect(response).to have_http_status(:not_found)
+  end
+
   context "GET /api/volume_mappings/:id" do
     it "returns one volume_mapping" do
       volume_mapping = FactoryBot.create(:volume_mapping)
