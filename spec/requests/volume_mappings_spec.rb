@@ -89,7 +89,7 @@ describe "Volume Mappings API" do
 
     it "Deletion of a single Volume Mapping" do
       provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
-      volume_mapping = :FactoryBot.create(:volume_mapping, :ext_management_system => provider)
+      volume_mapping = FactoryBot.create(:volume_mapping, :ext_management_system => provider)
       api_basic_authorize(action_identifier(:volume_mappings, :delete, :resource_actions, :post))
 
       expect_any_instance_of(volume_mapping.class).to receive(:supports?).with(:delete).and_return(true)
@@ -101,8 +101,8 @@ describe "Volume Mappings API" do
 
     it "Delete of multiple Volume Mappings" do
       provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
-      volume_mapping = :FactoryBot.create(:volume_mapping, :ext_management_system => provider)
-      volume_mapping_two = :FactoryBot.create(:volume_mapping, :ext_management_system => provider)
+      volume_mapping = FactoryBot.create(:volume_mapping, :ext_management_system => provider)
+      volume_mapping_two = FactoryBot.create(:volume_mapping, :ext_management_system => provider)
       api_basic_authorize collection_action_identifier(:volume_mappings, :delete, :post)
 
       expect_any_instance_of(volume_mapping.class).to receive(:supports?).with(:delete).and_return(true)
