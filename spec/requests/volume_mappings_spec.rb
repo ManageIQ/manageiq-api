@@ -57,7 +57,7 @@ describe "Volume Mappings API" do
   it "can delete a single volume mapiing" do
     volume_mapping = FactoryBot.create(:volume_mapping)
 
-    api_basic_authorize action_identifier(:volume_mapping, :delete, :resource_actions, :post)
+    api_basic_authorize("volume_mapping_delete")
 
     post(api_volume_mapping_url(nil, volume_mapping), :params => {:action => "delete"})
 
@@ -74,7 +74,7 @@ describe "Volume Mappings API" do
   it "can delete volume mapping with DELETE as a resource action" do
     volume_mapping = FactoryBot.create(:volume_mapping)
 
-    api_basic_authorize action_identifier(:volume_mapping, :delete, :resource_actions, :delete)
+    api_basic_authorize("volume_mapping_delete")
 
     delete api_volume_mapping_url(nil, volume_mapping)
 
@@ -92,7 +92,7 @@ describe "Volume Mappings API" do
   end
 
   it 'DELETE will raise an error if the cloud volume does not exist' do
-    api_basic_authorize action_identifier(:volume_mappings, :delete, :resource_actions, :delete)
+    api_basic_authorize("volume_mapping_delete")
 
     delete(api_volume_mapping_url(nil, 999_999))
 
