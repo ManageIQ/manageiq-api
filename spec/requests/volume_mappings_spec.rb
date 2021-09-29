@@ -54,51 +54,6 @@ describe "Volume Mappings API" do
     end
   end
 
-  it "can delete a single volume mapiing" do
-    volume_mapping = FactoryBot.create(:volume_mapping)
-
-    api_basic_authorize("volume_mapping_delete")
-
-    post(api_volume_mapping_url(nil, volume_mapping), :params => {:action => "delete"})
-
-    expected = {
-      'message' => "Deleting Volume Mapping id:#{volume_mapping.id}",
-      'success' => true,
-      'task_id' => a_kind_of(String)
-    }
-
-    expect(response.parsed_body).to include(expected)
-    expect(response).to have_http_status(:ok)
-  end
-
-  it "can delete volume mapping with DELETE as a resource action" do
-    volume_mapping = FactoryBot.create(:volume_mapping)
-
-    api_basic_authorize("volume_mapping_delete")
-
-    delete api_volume_mapping_url(nil, volume_mapping)
-
-    expect(response).to have_http_status(:no_content)
-  end
-
-  it "rejects delete request with DELETE as a resource action without appropriate role" do
-    volume_mapping = FactoryBot.create(:volume_mapping)
-
-    api_basic_authorize
-
-    delete api_volume_mapping_url(nil, volume_mapping)
-
-    expect(response).to have_http_status(:forbidden)
-  end
-
-  it 'DELETE will raise an error if the cloud volume does not exist' do
-    api_basic_authorize("volume_mapping_delete")
-
-    delete(api_volume_mapping_url(nil, 999_999))
-
-    expect(response).to have_http_status(:not_found)
-  end
-
   context "GET /api/volume_mappings/:id" do
     it "returns one volume_mapping" do
       volume_mapping = FactoryBot.create(:volume_mapping)
@@ -111,6 +66,61 @@ describe "Volume Mappings API" do
       }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
+    end
+  end
+
+  context "Volume Mapping delete action" do
+    it "with an invalid id" do
+      api_basic_authorize(action_identifier(:volume_mappings, :delete, :resource_actions, :post))
+
+      post(api_volume_mapping_url(nil, 999_999), :params => gen_request(:delete))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "rejects Delete for unsupported volume mapping" do
+      volume_mapping = FactoryBot.create(:volume_mapping, :name => 'test_volume_mapping')
+      api_basic_authorize(action_identifier(:volume_mappings, :delete, :resource_actions, :post))
+
+      post(api_volume_mapping_url(nil, volume_mapping), :params => gen_request(:delete))
+
+      expect_single_action_result(:success => false, :message => /Feature not available/i, :href => api_volume_mapping_url(nil, volume_mapping))
+    end
+
+    it "Deletion of a single Volume Mapping" do
+      provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+      volume_mapping = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::VolumeMapping", :name => 'test_volume_mapping', :ext_management_system => provider)
+      api_basic_authorize(action_identifier(:volume_mappings, :delete, :resource_actions, :post))
+
+      post(api_volume_mapping_url(nil, volume_mapping), :params => gen_request(:delete))
+
+      expect_single_action_result(:success => true, :message => /Deleting Volume Mapping id:#{volume_mapping.id}/i, :href => api_volume_mapping_url(nil, volume_mapping))
+    end
+
+    it "Delete of multiple Volume Mappings" do
+      provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+      volume_mapping = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::VolumeMapping", :name => 'test_volume_mapping', :ext_management_system => provider)
+      volume_mapping_two = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::VolumeMapping", :name => 'test_volume_mapping2', :ext_management_system => provider)
+      api_basic_authorize collection_action_identifier(:volume_mappings, :delete, :post)
+
+      post(api_volume_mappings_url, :params => gen_request(:delete, [{"href" => api_volume_mapping_url(nil, volume_mapping)}, {"href" => api_volume_mapping_url(nil, volume_mapping_two)}]))
+
+      expected = {
+        "results" => a_collection_containing_exactly(
+          a_hash_including(
+            "href"    => api_volume_mapping_url(nil, volume_mapping),
+            "message" => a_string_matching(/Deleting Volume Mapping id:#{volume_mapping.id}/i),
+            "success" => true
+          ),
+          a_hash_including(
+            "href"    => api_volume_mapping_url(nil, volume_mapping_two),
+            "message" => a_string_matching(/Deleting Volume Mapping id:#{volume_mapping_two.id}/i),
+            "success" => true
+          )
+        )
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
     end
   end
 
