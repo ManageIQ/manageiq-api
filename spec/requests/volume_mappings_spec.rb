@@ -105,7 +105,7 @@ describe "Volume Mappings API" do
       volume_mapping_two = FactoryBot.create(:volume_mapping, :ext_management_system => provider)
       api_basic_authorize collection_action_identifier(:volume_mappings, :delete, :post)
 
-      expect_any_instance_of(VolumeMapping).to receive(:supports?).with(:delete).and_return(true)
+      allow_any_instance_of(VolumeMapping).to receive(:supports?).with(:delete).and_return(true)
       post(api_volume_mappings_url, :params => gen_request(:delete, [{"href" => api_volume_mapping_url(nil, volume_mapping)}, {"href" => api_volume_mapping_url(nil, volume_mapping_two)}]))
 
       expected = {
