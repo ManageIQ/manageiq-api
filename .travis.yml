@@ -10,3 +10,4 @@ services:
 - memcached
 install: bin/setup
 after_script: bin/ci/after_script
+dist: bionic
