@@ -4988,6 +4988,8 @@
         :identifier: volume_mapping_new
       - :name: refresh
         :identifier: volume_mapping_refresh
+      - :name: delete
+        :identifier: volume_mapping_delete
     :resource_actions:
       :get:
       - :name: read
@@ -4995,6 +4997,11 @@
       :post:
       - :name: refresh
         :identifier: volume_mapping_refresh
+      - :name: delete
+        :identifier: volume_mapping_delete
+      :delete:
+      - :name: delete
+        :identifier: volume_mapping_delete
   :widgets:
     :description: Miq Widgets
     :identifier: miq_report_widget_admin
