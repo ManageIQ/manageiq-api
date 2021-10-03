@@ -24,6 +24,25 @@ module Api
       action_result(false, err.to_s)
     end
 
+    def delete_resource(type, id, _data = nil)
+      raise BadRequestError, "Must specify an id for deleting a #{type} resource" if id.blank?
+
+      ensure_resource_exists(type, id) if single_resource?
+
+      api_action(type, id) do |klass|
+        volume_mapping = resource_search(id, type, klass)
+        unless volume_mapping.supports?(:delete)
+          error_msg = "Failed to delete volume mapping: #{volume_mapping.unsupported_reason(:delete)}"
+          raise error_msg
+        end
+        task_id = volume_mapping.delete_volume_mapping_queue(User.current_user)
+        msg = "Deleting #{volume_mapping_ident(volume_mapping)}"
+        action_result(true, msg, :task_id => task_id)
+      rescue => err
+        action_result(false, err.to_s)
+      end
+    end
+
     private
 
     def ensure_resource_exists(type, id)
