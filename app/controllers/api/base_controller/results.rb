@@ -32,7 +32,8 @@ module Api
       end
 
       def add_parent_href_to_result(hash, parent_id = nil)
-        return if hash[:href].present?
+        return hash if hash[:href].present?
+
         hash[:href] = "#{@req.api_prefix}/#{@req.collection}/#{parent_id ? parent_id : @req.collection_id}"
         hash
       end
