@@ -585,6 +585,10 @@ module Api
         attrs = virtual_attributes_for(klass) do |type, attr_name, attr_base|
           if klass.virtual_includes(attr_name) && !klass.attribute_supported_by_sql?(attr_name) && attr_base.blank?
             attr_name
+          elsif klass.respond_to?(:reflect_on_association) && klass.reflect_on_association(attr_name)
+            next if attr_base_uses_rbac?(attr_base)
+
+            attr_name
           else
             next if attr_base.blank?
             next if virtual_attribute_accessor(type, attr_name)

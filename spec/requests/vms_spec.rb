@@ -296,6 +296,36 @@ describe "Vms API" do
         expect(response.parsed_body).to include(expected)
       end
     end
+
+    context "requesting tags" do
+      it "removes N+1 from the index query for tags relations" do
+        api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+        query_match = query_match_regexp("vms", "tags")
+
+        # The two extra queries in this case are two different fetches of the
+        # `vm.id`s for the subsequent subquery count and the main query due to
+        # the join.
+        #
+        # We might be able to optimize them out, but for now this should be
+        # fine.
+        #
+        expect {
+          get api_vms_url, :params => {
+            :expand     => "resources",
+            :attributes => "name,tags"
+          }
+        }.to make_database_queries(:count => 5, :matching => query_match)
+
+        expected = {
+          "resources" => a_collection_including(
+            a_hash_including("name" => vm.name, "tags" => []),
+            a_hash_including("name" => vm1.name, "tags" => [])
+          )
+        }
+
+        expect(response.parsed_body).to include(expected)
+      end
+    end
   end
 
   context "Vm index with nested indirect virtual attribute that participates in Rbac ('hardware.host.name')" do
