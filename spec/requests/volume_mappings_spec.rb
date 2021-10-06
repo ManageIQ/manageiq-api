@@ -34,7 +34,7 @@ describe "Volume Mappings API" do
 
       post(api_volume_mappings_url, :params => request)
 
-      expect_multiple_action_result(1, :success => true, :message => "Creating Host Initiator test_host_initiator for Provider: #{provider.name}", :task => true)
+      expect_multiple_action_result(1, :success => true, :message => "Creating Volume Mapping for Provider: #{provider.name}", :task => true)
     end
   end
 
