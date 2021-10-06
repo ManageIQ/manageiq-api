@@ -404,7 +404,7 @@ RSpec.describe "users API" do
 
       post(user1_url, :params => gen_request(:delete))
 
-      expect_single_action_result(:success => true, :message => "deleting", :href => api_user_url(nil, user1))
+      expect_single_action_result(:success => true, :message => "Deleting User", :href => api_user_url(nil, user1))
       expect(User.exists?(user1_id)).to be_falsey
     end
 

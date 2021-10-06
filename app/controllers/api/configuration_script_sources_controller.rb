@@ -14,9 +14,9 @@ module Api
     def delete_resource(type, id, _data = {})
       delete_action_handler do
         config_script_src = resource_search(id, type, collection_class(:configuration_script_sources))
-        raise "Delete not supported for #{config_script_src_ident(config_script_src)}" unless config_script_src.respond_to?(:delete_in_provider_queue)
+        ensure_respond_to(type, config_script_src, :delete, :delete_in_provider_queue)
         task_id = config_script_src.delete_in_provider_queue
-        action_result(true, "Deleting #{config_script_src_ident(config_script_src)}", :task_id => task_id)
+        action_result(true, "Deleting #{model_ident(config_script_src, type)}", :task_id => task_id)
       end
     end
 

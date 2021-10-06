@@ -28,7 +28,7 @@ module Api
       go_def = fetch_generic_object_definition(type, id, data)
       go_def.destroy!
     rescue => err
-      raise BadRequestError, "Failed to delete generic object definition - #{err}"
+      raise BadRequestError, "Deleting #{model_ident(model, type)} - #{err}"
     end
 
     def add_attributes_resource(type, id, data)

@@ -144,15 +144,7 @@ RSpec.describe 'CustomButtonSets API' do
         ]
       }
       post(api_custom_button_sets_url, :params => request)
-
-      expected = {
-        'results' => a_collection_including(
-          a_hash_including('success' => true, 'message' => "custom_button_sets id: #{cb_set.id} deleting"),
-          a_hash_including('success' => true, 'message' => "custom_button_sets id: #{cb_set2.id} deleting"),
-        )
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_multiple_action_result(2, :success => true, :message => /Deleting Custom Button Set/)
     end
   end
 

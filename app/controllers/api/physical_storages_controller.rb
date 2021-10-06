@@ -34,7 +34,7 @@ module Api
     end
 
     def delete_resource(type, id, _data = nil)
-      raise BadRequestError, "Must specify an id for deleting a #{type} resource" if id.blank?
+      raise BadRequestError, "Deleting #{type.to_s.titleize} requires an id" if id.blank?
 
       ensure_resource_exists(type, id) if single_resource?
 
@@ -45,7 +45,7 @@ module Api
             error_msg = "Failed to delete #{physical_storage.name}: #{physical_storage.unsupported_reason(:delete)}"
             raise error_msg
           end
-          msg = "Detaching #{physical_storage_ident(physical_storage)}"
+          msg = "Detaching #{model_ident(physical_storage, type)}"
           api_log_info(msg)
           task_id = physical_storage.delete_physical_storage_queue(User.current_user)
           action_result(true, msg, :task_id => task_id)

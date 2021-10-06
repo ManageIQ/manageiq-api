@@ -40,19 +40,10 @@ describe 'TasksController' do
   it 'deletes on POST' do
     api_basic_authorize 'miq_task_all_ui', resource_action_identifier(:tasks, :delete)
 
-    data = {
-      :action => 'delete'
-    }
-    post(api_task_url(nil, task), :params => data)
+    post(api_task_url(nil, task), :params => {:action => 'delete'})
 
-    expect(response).to have_http_status(:ok) # 200
     expect_deleted(task)
-
-    expected = {
-      'success' => true,
-      'message' => "tasks id: #{task.id} deleting"
-    }
-    expect(response.parsed_body).to include(expected)
+    expect_single_action_result(:success => true, :message => /Deleting Task/)
   end
 
   it 'bulk deletes' do
@@ -69,14 +60,7 @@ describe 'TasksController' do
 
     expect(response).to have_http_status(:ok) # 200
     expect_deleted(task, task2)
-
-    expected = {
-      'results' => a_collection_including(
-        a_hash_including('success' => true, 'message' => "tasks id: #{task.id} deleting"),
-        a_hash_including('success' => true, 'message' => "tasks id: #{task2.id} deleting")
-      )
-    }
-    expect(response.parsed_body).to include(expected)
+    expect_multiple_action_result(2, :success => true, :message => /Deleting Task/)
   end
 
   describe 'GET /api/tasks' do

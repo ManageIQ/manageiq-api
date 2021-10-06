@@ -283,12 +283,7 @@ RSpec.describe 'GenericObjects API' do
         ]
       }
       post(api_generic_objects_url, :params => request)
-
-      expected = {
-        'results' => [a_hash_including('success' => true, 'message' => a_string_including('deleting'))]
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_multiple_action_result(1, :success => true, :message => /Deleting Generic Object/)
     end
   end
 
@@ -330,13 +325,7 @@ RSpec.describe 'GenericObjects API' do
       api_basic_authorize action_identifier(:generic_objects, :delete)
 
       post(api_generic_object_url(nil, object), :params => { :action => 'delete' })
-
-      expected = {
-        'success' => true,
-        'message' => a_string_including("generic_objects id: #{object.id} deleting")
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => true, :message => /Deleting Generic Object/)
     end
 
     it 'can call a custom action on a generic object' do

@@ -76,7 +76,7 @@ module Api
     def delete_resource(type, id, data = {})
       delete_action_handler do
         conversion_host = resource_search(id, type, collection_class(type))
-        message = "Disabling and deleting ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}"
+        message = "Deleting #{model_ident(conversion_host, type)}"
         begin
           task_id = conversion_host.disable_queue(data['auth_user']) # Ok if nil
           action_result(true, message, :task_id => task_id)

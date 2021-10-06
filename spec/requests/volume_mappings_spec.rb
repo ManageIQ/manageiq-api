@@ -84,7 +84,7 @@ describe "Volume Mappings API" do
 
       post(api_volume_mapping_url(nil, volume_mapping), :params => gen_request(:delete))
 
-      expect_single_action_result(:success => false, :message => /Feature not available/i, :href => api_volume_mapping_url(nil, volume_mapping))
+      expect_single_action_result(:success => false, :message => /Feature not available/i)
     end
 
     it "Deletion of a single Volume Mapping" do
@@ -96,7 +96,7 @@ describe "Volume Mappings API" do
 
       post(api_volume_mapping_url(nil, volume_mapping), :params => gen_request(:delete))
 
-      expect_single_action_result(:success => true, :message => /Deleting Volume Mapping id:#{volume_mapping.id}/i, :href => api_volume_mapping_url(nil, volume_mapping))
+      expect_single_action_result(:success => true, :message => /Deleting Volume Mapping id: #{volume_mapping.id}/i, :href => api_volume_mapping_url(nil, volume_mapping))
     end
 
     it "Delete of multiple Volume Mappings" do
@@ -112,12 +112,12 @@ describe "Volume Mappings API" do
         "results" => a_collection_containing_exactly(
           a_hash_including(
             "href"    => api_volume_mapping_url(nil, volume_mapping),
-            "message" => a_string_matching(/Deleting Volume Mapping id:#{volume_mapping.id}/i),
+            "message" => a_string_matching(/Deleting Volume Mapping id: #{volume_mapping.id}/i),
             "success" => true
           ),
           a_hash_including(
             "href"    => api_volume_mapping_url(nil, volume_mapping_two),
-            "message" => a_string_matching(/Deleting Volume Mapping id:#{volume_mapping_two.id}/i),
+            "message" => a_string_matching(/Deleting Volume Mapping id: #{volume_mapping_two.id}/i),
             "success" => true
           )
         )

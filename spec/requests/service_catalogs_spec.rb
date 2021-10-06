@@ -272,7 +272,7 @@ describe "Service Catalogs API" do
 
       post(api_service_catalog_url(nil, sc), :params => gen_request(:delete))
 
-      expect_single_action_result(:success => true, :message => "deleting", :href => api_service_catalog_url(nil, sc))
+      expect_single_action_result(:success => true, :message => /Deleting Service Catalog/, :href => api_service_catalog_url(nil, sc))
       expect { sc.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
@@ -285,7 +285,7 @@ describe "Service Catalogs API" do
       post(api_service_catalogs_url, :params => gen_request(:delete,
                                                             [{"href" => api_service_catalog_url(nil, sc1)},
                                                              {"href" => api_service_catalog_url(nil, sc2)}]))
-      expect_multiple_action_result(2)
+      expect_multiple_action_result(2, :success => true, :message => /Deleting Service Catalog/)
       expect_result_resources_to_include_hrefs("results", [api_service_catalog_url(nil, sc1), api_service_catalog_url(nil, sc2)])
 
       expect { sc1.reload }.to raise_error(ActiveRecord::RecordNotFound)

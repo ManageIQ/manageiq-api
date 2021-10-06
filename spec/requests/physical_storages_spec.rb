@@ -36,7 +36,7 @@ describe "Physical Storages API" do
 
       post(api_physical_storage_url(nil, physical_storage), :params => gen_request(:delete))
 
-      expect_single_action_result(:success => false, :message => /Feature not available/i, :href => api_physical_storage_url(nil, physical_storage))
+      expect_single_action_result(:success => false, :message => /Feature not available/i)
     end
 
     it "Deletion of a single Physical Storage" do
@@ -46,7 +46,7 @@ describe "Physical Storages API" do
 
       post(api_physical_storage_url(nil, physical_storage), :params => gen_request(:delete))
 
-      expect_single_action_result(:success => true, :message => /Detaching Physical Storage id:#{physical_storage.id}/i, :href => api_physical_storage_url(nil, physical_storage))
+      expect_single_action_result(:success => true, :message => /Detaching Physical Storage id: #{physical_storage.id}/)
     end
 
     it "Delete of multiple Physical Storages" do
@@ -61,12 +61,12 @@ describe "Physical Storages API" do
         "results" => a_collection_containing_exactly(
           a_hash_including(
             "href"    => api_physical_storage_url(nil, physical_storage),
-            "message" => a_string_matching(/Detaching Physical Storage id:#{physical_storage.id}/i),
+            "message" => a_string_matching(/Detaching Physical Storage id: #{physical_storage.id}/i),
             "success" => true
           ),
           a_hash_including(
             "href"    => api_physical_storage_url(nil, physical_storage_two),
-            "message" => a_string_matching(/Detaching Physical Storage id:#{physical_storage_two.id}/i),
+            "message" => a_string_matching(/Detaching Physical Storage id: #{physical_storage_two.id}/i),
             "success" => true
           )
         )

@@ -70,19 +70,9 @@ RSpec.describe 'Authentications API' do
     it 'will delete an authentication' do
       api_basic_authorize collection_action_identifier(:authentications, :delete, :post)
 
-      expected = {
-        'results' => [
-          a_hash_including(
-            'success' => true,
-            'message' => a_string_including('Deleting Authentication'),
-            'task_id' => a_kind_of(String)
-          )
-        ]
-      }
       post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }] })
 
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      expect_multiple_action_result(1, :success => true, :task => true, :message => /Deleting Authentication/)
     end
 
     it 'raises a not found for nonexistent authentication' do
@@ -99,39 +89,14 @@ RSpec.describe 'Authentications API' do
 
       post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }] })
 
-      expected = {
-        'results' => [
-          {
-            'success' => false,
-            'message' => "Delete not supported for Authentication id:#{auth.id} name: '#{auth.name}'"
-          }
-        ]
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_multiple_action_result(1, :success => false, :message => /Delete not supported/)
     end
 
     it 'will delete multiple authentications' do
       api_basic_authorize collection_action_identifier(:authentications, :delete, :post)
 
-      expected = {
-        'results' => [
-          a_hash_including(
-            'success' => true,
-            'message' => a_string_including('Deleting Authentication'),
-            'task_id' => a_kind_of(String)
-          ),
-          a_hash_including(
-            'success' => true,
-            'message' => a_string_including('Deleting Authentication'),
-            'task_id' => a_kind_of(String)
-          )
-        ]
-      }
-      post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }, { 'id' => auth_2.id }] })
-
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      post(api_authentications_url, :params => {:action => 'delete', :resources => [{'id' => auth.id}, {'id' => auth_2.id}]})
+      expect_multiple_action_result(2, :task => true, :success => true, :message => 'Deleting Authentication')
     end
 
     it 'will forbid deletion to an authentication without appropriate role' do
@@ -383,13 +348,7 @@ RSpec.describe 'Authentications API' do
 
       post(api_authentication_url(nil, auth), :params => { :action => 'delete' })
 
-      expected = {
-        'success' => true,
-        'message' => a_string_including('Deleting Authentication'),
-        'task_id' => a_kind_of(String)
-      }
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      expect_single_action_result(:success => true, :task => true, :message => 'Deleting Authentication')
     end
 
     it 'will not delete an authentication without an appropriate role' do

@@ -26,7 +26,7 @@ module Api
     end
 
     def delete_resource(type, id = nil, _data = {})
-      raise BadRequestError, "Must specify an id for deleting a #{type} resource" unless id
+      raise BadRequestError, "Deleting #{type.to_s.titleize} requires an id" unless id
 
       delete_resource_action(type, id)
     end
@@ -70,7 +70,7 @@ module Api
           MiqAeDomain.where(:name => domain.name).each { |d| raise "Not deleting. Domain is locked." if d.contents_locked? }
 
           MiqAeDomain.where(:name => domain.name).each(&:destroy_queue)
-          action_result(true, "Delete queued for #{automate_domain_ident(domain)}")
+          action_result(true, "Deleting #{model_ident(domain, type)}")
         rescue => err
           action_result(false, err.to_s)
         end

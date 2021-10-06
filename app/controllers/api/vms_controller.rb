@@ -113,7 +113,7 @@ module Api
     end
 
     def delete_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for deleting a #{type} resource" unless id
+      raise BadRequestError, "Deleting #{type.to_s.titleize} requires an id" unless id
 
       api_action(type, id) do |klass|
         vm = resource_search(id, type, klass)
@@ -424,7 +424,7 @@ module Api
     end
 
     def destroy_vm(vm)
-      desc = "#{vm_ident(vm)} deleting"
+      desc = "Deleting #{model_ident(vm, :vm)}"
       task_id = queue_object_action(vm, desc, queue_options("destroy"))
       action_result(true, desc, :task_id => task_id)
     rescue => err

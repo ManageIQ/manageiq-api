@@ -288,10 +288,21 @@ describe "Groups API" do
       expect(response).to have_http_status(:not_found)
     end
 
+    # we are not returning tenant groups for any operations, so they are not found
     it 'rejects a request to remove a default tenant group' do
       api_basic_authorize collection_action_identifier(:groups, :delete)
 
       delete(api_group_url(nil, tenant3.default_miq_group_id))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it 'rejects a request to remove a system group' do
+      api_basic_authorize collection_action_identifier(:groups, :delete)
+
+      group = FactoryBot.create(:miq_group, :system_type)
+
+      delete(api_group_url(nil, group))
 
       expect(response).to have_http_status(:forbidden)
     end
@@ -316,7 +327,7 @@ describe "Groups API" do
 
       post(g1_url, :params => gen_request(:delete))
 
-      expect_single_action_result(:success => true, :message => "deleting", :href => api_group_url(nil, group1))
+      expect_single_action_result(:success => true, :message => /Deleting Group id: #{group1.id}/, :href => api_group_url(nil, group1))
       expect(MiqGroup.exists?(g1_id)).to be_falsey
     end
 

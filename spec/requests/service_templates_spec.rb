@@ -14,7 +14,7 @@ describe "Service Templates API" do
   let(:ra2)        { FactoryBot.create(:resource_action, :action => "Retirement", :dialog => dialog2) }
 
   let(:picture)    { FactoryBot.create(:picture, :extension => "jpg") }
-  let(:template)   { FactoryBot.create(:service_template, :name => "ServiceTemplate") }
+  let(:template)   { FactoryBot.create(:service_template) }
 
   describe "Service Templates query" do
     before do
@@ -243,19 +243,14 @@ describe "Service Templates API" do
 
     it "can delete a service template via POST with an appropriate role" do
       api_basic_authorize(action_identifier(:service_templates, :delete))
-      service_template = FactoryBot.create(:service_template)
 
-      expect do
-        post(api_service_template_url(nil, service_template), :params => { :action => "delete" })
-      end.to change(ServiceTemplate, :count).by(-1)
-
-      expected = {
-        "href"    => api_service_template_url(nil, service_template),
-        "message" => "service_templates id: #{service_template.id} deleting",
-        "success" => true
-      }
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      post(api_service_template_url(nil, template), :params => {:action => "delete"})
+      expect_single_action_result(
+        :href    => api_service_template_url(nil, template),
+        :message => /Deleting Service Template id: #{template.id}/,
+        :success => true
+      )
+      expect { template.reload }.to raise_exception(ActiveRecord::RecordNotFound)
     end
 
     it "will not delete a service template via POST without an appropriate role" do
@@ -856,12 +851,7 @@ describe "Service Templates API" do
             post(api_service_template_schedule_url(nil, service_template, schedule_1), :params => { :action => "delete" })
           end.to change(MiqSchedule, :count).by(-1)
 
-          expected = {
-            "message" => "schedules id: #{schedule_1.id} deleting",
-            "success" => true,
-          }
-          expect(response.parsed_body).to include(expected)
-          expect(response).to have_http_status(:ok)
+          expect_single_action_result(:success => true, :message => /Deleting Schedule id: #{schedule_1.id}/)
         end
 
         it "will not delete a schedule unless authorized" do

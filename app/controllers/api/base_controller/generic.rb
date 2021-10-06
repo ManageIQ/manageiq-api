@@ -52,7 +52,7 @@ module Api
       def delete_resource(type, id = nil, _data = nil)
         klass = collection_class(type)
         id ||= @req.collection_id
-        raise BadRequestError, "Must specify an id for deleting a #{type} resource" unless id
+        raise BadRequestError, "Deleting #{type.to_s.titleize} requires an id" unless id
         delete_resource_action(klass, type, id)
       end
 
@@ -174,10 +174,10 @@ module Api
 
       def delete_resource_action(klass, type, id)
         delete_action_handler do
-          api_log_info("Deleting #{type} id #{id}")
+          api_log_info("Deleting #{type.to_s.titleize} id #{id}")
           resource = resource_search(id, type, klass)
           resource.destroy!
-          result = action_result(true, "#{type} id: #{id} deleting")
+          result = action_result(true, "Deleting #{model_ident(resource, type)}")
           add_href_to_result(result, type, id)
           log_result(result)
           result
@@ -238,6 +238,14 @@ module Api
         end
       rescue => err
         action_result(false, err.to_s)
+      end
+
+      def model_ident(model, type = nil)
+        if model.respond_to?(:name)
+          "#{type.to_s.singularize.titleize} id: #{model.id} name: '#{model.name}'"
+        else
+          "#{type.to_s.singularize.titleize} id: #{model.id}"
+        end
       end
 
       def validate_id(id, type, klass)

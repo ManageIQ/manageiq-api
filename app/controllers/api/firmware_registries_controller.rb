@@ -14,8 +14,9 @@ module Api
 
     def delete_resource(type, id, _data = {})
       delete_action_handler do
-        resource_search(id, type, collection_class(:firmware_registries)).destroy
-        action_result(true, "FirmwareBinary [id: #{id}] deleted")
+        firmware_registries = resource_search(id, type, collection_class(type))
+        firmware_registries.destroy
+        action_result(true, "Deleting #{model_ident(firmware_registries, type)}")
       end
     end
   end

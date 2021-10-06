@@ -169,14 +169,7 @@ describe "Tags API" do
         end.to change(Classification, :count).by(-2)
         expect { classification1.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { classification2.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        expect_result_to_match_hash(
-          response.parsed_body,
-          "results" => [
-            {"success" => true, "message" => "tags id: #{tag1.id} deleting"},
-            {"success" => true, "message" => "tags id: #{tag2.id} deleting"}
-          ]
-        )
-        expect(response).to have_http_status(:ok)
+        expect_multiple_action_result(2, :success => true, :message => /Deleting Tag/)
       end
 
       it "can delete multiple tags within a category by name" do
@@ -193,14 +186,7 @@ describe "Tags API" do
         end.to change(Classification, :count).by(-2)
         expect { classification1.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { classification2.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        expect_result_to_match_hash(
-          response.parsed_body,
-          "results" => [
-            {"success" => true, "message" => "tags id: #{tag1.id} deleting"},
-            {"success" => true, "message" => "tags id: #{tag2.id} deleting"}
-          ]
-        )
-        expect(response).to have_http_status(:ok)
+        expect_multiple_action_result(2, :success => true, :message => /Deleting Tag/)
       end
     end
 

@@ -144,15 +144,7 @@ RSpec.describe 'FloatingIp API' do
       api_basic_authorize(action_identifier(:floating_ips, :delete, :resource_actions))
 
       post(api_floating_ip_url(nil, floating_ip), :params => gen_request(:delete))
-
-      expected = {
-        'success'   => true,
-        'message'   => a_string_including('Deleting Floating Ip'),
-        'task_href' => a_string_matching(api_tasks_url),
-        'task_id'   => a_kind_of(String)
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => true, :task => true, :message => /Deleting Floating Ip/)
     end
 
     it "will not delete a floating ip unless authorized" do
@@ -170,17 +162,14 @@ RSpec.describe 'FloatingIp API' do
       api_basic_authorize(action_identifier(:floating_ips, :delete, :resource_actions))
 
       post(api_floating_ips_url, :params => {:action => "delete", :resources => [{:id => floating_ip1.id}, {:id => floating_ip2.id}]})
-
-      expect(response).to have_http_status(:ok)
+      expect_multiple_action_result(2, :success => true, :task => true, :message => /Deleting Floating Ip/)
     end
 
     it "forbids multiple floating ip deletion without an appropriate role" do
       floating_ip1, floating_ip2 = FactoryBot.create_list(:floating_ip, 2)
-      api_basic_authorize
-
-      post(api_floating_ips_url, :params => {:action => "delete", :resources => [{:id => floating_ip1.id}, {:id => floating_ip2.id}]})
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request do
+        post(api_floating_ips_url, :params => {:action => "delete", :resources => [{:id => floating_ip1.id}, {:id => floating_ip2.id}]})
+      end
     end
 
     it "raises an error when delete not supported for floating ip" do
@@ -188,13 +177,7 @@ RSpec.describe 'FloatingIp API' do
       api_basic_authorize(action_identifier(:floating_ips, :delete, :resource_actions))
 
       post(api_floating_ip_url(nil, floating_ip), :params => gen_request(:delete))
-
-      expected = {
-        'success' => false,
-        'message' => a_string_including('Delete for Floating Ip')
-      }
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => false, :messge => /Delete for Floating Ip/)
     end
   end
 end

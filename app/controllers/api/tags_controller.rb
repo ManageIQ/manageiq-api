@@ -25,8 +25,8 @@ module Api
     end
 
     def delete_resource(_type, id, _data = {})
-      destroy_tag_and_classification(id)
-      action_result(true, "tags id: #{id} deleting")
+      tag = destroy_tag_and_classification(id)
+      action_result(true, "Deleting #{model_ident(tag, :tag)}")
     rescue ActiveRecord::RecordNotFound
       raise
     rescue => err
