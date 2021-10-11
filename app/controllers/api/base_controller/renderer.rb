@@ -277,6 +277,7 @@ module Api
 
       def fetch_direct_virtual_attribute(type, resource, attr)
         return unless attr_accessible?(resource, attr)
+
         virtattr_accessor = virtual_attribute_accessor(type, attr)
         value = virtattr_accessor ? send(virtattr_accessor, resource) : virtual_attribute_search(resource, attr)
         value = add_custom_action_hrefs(value) if attr == "custom_actions"
@@ -545,6 +546,28 @@ module Api
       def render_options(resource, data = {})
         klass = collection_class(resource)
         render :json => OptionsSerializer.new(klass, data).serialize
+      end
+
+      def render_update_resource_options(id)
+        type = @req.collection.to_sym
+        klass = collection_class(type)
+
+        resource = resource_search(id, type, klass)
+        raise BadRequestError, resource.unsupported_reason(:update) unless resource.supports?(:update)
+
+        render_options(type, :form_schema => resource.params_for_update)
+      end
+
+      def render_create_resource_options(ems_id)
+        type = @req.collection.to_sym
+        base_klass = collection_class(type)
+
+        ems = resource_search(ems_id, :ext_management_systems, ExtManagementSystem)
+        klass = ems.class_by_ems(base_klass.name)
+        raise BadRequestError, "No #{type.to_s.titleize} support for - #{ems.name}" unless klass
+        raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
+
+        render_options(type, :form_schema => klass.params_for_create(ems))
       end
 
       # This is a helper method used by both .determine_include_for_find and

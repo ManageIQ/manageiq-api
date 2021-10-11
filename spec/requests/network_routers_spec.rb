@@ -3,7 +3,7 @@ RSpec.describe 'NetworkRouters API' do
 
   let(:ems) { FactoryBot.create(:ems_openstack) }
   let(:network_manager) { ems.network_manager }
-  let(:cloud_tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
+  let(:cloud_tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => network_manager) }
   let(:network_router) { FactoryBot.create(:network_router_openstack, :ext_management_system => network_manager, :cloud_tenant => cloud_tenant) }
 
   describe 'GET /api/network_routers' do
@@ -210,6 +210,23 @@ RSpec.describe 'NetworkRouters API' do
       expect(response.parsed_body['data']).to eq({})
       expect(response).to have_http_status(:ok)
     end
+
+    it "with an incompatible ems returns a reason" do
+      # infra does not have NetworkRouter defined
+      ems = FactoryBot.create(:ems_infra)
+      options(api_network_routers_url(:ems_id => ems.id))
+
+      expect_bad_request(/No Network Routers support for/)
+    end
+
+    it 'with an unsupported ems return a reason' do
+      network_manager = FactoryBot.create(:ems_infra)
+      # there is a network manager, but it does not support create
+      stub_const("#{network_manager.class.name}::NetworkRouter", Class.new(NetworkRouter))
+      options(api_network_routers_url(:ems_id => network_manager.id))
+
+      expect_bad_request(/Feature not available/)
+    end
   end
 
   describe 'OPTIONS /api/network_routers/:id' do
@@ -220,6 +237,13 @@ RSpec.describe 'NetworkRouters API' do
 
       expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
       expect(response).to have_http_status(:ok)
+    end
+
+    it 'raises an error when options not supported for updating a network router' do
+      network_router = FactoryBot.create(:network_router)
+      options(api_network_router_url(nil, network_router))
+
+      expect_bad_request(/Feature not available/)
     end
   end
 end

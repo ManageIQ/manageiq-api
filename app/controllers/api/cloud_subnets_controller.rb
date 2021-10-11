@@ -3,17 +3,11 @@ module Api
     include Subcollections::Tags
 
     def options
-      return super unless params[:ems_id]
-
-      ems = ExtManagementSystem.find(params[:ems_id])
-
-      raise BadRequestError, "No CloudSubnet support for - #{ems.class}" unless defined?(ems.class::CloudSubnet)
-
-      klass = ems.class::CloudSubnet
-
-      raise BadRequestError, "No DDF specified for - #{klass}" unless klass.respond_to?(:params_for_create)
-
-      render_options(:cloud_subnets, :form_schema => klass.params_for_create(ems))
+      if (ems_id = params["ems_id"])
+        render_create_resource_options(ems_id)
+      else
+        super
+      end
     end
 
     def create_resource(_type, _id = nil, data = {})
