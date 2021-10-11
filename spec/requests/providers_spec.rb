@@ -14,6 +14,8 @@
 # - Refresh multiple providers            /api/providers                        action "refresh"
 #
 describe "Providers API" do
+  include Spec::Support::SupportsHelper
+
   ENDPOINT_ATTRS = Api::ProvidersController::ENDPOINT_ATTRS
   CREDENTIALS_ATTR = Api::ProvidersController::CREDENTIALS_ATTR
 
@@ -1620,9 +1622,11 @@ describe "Providers API" do
         end
 
         it 'calls the .params_for_create on the provider' do
-          expect(DummyProvider).to receive(:params_for_create).and_return('foo' => 'bar')
-          options("#{api_providers_url}?type=DummyProvider")
-          expect(response.parsed_body['data']['provider_form_schema']).to eq('foo' => 'bar')
+          stub_supports(DummyProvider, :create)
+          stub_params_for(DummyProvider, :create, :fields => [])
+          options(api_providers_url(:type => "DummyProvider"))
+          expect(response.parsed_body['data']).to include("provider_form_schema" => {"fields" => []})
+          expect(response).to have_http_status(:ok)
         end
       end
     end

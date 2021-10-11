@@ -9,6 +9,8 @@
 #
 
 describe "Cloud Volumes API" do
+  include Spec::Support::SupportsHelper
+
   it "forbids access to cloud volumes without an appropriate role" do
     api_basic_authorize
 
@@ -163,12 +165,12 @@ describe "Cloud Volumes API" do
       zone = FactoryBot.create(:zone)
       provider = FactoryBot.create(:ems_autosde, :zone => zone)
 
-      allow(provider.class::CloudVolume).to receive(:params_for_create).and_return('foo')
+      stub_supports(provider.class::CloudVolume, :create)
+      stub_params_for(provider.class::CloudVolume, :create, :fields => [])
 
-      options(api_cloud_volumes_url, :params => {:ems_id => provider.id})
-      options("#{api_cloud_volumes_url}?ems_id=#{provider.id}")
+      options(api_cloud_volumes_url(:ems_id => provider.id))
 
-      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
       expect(response).to have_http_status(:ok)
     end
   end
@@ -179,11 +181,12 @@ describe "Cloud Volumes API" do
       provider = FactoryBot.create(:ems_autosde, :zone => zone)
       cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => provider)
 
-      allow(Rbac).to receive(:filtered_object).and_return(cloud_volume)
-      expect(cloud_volume).to receive(:params_for_update).and_return('foo')
-      options("#{api_cloud_volumes_url}/#{cloud_volume.id}")
+      # allow(Rbac).to receive(:filtered_object).and_return(cloud_volume)
+      stub_supports(cloud_volume.class, :update)
+      stub_params_for(cloud_volume.class, :update, :fields => [])
+      options(api_cloud_volume_url(nil, cloud_volume))
 
-      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
       expect(response).to have_http_status(:ok)
     end
   end

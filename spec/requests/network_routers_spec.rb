@@ -1,4 +1,6 @@
 RSpec.describe 'NetworkRouters API' do
+  include Spec::Support::SupportsHelper
+
   let(:ems) { FactoryBot.create(:ems_openstack) }
   let(:network_manager) { ems.network_manager }
   let(:cloud_tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
@@ -194,9 +196,11 @@ RSpec.describe 'NetworkRouters API' do
 
   describe 'OPTIONS /api/network_routers' do
     it 'with ems_id="..." returns a DDF schema for add when available via OPTIONS' do
+      stub_supports(network_router.class, :create)
+      stub_params_for(network_router.class, :create, :fields => [])
       options(api_network_routers_url(:ems_id => network_manager.id))
 
-      expect(response.parsed_body['data']).to(match("form_schema" => hash_including("fields" => array_including())))
+      expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
       expect(response).to have_http_status(:ok)
     end
 
@@ -210,9 +214,11 @@ RSpec.describe 'NetworkRouters API' do
 
   describe 'OPTIONS /api/network_routers/:id' do
     it 'returns a DDF schema for edit when available via OPTIONS' do
+      stub_supports(network_router.class, :update)
+      stub_params_for(network_router.class, :update, :fields => [])
       options(api_network_router_url(nil, network_router))
 
-      expect(response.parsed_body['data']).to(match("form_schema" => hash_including("fields" => array_including())))
+      expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
       expect(response).to have_http_status(:ok)
     end
   end
