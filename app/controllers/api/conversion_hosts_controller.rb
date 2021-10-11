@@ -73,17 +73,9 @@ module Api
     # Note that you can also delete via a POST action using "action: delete" as
     # a parameter, which will include a response body.
     #
-    def delete_resource(type, id, data = {})
-      delete_action_handler do
-        conversion_host = resource_search(id, type, collection_class(type))
-        message = "Deleting #{model_ident(conversion_host, type)}"
-        begin
-          task_id = conversion_host.disable_queue(data['auth_user']) # Ok if nil
-          action_result(true, message, :task_id => task_id)
-        rescue => err
-          action_result(false, err.to_s)
-        end
-      end
+    def delete_resource_main_action(_type, conversion_host, data)
+      # TODO: ensure_supports(type, conversion_host, :delete)
+      {:task_id => conversion_host.disable_queue(data['auth_user'])}
     end
   end
 end

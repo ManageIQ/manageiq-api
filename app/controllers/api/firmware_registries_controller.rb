@@ -11,13 +11,5 @@ module Api
     rescue => err
       action_result(false, err.to_s)
     end
-
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        firmware_registries = resource_search(id, type, collection_class(type))
-        firmware_registries.destroy
-        action_result(true, "Deleting #{model_ident(firmware_registries, type)}")
-      end
-    end
   end
 end

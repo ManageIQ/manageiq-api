@@ -72,13 +72,8 @@ module Api
       end
     end
 
-    def delete_resource(type, id = nil, _data = nil)
-      delete_action_handler do
-        raise BadRequestError, "Deleting #{type.to_s.titleize} requires an id" unless id
-        provider = resource_search(id, type, collection_class(type))
-        task_id = provider.destroy_queue
-        action_result(true, "Deleting #{provider_ident(provider)}", :task_id => task_id, :parent_id => id)
-      end
+    def delete_resource_main_action(_type, provider, _data)
+      {:task_id => provider.destroy_queue, :parent_id => provider.id}
     end
 
     def import_vm_resource(type, id = nil, data = {})

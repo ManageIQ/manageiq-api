@@ -24,9 +24,13 @@ module Api
       raise BadRequestError, "Failed to update generic object definition - #{err}"
     end
 
+    # TODO: convert callers to accept an action hash
+    # @returns model (not action result hash)
     def delete_resource(type, id, data = {})
-      go_def = fetch_generic_object_definition(type, id, data)
-      go_def.destroy!
+      id ||= data['name']
+      model = resource_search(id, type, collection_class(type))
+      delete_resource_main_action(type, model, data)
+      model
     rescue => err
       raise BadRequestError, "Deleting #{model_ident(model, type)} - #{err}"
     end

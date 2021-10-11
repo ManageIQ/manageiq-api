@@ -112,15 +112,9 @@ module Api
       raise BadRequestError, "Cannot edit VM - #{err}"
     end
 
-    def delete_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Deleting #{type.to_s.titleize} requires an id" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Deleting #{vm_ident(vm)}")
-
-        destroy_vm(vm)
-      end
+    def delete_resource_main_action(type, vm_model, _data = nil)
+      # TODO: ensure_supports(type, vm, :delete)
+      {:task_id => queue_object_action(vm_model, "Deleting #{model_ident(vm_model, type)}", queue_options("destroy"))}
     end
 
     def set_owner_resource(type, id = nil, data = nil)
@@ -418,14 +412,6 @@ module Api
     def shelve_offload_vm(vm)
       desc = "#{vm_ident(vm)} shelve-offloading"
       task_id = queue_object_action(vm, desc, queue_options("shelve_offload", DEFAULT_ROLE))
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def destroy_vm(vm)
-      desc = "Deleting #{model_ident(vm, :vm)}"
-      task_id = queue_object_action(vm, desc, queue_options("destroy"))
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)

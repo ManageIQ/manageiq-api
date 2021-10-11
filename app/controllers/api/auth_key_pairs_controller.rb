@@ -13,14 +13,9 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        key_pair = resource_search(id, type, collection_class(type))
-        raise "Delete not supported for #{key_pair.name}" unless key_pair.supports?(:delete)
-
-        task_id = key_pair.delete_key_pair_queue(current_user.userid)
-        action_result(true, "Deleting #{model_ident(key_pair, type)}", :task_id => task_id)
-      end
+    def delete_resource_main_action(type, key_pair, _data)
+      ensure_supports(type, key_pair, :delete)
+      {:task_id => key_pair.delete_key_pair_queue(User.current_userid)}
     end
   end
 end

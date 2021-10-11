@@ -25,7 +25,7 @@ module Api
         action_result(true, "Updating #{cloud_network.name}", :task_id => task_id)
       end
 
-      def cloud_networks_delete_resource(_parent, type, resource_id, _data)
+      def cloud_networks_delete_resource(_parent, type, resource_id, data)
         delete_resource(type, resource_id, data)
       end
     end

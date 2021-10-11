@@ -26,14 +26,9 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        host_aggregate = resource_search(id, type, collection_class(type))
-        raise "Delete not supported for #{host_aggregate.name}" unless host_aggregate.supports?(:delete_aggregate)
-
-        task_id = host_aggregate.delete_aggregate_queue(current_user.userid)
-        action_result(true, "Deleting #{host_aggregate.name}", :task_id => task_id)
-      end
+    def delete_resource_main_action(_type, host_aggregate, _data = {})
+      # TODO: ensure_supports(host_aggrtegate, :delete)
+      {:task_id => host_aggregate.delete_aggregate_queue(current_user.userid)}
     end
 
     private

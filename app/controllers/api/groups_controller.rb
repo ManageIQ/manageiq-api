@@ -10,7 +10,8 @@ module Api
       ["group_type != ?", MiqGroup::TENANT_GROUP]
     end
 
-    # NOTE: tenant groups not found/edited. system group (read only) will be found so manually reject
+    # NOTE: tenant groups are not found/edited.
+    #       system group (read_only? == true) will be found so we need to manually reject in delete/update
     def find_groups(id)
       MiqGroup.non_tenant_groups.find(id)
     end
@@ -37,8 +38,9 @@ module Api
       super
     end
 
-    def delete_resource(type, id, data = {})
-      raise ForbiddenError, "Cannot delete a read-only group" if find_groups(id).read_only?
+    def delete_resource_main_action(type, group, data = {})
+      raise ForbiddenError, "Cannot delete a read-only group" if group.read_only?
+
       super
     end
 

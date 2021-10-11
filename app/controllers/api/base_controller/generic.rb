@@ -49,11 +49,8 @@ module Api
         resource
       end
 
-      def delete_resource(type, id = nil, _data = nil)
-        klass = collection_class(type)
-        id ||= @req.collection_id
-        raise BadRequestError, "Deleting #{type.to_s.titleize} requires an id" unless id
-        delete_resource_action(klass, type, id)
+      def delete_resource(type, id = nil, data = nil)
+        delete_resource_action(type, id, data)
       end
 
       def request_retire_resource(type, id, data = nil)
@@ -172,16 +169,42 @@ module Api
         end
       end
 
-      def delete_resource_action(klass, type, id)
-        delete_action_handler do
-          api_log_info("Deleting #{type.to_s.titleize} id #{id}")
-          resource = resource_search(id, type, klass)
-          resource.destroy!
-          result = action_result(true, "Deleting #{model_ident(resource, type)}")
-          add_href_to_result(result, type, id)
-          log_result(result)
-          result
+      # called by default delete_resource, (but some other dynamic methods as well)
+      # majority of these return an action hash
+      # Unfortunately, some sub-collections return an object
+      # making the transition to all returning an action hash
+      def delete_resource_action(type, id = nil, data = nil)
+        api_resource(type, id, "Deleting") do |resource|
+          delete_resource_main_action(type, resource, data)
         end
+      end
+
+      def api_resource(type, id, action_phrase)
+        id ||= @req.collection_id
+        klass = collection_class(type)
+        raise BadRequestError, "#{action_phrase} #{type.to_s.titleize} requires an id" unless id
+
+        api_log_info("#{action_phrase} #{type.to_s.titleize} id: #{id}")
+        resource = resource_search(id, type, klass)
+        result_options = yield(resource)
+        result = action_result(true, "#{action_phrase} #{model_ident(resource, type)}", result_options)
+        add_href_to_result(result, type, id)
+        log_result(result)
+        result
+      rescue ActiveRecord::RecordNotFound, ForbiddenError => err
+        single_resource? ? raise(err) : action_result(false, err.to_s)
+      rescue => err
+        action_result(false, err.to_s)
+      end
+
+      # The lower-level implementation for deleting a resource.
+      #
+      # The default implementation here will delete the record directly from the database.
+      #   It is expected that subclasses will override for alternative delete strategies,
+      #   for example to delete via the native provider over the queue.
+      def delete_resource_main_action(_type, resource, _data)
+        resource.destroy!
+        {}
       end
 
       def invoke_custom_action(type, resource, action, data)

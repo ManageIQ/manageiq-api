@@ -23,13 +23,9 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        network_router = resource_search(id, type, collection_class(:network_routers))
-        raise "Delete not supported for #{network_router_ident(network_router)}" unless network_router.respond_to?(:delete_network_router_queue)
-        task_id = network_router.delete_network_router_queue(User.current_userid)
-        action_result(true, "Deleting #{network_router_ident(network_router)}", :task_id => task_id)
-      end
+    def delete_resource_main_action(type, network_router, _data)
+      ensure_respond_to(type, network_router, :delete, :delete_network_router_queue)
+      {:task_id => network_router.delete_network_router_queue(User.current_userid)}
     end
 
     private

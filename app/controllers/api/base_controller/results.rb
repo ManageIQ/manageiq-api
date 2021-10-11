@@ -3,14 +3,6 @@ module Api
     module Results
       private
 
-      def delete_action_handler
-        yield
-      rescue ActiveRecord::RecordNotFound => err
-        single_resource? ? raise(err) : action_result(false, err.to_s)
-      rescue => err
-        action_result(false, err.to_s)
-      end
-
       def single_resource?
         @req.method == :delete || !@req.json_body.key?('resources')
       end
