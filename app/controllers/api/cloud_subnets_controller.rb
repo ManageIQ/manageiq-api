@@ -37,14 +37,9 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        cloud_subnet = resource_search(id, type, collection_class(:cloud_subnets))
-        raise BadRequestError, "Cannot delete #{cloud_subnet_ident(cloud_subnet)}: #{cloud_subnet.unsupported_reason(:delete)}" unless cloud_subnet.supports?(:delete)
-
-        task_id = cloud_subnet.delete_cloud_subnet_queue(session[:userid])
-        action_result(true, "Deleting #{cloud_subnet_ident(cloud_subnet)}", :task_id => task_id)
-      end
+    def delete_resource_main_action(type, cloud_subnet, _data)
+      ensure_supports(type, cloud_subnet, :delete)
+      {:task_id => cloud_subnet.delete_cloud_subnet_queue(User.current_userid)}
     end
 
     private

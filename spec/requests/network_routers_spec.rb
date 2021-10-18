@@ -151,13 +151,7 @@ RSpec.describe 'NetworkRouters API' do
       api_basic_authorize(action_identifier(:network_routers, :delete, :resource_actions))
 
       post(api_network_router_url(nil, network_router), :params => gen_request(:delete))
-
-      expected = {
-        'success' => true,
-        'message' => a_string_including('Deleting Network Router')
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => true, :task => true, :message => /Deleting Network Router/)
     end
 
     it "will not delete a router unless authorized" do
@@ -175,19 +169,16 @@ RSpec.describe 'NetworkRouters API' do
       api_basic_authorize(action_identifier(:network_routers, :delete, :resource_actions))
 
       post(api_network_routers_url, :params => { :action => "delete", :resources => [{:id => network_router1.id},
-                                                                                     {:id => network_router2.id}] })
-
-      expect(response).to have_http_status(:ok)
+                                                                                     {:id => network_router2.id}]})
+      expect_multiple_action_result(2, :success => true, :task => true, :message => /Deleting Network Router/)
     end
 
     it "forbids multiple network router deletion without an appropriate role" do
       network_router1, network_router2 = FactoryBot.create_list(:network_router, 2)
-      api_basic_authorize
-
-      post(api_network_routers_url, :params => { :action => "delete", :resources => [{:id => network_router1.id},
-                                                                                     {:id => network_router2.id}] })
-
-      expect(response).to have_http_status(:forbidden)
+      expect_forbidden_request do
+        post(api_network_routers_url, :params => {:action => "delete", :resources => [{:id => network_router1.id},
+                                                                                      {:id => network_router2.id}]})
+      end
     end
 
     it 'raises an error when delete not supported for network router' do
@@ -195,13 +186,7 @@ RSpec.describe 'NetworkRouters API' do
       api_basic_authorize(action_identifier(:network_routers, :delete, :resource_actions))
 
       post(api_network_router_url(nil, network_router), :params => gen_request(:delete))
-
-      expected = {
-        'success' => false,
-        'message' => a_string_including('Delete not supported for Network Router')
-      }
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => false, :message => /Delete not supported for Network Router/)
     end
   end
 end

@@ -568,14 +568,7 @@ RSpec.describe 'GenericObjectDefinitions API' do
 
       post(api_generic_object_definition_url(nil, object_def.name), :params => { :action => 'delete' })
 
-      expected = {
-        'error' => a_hash_including(
-          'kind'    => 'bad_request',
-          'message' => a_string_including('Failed to delete generic object definition')
-        )
-      }
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body).to include(expected)
+      expect_bad_request(/Deleting Generic Object/)
     end
 
     it 'can delete generic_object_definition in bulk by name, id, or href' do

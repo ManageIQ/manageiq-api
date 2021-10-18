@@ -208,21 +208,26 @@ module Spec
           expected["success"] = options[:success] if options.key?(:success)
           expected["message"] = a_string_matching(options[:message]) if options[:message]
           expected["href"] = a_string_matching(options[:href]) if options[:href]
-          expected.merge!(expected_task_response) if options[:task]
+          expected.merge!(expected_task_response(options[:task])) if options[:task]
           expect(response.parsed_body).to include(expected)
           expect(response.parsed_body).not_to include("actions")
         end
 
         def expect_multiple_action_result(count, options = {})
           expect(response).to have_http_status(:ok)
-          expected_result = {"success" => true}
-          expected_result.merge!(expected_task_response) if options[:task]
+          expected_result = {"success" => options.key?(:success) ? options[:success] : true}
+          expected_result.merge!(expected_task_response(options[:task])) if options[:task]
+          expected_result["message"] = a_string_matching(options[:message]) if options[:message]
           expected = {"results" => Array.new(count) { a_hash_including(expected_result) }}
           expect(response.parsed_body).to include(expected)
         end
 
-        def expected_task_response
-          {"task_id" => anything, "task_href" => anything}
+        def expected_task_response(task_id = nil)
+          if task_id == true
+            {"task_id" => a_string_matching(/\d+/), "task_href" => a_string_including("http://www.example.com/api/tasks/")}
+          else
+            {"task_id" => task_id, "task_href" => "http://www.example.com/api/tasks/#{task_id}"}
+          end
         end
 
         def expect_tagging_result(tag_results, status = :ok)

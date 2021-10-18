@@ -1010,7 +1010,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:delete))
 
-      expect_single_action_result(:success => true, :message => "deleting", :href => api_vm_url(nil, vm), :task => true)
+      expect_single_action_result(:success => true, :message => /Deleting Vm id: #{vm.id}/, :href => api_vm_url(nil, vm), :task => true)
       expect(MiqQueue.where(:method_name => "destroy",
                             :user_id     => @user.id,
                             :group_id    => @user.current_group.id,

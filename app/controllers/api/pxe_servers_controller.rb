@@ -37,12 +37,6 @@ module Api
       end
     end
 
-    def delete_resource(_type, id = nil, data = nil)
-      raise BadRequestError, "Must specify an id for deleting a pxe server" unless id
-
-      super
-    end
-
     def edit_resource(type, id, data)
       server = resource_search(id, type, collection_class(:pxe_servers))
       menus = data.delete('pxe_menus')

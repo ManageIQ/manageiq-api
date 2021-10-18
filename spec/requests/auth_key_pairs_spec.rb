@@ -114,7 +114,7 @@ RSpec.describe "Auth Key Pairs API" do
 
       post(api_auth_key_pair_url(nil, akp), :params => {'action' => 'delete'})
 
-      expect_single_action_result(:success => true, :message => "Deleting", :task => true)
+      expect_single_action_result(:success => true, :message => /Deleting Auth Key Pair/, :task => true)
     end
 
     it 'will not allow unauthorized key pairs delete' do

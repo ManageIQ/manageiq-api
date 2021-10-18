@@ -33,26 +33,16 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def delete_resource(type, id, _data = nil)
-      raise BadRequestError, "Must specify an id for deleting a #{type} resource" if id.blank?
-
-      ensure_resource_exists(type, id) if single_resource?
-
-      api_action(type, id) do |klass|
-        begin
-          physical_storage = resource_search(id, type, klass)
-          unless physical_storage.supports?(:delete)
-            error_msg = "Failed to delete #{physical_storage.name}: #{physical_storage.unsupported_reason(:delete)}"
-            raise error_msg
-          end
-          msg = "Detaching #{physical_storage_ident(physical_storage)}"
-          api_log_info(msg)
-          task_id = physical_storage.delete_physical_storage_queue(User.current_user)
-          action_result(true, msg, :task_id => task_id)
-        rescue => err
-          action_result(false, err.to_s)
-        end
+    # really shouldn't override, but want the word Detaching in there
+    def delete_resource_action(type, id = nil, data = nil)
+      api_resource(type, id, "Detaching") do |resource|
+        delete_resource_main_action(type, resource, data)
       end
+    end
+
+    def delete_resource_main_action(type, physical_storage, _data = nil)
+      ensure_supports(type, physical_storage, :delete)
+      {:task_id => physical_storage.delete_physical_storage_queue(User.current_user)}
     end
 
     private

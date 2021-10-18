@@ -113,23 +113,7 @@ RSpec.describe 'Configuration Script Sources API' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :delete, :post)
 
       post(api_configuration_script_sources_url, :params => { :action => 'delete', :resources => [{:id => config_script_src.id}, {:id => config_script_src_2.id}] })
-
-      expected = {
-        'results' => [
-          a_hash_including(
-            'success' => true,
-            'message' => a_string_including('Deleting ConfigurationScriptSource'),
-            'task_id' => a_kind_of(String)
-          ),
-          a_hash_including(
-            'success' => true,
-            'message' => a_string_including('Deleting ConfigurationScriptSource'),
-            'task_id' => a_kind_of(String)
-          )
-        ]
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_multiple_action_result(2, :success => true, :task => true, :message => /Deleting Configuration Script Source/)
     end
 
     it 'forbids delete without an appropriate role' do
@@ -287,14 +271,7 @@ RSpec.describe 'Configuration Script Sources API' do
       api_basic_authorize action_identifier(:configuration_script_sources, :delete)
 
       post(api_configuration_script_source_url(nil, config_script_src), :params => { :action => 'delete' })
-
-      expected = {
-        'success' => true,
-        'message' => a_string_including('Deleting ConfigurationScriptSource'),
-        'task_id' => a_kind_of(String)
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => true, :task => true, :message => /Deleting Configuration Script Source/)
     end
 
     it 'requires that the type support delete_in_provider_queue' do
@@ -302,13 +279,7 @@ RSpec.describe 'Configuration Script Sources API' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :delete, :post)
 
       post(api_configuration_script_source_url(nil, config_script_src), :params => { :action => 'delete', :resource => params })
-
-      expected = {
-        'success' => false,
-        'message' => "Delete not supported for ConfigurationScriptSource id:#{config_script_src.id} name: '#{config_script_src.name}'"
-      }
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => false, :message => /Delete not supported for Configuration Script Source/)
     end
 
     it 'forbids configuration script source delete without an appropriate role' do

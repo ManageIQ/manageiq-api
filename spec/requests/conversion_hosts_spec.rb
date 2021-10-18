@@ -242,18 +242,10 @@ describe "ConversionHosts API" do
       api_basic_authorize(action_identifier(:conversion_hosts, :delete, :resource_actions))
       post(conversion_host_url, :params => gen_request(:delete))
 
-      results = response.parsed_body
-      task_id = results['task_id']
-
+      task_id = response.parsed_body['task_id']
       expect(task_id).to match(/\d+/)
       expect(MiqTask.exists?(task_id.to_i)).to be_truthy
-
-      expect(results).to include(
-        'success'   => true,
-        'message'   => "Disabling and deleting ConversionHost id:#{conversion_host.id} name:#{conversion_host.name}",
-        'task_id'   => task_id,
-        'task_href' => "http://www.example.com/api/tasks/#{task_id}"
-      )
+      expect_single_action_result(:success => true, :task => task_id, :message => /Deleting Conversion Host.*#{conversion_host.name}/)
     end
 
     it "will not delete a conversion host unless authorized" do
@@ -274,29 +266,7 @@ describe "ConversionHosts API" do
       chost2_url = api_conversion_host_url(nil, chost2_id)
 
       post(api_conversion_hosts_url, :params => gen_request(:delete, [{"href" => chost1_url}, {"href" => chost2_url}]))
-      expect_multiple_action_result(2)
-
-      results = response.parsed_body['results']
-      task_one_id = results.first['task_id']
-      task_two_id = results.last['task_id']
-
-      expect(MiqTask.exists?(task_one_id.to_i)).to be_truthy
-      expect(MiqTask.exists?(task_two_id.to_i)).to be_truthy
-
-      expect(results).to contain_exactly(
-        a_hash_including(
-          'success'   => true,
-          'message'   => "Disabling and deleting ConversionHost id:#{chost1.id} name:#{chost1.name}",
-          'task_id'   => task_one_id,
-          'task_href' => "http://www.example.com/api/tasks/#{task_one_id}"
-        ),
-        a_hash_including(
-          'success'   => true,
-          'message'   => "Disabling and deleting ConversionHost id:#{chost2.id} name:#{chost2.name}",
-          'task_id'   => task_two_id,
-          'task_href' => "http://www.example.com/api/tasks/#{task_two_id}"
-        )
-      )
+      expect_multiple_action_result(2, :success => true, :task => true, :message => /Deleting Conversion Host/)
     end
   end
 

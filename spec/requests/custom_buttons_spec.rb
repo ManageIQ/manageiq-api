@@ -322,14 +322,7 @@ RSpec.describe 'CustomButtons API' do
         ]
       }
       post(api_custom_buttons_url, :params => request)
-
-      expected = {
-        'results' => a_collection_including(
-          a_hash_including('success' => true, 'message' => "custom_buttons id: #{cb.id} deleting")
-        )
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_multiple_action_result(1, :success => true, :message => /Deleting Custom Button/)
     end
   end
 

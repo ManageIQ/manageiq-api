@@ -21,14 +21,9 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        floating_ip = resource_search(id, type, collection_class(:floating_ips))
-        raise BadRequestError, "Delete for #{floating_ip_ident(floating_ip)}: #{floating_ip.unsupported_reason(:delete)}" unless floating_ip.supports?(:delete)
-
-        task_id = floating_ip.delete_floating_ip_queue(session[:userid])
-        action_result(true, "Deleting #{floating_ip_ident(floating_ip)}", :task_id => task_id)
-      end
+    def delete_resource_main_action(type, floating_ip, _data)
+      ensure_supports(type, floating_ip, :delete)
+      {:task_id => floating_ip.delete_floating_ip_queue(User.current_userid)}
     end
 
     private

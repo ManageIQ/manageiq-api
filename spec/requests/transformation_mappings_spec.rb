@@ -228,13 +228,7 @@ RSpec.describe "Transformation Mappings", :v2v do
         }
         post(api_transformation_mappings_url, :params => request)
 
-        expected = {
-          'results' => a_collection_including(
-            a_hash_including('success' => true, 'message' => "transformation_mappings id: #{transformation_mapping.id} deleting")
-          )
-        }
-        expect(response).to have_http_status(:ok)
-        expect(response.parsed_body).to include(expected)
+        expect_multiple_action_result(1, :success => true, :message => /Deleting Transformation Mapping/)
       end
     end
 

@@ -24,8 +24,11 @@ module Api
       entry.tag
     end
 
-    def delete_resource(_type, id, _data = {})
-      destroy_tag_and_classification(id)
+    # TODO: Fix resource_search to handle a classification id or tag id
+    #       Then delete this method
+    def delete_resource_action(type, id, data = {})
+      entry_or_tag = Classification.find_by(:tag_id => id) || Tag.find(id)
+      delete_resource_main_action(type, entry_or_tag, data)
       action_result(true, "tags id: #{id} deleting")
     rescue ActiveRecord::RecordNotFound
       raise
@@ -42,11 +45,6 @@ module Api
         raise BadRequestError, "Category id, href or name needs to be specified for creating a new tag resource"
       end
       Category.find_by(:id => category_id)
-    end
-
-    def destroy_tag_and_classification(tag_id)
-      entry_or_tag = Classification.find_by(:tag_id => tag_id) || Tag.find(tag_id)
-      entry_or_tag.destroy!
     end
   end
 end

@@ -157,7 +157,7 @@ describe "Alerts Definitions API" do
     post(api_alert_definition_url(nil, alert_definition), :params => gen_request(:delete))
     expect(response).to have_http_status(:ok)
     expect_single_action_result(:success => true,
-                                :message => "alert_definitions id: #{alert_definition.id} deleting",
+                                :message => /Deleting Alert Definition/,
                                 :href    => api_alert_definition_url(nil, alert_definition))
   end
 
@@ -395,7 +395,7 @@ describe "Alerts Definition Profiles API" do
 
     expect(response).to have_http_status(:ok)
     expect_single_action_result(:success => true,
-                                :message => "alert_definition_profiles id: #{alert_definition_profile.id} deleting",
+                                :message => /Deleting Alert Definition Profile/,
                                 :href    => api_alert_definition_profile_url(nil, alert_definition_profile))
   end
 

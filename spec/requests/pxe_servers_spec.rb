@@ -209,24 +209,7 @@ RSpec.describe 'PxeServers API' do
           ]
         }
       )
-
-      expected = {
-        "results" => a_collection_containing_exactly(
-          a_hash_including(
-            "message" => "pxe_servers id: #{pxe_server1.id} deleting",
-            "success" => true,
-            "href"    => api_pxe_server_url(nil, pxe_server1)
-          ),
-          a_hash_including(
-            "message" => "pxe_servers id: #{pxe_server2.id} deleting",
-            "success" => true,
-            "href"    => api_pxe_server_url(nil, pxe_server2)
-          )
-        )
-      }
-
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_multiple_action_result(2, :success => true, :message => /Deleting Pxe Server/)
       expect(PxeServer.exists?(pxe_server1.id)).to be_falsey
       expect(PxeServer.exists?(pxe_server2.id)).to be_falsey
     end

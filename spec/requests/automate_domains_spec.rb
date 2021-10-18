@@ -58,7 +58,7 @@ describe "Automate Domains API" do
       post(api_automate_domain_url(nil, automate_domain), :params => gen_request(:delete))
       expect_single_action_result(
         :success => true,
-        :message => a_string_matching(/Delete queued for .*/),
+        :message => /Deleting Automate Domain/,
         :href    => api_automate_domain_url(nil, automate_domain)
       )
     end

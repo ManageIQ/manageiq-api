@@ -17,13 +17,9 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        auth = resource_search(id, type, collection_class(:authentications))
-        raise "Delete not supported for #{authentication_ident(auth)}" unless auth.respond_to?(:delete_in_provider_queue)
-        task_id = auth.delete_in_provider_queue
-        action_result(true, "Deleting #{authentication_ident(auth)}", :task_id => task_id)
-      end
+    def delete_resource_main_action(type, auth, _data)
+      ensure_respond_to(type, auth, :delete, :delete_in_provider_queue)
+      {:task_id => auth.delete_in_provider_queue}
     end
 
     def refresh_resource(type, id, _data)

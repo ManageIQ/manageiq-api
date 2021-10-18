@@ -11,12 +11,5 @@ module Api
     rescue => err
       action_result(false, err.to_s)
     end
-
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        resource_search(id, type, collection_class(:firmware_registries)).destroy
-        action_result(true, "FirmwareBinary [id: #{id}] deleted")
-      end
-    end
   end
 end

@@ -8,13 +8,11 @@ RSpec.describe "Templates API" do
         post(api_template_url(nil, template), :params => { :action => "delete" })
       end.to change(MiqTemplate, :count).by(-1)
 
-      expected = {
-        "href"    => api_template_url(nil, template),
-        "message" => "templates id: #{template.id} deleting",
-        "success" => true
-      }
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      expect_single_action_result(
+        :href    => api_template_url(nil, template),
+        :message => /Deleting Template id: #{template.id}/,
+        :success => true
+      )
     end
 
     it "won't delete a template without an appropriate role" do

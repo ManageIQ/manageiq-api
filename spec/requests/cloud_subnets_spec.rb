@@ -189,14 +189,7 @@ RSpec.describe 'CloudSubnets API' do
 
       post(api_cloud_subnet_url(nil, cloud_subnet), :params => gen_request(:delete))
 
-      expected = {
-        'success'   => true,
-        'message'   => a_string_including('Deleting Cloud Subnet'),
-        'task_href' => a_string_matching(api_tasks_url),
-        'task_id'   => a_kind_of(String)
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => true, :task => true, :message => /Deleting Cloud Subnet/)
     end
 
     it "will not delete a cloud subnet unless authorized" do
@@ -215,7 +208,7 @@ RSpec.describe 'CloudSubnets API' do
 
       post(api_cloud_subnets_url, :params => {:action => "delete", :resources => [{:id => cloud_subnet1.id}, {:id => cloud_subnet2.id}]})
 
-      expect(response).to have_http_status(:ok)
+      expect_multiple_action_result(2, :success => true, :task => true, :message => /Deleting Cloud Subnet/)
     end
 
     it "forbids multiple cloud subnet deletion without an appropriate role" do
@@ -233,12 +226,7 @@ RSpec.describe 'CloudSubnets API' do
 
       post(api_cloud_subnet_url(nil, cloud_subnet), :params => gen_request(:delete))
 
-      expected = {
-        'success' => false,
-        'message' => a_string_including('Cannot delete Cloud Subnet')
-      }
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => false, :message => /Delete for Cloud Subnets.*not.*supported/)
     end
   end
 end

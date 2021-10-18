@@ -54,7 +54,7 @@ RSpec.describe "firmware_registries API" do
         api_basic_authorize action_identifier(:firmware_registries, :delete, :collection_actions, :post)
         post(api_firmware_registries_url, :params => gen_request(:delete, [{:id => registry.id}]))
         expect(FirmwareRegistry.count).to be_zero
-        expect(response).to have_http_status(:ok)
+        expect_multiple_action_result(1, :success => true, :message => a_string_matching(/Deleting Firmware Registry/))
       end
 
       it 'deletes multiple firmware registries with an appropriate role' do
@@ -62,9 +62,10 @@ RSpec.describe "firmware_registries API" do
         post(api_firmware_registries_url, :params => gen_request(:delete, [{:id => registry.id}, {:id => registry2.id}]))
         expect(FirmwareRegistry.count).to be_zero
         expect(response).to have_http_status(:ok)
+        expect_multiple_action_result(2, :success => true, :message => /Deleting Firmware Registry/)
       end
 
-      it 'does not create firmware_registries without an appropriate role' do
+      it 'does not delete firmware_registries without an appropriate role' do
         api_basic_authorize
         post(api_firmware_registries_url, :params => gen_request(:delete, []))
         expect(response).to have_http_status(:forbidden)

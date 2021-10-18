@@ -342,13 +342,11 @@ describe "Services API" do
         post(api_service_url(nil, service), :params => { :action => "delete" })
       end.to change(Service, :count).by(-1)
 
-      expected = {
-        "success" => true,
-        "message" => "services id: #{service.id} deleting",
-        "href"    => api_service_url(nil, service)
-      }
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      expect_single_action_result(
+        :success => true,
+        :message => /Deleting Service.*#{service.id}/,
+        "href"   => api_service_url(nil, service)
+      )
     end
 
     it "won't delete a service via POST without an appropriate role" do
@@ -368,7 +366,7 @@ describe "Services API" do
       post(api_services_url, :params => gen_request(:delete,
                                                     [{"href" => api_service_url(nil, svc1)},
                                                      {"href" => api_service_url(nil, svc2)}]))
-      expect_multiple_action_result(2)
+      expect_multiple_action_result(2, :message => /Deleting Service/, :success => true)
       expect_result_resources_to_include_hrefs("results",
                                                [api_service_url(nil, svc1), api_service_url(nil, svc2)])
       expect { svc1.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -384,7 +382,7 @@ describe "Services API" do
       expected = {
         "results" => [
           a_hash_including("success" => false, "message" => "Couldn't find Service with 'id'=0"),
-          a_hash_including("success" => true, "message" => "services id: #{svc.id} deleting")
+          a_hash_including("success" => true, "message" => a_string_matching(/Deleting Service id: #{svc.id}/))
         ]
       }
       expect(response).to have_http_status(:ok)

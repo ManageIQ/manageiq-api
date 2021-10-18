@@ -102,7 +102,7 @@ module Api
       end
 
       def update_one_collection(is_subcollection, target, type, id, resource)
-        id = id.to_i if id =~ /\A\d+\z/
+        id = id.to_i if id.kind_of?(String) && id =~ /\A\d+\z/
         parent_resource = parent_resource_obj if is_subcollection
         if is_subcollection
           send(target, parent_resource, type, id, resource)

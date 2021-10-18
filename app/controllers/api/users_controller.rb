@@ -42,7 +42,7 @@ module Api
       super
     end
 
-    def delete_resource(type, id = nil, data = nil)
+    def delete_resource_action(type, id = nil, data = nil)
       raise BadRequestError, "Must specify an id for deleting a user" unless id
       raise BadRequestError, "Cannot delete user of current request" if id.to_i == User.current_user.id
       super

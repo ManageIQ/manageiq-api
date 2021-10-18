@@ -23,14 +23,9 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        cloud_tenant = resource_search(id, type, collection_class(type))
-        raise "Delete not supported for #{cloud_tenant.name}" unless cloud_tenant.respond_to?(:delete_cloud_tenant_queue)
-
-        task_id = cloud_tenant.delete_key_pair_queue(current_user.userid)
-        action_result(true, "Deleting #{cloud_tenant.name}", :task_id => task_id)
-      end
+    def delete_resource_main_action(type, cloud_tenant, _data)
+      ensure_respond_to(type, cloud_tenant, :delete, :delete_cloud_tenant_queue)
+      {:task_id => cloud_tenant.delete_in_provider_queue}
     end
 
     private

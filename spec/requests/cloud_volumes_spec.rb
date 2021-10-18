@@ -59,14 +59,7 @@ describe "Cloud Volumes API" do
 
     post(api_cloud_volume_url(nil, cloud_volume1), :params => { :action => "delete" })
 
-    expected = {
-      'message' => 'Deleting Cloud Volume CloudVolume1',
-      'success' => true,
-      'task_id' => a_kind_of(String)
-    }
-
-    expect(response.parsed_body).to include(expected)
-    expect(response).to have_http_status(:ok)
+    expect_single_action_result(:success => true, :task => true, :message => /Deleting Cloud Volume/)
   end
 
   it "can delete a cloud volume with DELETE as a resource action" do
@@ -109,24 +102,8 @@ describe "Cloud Volumes API" do
 
     api_basic_authorize collection_action_identifier(:cloud_volumes, :delete, :post)
 
-    expected = {
-      'results' => a_collection_containing_exactly(
-        a_hash_including(
-          'success' => true,
-          'message' => a_string_including('Deleting Cloud Volume CloudVolume1'),
-          'task_id' => a_kind_of(String)
-        ),
-        a_hash_including(
-          'success' => true,
-          'message' => a_string_including('Deleting Cloud Volume CloudVolume2'),
-          'task_id' => a_kind_of(String)
-        )
-      )
-    }
     post(api_cloud_volumes_url, :params => { :action => 'delete', :resources => [{ 'id' => cloud_volume1.id }, { 'id' => cloud_volume2.id }] })
-
-    expect(response.parsed_body).to include(expected)
-    expect(response).to have_http_status(:ok)
+    expect_multiple_action_result(2, :task => true, :message => /Deleting Cloud Volume/)
   end
 
   it 'it can create cloud volumes through POST' do
@@ -158,13 +135,7 @@ describe "Cloud Volumes API" do
 
       post(api_cloud_volume_url(nil, volume), :params => {"action" => "safe_delete"})
 
-      expected = {
-        "success" => true,
-        "message" => "Deleting Cloud Volume my_volume"
-      }
-
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      expect_single_action_result(:success => true, :task => true, :message => /Deleting Cloud Volume/)
     end
 
     it 'safe_delete will raise an error if the cloud volume does not support safe_delete' do
@@ -173,14 +144,7 @@ describe "Cloud Volumes API" do
       api_basic_authorize(action_identifier(:cloud_volumes, :safe_delete, :resource_actions, :post))
 
       post(api_cloud_volume_url(nil, volume), :params => {"action" => "safe_delete"})
-
-      expected = {
-        "success" => false,
-        "message" => "Feature not available/supported"
-      }
-
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:bad_request)
+      expect_single_action_result(:success => false, :message => "Safe Delete for Cloud Volumes: Feature not available/supported")
     end
 
     it "can safe delete a cloud volume as a resource action" do
@@ -190,14 +154,7 @@ describe "Cloud Volumes API" do
       api_basic_authorize(action_identifier(:cloud_volumes, :safe_delete, :resource_actions, :post))
       post(api_cloud_volumes_url, :params => {"action" => "safe_delete", "resources" => [{"id" => volume1.id}]})
 
-      expected1 = {
-        "success" => true,
-        "message" => "Deleting Cloud Volume #{volume1.name}",
-      }
-
-      expect(response.parsed_body["results"][0]).to include(expected1)
-      expect(response.parsed_body.length).to eq 1
-      expect(response).to have_http_status(:ok)
+      expect_multiple_action_result(1, :success => true, :message => /Deleting Cloud Volume.*#{volume1.name}/)
     end
   end
 

@@ -429,13 +429,11 @@ RSpec.describe "reports API" do
 
         post(api_report_result_url(nil, report, result), :params => {:action => "delete"})
 
-        expected = {
-          "href"    => "http://www.example.com/api/results/#{result.id}",
-          "message" => "results id: #{result.id} deleting",
-          "success" => true,
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect_single_action_result(
+          :success => true,
+          :message => /Deleting Result/,
+          "href"   => "http://www.example.com/api/results/#{result.id}"
+        )
       end
 
       it "will not delete a report result unless authorized" do
@@ -482,23 +480,7 @@ RSpec.describe "reports API" do
             ]
           }
         )
-
-        expected = {
-          "results" => a_collection_containing_exactly(
-            a_hash_including(
-              "success" => true,
-              "message" => "results id: #{results.first.id} deleting",
-              "href"    => api_result_url(nil, results.first)
-            ),
-            a_hash_including(
-              "success" => true,
-              "message" => "results id: #{results.last.id} deleting",
-              "href"    => api_result_url(nil, results.last)
-            )
-          )
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect_multiple_action_result(2, :success => true, :message => /Deleting Result/)
       end
 
       it "raises a 404 with proper message if a resource isn't found" do
@@ -512,15 +494,7 @@ RSpec.describe "reports API" do
             :resources => [{:href => api_report_result_url(nil, report, fake_id)}]
           }
         )
-
-        expected = {
-          "results" => [{
-            "message" => a_string_starting_with("Couldn't find MiqReportResult with 'id'=#{fake_id}"),
-            "success" => false
-          }]
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(200)
+        expect_multiple_action_result(1, :success => false, :message => /Couldn't find MiqReportResult with 'id'=#{fake_id}/)
       end
     end
 

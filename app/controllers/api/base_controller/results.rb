@@ -3,14 +3,6 @@ module Api
     module Results
       private
 
-      def delete_action_handler
-        yield
-      rescue ActiveRecord::RecordNotFound => err
-        single_resource? ? raise(err) : action_result(false, err.to_s)
-      rescue => err
-        action_result(false, err.to_s)
-      end
-
       def single_resource?
         @req.method == :delete || !@req.json_body.key?('resources')
       end
@@ -32,7 +24,8 @@ module Api
       end
 
       def add_parent_href_to_result(hash, parent_id = nil)
-        return if hash[:href].present?
+        return hash if hash[:href].present?
+
         hash[:href] = "#{@req.api_prefix}/#{@req.collection}/#{parent_id ? parent_id : @req.collection_id}"
         hash
       end

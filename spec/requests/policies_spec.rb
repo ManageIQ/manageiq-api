@@ -262,7 +262,7 @@ describe "Policies API" do
       api_basic_authorize resource_action_identifier(:policy_profiles, :delete)
       post(api_policy_profile_url(nil, policy_profile), :params => gen_request(:delete))
 
-      expect(response).to have_http_status(:ok)
+      expect_single_action_result(:ok => true, :message => /Deleting Policy Profile/)
 
       expect(MiqPolicySet.exists?(policy_profile.id)).to be_falsey
     end

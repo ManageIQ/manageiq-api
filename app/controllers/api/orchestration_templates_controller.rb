@@ -1,5 +1,7 @@
 module Api
   class OrchestrationTemplatesController < BaseController
+    # TODO: convert callers to accept action hash results as return type
+    # @returns model (not an action result hash)
     def delete_resource(type, id, data = {})
       klass    = collection_class(type)
       resource = resource_search(id, type, klass)

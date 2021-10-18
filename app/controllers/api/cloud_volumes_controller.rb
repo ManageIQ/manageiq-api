@@ -29,22 +29,15 @@ module Api
     end
 
     def safe_delete_resource(type, id, _data = {})
-      delete_action_handler do
-        cloud_volume = resource_search(id, type, collection_class(:cloud_volumes))
-
-        raise BadRequestError, cloud_volume.unsupported_reason(:safe_delete) unless cloud_volume.supports?(:safe_delete)
-
-        task_id = cloud_volume.safe_delete_volume_queue(User.current_user)
-        action_result(true, "Deleting Cloud Volume #{cloud_volume.name}", :task_id => task_id)
+      api_resource(type, id, "Deleting") do |cloud_volume|
+        ensure_supports(type, cloud_volume, :safe_delete)
+        {:task_id => cloud_volume.safe_delete_volume_queue(User.current_userid)}
       end
     end
 
-    def delete_resource(type, id, _data = {})
-      delete_action_handler do
-        cloud_volume = resource_search(id, type, collection_class(:cloud_volumes))
-        task_id = cloud_volume.delete_volume_queue(User.current_user)
-        action_result(true, "Deleting Cloud Volume #{cloud_volume.name}", :task_id => task_id)
-      end
+    def delete_resource_main_action(_type, cloud_volume, _data)
+      # TODO: ensure_supports(type, cloud_volume, :delete)
+      {:task_id => cloud_volume.delete_volume_queue(User.current_userid)}
     end
 
     def options

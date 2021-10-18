@@ -38,6 +38,14 @@ module Api
         send("validate_#{@req.method}_method")
       end
 
+      def ensure_supports(type, model, action, supports = action)
+        raise BadRequestError, "#{action.to_s.titleize} for #{type.to_s.titleize}: #{model.unsupported_reason(supports)}" unless model.supports?(supports)
+      end
+
+      def ensure_respond_to(type, model, action, respond_to)
+        raise BadRequestError, "#{action.to_s.titleize} not supported for #{model_ident(model, type)}" unless model.respond_to?(respond_to)
+      end
+
       def parse_id(resource, collection)
         return nil if !resource.kind_of?(Hash) || resource.blank?
 
