@@ -1,4 +1,6 @@
 RSpec.describe 'CloudSubnets API' do
+  include Spec::Support::SupportsHelper
+
   let(:ems) { FactoryBot.create(:ems_network) }
 
   describe 'GET /api/cloud_subnets' do
@@ -82,13 +84,12 @@ RSpec.describe 'CloudSubnets API' do
     it 'returns a DDF schema when available via OPTIONS' do
       zone = FactoryBot.create(:zone, :name => "api_zone")
       provider = FactoryBot.create(:ems_network, :zone => zone)
+      stub_supports(provider.class::CloudSubnet, :create)
+      stub_params_for(provider.class::CloudSubnet, :create, :fields => [])
 
-      allow(provider.class::CloudSubnet).to receive(:params_for_create).and_return('foo')
+      options(api_cloud_subnets_url(:ems_id => provider.id))
 
-      options(api_cloud_subnets_url, :params => {:ems_id => provider.id})
-      options("#{api_cloud_subnets_url}?ems_id=#{provider.id}")
-
-      expect(response.parsed_body['data']['form_schema']).to eq('foo')
+      expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
       expect(response).to have_http_status(:ok)
     end
   end

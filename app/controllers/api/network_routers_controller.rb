@@ -28,6 +28,16 @@ module Api
       {:task_id => network_router.delete_network_router_queue(User.current_userid)}
     end
 
+    def options
+      if (id = params["id"])
+        render_update_resource_options(id)
+      elsif (ems_id = params["ems_id"])
+        render_create_resource_options(ems_id)
+      else
+        super
+      end
+    end
+
     private
 
     def network_router_ident(network_router)

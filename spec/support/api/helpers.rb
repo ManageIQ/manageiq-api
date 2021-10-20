@@ -270,6 +270,17 @@ module Spec
         def select_attributes(attrlist)
           attrlist.sort.select { |attr| !::Api.encrypted_attribute?(attr) }
         end
+
+        # when testing options requests, ensure the base model responds in a certain way
+        # this is used for OPTIONS for DDF
+        def stub_params_for(model, action = :update, fields: [])
+          action_params = "params_for_#{action}".to_sym
+
+          receive_this_message = receive(action_params).and_return("fields" => fields)
+
+          allow(model).to(receive_this_message)                 # create
+          allow_any_instance_of(model).to(receive_this_message) # update
+        end
       end
     end
   end

@@ -41,17 +41,10 @@ module Api
     end
 
     def options
-      if params[:id]
-        cloud_volume = resource_search(params[:id], :cloud_volumes, CloudVolume)
-        render_options(:cloud_volumes, :form_schema => cloud_volume.params_for_update)
-      elsif params[:ems_id]
-        ems = resource_search(params[:ems_id], :ext_management_systems, ExtManagementSystem)
-        raise BadRequestError, "No CloudVolume support for - #{ems.class}" unless defined?(ems.class::CloudVolume)
-
-        klass = ems.class::CloudVolume
-        raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
-
-        render_options(:cloud_volumes, :form_schema => klass.params_for_create(ems))
+      if (id = params["id"])
+        render_update_resource_options(id)
+      elsif (ems_id = params["ems_id"])
+        render_create_resource_options(ems_id)
       else
         super
       end
