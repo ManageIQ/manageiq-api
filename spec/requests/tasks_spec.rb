@@ -3,15 +3,6 @@ describe 'TasksController' do
   let(:task2)   { FactoryBot.create(:miq_task, :state => MiqTask::STATE_FINISHED) }
   let(:my_task) { FactoryBot.create(:miq_task, :state => MiqTask::STATE_FINISHED, :userid => "api_user_id") }
 
-  def expect_deleted(*args)
-    args.each do |arg|
-      expect(MiqTask.find_by(:id => arg.id)).to be_nil
-    end
-  end
-
-  def expect_not_deleted(*args)
-    expect(MiqTask.where(:id => args.collect(&:id)).length).to eq(args.length)
-  end
 
   it 'will not delete other users tasks on DELETE when role is miq_task_my_ui' do
     api_basic_authorize 'miq_task_my_ui', resource_action_identifier(:tasks, :delete, :delete)
