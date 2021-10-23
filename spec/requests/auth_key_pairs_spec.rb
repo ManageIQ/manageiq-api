@@ -138,6 +138,7 @@ RSpec.describe "Auth Key Pairs API" do
   end
 
   describe 'DELETE /api/auth_key_pairs/:id' do
+    let(:akp) { FactoryBot.create(:auth_key_pair_openstack, :resource => FactoryBot.create(:ems_cloud)) }
     it 'can delete an auth key pair by id' do
       api_basic_authorize action_identifier(:auth_key_pairs, :delete, :resource_actions, :delete)
 

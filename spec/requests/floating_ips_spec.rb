@@ -177,7 +177,7 @@ RSpec.describe 'FloatingIp API' do
       api_basic_authorize(action_identifier(:floating_ips, :delete, :resource_actions))
 
       post(api_floating_ip_url(nil, floating_ip), :params => gen_request(:delete))
-      expect_single_action_result(:success => false, :messge => /Delete for Floating Ip/)
+      expect_bad_request(/Delete for Floating Ip/)
     end
   end
 end

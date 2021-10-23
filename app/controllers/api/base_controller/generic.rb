@@ -191,7 +191,7 @@ module Api
         add_href_to_result(result, type, id)
         log_result(result)
         result
-      rescue ActiveRecord::RecordNotFound, ForbiddenError => err
+      rescue ActiveRecord::RecordNotFound, ForbiddenError, BadRequestError, NotFoundError => err
         single_resource? ? raise(err) : action_result(false, err.to_s)
       rescue => err
         action_result(false, err.to_s)

@@ -422,7 +422,7 @@ RSpec.describe 'Authentications API' do
 
   describe 'DELETE /api/authentications/:id' do
     it 'will delete an authentication' do
-      auth = FactoryBot.create(:authentication)
+      auth = FactoryBot.create(:embedded_ansible_openstack_credential)
       api_basic_authorize action_identifier(:authentications, :delete, :resource_actions, :delete)
 
       delete(api_authentication_url(nil, auth))

@@ -83,8 +83,7 @@ describe "Volume Mappings API" do
       api_basic_authorize(action_identifier(:volume_mappings, :delete, :resource_actions, :post))
 
       post(api_volume_mapping_url(nil, volume_mapping), :params => gen_request(:delete))
-
-      expect_single_action_result(:success => false, :message => /Feature not available/i)
+      expect_bad_request(/Feature not available/i)
     end
 
     it "Deletion of a single Volume Mapping" do
