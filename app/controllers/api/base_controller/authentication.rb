@@ -107,6 +107,26 @@ module Api
       end
 
       def authenticate_with_user_token(auth_token)
+        # Using `.nil?` + `.empty?` to avoid a REGEXP on `.blank?` valid
+        # tokens, which can be expensive on every request:
+        #
+        #   http://tmm1.net/ruby21-profiling/
+        #
+        # We only care about empty? and not whitespace anyway since the reason
+        # for this check is because Dalli checks for `nil`, or specifically a
+        # zero length string to raise an error with:
+        #
+        #   # lib/dalli/client.rb:380
+        #
+        #   def validate_key(key)
+        #     raise ArgumentError, "key cannot be blank" if !key || key.length == 0
+        #
+        #     # ...
+        #   end
+        #
+        raise AuthenticationError, "Missing Authentication Token (#{HttpHeaders::AUTH_TOKEN})" if auth_token.nil?
+        raise AuthenticationError, "Empty Authentication Token (#{HttpHeaders::AUTH_TOKEN})"   if auth_token.length == 0
+
         if !api_token_mgr.token_valid?(auth_token)
           raise AuthenticationError, "Invalid Authentication Token #{auth_token} specified"
         else
