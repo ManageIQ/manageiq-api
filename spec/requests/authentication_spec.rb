@@ -240,7 +240,7 @@ describe "Authentication API" do
   end
 
   context "Token Based Authentication" do
-    %w(sql memory).each do |session_store|
+    %w(sql memory cache).each do |session_store|
       context "when using a #{session_store} session store" do
         before { stub_settings_merge(:server => {:session_store => session_store}) }
 
@@ -251,6 +251,15 @@ describe "Authentication API" do
 
           expect(response).to have_http_status(:ok)
           expect_result_to_have_keys(%w(auth_token token_ttl expires_on))
+        end
+
+        it "authentication using a blank token" do
+          get api_entrypoint_url, :headers => {Api::HttpHeaders::AUTH_TOKEN => ""}
+
+          expected_msg = "Empty Authentication Token (HTTP_X_AUTH_TOKEN)"
+
+          expect(response).to have_http_status(:unauthorized)
+          expect(response.parsed_body["error"]["message"]).to eq(expected_msg)
         end
 
         it "authentication using a bad token" do
