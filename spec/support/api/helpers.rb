@@ -267,6 +267,18 @@ module Spec
           expect(response).to have_http_status(:forbidden)
         end
 
+        def expect_deleted(*args)
+          args.flatten!
+          klass = args.first.class
+          expect(klass.where(:id => args.map(&:id)).exists?).to be false
+        end
+
+        def expect_not_deleted(*args)
+          args.flatten!
+          klass = args.first.class
+          expect(klass.where(:id => args.map(&:id)).count).to eq(args.length)
+        end
+
         def select_attributes(attrlist)
           attrlist.sort.select { |attr| !::Api.encrypted_attribute?(attr) }
         end
