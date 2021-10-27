@@ -163,7 +163,7 @@ RSpec.describe 'CloudSubnets API' do
   end
 
   describe "DELETE /api/cloud_subnets" do
-    let(:cloud_subnet) { FactoryBot.create(:cloud_subnet_openstack) }
+    let(:cloud_subnet) { FactoryBot.create(:cloud_subnet_openstack, :ext_management_system => ems) }
 
     it "can delete a cloud subnet" do
       api_basic_authorize(action_identifier(:cloud_subnets, :delete))
@@ -227,7 +227,7 @@ RSpec.describe 'CloudSubnets API' do
 
       post(api_cloud_subnet_url(nil, cloud_subnet), :params => gen_request(:delete))
 
-      expect_single_action_result(:success => false, :message => /Delete for Cloud Subnets.*not.*supported/)
+      expect_bad_request(/Delete for Cloud Subnets.*not.*supported/)
     end
   end
 end

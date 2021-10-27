@@ -130,7 +130,7 @@ RSpec.describe 'NetworkRouters API' do
 
   describe "DELETE /api/network_routers" do
     it "can delete a router" do
-      network_router = FactoryBot.create(:network_router)
+      network_router = FactoryBot.create(:network_router_openstack)
       api_basic_authorize(action_identifier(:network_routers, :delete))
 
       delete(api_network_router_url(nil, network_router))
@@ -190,7 +190,7 @@ RSpec.describe 'NetworkRouters API' do
       api_basic_authorize(action_identifier(:network_routers, :delete, :resource_actions))
 
       post(api_network_router_url(nil, network_router), :params => gen_request(:delete))
-      expect_single_action_result(:success => false, :message => /Delete not supported for Network Router/)
+      expect_bad_request(/Delete not supported for Network Router/)
     end
   end
 

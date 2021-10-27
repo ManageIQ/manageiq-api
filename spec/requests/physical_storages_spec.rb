@@ -36,7 +36,7 @@ describe "Physical Storages API" do
 
       post(api_physical_storage_url(nil, physical_storage), :params => gen_request(:delete))
 
-      expect_single_action_result(:success => false, :message => /Feature not available/i)
+      expect_bad_request(/Feature not available/i)
     end
 
     it "Deletion of a single Physical Storage" do

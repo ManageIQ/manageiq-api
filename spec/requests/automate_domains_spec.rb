@@ -36,20 +36,16 @@ describe "Automate Domains API" do
       api_basic_authorize action_identifier(:automate_domains, :delete)
 
       post(api_automate_domain_url(nil, automate_domain_locked), :params => gen_request(:delete))
-      expect_single_action_result(
-        :success => false,
-        :message => a_string_matching(/Not deleting.*locked/)
-      )
+
+      expect_bad_request(/Not deleting.*locked/)
     end
 
     it 'does not delete system domains' do
       api_basic_authorize action_identifier(:automate_domains, :delete)
 
       post(api_automate_domain_url(nil, automate_domain_system), :params => gen_request(:delete))
-      expect_single_action_result(
-        :success => false,
-        :message => a_string_matching(/Not deleting.*locked/)
-      )
+
+      expect_bad_request(/Not deleting.*locked/)
     end
 
     it 'deletes domains' do

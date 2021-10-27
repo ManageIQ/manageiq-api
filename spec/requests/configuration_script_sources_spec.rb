@@ -279,7 +279,7 @@ RSpec.describe 'Configuration Script Sources API' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :delete, :post)
 
       post(api_configuration_script_source_url(nil, config_script_src), :params => { :action => 'delete', :resource => params })
-      expect_single_action_result(:success => false, :message => /Delete not supported for Configuration Script Source/)
+      expect_bad_request(/Delete not supported for Configuration Script Source/)
     end
 
     it 'forbids configuration script source delete without an appropriate role' do
