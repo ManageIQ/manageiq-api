@@ -62,13 +62,8 @@ module Api
     end
 
     def refresh_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for refreshing a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        provider = resource_search(id, type, klass)
-        api_log_info("Refreshing #{provider_ident(provider)}")
-
-        refresh_provider(provider)
+      api_resource(type, id, "Refreshing") do |provider|
+        {:task_ids => provider.refresh_ems(:create_task => true)}
       end
     end
 
@@ -300,14 +295,6 @@ module Api
       provider
     rescue => err
       raise BadRequestError, "Could not update the provider - #{err}"
-    end
-
-    def refresh_provider(provider)
-      desc = "#{provider_ident(provider)} refreshing"
-      task_ids = provider.refresh_ems(:create_task => true)
-      action_result(true, desc, :task_ids => task_ids)
-    rescue => err
-      action_result(false, err.to_s)
     end
 
     def import_vm_to_provider(provider, source_vm_id, target_params)

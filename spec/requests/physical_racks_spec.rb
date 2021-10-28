@@ -54,12 +54,20 @@ describe "Physical Racks API" do
     end
 
     context "with an appropriate role" do
-      it "rejects refresh for an unspecified Physical Rack" do
+      it "rejects refresh for a single unspecified Physical Rack" do
+        api_basic_authorize(action_identifier(:physical_racks, :refresh, :resource_actions, :post))
+
+        post(api_physical_racks_url, :params => gen_request(:refresh, "href" => api_physical_racks_url))
+
+        expect_bad_request(/Refreshing.* requires an id/i)
+      end
+
+      it "rejects refresh for multiple unspecified Physical Rack" do
         api_basic_authorize(action_identifier(:physical_racks, :refresh, :resource_actions, :post))
 
         post(api_physical_racks_url, :params => gen_request(:refresh, [{"href" => api_physical_racks_url}, {"href" => api_physical_racks_url}]))
 
-        expect_bad_request(/Must specify an id/i)
+        expect_multiple_action_result(2, :success => false, :message => /Refreshing.*requires an id/i)
       end
 
       it "refresh of a single Physical Rack" do
@@ -68,7 +76,7 @@ describe "Physical Racks API" do
 
         post(api_physical_rack_url(nil, physical_rack), :params => gen_request(:refresh))
 
-        expect_single_action_result(:success => true, :message => /#{physical_rack.id}.* refreshing/i, :href => api_physical_rack_url(nil, physical_rack))
+        expect_single_action_result(:success => true, :message => /Refreshing.*#{physical_rack.id}/i, :href => api_physical_rack_url(nil, physical_rack))
       end
 
       it "refresh of multiple Physical Racks" do
@@ -81,12 +89,12 @@ describe "Physical Racks API" do
         expected = {
           "results" => a_collection_containing_exactly(
             a_hash_including(
-              "message" => a_string_matching(/#{first_physical_rack.id}.* refreshing/i),
+              "message" => a_string_matching(/Refreshing.*#{first_physical_rack.id}/i),
               "success" => true,
               "href"    => api_physical_rack_url(nil, first_physical_rack)
             ),
             a_hash_including(
-              "message" => a_string_matching(/#{second_physical_rack.id}.* refreshing/i),
+              "message" => a_string_matching(/Refreshing.*#{second_physical_rack.id}/i),
               "success" => true,
               "href"    => api_physical_rack_url(nil, second_physical_rack)
             )

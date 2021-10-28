@@ -1,15 +1,7 @@
 module Api
   class PhysicalStoragesController < BaseController
     def refresh_resource(type, id, _data = nil)
-      raise BadRequestError, "Must specify an id for refreshing a #{type} resource" if id.blank?
-
-      ensure_resource_exists(type, id) if single_resource?
-
-      api_action(type, id) do |klass|
-        physical_storage = resource_search(id, type, klass)
-        api_log_info("Refreshing #{physical_storage_ident(physical_storage)}")
-        refresh_physical_storage(physical_storage)
-      end
+      enqueue_action(type, id, "Refreshing", :method_name => :refresh_ems)
     end
 
     def create_resource(_type, _id = nil, data = {})
@@ -43,31 +35,6 @@ module Api
     def delete_resource_main_action(type, physical_storage, _data = nil)
       ensure_supports(type, physical_storage, :delete)
       {:task_id => physical_storage.delete_physical_storage_queue(User.current_user)}
-    end
-
-    private
-
-    def ensure_resource_exists(type, id)
-      raise NotFoundError, "#{type} with id:#{id} not found" unless collection_class(type).exists?(id)
-    end
-
-    def refresh_physical_storage(physical_storage)
-      method_name = "refresh_ems"
-      role = "ems_operations"
-
-      act_refresh(physical_storage, method_name, role)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def physical_storage_ident(physical_storage)
-      "Physical Storage id:#{physical_storage.id} name:'#{physical_storage.name}'"
-    end
-
-    def act_refresh(physical_storage, method_name, role)
-      desc = "#{physical_storage_ident(physical_storage)} refreshing"
-      task_id = queue_object_action(physical_storage, desc, :method_name => method_name, :role => role)
-      action_result(true, desc, :task_id => task_id)
     end
   end
 end

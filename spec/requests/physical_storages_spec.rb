@@ -131,12 +131,20 @@ describe "Physical Storages API" do
     end
 
     context "with an appropriate role" do
-      it "rejects refresh for unspecified physical storage" do
+      it "rejects refresh for a single unspecified physical storage" do
+        api_basic_authorize(action_identifier(:physical_storages, :refresh, :resource_actions, :post))
+
+        post(api_physical_storages_url, :params => gen_request(:refresh, "href" => "/api/physical_storages/"))
+
+        expect_bad_request(/Refreshing.*requires an id/i)
+      end
+
+      it "rejects refresh for multiple unspecified physical storage" do
         api_basic_authorize(action_identifier(:physical_storages, :refresh, :resource_actions, :post))
 
         post(api_physical_storages_url, :params => gen_request(:refresh, [{"href" => "/api/physical_storages/"}, {"href" => "/api/physical_storages/"}]))
 
-        expect_bad_request(/Must specify an id/i)
+        expect_multiple_action_result(2, :success => false, :message => /Refreshing.*requires an id/i)
       end
 
       it "refresh of a single Physical Storage" do
@@ -145,7 +153,7 @@ describe "Physical Storages API" do
 
         post(api_physical_storage_url(nil, physical_storage), :params => gen_request(:refresh))
 
-        expect_single_action_result(:success => true, :message => /#{physical_storage.id}.* refreshing/i, :href => api_physical_storage_url(nil, physical_storage))
+        expect_single_action_result(:success => true, :message => /Refreshing.*#{physical_storage.id}/i, :href => api_physical_storage_url(nil, physical_storage))
       end
 
       it "refresh of multiple Physical Storages" do
@@ -158,12 +166,12 @@ describe "Physical Storages API" do
         expected = {
           "results" => a_collection_containing_exactly(
             a_hash_including(
-              "message" => a_string_matching(/#{physical_storage.id}.* refreshing/i),
+              "message" => a_string_matching(/Refreshing.*#{physical_storage.id}/i),
               "success" => true,
               "href"    => api_physical_storage_url(nil, physical_storage)
             ),
             a_hash_including(
-              "message" => a_string_matching(/#{physical_storage_two.id}.* refreshing/i),
+              "message" => a_string_matching(/Refreshing.*#{physical_storage_two.id}/i),
               "success" => true,
               "href"    => api_physical_storage_url(nil, physical_storage_two)
             )

@@ -440,12 +440,20 @@ RSpec.describe "physical_servers API" do
     end
 
     context "with an appropriate role" do
-      it "rejects refresh for unspecified physical servers" do
+      it "rejects refresh for a single unspecified physical servers" do
+        api_basic_authorize(action_identifier(:physical_servers, :refresh, :resource_actions, :post))
+
+        post(api_physical_servers_url, :params => gen_request(:refresh, "href" => "/api/physical_servers/"))
+
+        expect_bad_request(/Refreshing.*requires an id/i)
+      end
+
+      it "rejects refresh for multiple unspecified physical servers" do
         api_basic_authorize(action_identifier(:physical_servers, :refresh, :resource_actions, :post))
 
         post(api_physical_servers_url, :params => gen_request(:refresh, [{"href" => "/api/physical_servers/"}, {"href" => "/api/physical_servers/"}]))
 
-        expect_bad_request(/Must specify an id/i)
+        expect_multiple_action_result(2, :success => false, :message => /Refreshing.*requires an id/i)
       end
 
       it "refresh of a single Physical Server" do
@@ -454,7 +462,7 @@ RSpec.describe "physical_servers API" do
 
         post(api_physical_server_url(nil, ps), :params => gen_request(:refresh))
 
-        expect_single_action_result(:success => true, :message => /#{ps.id}.* refreshing/i, :href => api_physical_server_url(nil, ps))
+        expect_single_action_result(:success => true, :message => /Refreshing.*#{ps.id}/i, :href => api_physical_server_url(nil, ps))
       end
 
       it "refresh of multiple Physical Servers" do
@@ -467,12 +475,12 @@ RSpec.describe "physical_servers API" do
         expected = {
           "results" => a_collection_containing_exactly(
             a_hash_including(
-              "message" => a_string_matching(/#{ps.id}.* refreshing/i),
+              "message" => a_string_matching(/Refreshing.*#{ps.id}/i),
               "success" => true,
               "href"    => api_physical_server_url(nil, ps)
             ),
             a_hash_including(
-              "message" => a_string_matching(/#{ps2.id}.* refreshing/i),
+              "message" => a_string_matching(/Refreshing.*#{ps2.id}/i),
               "success" => true,
               "href"    => api_physical_server_url(nil, ps2)
             )

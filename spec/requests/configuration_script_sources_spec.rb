@@ -133,14 +133,14 @@ RSpec.describe 'Configuration Script Sources API' do
         'results' => [
           a_hash_including(
             'success'   => true,
-            'message'   => a_string_including("Refreshing ConfigurationScriptSource id:#{config_script_src.id}"),
+            'message'   => a_string_including("Refreshing Configuration Script Source id: #{config_script_src.id}"),
             'task_id'   => a_kind_of(String),
             'task_href' => /task/,
             'tasks'     => [a_hash_including('id' => a_kind_of(String), 'href' => /task/)]
           ),
           a_hash_including(
             'success'   => true,
-            'message'   => a_string_including("Refreshing ConfigurationScriptSource id:#{config_script_src_2.id}"),
+            'message'   => a_string_including("Refreshing Configuration Script Source id: #{config_script_src_2.id}"),
             'task_id'   => a_kind_of(String),
             'task_href' => /task/,
             'tasks'     => [a_hash_including('id' => a_kind_of(String), 'href' => /task/)]
@@ -258,7 +258,7 @@ RSpec.describe 'Configuration Script Sources API' do
 
       expected = {
         'success'   => true,
-        'message'   => /Refreshing ConfigurationScriptSource/,
+        'message'   => /Refreshing Configuration Script Source/,
         'task_id'   => a_kind_of(String),
         'task_href' => /task/,
         'tasks'     => [a_hash_including('id' => a_kind_of(String), 'href' => /tasks/)]

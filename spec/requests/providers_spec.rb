@@ -988,7 +988,7 @@ describe "Providers API" do
 
   describe "Providers refresh" do
     def failed_auth_action(id)
-      {"success" => false, "message" => /failed last authentication check/i, "href" => api_provider_url(nil, id)}
+      {"success" => false, "message" => /failed last authentication check/i}
     end
 
     it "rejects refresh requests without appropriate role" do
@@ -1046,7 +1046,7 @@ describe "Providers API" do
       post(api_provider_url(nil, provider), :params => gen_request(:refresh))
 
       expect_single_action_result(:success => true,
-                                  :message => a_string_matching("Provider .* refreshing"),
+                                  :message => a_string_matching("Refreshing Provider"),
                                   :href    => api_provider_url(nil, provider),
                                   :task    => true)
     end
@@ -1061,7 +1061,7 @@ describe "Providers API" do
       post(api_provider_url(nil, provider) + '?provider_class=provider', :params => gen_request(:refresh))
 
       expect_single_action_result(:success => true,
-                                  :message => a_string_matching("Provider .* refreshing"),
+                                  :message => a_string_matching("Refreshing Provider"),
                                   :href    => api_provider_url(nil, provider),
                                   :task    => true)
     end
@@ -1077,7 +1077,7 @@ describe "Providers API" do
 
       expected = {
         "success"   => true,
-        "message"   => a_string_matching("Provider .* refreshing"),
+        "message"   => a_string_matching("Refreshing Provider"),
         "href"      => api_provider_url(nil, provider),
         "task_id"   => a_kind_of(String),
         "task_href" => a_string_matching(api_tasks_url),

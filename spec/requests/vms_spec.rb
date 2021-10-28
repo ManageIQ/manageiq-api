@@ -1634,7 +1634,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:refresh))
 
-      expect_single_action_result(:success => true, :message => /#{vm.id}.* refreshing/i, :href => api_vm_url(nil, vm))
+      expect_single_action_result(:success => true, :message => /Refreshing Vm.*#{vm.id}/i, :href => api_vm_url(nil, vm))
     end
 
     it "to multiple Vms" do
@@ -1645,12 +1645,12 @@ describe "Vms API" do
       expected = {
         "results" => a_collection_containing_exactly(
           a_hash_including(
-            "message" => a_string_matching(/#{vm1.id}.* refreshing/i),
+            "message" => a_string_matching(/Refreshing Vm.*#{vm1.id}/i),
             "success" => true,
             "href"    => api_vm_url(nil, vm1)
           ),
           a_hash_including(
-            "message" => a_string_matching(/#{vm2.id}.* refreshing/i),
+            "message" => a_string_matching(/Refreshing Vm.*#{vm2.id}/i),
             "success" => true,
             "href"    => api_vm_url(nil, vm2)
           )

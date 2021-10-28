@@ -98,12 +98,20 @@ describe "Host Initiators API" do
     end
 
     context "with an appropriate role" do
-      it "rejects refresh for unspecified host initiator" do
+      it "rejects refresh for a single unspecified host initiator" do
+        api_basic_authorize(action_identifier(:host_initiators, :refresh, :resource_actions, :post))
+
+        post(api_host_initiators_url, :params => gen_request(:refresh, "href" => "/api/host_initiators/"))
+
+        expect_bad_request(/Refreshing.*requires an id/i)
+      end
+
+      it "rejects refresh for multiple unspecified host initiators" do
         api_basic_authorize(action_identifier(:host_initiators, :refresh, :resource_actions, :post))
 
         post(api_host_initiators_url, :params => gen_request(:refresh, [{"href" => "/api/host_initiators/"}, {"href" => "/api/host_initiators/"}]))
 
-        expect_bad_request(/Must specify an id/i)
+        expect_multiple_action_result(2, :success => false, :message => /Refreshing.*requires an id/i)
       end
 
       it "refresh of a single Host Initiator" do
@@ -112,7 +120,7 @@ describe "Host Initiators API" do
 
         post(api_host_initiator_url(nil, host_initiator), :params => gen_request(:refresh))
 
-        expect_single_action_result(:success => true, :message => /#{host_initiator.id}.* refreshing/i, :href => api_host_initiator_url(nil, host_initiator))
+        expect_single_action_result(:success => true, :message => /Refreshing.*#{host_initiator.id}/i, :href => api_host_initiator_url(nil, host_initiator))
       end
 
       it "refresh of multiple Host Initiators" do
@@ -125,12 +133,12 @@ describe "Host Initiators API" do
         expected = {
           "results" => a_collection_containing_exactly(
             a_hash_including(
-              "message" => a_string_matching(/#{host_initiator.id}.* refreshing/i),
+              "message" => a_string_matching(/Refreshing.*#{host_initiator.id}/i),
               "success" => true,
               "href"    => api_host_initiator_url(nil, host_initiator)
             ),
             a_hash_including(
-              "message" => a_string_matching(/#{host_initiator_two.id}.* refreshing/i),
+              "message" => a_string_matching(/Refreshing.*#{host_initiator_two.id}/i),
               "success" => true,
               "href"    => api_host_initiator_url(nil, host_initiator_two)
             )
