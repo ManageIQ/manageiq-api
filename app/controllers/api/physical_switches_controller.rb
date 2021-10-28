@@ -1,6 +1,5 @@
 module Api
   class PhysicalSwitchesController < BaseController
-    include Api::Mixins::Operations
     include Subcollections::EventStreams
 
     def refresh_resource(type, id, _data = nil)

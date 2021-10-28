@@ -1,7 +1,6 @@
 module Api
   class PhysicalChassisController < BaseController
     include Subcollections::EventStreams
-    include Api::Mixins::Operations
 
     def blink_loc_led_resource(type, id, _data)
       enqueue_action(type, id, :method_name => :blink_loc_led)
