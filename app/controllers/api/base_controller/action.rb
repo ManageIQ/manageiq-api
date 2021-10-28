@@ -31,7 +31,7 @@ module Api
         log_result(result)
         result
       rescue ActiveRecord::RecordNotFound, ForbiddenError, BadRequestError, NotFoundError => err
-        single_resource? ? raise(err) : action_result(false, err.to_s)
+        single_resource? ? raise : action_result(false, err.to_s)
       rescue => err
         action_result(false, err.to_s)
       end
