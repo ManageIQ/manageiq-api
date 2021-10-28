@@ -54,12 +54,20 @@ describe "Physical Chassis API" do
     end
 
     context "with an appropriate role" do
+      it "rejects refresh for a single unspecified physical chassis" do
+        api_basic_authorize(action_identifier(:physical_chassis, :refresh, :resource_actions, :post))
+
+        post(api_physical_chassis_url, :params => gen_request(:refresh, "href" => "/api/physical_chassis/"))
+
+        expect_bad_request(/requires an id/i)
+      end
+
       it "rejects refresh for unspecified physical chassis" do
         api_basic_authorize(action_identifier(:physical_chassis, :refresh, :resource_actions, :post))
 
         post(api_physical_chassis_url, :params => gen_request(:refresh, [{"href" => "/api/physical_chassis/"}, {"href" => "/api/physical_chassis/"}]))
 
-        expect_bad_request(/Must specify an id/i)
+        expect_multiple_action_result(2, :success => false, :message => /requires an id/i)
       end
 
       it "refresh of a single Physical Chassis" do
@@ -68,7 +76,7 @@ describe "Physical Chassis API" do
 
         post(api_one_physical_chassis_url(nil, physical_chassis), :params => gen_request(:refresh))
 
-        expect_single_action_result(:success => true, :message => "Performing refresh_ems for Physical chassis id:#{physical_chassis.id} name: '#{physical_chassis.name}'", :href => api_one_physical_chassis_url(nil, physical_chassis))
+        expect_single_action_result(:success => true, :message => "Refreshing Physical Chassis id: #{physical_chassis.id} name: '#{physical_chassis.name}'", :href => api_one_physical_chassis_url(nil, physical_chassis))
       end
 
       it "refresh of multiple Physical Chassis" do
@@ -81,12 +89,12 @@ describe "Physical Chassis API" do
         expected = {
           "results" => a_collection_containing_exactly(
             a_hash_including(
-              "message" => "Performing refresh_ems for Physical chassis id:#{physical_chassis.id} name: '#{physical_chassis.name}'",
+              "message" => "Refreshing Physical Chassis id: #{physical_chassis.id} name: '#{physical_chassis.name}'",
               "success" => true,
               "href"    => api_one_physical_chassis_url(nil, physical_chassis)
             ),
             a_hash_including(
-              "message" => "Performing refresh_ems for Physical chassis id:#{physical_chassis_two.id} name: '#{physical_chassis_two.name}'",
+              "message" => "Refreshing Physical Chassis id: #{physical_chassis_two.id} name: '#{physical_chassis_two.name}'",
               "success" => true,
               "href"    => api_one_physical_chassis_url(nil, physical_chassis_two)
             )

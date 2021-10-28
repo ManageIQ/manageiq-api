@@ -4,11 +4,11 @@ module Api
     include Subcollections::EventStreams
 
     def refresh_resource(type, id, _data = nil)
-      perform_action(:refresh_ems, type, id)
+      enqueue_action(type, id, "Refreshing", :method_name => :refresh_ems)
     end
 
     def restart_resource(type, id, _data = nil)
-      perform_action(:restart, type, id)
+      enqueue_action(type, id, "Restarting", :method_name => :restart)
     end
   end
 end
