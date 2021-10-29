@@ -1,4 +1,5 @@
 describe "Volume Mappings API" do
+  include Spec::Support::SupportsHelper
   context "POST /api/volume_mappings" do
     it "with an invalid ems_id it responds with 404 Not Found" do
       api_basic_authorize(collection_action_identifier(:volume_mappings, :create))
@@ -91,7 +92,7 @@ describe "Volume Mappings API" do
       volume_mapping = FactoryBot.create(:volume_mapping, :ext_management_system => provider)
       api_basic_authorize(action_identifier(:volume_mappings, :delete, :resource_actions, :post))
 
-      expect_any_instance_of(volume_mapping.class).to receive(:supports?).with(:delete).and_return(true)
+      stub_supports(volume_mapping.class, :delete)
 
       post(api_volume_mapping_url(nil, volume_mapping), :params => gen_request(:delete))
 
@@ -104,7 +105,7 @@ describe "Volume Mappings API" do
       volume_mapping_two = FactoryBot.create(:volume_mapping, :ext_management_system => provider)
       api_basic_authorize collection_action_identifier(:volume_mappings, :delete, :post)
 
-      allow_any_instance_of(VolumeMapping).to receive(:supports?).with(:delete).and_return(true)
+      stub_supports(volume_mapping.class, :delete)
       post(api_volume_mappings_url, :params => gen_request(:delete, [{"href" => api_volume_mapping_url(nil, volume_mapping)}, {"href" => api_volume_mapping_url(nil, volume_mapping_two)}]))
 
       expected = {

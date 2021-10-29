@@ -1,4 +1,5 @@
 RSpec.describe "Auth Key Pairs API" do
+  include Spec::Support::SupportsHelper
   let(:akp) { FactoryBot.create(:auth_key_pair_cloud, :resource => FactoryBot.create(:ems_cloud)) }
 
   describe 'GET /api/auth_key_pairs' do
@@ -107,10 +108,7 @@ RSpec.describe "Auth Key Pairs API" do
 
     it 'can delete auth_key_pairs' do
       api_basic_authorize action_identifier(:auth_key_pairs, :delete)
-
-      # This mock is needed because akp.class is ManageIQ::Providers::CloudManager::AuthKeyPair
-      # which does NOT support :delete because it is not a leaf class
-      expect_any_instance_of(akp.class).to receive(:supports?).with(:delete).and_return(true)
+      stub_supports(akp.class, :delete)
 
       post(api_auth_key_pair_url(nil, akp), :params => {'action' => 'delete'})
 
