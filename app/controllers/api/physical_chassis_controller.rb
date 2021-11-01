@@ -1,22 +1,21 @@
 module Api
   class PhysicalChassisController < BaseController
     include Subcollections::EventStreams
-    include Api::Mixins::Operations
 
     def blink_loc_led_resource(type, id, _data)
-      perform_action(:blink_loc_led, type, id)
+      enqueue_action(type, id, :method_name => :blink_loc_led)
     end
 
     def turn_on_loc_led_resource(type, id, _data)
-      perform_action(:turn_on_loc_led, type, id)
+      enqueue_action(type, id, :method_name => :turn_on_loc_led)
     end
 
     def turn_off_loc_led_resource(type, id, _data)
-      perform_action(:turn_off_loc_led, type, id)
+      enqueue_action(type, id, :method_name => :turn_off_loc_led)
     end
 
     def refresh_resource(type, id, _data = nil)
-      perform_action(:refresh_ems, type, id)
+      enqueue_action(type, id, "Refreshing", :method_name => :refresh_ems)
     end
   end
 end

@@ -55,12 +55,20 @@ describe "Physical Switches API" do
     end
 
     context "with an appropriate role" do
-      it "rejects refresh for an unspecified Physical Switch" do
+      it "rejects refresh for a multiple unspecified Physical Switches" do
         api_basic_authorize(action_identifier(:physical_switches, :refresh, :resource_actions, :post))
 
         post(api_physical_switches_url, :params => gen_request(:refresh, [{"href" => api_physical_switches_url}, {"href" => api_physical_switches_url}]))
 
-        expect_bad_request(/Must specify an id/i)
+        expect_multiple_action_result(2, :success => false, :message => /requires an id/)
+      end
+
+      it "rejects refresh for a single unspecified Physical Switch" do
+        api_basic_authorize(action_identifier(:physical_switches, :refresh, :resource_actions, :post))
+
+        post(api_physical_switches_url, :params => gen_request(:refresh, "href" => api_physical_switches_url))
+
+        expect_bad_request(/requires an id/i)
       end
 
       it "refresh of a single Physical Switch" do
@@ -68,7 +76,7 @@ describe "Physical Switches API" do
 
         post(api_physical_switch_url(nil, physical_switch), :params => gen_request(:refresh))
 
-        expect_single_action_result(:success => true, :message => "Performing refresh_ems for Physical switch id:#{physical_switch.id} name: '#{physical_switch.name}'", :href => api_physical_switch_url(nil, physical_switch))
+        expect_single_action_result(:success => true, :message => "Refreshing Physical Switch id: #{physical_switch.id} name: '#{physical_switch.name}'", :href => api_physical_switch_url(nil, physical_switch))
       end
 
       it "refresh of multiple Physical Switches" do
@@ -78,22 +86,7 @@ describe "Physical Switches API" do
 
         post(api_physical_switches_url, :params => gen_request(:refresh, [{"href" => api_physical_switch_url(nil, first_physical_switch)}, {"href" => api_physical_switch_url(nil, second_physical_switch)}]))
 
-        expected = {
-          "results" => a_collection_containing_exactly(
-            a_hash_including(
-              "message" => a_string_matching("Performing refresh_ems for Physical switch id:#{first_physical_switch.id} name: '#{first_physical_switch.name}'"),
-              "success" => true,
-              "href"    => api_physical_switch_url(nil, first_physical_switch)
-            ),
-            a_hash_including(
-              "message" => a_string_matching("Performing refresh_ems for Physical switch id:#{second_physical_switch.id} name: '#{second_physical_switch.name}'"),
-              "success" => true,
-              "href"    => api_physical_switch_url(nil, second_physical_switch)
-            )
-          )
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect_multiple_action_result(2, :success => true, :href => true, :message => /Refreshing Physical Switch/)
       end
     end
   end
@@ -111,7 +104,7 @@ describe "Physical Switches API" do
           expected = {
             "results" => a_collection_containing_exactly(
               a_hash_including(
-                "message" => a_string_matching("Performing #{action} for Physical switch id:#{physical_switch.id} name: '#{physical_switch.name}'"),
+                "message" => a_string_matching("Restarting Physical Switch id: #{physical_switch.id} name: '#{physical_switch.name}'"),
                 "success" => true,
                 "href"    => api_physical_switch_url(nil, physical_switch)
               ),
@@ -131,17 +124,12 @@ describe "Physical Switches API" do
 
           post(api_physical_switches_url, :params => gen_request(action, [{"href" => api_physical_switch_url(nil, physical_switch)}]))
 
-          expected = {
-            "results" => a_collection_containing_exactly(
-              a_hash_including(
-                "message" => a_string_matching("Performing #{action} for Physical switch id:#{physical_switch.id} name: '#{physical_switch.name}'"),
-                "success" => true,
-                "href"    => api_physical_switch_url(nil, physical_switch)
-              )
-            )
-          }
-          expect(response.parsed_body).to include(expected)
-          expect(response).to have_http_status(:ok)
+          expect_multiple_action_result(
+            1,
+            :message => /Restarting Physical Switch id: #{physical_switch.id}/,
+            :success => true,
+            :href    => api_physical_switch_url(nil, physical_switch)
+          )
         end
       end
     end
@@ -165,7 +153,7 @@ describe "Physical Switches API" do
 
           expect_single_action_result(
             :success => true,
-            :message => a_string_matching("Performing #{action} for Physical switch id:#{physical_switch.id} name: '#{physical_switch.name}'"),
+            :message => /Restarting Physical Switch id: #{physical_switch.id} name: '#{physical_switch.name}'/,
             :href    => api_physical_switch_url(nil, physical_switch)
           )
         end

@@ -179,24 +179,6 @@ module Api
         end
       end
 
-      def api_resource(type, id, action_phrase)
-        id ||= @req.collection_id
-        klass = collection_class(type)
-        raise BadRequestError, "#{action_phrase} #{type.to_s.titleize} requires an id" unless id
-
-        api_log_info("#{action_phrase} #{type.to_s.titleize} id: #{id}")
-        resource = resource_search(id, type, klass)
-        result_options = yield(resource)
-        result = action_result(true, "#{action_phrase} #{model_ident(resource, type)}", result_options)
-        add_href_to_result(result, type, id)
-        log_result(result)
-        result
-      rescue ActiveRecord::RecordNotFound, ForbiddenError, BadRequestError, NotFoundError => err
-        single_resource? ? raise(err) : action_result(false, err.to_s)
-      rescue => err
-        action_result(false, err.to_s)
-      end
-
       # The lower-level implementation for deleting a resource.
       #
       # The default implementation here will delete the record directly from the database.

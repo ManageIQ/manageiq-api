@@ -269,14 +269,14 @@ RSpec.describe 'Authentications API' do
         'results' => [
           a_hash_including(
             'success'   => true,
-            'message'   => a_string_including("Refreshing Authentication id:#{auth.id}"),
+            'message'   => a_string_including("Refreshing Authentication id: #{auth.id}"),
             'task_id'   => a_kind_of(String),
             'task_href' => /task/,
             'tasks'     => [a_hash_including('id' => a_kind_of(String), 'href' => /task/)]
           ),
           a_hash_including(
             'success'   => true,
-            'message'   => a_string_including("Refreshing Authentication id:#{auth_2.id}"),
+            'message'   => a_string_including("Refreshing Authentication id: #{auth_2.id}"),
             'task_id'   => a_kind_of(String),
             'task_href' => /task/,
             'tasks'     => [a_hash_including('id' => a_kind_of(String), 'href' => /task/)]
