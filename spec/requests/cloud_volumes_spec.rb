@@ -146,7 +146,7 @@ describe "Cloud Volumes API" do
       api_basic_authorize(action_identifier(:cloud_volumes, :safe_delete, :resource_actions, :post))
 
       post(api_cloud_volume_url(nil, volume), :params => {"action" => "safe_delete"})
-      expect_bad_request("Safe Delete for Cloud Volumes: Feature not available/supported")
+      expect_bad_request(/Safe Delete for Cloud Volume.*not available/)
     end
 
     it "can safe delete a cloud volume as a resource action" do

@@ -39,7 +39,11 @@ module Api
       end
 
       def ensure_supports(type, model, action, supports = action)
-        raise BadRequestError, "#{action.to_s.titleize} for #{type.to_s.titleize}: #{model.unsupported_reason(supports)}" unless model.supports?(supports)
+        unless model.supports?(supports)
+          # for class level methods (like create) we display the type, otherwise we display the instance information
+          instance_name = model.kind_of?(Class) ? type.to_s.titleize : model_ident(model, type)
+          raise BadRequestError, "#{action.to_s.titleize} for #{instance_name}: #{model.unsupported_reason(supports)}"
+        end
       end
 
       def ensure_respond_to(type, model, action, respond_to)

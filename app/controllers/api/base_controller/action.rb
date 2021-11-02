@@ -46,6 +46,7 @@ module Api
       # @option options :method_name   - method name for the queue
       # @option options :args          - args for the queue method
       # @option options :role          - role for queue (defaults: ems_operations)
+      # @option options :supports      - check that this method_name is supported by the model
       def enqueue_action(type, id, action_phrase = nil, options = {})
         if action_phrase.kind_of?(Hash)
           options = action_phrase
@@ -53,7 +54,11 @@ module Api
         end
         action_phrase ||= "Performing #{options[:method_name]} for "
 
+        supports = options.delete(:supports)
+        supports = options[:method_name] if supports == true
+
         api_resource(type, id, action_phrase) do |model|
+          ensure_supports(type, model, options[:method_name], supports) if supports
           yield(model) if block_given?
           desc = "#{action_phrase} #{model_ident(model, type)}"
           {:task_id => queue_object_action(model, desc, options)}

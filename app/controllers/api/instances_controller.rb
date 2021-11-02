@@ -115,11 +115,7 @@ module Api
     central_admin :reset_resource, :reset
 
     def check_compliance_resource(type, id, _data = nil)
-      api_action(type, id) do |klass|
-        instance = resource_search(id, type, klass)
-        api_log_info("Checking compliance of #{instance_ident(instance)}")
-        request_compliance_check(instance)
-      end
+      enqueue_ems_action(type, id, "Check Compliance for", :method_name => "check_compliance", :supports => true)
     end
 
     def options
@@ -204,16 +200,6 @@ module Api
       task_id = queue_object_action(instance, desc, queue_options("reset", DEFAULT_ROLE))
       action_result(true, desc, :task_id => task_id)
     rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def request_compliance_check(instance)
-      desc = "#{instance_ident(instance)} check compliance requested"
-      raise "#{instance_ident(instance)} has no compliance policies assigned" if instance.compliance_policies.blank?
-
-      task_id = queue_object_action(instance, desc, :method_name => "check_compliance")
-      action_result(true, desc, :task_id => task_id)
-    rescue StandardError => err
       action_result(false, err.to_s)
     end
   end

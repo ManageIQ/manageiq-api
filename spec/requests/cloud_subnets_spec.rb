@@ -227,7 +227,7 @@ RSpec.describe 'CloudSubnets API' do
 
       post(api_cloud_subnet_url(nil, cloud_subnet), :params => gen_request(:delete))
 
-      expect_bad_request(/Delete for Cloud Subnets.*not.*supported/)
+      expect_bad_request(/Delete for Cloud Subnet.*not.*supported/)
     end
   end
 end
