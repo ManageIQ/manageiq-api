@@ -81,10 +81,6 @@ module Api
         raise BadRequestError, "Cannot determine target resource for collection #{href.subject} and #{href.subject_id}: #{err.message}"
       end
 
-      def target_add_label_defaults(target)
-        [target, 'container_image']
-      end
-
       def tag_assigment(record, rate_type)
         tag_record_validation(record, rate_type)
         target_tag = parse_tag(record)
@@ -105,17 +101,15 @@ module Api
       end
 
       def tag_target_assignment(record, _assignment_type, rate_type)
-        target = tag_assigment(record, rate_type)
-        [target, rate_type == "Storage" ? 'storage' : record['assignment_prefix']]
+        [tag_assigment(record, rate_type), rate_type == "Storage" ? 'storage' : record['assignment_prefix']]
       end
 
       def label_target_assignment(record, assignment_type, rate_type)
-        target = target_from(record['href'], assignment_type, rate_type)
-        target_add_label_defaults(target)
+        [target_from(record['href'], "label", rate_type), "container_image"]
       end
 
       def resource_target_assignment(record, assignment_type, rate_type)
-        target_from(record['href'], assignment_type, rate_type)
+        target_from(record['href'], "resource", rate_type)
       end
 
       def convert_assignment_key_from(parameter_key)
@@ -129,15 +123,15 @@ module Api
         when :tag
           record = parameter_record["tag"]
           target = tag_target_assignment(record, assignment_type, rate_type)
-          {:cb_rate => rate, convert_assignment_key_from(assignment_type) => target}
+          {:cb_rate => rate, :tag => target}
         when :label
           record = parameter_record["label"] = parameter_record.delete("resource")
           target = label_target_assignment(record, assignment_type, rate_type)
-          {:cb_rate => rate, convert_assignment_key_from(assignment_type) => target}
+          {:cb_rate => rate, :label => target}
         when :resource
           record = parameter_record["resource"]
           target = resource_target_assignment(record, assignment_type, rate_type)
-          {:cb_rate => rate, convert_assignment_key_from(assignment_type) => target}
+          {:cb_rate => rate, :object => target}
         else
           raise BadRequestError, "Unknown assignment_type of #{assignment_type}"
         end
