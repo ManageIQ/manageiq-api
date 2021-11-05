@@ -2,8 +2,11 @@ module Api
   class BaseController
     module Manager
       def update_collection(type, id)
-        if @req.method == :put || @req.method == :patch
-          return send("#{@req.method}_resource", type, id)
+        case @req.method
+        when :put
+          return edit_resource(type, id, @req.json_body)
+        when :patch
+          return patch_resource(type, id)
         end
 
         unless id || @req.subcollection? || @req.json_body.key?("resources")
@@ -30,10 +33,6 @@ module Api
 
       def collection_class(type)
         @collection_klasses[type.to_sym] || collection_config.klass(type)
-      end
-
-      def put_resource(type, id)
-        edit_resource(type, id, @req.json_body)
       end
 
       #
