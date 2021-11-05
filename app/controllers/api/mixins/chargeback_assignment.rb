@@ -123,19 +123,20 @@ module Api
       end
 
       def rate_assignment(parameter_record, assignment_type, rate_type)
-        parameter_record['label'] = parameter_record.delete('resource') if assignment_type == :label
-
         rate = chargeback_rate(parameter_record)
 
         case assignment_type.to_sym
         when :tag
-          target = tag_target_assignment(parameter_record[assignment_type.to_s], assignment_type, rate_type)
+          record = parameter_record["tag"]
+          target = tag_target_assignment(record, assignment_type, rate_type)
           {:cb_rate => rate, convert_assignment_key_from(assignment_type) => target}
         when :label
-          target = label_target_assignment(parameter_record[assignment_type.to_s], assignment_type, rate_type)
+          record = parameter_record["label"] = parameter_record.delete("resource")
+          target = label_target_assignment(record, assignment_type, rate_type)
           {:cb_rate => rate, convert_assignment_key_from(assignment_type) => target}
         when :resource
-          target = resource_target_assignment(parameter_record[assignment_type.to_s], assignment_type, rate_type)
+          record = parameter_record["resource"]
+          target = resource_target_assignment(record, assignment_type, rate_type)
           {:cb_rate => rate, convert_assignment_key_from(assignment_type) => target}
         else
           raise BadRequestError, "Unknown assignment_type of #{assignment_type}"
