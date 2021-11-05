@@ -100,16 +100,20 @@ module Api
         @chargeback_rate[rate_id] ||= ChargebackRate.find(rate_id)
       end
 
-      def tag_target_assignment(record, _assignment_type, rate_type)
-        [tag_assigment(record, rate_type), rate_type == "Storage" ? 'storage' : record['assignment_prefix']]
+      def tag_target_assignment(parameter_record, rate, rate_type)
+        record = parameter_record["tag"]
+        rate_tag = rate_type == "Storage" ? 'storage' : record['assignment_prefix']
+        {:cb_rate => rate, :tag => [tag_assigment(record, rate_type), rate_tag]}
       end
 
-      def label_target_assignment(record, assignment_type, rate_type)
-        [target_from(record['href'], "label", rate_type), "container_image"]
+      def label_target_assignment(parameter_record, rate, rate_type)
+        record = parameter_record["label"] = parameter_record.delete("resource")
+        {:cb_rate => rate, :label => [target_from(record['href'], "label", rate_type), "container_image"]}
       end
 
-      def resource_target_assignment(record, assignment_type, rate_type)
-        target_from(record['href'], "resource", rate_type)
+      def resource_target_assignment(parameter_record, rate, rate_type)
+        record = parameter_record["resource"]
+        {:cb_rate => rate, :object => target_from(record['href'], "resource", rate_type)}
       end
 
       def convert_assignment_key_from(parameter_key)
@@ -121,17 +125,11 @@ module Api
 
         case assignment_type.to_sym
         when :tag
-          record = parameter_record["tag"]
-          target = tag_target_assignment(record, assignment_type, rate_type)
-          {:cb_rate => rate, :tag => target}
+          tag_target_assignment(parameter_record, rate, rate_type)
         when :label
-          record = parameter_record["label"] = parameter_record.delete("resource")
-          target = label_target_assignment(record, assignment_type, rate_type)
-          {:cb_rate => rate, :label => target}
+          label_target_assignment(parameter_record, rate, rate_type)
         when :resource
-          record = parameter_record["resource"]
-          target = resource_target_assignment(record, assignment_type, rate_type)
-          {:cb_rate => rate, :object => target}
+          resource_target_assignment(parameter_record, rate, rate_type)
         else
           raise BadRequestError, "Unknown assignment_type of #{assignment_type}"
         end
