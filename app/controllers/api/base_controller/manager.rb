@@ -20,9 +20,9 @@ module Api
               "Unimplemented Action #{action} for #{type} resources" unless respond_to?(target)
 
         if id
-          get_and_update_one_collection(@req.subcollection?, target, type, id)
+          update_one_collection(@req.subcollection?, target, type, id, @req.resource)
         else
-          get_and_update_multiple_collections(@req.subcollection?, target, type)
+          update_multiple_collections(@req.subcollection?, target, type, @req.resources)
         end
       end
 
@@ -90,14 +90,6 @@ module Api
           return target if respond_to?(target)
           collection_config.custom_actions?(type) ? "custom_action_resource" : "undefined_api_method"
         end
-      end
-
-      def get_and_update_one_collection(is_subcollection, target, type, id)
-        update_one_collection(is_subcollection, target, type, id, @req.resource)
-      end
-
-      def get_and_update_multiple_collections(is_subcollection, target, type)
-        update_multiple_collections(is_subcollection, target, type, @req.resources)
       end
 
       def update_one_collection(is_subcollection, target, type, id, resource)
