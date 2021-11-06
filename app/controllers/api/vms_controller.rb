@@ -113,9 +113,8 @@ module Api
       raise BadRequestError, "Cannot edit VM - #{err}"
     end
 
-    def delete_resource_main_action(type, vm_model, _data = nil)
-      # TODO: ensure_supports(type, vm, :delete)
-      {:task_id => queue_object_action(vm_model, "Deleting #{model_ident(vm_model, type)}", queue_options("destroy"))}
+    def delete_resource(type, id, _data = nil)
+      enqueue_ems_action(type, id, "Deleting", :method_name => "destroy")
     end
 
     def set_owner_resource(type, id = nil, data = nil)
