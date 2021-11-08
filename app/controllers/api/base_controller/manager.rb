@@ -2,8 +2,11 @@ module Api
   class BaseController
     module Manager
       def update_collection(type, id)
-        if @req.method == :put || @req.method == :patch
-          return send("#{@req.method}_resource", type, id)
+        case @req.method
+        when :put
+          return edit_resource(type, id, @req.json_body)
+        when :patch
+          return patch_resource(type, id)
         end
 
         unless id || @req.subcollection? || @req.json_body.key?("resources")
@@ -17,9 +20,9 @@ module Api
               "Unimplemented Action #{action} for #{type} resources" unless respond_to?(target)
 
         if id
-          get_and_update_one_collection(@req.subcollection?, target, type, id)
+          update_one_collection(@req.subcollection?, target, type, id, @req.resource)
         else
-          get_and_update_multiple_collections(@req.subcollection?, target, type)
+          update_multiple_collections(@req.subcollection?, target, type, @req.resources)
         end
       end
 
@@ -30,10 +33,6 @@ module Api
 
       def collection_class(type)
         @collection_klasses[type.to_sym] || collection_config.klass(type)
-      end
-
-      def put_resource(type, id)
-        edit_resource(type, id, @req.json_body)
       end
 
       #
@@ -91,14 +90,6 @@ module Api
           return target if respond_to?(target)
           collection_config.custom_actions?(type) ? "custom_action_resource" : "undefined_api_method"
         end
-      end
-
-      def get_and_update_one_collection(is_subcollection, target, type, id)
-        update_one_collection(is_subcollection, target, type, id, @req.resource)
-      end
-
-      def get_and_update_multiple_collections(is_subcollection, target, type)
-        update_multiple_collections(is_subcollection, target, type, @req.resources)
       end
 
       def update_one_collection(is_subcollection, target, type, id, resource)
