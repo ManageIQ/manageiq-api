@@ -16,89 +16,34 @@ module Api
     include Subcollections::Software
     include Subcollections::Tags
 
-    DEFAULT_ROLE = 'ems_operations'.freeze
     RELATIONSHIP_COLLECTIONS = %w[vms templates].freeze
     VALID_EDIT_ATTRS = %w[description name child_resources parent_resource].freeze
 
     def start_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Starting #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "start")
-        result = start_vm(vm) if result[:success]
-        result
-      end
+      enqueue_ems_action(type, id, "Starting", :method_name => "start", :supports => true)
     end
     central_admin :start_resource, :start
 
     def stop_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for stopping a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Stopping #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "stop")
-        result = stop_vm(vm) if result[:success]
-        result
-      end
+      enqueue_ems_action(type, id, "Stopping", :method_name => "stop", :supports => true)
     end
     central_admin :stop_resource, :stop
 
     def suspend_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for suspending a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Suspending #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "suspend")
-        result = suspend_vm(vm) if result[:success]
-        result
-      end
+      enqueue_ems_action(type, id, "Suspending", :method_name => "suspend", :supports => true)
     end
     central_admin :suspend_resource, :suspend
 
     def pause_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for pausing a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Pausing #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "pause")
-        result = pause_vm(vm) if result[:success]
-        result
-      end
+      enqueue_ems_action(type, id, "Pausing", :method_name => "pause", :supports => true)
     end
 
     def shelve_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for shelving a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Shelving #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "shelve")
-        result = shelve_vm(vm) if result[:success]
-        result
-      end
+      enqueue_ems_action(type, id, "Shelving", :method_name => "shelve", :supports => true)
     end
 
     def shelve_offload_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for shelve-offloading a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Shelve-offloading #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "shelve_offload")
-        result = shelve_offload_vm(vm) if result[:success]
-        result
-      end
+      enqueue_ems_action(type, id, "Shelve-Offloading", :method_name => "shelve_offload", :supports => true)
     end
 
     def edit_resource(type, id, data)
@@ -143,16 +88,7 @@ module Api
     end
 
     def scan_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for scanning a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Scanning #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "smartstate_analysis")
-        result = scan_vm(vm) if result[:success]
-        result
-      end
+      enqueue_ems_action(type, id, "Scanning", :method_name => "scan", :supports => :smartstate_analysis, :role => "smartstate")
     end
 
     def add_event_resource(type, id = nil, data = nil)
@@ -169,30 +105,12 @@ module Api
     end
 
     def reset_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for resetting a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Resetting #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "reset")
-        result = reset_vm(vm) if result[:success]
-        result
-      end
+      enqueue_ems_action(type, id, "Resetting", :method_name => "reset", :supports => true)
     end
     central_admin :reset_resource, :reset
 
     def reboot_guest_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for rebooting a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Rebooting #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "reboot_guest")
-        result = reboot_guest_vm(vm) if result[:success]
-        result
-      end
+      enqueue_ems_action(type, id, "Rebooting", :method_name => "reboot_guest", :supports => true)
     end
     central_admin :reboot_guest_resource, :reboot_guest
 
@@ -214,16 +132,7 @@ module Api
     central_admin :rename_resource, :rename
 
     def shutdown_guest_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for shutting down a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Shutting down #{vm_ident(vm)}")
-
-        result = validate_vm_for_action(vm, "shutdown_guest")
-        result = shutdown_guest_vm(vm) if result[:success]
-        result
-      end
+      enqueue_ems_action(type, id, "Shutting Down", :method_name => "shutdown_guest", :supports => true)
     end
     central_admin :shutdown_guest_resource, :shutdown_guest
 
@@ -243,13 +152,12 @@ module Api
       # protocol = "mks"
       protocol = data["protocol"] || "vnc"
 
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        api_log_info("Requesting Console #{vm_ident(vm)}")
-
-        result = validate_vm_for_remote_console(vm, protocol)
-        result = request_console_vm(vm, protocol) if result[:success]
-        result
+      args = [User.current_user.userid, MiqServer.my_server.id, protocol]
+      enqueue_ems_action(type, id, "Requesting Console", :method_name => "remote_console_acquire_ticket", :args => args) do |vm|
+        # NOTE: we are queuing the :remote_console_acquire_ticket and returning the task id and href.
+        #
+        # The remote console ticket/info can be stashed in the task's context_data by the *_acquire_ticket method
+        vm.validate_remote_console_acquire_ticket(protocol)
       end
     end
 
@@ -273,21 +181,12 @@ module Api
     def request_retire_resource(type, id = nil, data = nil)
       raise BadRequestError, "Must specify an id for retiring a #{type} resource" unless id
 
-      api_action(type, id) do |klass|
-        vm = resource_search(id, type, klass)
-        msg = "Retiring request of vm #{vm_ident(vm)}"
-        if data && data["date"]
-          opts = {}
-          opts[:date] = data["date"]
-          opts[:warn] = data["warn"] if data["warn"]
-          msg << " on: #{opts}"
-          api_log_info(msg)
-          request_retire(vm, opts)
-        else
-          msg << " immediately."
-          api_log_info(msg)
-          request_retire(vm)
-        end
+      if data && data["date"]
+        opts = {:date => data["date"]}
+        opts[:warn] = data["warn"] if data["warn"]
+        enqueue_action(type, id, "Retiring on #{data["date"]}", :method_name => "retire", :role => "automate", :args => [opts])
+      else
+        enqueue_action(type, id, "Retiring immediately", :method_name => "make_retire_request", :role => "automate", :args => [User.current_user.id])
       end
     end
     alias retire_resource request_retire_resource
@@ -359,54 +258,6 @@ module Api
       action_result(false, err.message)
     end
 
-    def start_vm(vm)
-      desc = "#{vm_ident(vm)} starting"
-      task_id = queue_object_action(vm, desc, queue_options("start", DEFAULT_ROLE))
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def stop_vm(vm)
-      desc = "#{vm_ident(vm)} stopping"
-      task_id = queue_object_action(vm, desc, queue_options("stop", DEFAULT_ROLE))
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def suspend_vm(vm)
-      desc = "#{vm_ident(vm)} suspending"
-      task_id = queue_object_action(vm, desc, queue_options("suspend", DEFAULT_ROLE))
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def pause_vm(vm)
-      desc = "#{vm_ident(vm)} pausing"
-      task_id = queue_object_action(vm, desc, queue_options("pause", DEFAULT_ROLE))
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def shelve_vm(vm)
-      desc = "#{vm_ident(vm)} shelving"
-      task_id = queue_object_action(vm, desc, queue_options("shelve", DEFAULT_ROLE))
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def shelve_offload_vm(vm)
-      desc = "#{vm_ident(vm)} shelve-offloading"
-      task_id = queue_object_action(vm, desc, queue_options("shelve_offload", DEFAULT_ROLE))
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
     def set_owner_vm(vm, owner)
       desc = "#{vm_ident(vm)} setting owner to '#{owner}'"
       user = User.lookup_by_identity(owner)
@@ -434,14 +285,6 @@ module Api
       data
     end
 
-    def scan_vm(vm)
-      desc = "#{vm_ident(vm)} scanning"
-      task_id = queue_object_action(vm, desc, :method_name => "scan", :role => "smartstate")
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
     def vm_event(vm, event_type, event_message, event_time)
       desc = "Adding Event type=#{event_type} message=#{event_message}"
       event_timestamp = event_time.blank? ? Time.now.utc : event_time.to_time(:utc)
@@ -452,63 +295,11 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def reset_vm(vm)
-      desc = "#{vm_ident(vm)} resetting"
-      task_id = queue_object_action(vm, desc, :method_name => "reset", :role => "ems_operations")
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def shutdown_guest_vm(vm)
-      desc = "#{vm_ident(vm)} shutting down"
-      task_id = queue_object_action(vm, desc, :method_name => "shutdown_guest", :role => "ems_operations")
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def reboot_guest_vm(vm)
-      desc = "#{vm_ident(vm)} rebooting"
-      task_id = queue_object_action(vm, desc, :method_name => "reboot_guest", :role => "ems_operations")
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
     def rename_vm(vm, new_name)
       desc = "#{vm_ident(vm)} renaming to #{new_name}"
       task_id = vm.rename_queue(User.current_user.userid, new_name)
       action_result(true, desc, :task_id => task_id)
     rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def request_console_vm(vm, protocol)
-      desc = "#{vm_ident(vm)} requesting console"
-      task_id = queue_object_action(vm, desc,
-                                    :method_name => "remote_console_acquire_ticket",
-                                    :role        => "ems_operations",
-                                    :args        => [User.current_user.userid, MiqServer.my_server.id, protocol])
-      # NOTE:
-      # we are queuing the :remote_console_acquire_ticket and returning the task id and href.
-      #
-      # The remote console ticket/info can be stashed in the task's context_data by the *_acquire_ticket method
-      # context_data is returned as part of the task i.e. GET /api/tasks/:id
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def request_retire(virtual_machine, opts = nil)
-      desc = "#{vm_ident(virtual_machine)} request retire"
-      task_id = if opts
-                  queue_object_action(virtual_machine, desc, :method_name => "retire", :role => "automate", :args => [opts])
-                else
-                  queue_object_action(virtual_machine, desc, :method_name => "make_retire_request", :role => "automate", :args => [User.current_user.id])
-                end
-      action_result(true, desc, :task_id => task_id)
-    rescue StandardError => err
       action_result(false, err.to_s)
     end
   end

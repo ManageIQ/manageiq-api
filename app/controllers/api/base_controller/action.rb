@@ -98,14 +98,6 @@ module Api
 
         MiqTask.generic_action_with_callback(task_options, queue_options)
       end
-
-      def queue_options(method, role = nil)
-        {
-          :method_name => method,
-          :role        => role,
-          :user        => true
-        }
-      end
     end
   end
 end
