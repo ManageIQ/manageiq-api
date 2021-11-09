@@ -680,13 +680,7 @@ describe "Services API" do
 
         post(api_service_url(nil, service), :params => { :action => "start" })
 
-        expected = {
-          "href"    => api_service_url(nil, service),
-          "success" => true,
-          "message" => a_string_matching("starting")
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect_single_action_result(:success => true, :message => /Starting/, :task => true, :href => api_service_url(nil, service))
       end
 
       it "can start multiple services for a user with appropriate role" do
@@ -695,22 +689,8 @@ describe "Services API" do
 
         post(api_services_url, :params => { :action => "start", :resources => [{:id => service_1.id}, {:id => service_2.id}] })
 
-        expected = {
-          "results" => a_collection_containing_exactly(
-            a_hash_including("success"   => true,
-                             "message"   => a_string_matching("starting"),
-                             "task_id"   => anything,
-                             "task_href" => anything,
-                             "href"      => api_service_url(nil, service_1)),
-            a_hash_including("success"   => true,
-                             "message"   => a_string_matching("starting"),
-                             "task_id"   => anything,
-                             "task_href" => anything,
-                             "href"      => api_service_url(nil, service_2)),
-          )
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect_multiple_action_result(2, :success => true, :message => /Starting/, :task => true)
+        expect_result_resources_to_include_hrefs("results", [api_service_url(nil, service_1), api_service_url(nil, service_2)])
       end
 
       it "will not start a service for a user without an appropriate role" do
@@ -730,13 +710,7 @@ describe "Services API" do
 
         post(api_service_url(nil, service), :params => { :action => "stop" })
 
-        expected = {
-          "href"    => api_service_url(nil, service),
-          "success" => true,
-          "message" => a_string_matching("stopping")
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect_single_action_result(:success => true, :message => /Stopping/, :href => api_service_url(nil, service))
       end
 
       it "can stop multiple services for a user with appropriate role" do
@@ -745,22 +719,8 @@ describe "Services API" do
 
         post(api_services_url, :params => { :action => "stop", :resources => [{:id => service_1.id}, {:id => service_2.id}] })
 
-        expected = {
-          "results" => a_collection_containing_exactly(
-            a_hash_including("success"   => true,
-                             "message"   => a_string_matching("stopping"),
-                             "task_id"   => anything,
-                             "task_href" => anything,
-                             "href"      => api_service_url(nil, service_1)),
-            a_hash_including("success"   => true,
-                             "message"   => a_string_matching("stopping"),
-                             "task_id"   => anything,
-                             "task_href" => anything,
-                             "href"      => api_service_url(nil, service_2)),
-          )
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect_multiple_action_result(2, :success => true, :message => /Stopping/, :task => true)
+        expect_result_resources_to_include_hrefs("results", [api_service_url(nil, service_1), api_service_url(nil, service_2)])
       end
 
       it "will not stop a service for a user without an appropriate role" do
@@ -780,13 +740,7 @@ describe "Services API" do
 
         post(api_service_url(nil, service), :params => { :action => "suspend" })
 
-        expected = {
-          "href"    => api_service_url(nil, service),
-          "success" => true,
-          "message" => a_string_matching("suspending")
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect_single_action_result(:success => true, :message => /Suspending/, :task => true, :href => api_service_url(nil, service))
       end
 
       it "can suspend multiple services for a user with appropriate role" do
@@ -795,22 +749,8 @@ describe "Services API" do
 
         post(api_services_url, :params => { :action => "suspend", :resources => [{:id => service_1.id}, {:id => service_2.id}] })
 
-        expected = {
-          "results" => a_collection_containing_exactly(
-            a_hash_including("success"   => true,
-                             "message"   => a_string_matching("suspending"),
-                             "task_id"   => anything,
-                             "task_href" => anything,
-                             "href"      => api_service_url(nil, service_1)),
-            a_hash_including("success"   => true,
-                             "message"   => a_string_matching("suspending"),
-                             "task_id"   => anything,
-                             "task_href" => anything,
-                             "href"      => api_service_url(nil, service_2)),
-          )
-        }
-        expect(response.parsed_body).to include(expected)
-        expect(response).to have_http_status(:ok)
+        expect_multiple_action_result(2, :success => true, :message => /Suspending/, :task => true)
+        expect_result_resources_to_include_hrefs("results", [api_service_url(nil, service_1), api_service_url(nil, service_2)])
       end
 
       it "will not suspend a service for a user without an appropriate role" do
