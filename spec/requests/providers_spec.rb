@@ -1548,7 +1548,7 @@ describe "Providers API" do
     it "returns options for all providers when no query" do
       options(api_providers_url)
       expect(response.parsed_body["data"]["provider_settings"].keys.count).to eq(
-        ManageIQ::Providers::BaseManager.supported_subclasses.count
+        ManageIQ::Providers::BaseManager.permitted_subclasses.count
       )
       expect(response.parsed_body["data"]["supported_providers"].count).to eq(
         ExtManagementSystem.supported_types_for_create.count
