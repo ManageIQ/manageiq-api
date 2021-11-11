@@ -146,9 +146,9 @@ module Api
       klass.params_for_create
     end
 
-    def supported_subclasses
+    def permitted_subclasses
       ActiveSupport::Dependencies.interlock.loading do
-        ManageIQ::Providers::BaseManager.supported_subclasses
+        ManageIQ::Providers::BaseManager.permitted_subclasses
       end
     end
 
@@ -159,7 +159,7 @@ module Api
     end
 
     def providers_options
-      providers_options = supported_subclasses.inject({}) do |po, ems|
+      providers_options = permitted_subclasses.inject({}) do |po, ems|
         po.merge(ems.ems_type => ems.options_description)
       end
 
@@ -215,17 +215,17 @@ module Api
     end
 
     def fetch_provider_klass(klass, data)
-      supported_types = klass.supported_subclasses.collect(&:name)
-      types_string    = supported_types.join(", ")
+      permitted_types = klass.permitted_subclasses.collect(&:name)
+      types_string    = permitted_types.join(", ")
       unless data.key?(TYPE_ATTR)
-        raise BadRequestError, "Must specify a provider type, supported types are: #{types_string}"
+        raise BadRequestError, "Must specify a provider type, permitted types are: #{types_string}"
       end
 
       type = data[TYPE_ATTR]
-      unless supported_types.include?(type)
-        raise BadRequestError, "Invalid provider type #{type} specified, supported types are: #{types_string}"
+      unless permitted_types.include?(type)
+        raise BadRequestError, "Invalid provider type #{type} specified, permitted types are: #{types_string}"
       end
-      klass.supported_subclasses.detect { |p| p.name == data[TYPE_ATTR] }
+      klass.permitted_subclasses.detect { |p| p.name == data[TYPE_ATTR] }
     end
 
     def create_provider_ddf(data)
