@@ -26,7 +26,11 @@ module Api
           api_log_info("#{action_phrase} #{type.to_s.titleize} id: #{id}")
           resource = resource_search(id, type, klass)
           result_options = yield(resource)
-          action_result(true, "#{action_phrase} #{model_ident(resource, type)}", result_options)
+          if result_options.key?(:success) # full action hash (finer grained messaging)
+            result_options
+          else # result_options is action_hash (preferred)
+            action_result(true, "#{action_phrase} #{model_ident(resource, type)}", result_options)
+          end
         rescue ActiveRecord::RecordNotFound, ForbiddenError, BadRequestError, NotFoundError => err
           single_resource? ? raise : action_result(false, err.to_s)
         rescue => err
