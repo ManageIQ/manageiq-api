@@ -296,15 +296,11 @@ describe "Automation Requests API" do
     end
 
     context "SubResource#cancel" do
-      let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for AutomationTask"} }
-      let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for AutomationTask"} }
       include_context "SubResource#cancel", [:automation_request, :request_task], :automation_request, :automation_task, false
     end
   end
 
   context "Resource#cancel" do
-    let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for AutomationRequest"} }
-    let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for AutomationRequest"} }
     include_context "Resource#cancel", "automation_request", :automation_request, false
   end
 end

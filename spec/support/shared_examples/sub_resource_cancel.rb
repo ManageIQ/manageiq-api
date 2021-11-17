@@ -17,8 +17,7 @@ RSpec.shared_context "SubResource#cancel" do |ns, request_factory, factory, succ
       api_basic_authorize subcollection_action_identifier(base_namespace, sub_namespace, :cancel)
       post(send(instance_url, nil, request, resource_1.id), :params => gen_request(:cancel))
 
-      expect(response).to have_http_status(success ? :ok : :bad_request)
-      expect(response.parsed_body).to eq(resource_1_response)
+      expect_single_action_result(:success => success, :message => /Cancel operation is not supported/)
     end
   end
 
@@ -32,7 +31,7 @@ RSpec.shared_context "SubResource#cancel" do |ns, request_factory, factory, succ
       post(send(collection_url, nil, request), :params => gen_request(:cancel, [{:id => resource_1.id}, {:id => resource_2.id}]))
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body["results"]).to match_array([resource_1_response, resource_2_response])
+      expect_multiple_action_result(2, :success => success, :message => /Cancel operation is not supported/)
     end
   end
 end

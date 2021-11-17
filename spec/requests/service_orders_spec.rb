@@ -631,8 +631,6 @@ RSpec.describe "service orders API" do
     end
 
     context "ServiceRequest#cancel" do
-      let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for ServiceTemplateProvisionRequest"} }
-      let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for ServiceTemplateProvisionRequest"} }
       include_context "SubResource#cancel", [:service_order, :service_request], :shopping_cart, :service_template_provision_request, false
     end
   end

@@ -486,15 +486,11 @@ describe "Provision Requests API" do
     end
 
     context "SubResource#cancel" do
-      let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for MiqRequestTask"} }
-      let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for MiqRequestTask"} }
       include_context "SubResource#cancel", [:provision_request, :request_task], :miq_provision_request, :miq_request_task, false
     end
   end
 
   context "Resource#cancel" do
-    let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for MiqProvisionRequest"} }
-    let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for MiqProvisionRequest"} }
     include_context "Resource#cancel", "provision_request", :miq_provision_request, false
   end
 end

@@ -1,4 +1,4 @@
-RSpec.shared_context "Resource#cancel" do |ns, factory|
+RSpec.shared_context "Resource#cancel" do |ns, factory, success = false|
   let(:collection_identifier) { namespace.pluralize.to_sym }
   let(:collection_url)        { send("api_#{collection_identifier}_url") }
   let(:namespace)             { ns } # ns is not available from #instance_url method, but namespace is.
@@ -19,7 +19,7 @@ RSpec.shared_context "Resource#cancel" do |ns, factory|
 
       post(instance_url(resource_1), :params => gen_request(:cancel))
 
-      expect_single_action_result(resource_1_response)
+      expect_single_action_result(:success => success, :message => /Cancel operation is not supported/)
     end
   end
 
@@ -33,8 +33,7 @@ RSpec.shared_context "Resource#cancel" do |ns, factory|
 
       post(collection_url, :params => gen_request(:cancel, [{"href" => instance_url(resource_1)}, {"href" => instance_url(resource_2)}]))
 
-      expect(response.parsed_body).to include("results" => a_collection_containing_exactly(resource_1_response, resource_2_response))
-      expect(response).to have_http_status(:ok)
+      expect_multiple_action_result(2, :success => success, :message => /Cancel operation is not supported/)
     end
   end
 end
