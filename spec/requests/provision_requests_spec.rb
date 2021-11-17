@@ -389,35 +389,36 @@ describe "Provision Requests API" do
     it "supports approving a request" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      post(provreq1_url, :params => gen_request(:approve))
+      post(provreq1_url, :params => gen_request(:approve, :reason => "approve reason"))
 
-      expected_msg = "Provision request #{provreq1.id} approved"
+      expected_msg = /Approving Provision Request id: #{provreq1.id}/
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq1))
     end
 
     it "supports denying a request" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      post(provreq2_url, :params => gen_request(:deny))
+      post(provreq2_url, :params => gen_request(:deny, :reason => "deny reason"))
 
-      expected_msg = "Provision request #{provreq2.id} denied"
+      expected_msg = /Denying Provision Request id: #{provreq2.id}/
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_provision_request_url(nil, provreq2))
     end
 
     it "supports approving multiple requests" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      post(api_provision_requests_url, :params => gen_request(:approve, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
+      post(api_provision_requests_url, :params => gen_request(:approve, [{"href" => provreq1_url, "reason" => "approve reason"},
+                                                                         {"href" => provreq2_url, "reason" => "approve reason"}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
           {
-            "message" => a_string_matching(/Provision request #{provreq1.id} approved/i),
+            "message" => a_string_matching(/Approving Provision Request id: #{provreq1.id}/i),
             "success" => true,
             "href"    => api_provision_request_url(nil, provreq1)
           },
           {
-            "message" => a_string_matching(/Provision request #{provreq2.id} approved/i),
+            "message" => a_string_matching(/Approving Provision Request id: #{provreq2.id}/i),
             "success" => true,
             "href"    => api_provision_request_url(nil, provreq2)
           }
@@ -430,17 +431,18 @@ describe "Provision Requests API" do
     it "supports denying multiple requests" do
       api_basic_authorize collection_action_identifier(:provision_requests, :approve)
 
-      post(api_provision_requests_url, :params => gen_request(:deny, [{"href" => provreq1_url}, {"href" => provreq2_url}]))
+      post(api_provision_requests_url, :params => gen_request(:deny, [{"href" => provreq1_url, "reason" => "deny reason"},
+                                                                      {"href" => provreq2_url, "reason" => "deny reason"}]))
 
       expected = {
         "results" => a_collection_containing_exactly(
           {
-            "message" => a_string_matching(/Provision request #{provreq1.id} denied/i),
+            "message" => a_string_matching(/Denying Provision Request id: #{provreq1.id}/i),
             "success" => true,
             "href"    => api_provision_request_url(nil, provreq1)
           },
           {
-            "message" => a_string_matching(/Provision request #{provreq2.id} denied/i),
+            "message" => a_string_matching(/Denying Provision Request id: #{provreq2.id}/i),
             "success" => true,
             "href"    => api_provision_request_url(nil, provreq2)
           }

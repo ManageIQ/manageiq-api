@@ -201,7 +201,7 @@ describe "Automation Requests API" do
 
       post(request1_url, :params => gen_request(:approve, :reason => "approve reason"))
 
-      expected_msg = "Automation request #{request1.id} approved"
+      expected_msg = "Approving Automation Request id: #{request1.id}"
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_automation_request_url(nil, request1))
     end
 
@@ -210,7 +210,7 @@ describe "Automation Requests API" do
 
       post(request2_url, :params => gen_request(:deny, :reason => "deny reason"))
 
-      expected_msg = "Automation request #{request2.id} denied"
+      expected_msg = "Denying Automation Request id: #{request2.id}"
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_automation_request_url(nil, request2))
     end
 
@@ -223,12 +223,12 @@ describe "Automation Requests API" do
       expected = {
         "results" => a_collection_containing_exactly(
           {
-            "message" => a_string_matching(/Automation request #{request1.id} approved/i),
+            "message" => a_string_matching(/Approving Automation Request id: #{request1.id}/i),
             "success" => true,
             "href"    => api_automation_request_url(nil, request1)
           },
           {
-            "message" => a_string_matching(/Automation request #{request2.id} approved/i),
+            "message" => a_string_matching(/Approving Automation Request id: #{request2.id}/i),
             "success" => true,
             "href"    => api_automation_request_url(nil, request2)
           }
@@ -247,12 +247,12 @@ describe "Automation Requests API" do
       expected = {
         "results" => a_collection_containing_exactly(
           {
-            "message" => a_string_matching(/Automation request #{request1.id} denied/i,),
+            "message" => a_string_matching(/Denying Automation Request id: #{request1.id}/i),
             "success" => true,
             "href"    => api_automation_request_url(nil, request1)
           },
           {
-            "message" => a_string_matching(/Automation request #{request2.id} denied/i),
+            "message" => a_string_matching(/Denying Automation Request id: #{request2.id}/i),
             "success" => true,
             "href"    => api_automation_request_url(nil, request2)
           }
