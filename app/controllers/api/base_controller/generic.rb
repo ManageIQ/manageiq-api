@@ -195,30 +195,24 @@ module Api
           return invoke_custom_action_with_dialog(type, resource, action, data, custom_button)
         end
 
-        result = begin
-                   custom_button.invoke(resource)
-                   action_result(true, "Invoked custom action #{action} for #{type} id: #{resource.id}")
-                 rescue => err
-                   action_result(false, err.to_s)
-                 end
-        add_href_to_result(result, type, resource.id)
-        log_result(result)
-        result
+        api_action(type, resource.id) do
+          custom_button.invoke(resource)
+          action_result(true, "Invoked custom action #{action} for #{type} id: #{resource.id}")
+        rescue => err
+          action_result(false, err.to_s)
+        end
       end
 
       def invoke_custom_action_with_dialog(type, resource, action, data, custom_button)
-        result = begin
-                   custom_button.publish_event(nil, resource)
-                   wf_result = submit_custom_action_dialog(resource, custom_button, data)
-                   action_result(true,
-                                 "Invoked custom dialog action #{action} for #{type} id: #{resource.id}",
-                                 :result => wf_result[:request], :task_id => wf_result[:task_id])
-                 rescue => err
-                   action_result(false, err.to_s)
-                 end
-        add_href_to_result(result, type, resource.id)
-        log_result(result)
-        result
+        api_action(type, resource.id) do
+          custom_button.publish_event(nil, resource)
+          wf_result = submit_custom_action_dialog(resource, custom_button, data)
+          action_result(true,
+                        "Invoked custom dialog action #{action} for #{type} id: #{resource.id}",
+                        :result => wf_result[:request], :task_id => wf_result[:task_id])
+        rescue => err
+          action_result(false, err.to_s)
+        end
       end
 
       def submit_custom_action_dialog(resource, custom_button, data)
