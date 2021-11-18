@@ -2237,12 +2237,32 @@
     :klass: ChargebackRateDetailMeasure
   :metric_rollups:
     :description: Metric Rollups
-    :identifier: metrics
+    :identifier: metric_rollups
     :options:
     - :collection
     - :subcollection
     :verbs: *g
     :klass: MetricRollup
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - metric_rollups_view
+        - sui_metrics
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - metric_rollups_view
+        - sui_metrics
+  :metrics:
+    :description: Metrics
+    :identifier: metrics
+    :options:
+    - :collection
+    - :subcollection
+    :verbs: *g
+    :klass: Metric
     :collection_actions:
       :get:
       - :name: read
