@@ -2148,6 +2148,37 @@ describe "Vms API" do
     end
   end
 
+  describe "metrics subcollection" do
+    let(:url) { api_vm_metrics_url(nil, vm) }
+
+    before do
+      FactoryBot.create_list(:metric_vm_rt, 3, :resource => vm)
+    end
+
+    it 'returns the metrics for the vm' do
+      api_basic_authorize subcollection_action_identifier(:vms, :metrics, :read, :get)
+
+      get(url, :params => {:start_date => Time.zone.today.to_s})
+
+      expected = {
+        'count'    => 3,
+        'subcount' => 3,
+        'pages'    => 1
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+      expect(response.parsed_body['links'].keys).to match_array(%w[self first last])
+    end
+
+    it 'will not return metrics without an appropriate role' do
+      api_basic_authorize
+
+      get(url, :params => {:start_date => Time.zone.today.to_s})
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   describe "metric rollups subcollection" do
     let(:url) { api_vm_metric_rollups_url(nil, vm) }
 

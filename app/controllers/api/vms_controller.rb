@@ -7,6 +7,7 @@ module Api
     include Subcollections::Compliances
     include Subcollections::CustomAttributes
     include Subcollections::Disks
+    include Subcollections::Metrics
     include Subcollections::MetricRollups
     include Subcollections::Policies
     include Subcollections::PolicyProfiles
