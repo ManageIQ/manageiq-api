@@ -2255,6 +2255,26 @@
         :identifier:
         - metrics_view
         - sui_metrics
+  :metrics:
+    :description: Metrics
+    :identifier: metrics
+    :options:
+    - :collection
+    - :subcollection
+    :verbs: *g
+    :klass: Metric
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - metrics_view
+        - sui_metrics
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - metrics_view
+        - sui_metrics
   :network_routers:
     :description: Network_Routers
     :identifier: network_router
@@ -4676,6 +4696,7 @@
     - :security_groups
     - :software
     - :snapshots
+    - :metrics
     - :metric_rollups
     :collection_actions:
       :get:
