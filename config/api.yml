@@ -2247,13 +2247,13 @@
       :get:
       - :name: read
         :identifier:
-        - metric_rollups_view
+        - metrics_view
         - sui_metrics
     :subcollection_actions:
       :get:
       - :name: read
         :identifier:
-        - metric_rollups_view
+        - metrics_view
         - sui_metrics
   :metrics:
     :description: Metrics
@@ -4696,6 +4696,7 @@
     - :security_groups
     - :software
     - :snapshots
+    - :metrics
     - :metric_rollups
     :collection_actions:
       :get:
