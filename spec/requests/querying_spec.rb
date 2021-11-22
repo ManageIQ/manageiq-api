@@ -966,7 +966,7 @@ describe "Querying" do
   describe 'OPTIONS /api/vms' do
     it 'returns the options information' do
       options(api_vms_url)
-      expect_options_results(:vms)
+      expect_options_results(:vms, {})
     end
   end
 
