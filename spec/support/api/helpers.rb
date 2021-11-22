@@ -245,7 +245,7 @@ module Spec
           end
         end
 
-        def expect_options_results(type, data = {})
+        def expect_options_results(type, data = nil)
           klass = ::Api::ApiConfig.collections[type].klass.constantize
           attributes = select_attributes(klass.attribute_names - klass.virtual_attribute_names)
           reflections = (klass.reflections.keys | klass.virtual_reflections.keys.collect(&:to_s)).sort
@@ -255,9 +255,18 @@ module Spec
             'virtual_attributes' => select_attributes(klass.virtual_attribute_names),
             'relationships'      => reflections,
             'subcollections'     => subcollections,
-            'data'               => data
           }
-          expect(response.parsed_body).to eq(expected)
+
+          # Data can have complicated structure, so validating it is now optional.
+          # Basic data structures can be validated here if desired or not provided if
+          # validating will be done manually.
+          expected['data'] = data if data
+
+          body = response.parsed_body
+          expected.each_key do |key|
+            expect(body[key]).to eq(expected[key])
+          end
+
           expect(response.headers['Access-Control-Allow-Methods']).to include('OPTIONS')
         end
 

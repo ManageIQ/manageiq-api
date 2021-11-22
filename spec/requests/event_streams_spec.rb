@@ -162,4 +162,24 @@ RSpec.describe "Event Streams" do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  describe 'OPTIONS /api/event_streams' do
+    it 'returns expected and additional attributes' do
+      MiqEventDefinitionSet.seed
+      options(api_event_streams_url)
+
+      expect_options_results(:event_streams)
+
+      body = response.parsed_body
+      expect(body["data"].keys).to eq(["timeline_events"])
+      expect(body["data"]["timeline_events"].keys.sort).to eq(%w[EmsEvent MiqEvent])
+      expect(body["data"]["timeline_events"]["EmsEvent"].keys.sort).to eq(%w[description group_levels group_names])
+      expect(body["data"]["timeline_events"]["EmsEvent"]["group_names"].keys.sort).to include("addition", "other")
+      expect(body["data"]["timeline_events"]["EmsEvent"]["group_levels"].keys.sort).to eq(%w[critical detail warning])
+
+      expect(body["data"]["timeline_events"]["MiqEvent"].keys.sort).to eq(%w[description group_levels group_names])
+      expect(body["data"]["timeline_events"]["MiqEvent"]["group_names"].keys.sort).to include("auth_validation", "other")
+      expect(body["data"]["timeline_events"]["MiqEvent"]["group_levels"].keys.sort).to eq(%w[detail failure success])
+    end
+  end
 end
