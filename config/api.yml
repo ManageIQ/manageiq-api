@@ -1903,6 +1903,25 @@
         :identifier: host_aggregate_tag
       - :name: unassign
         :identifier: host_aggregate_tag
+  :host_initiator_groups:
+    :description: Host Initiator Groups
+    :identifier: host_initiator_group
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: HostInitiatorGroup
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: host_initiator_group_show_list
+      :post:
+      - :name: create
+        :identifier: host_initiator_group_new
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: host_initiator_group_show
   :host_initiators:
     :description: Host Initiators
     :identifier: host_initiator
