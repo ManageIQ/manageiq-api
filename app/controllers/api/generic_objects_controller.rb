@@ -29,17 +29,16 @@ module Api
 
     def invoke_custom_action(type, resource, action, data)
       return super(type, resource.reload, action, data) if resource_custom_action_button(resource, action)
-      result = begin
-                 description = method_description(resource, action)
-                 task_id = queue_object_action(resource, description, queue_args(action, data))
-                 action_result(true, description, :task_id => task_id)
-               rescue => err
-                 action_result(false, err.to_s)
-               end
-      add_href_to_result(result, type, resource.id)
-      log_result(result)
-      result
+
+      api_action(type, resource.id) do
+        description = method_description(resource, action)
+        task_id = queue_object_action(resource, description, queue_args(action, data))
+        action_result(true, description, :task_id => task_id)
+      rescue => err
+        action_result(false, err.to_s)
+      end
     end
+
     def method_description(resource, action)
       "Invoked method #{resource.generic_object_definition.name}##{action} for Generic Object id: #{resource.id} name: #{resource.name}"
     end

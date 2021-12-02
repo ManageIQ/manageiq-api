@@ -215,15 +215,12 @@ module Api
     end
 
     def invoke_reconfigure_dialog(type, svc, data = {})
-      result = begin
-                 wf_result = submit_reconfigure_dialog(svc, data)
-                 action_result(true, "#{service_ident(svc)} reconfiguring", :result => wf_result[:request])
-               rescue => err
-                 action_result(false, err.to_s)
-               end
-      add_href_to_result(result, type, svc.id)
-      log_result(result)
-      result
+      api_action(type, svc.id) do
+        wf_result = submit_reconfigure_dialog(svc, data)
+        action_result(true, "#{service_ident(svc)} reconfiguring", :result => wf_result[:request])
+      rescue => err
+        action_result(false, err.to_s)
+      end
     end
 
     def submit_reconfigure_dialog(svc, data)
