@@ -745,7 +745,7 @@ RSpec.describe "users API" do
         let(:expected_result_invalid_id) do
           {
             "success" => false,
-            "message" => "Invalid User id  specified",
+            "message" => "Invalid User id nil specified",
             "href"    => "http://www.example.com/api/users/"
           }
         end

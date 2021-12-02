@@ -245,9 +245,10 @@ module Api
         end
       end
 
-      def validate_id(id, type, klass)
-        return if collection_config.resource_identifier(type) != "id"
-        raise NotFoundError, "Invalid #{klass} id #{id} specified" unless id.kind_of?(Integer) || id =~ /\A\d+\z/
+      def validate_id(id, key_id, klass)
+        if id.nil? || (key_id == "id" && !id.integer?)
+          raise BadRequestError, "Invalid #{klass} #{key_id} #{id || "nil"} specified"
+        end
       end
     end
   end

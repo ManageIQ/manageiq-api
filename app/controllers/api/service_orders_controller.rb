@@ -31,8 +31,8 @@ module Api
       service_order
     end
 
-    def validate_id(id, type, klass)
-      id == USER_CART_ID || super(id, type, klass)
+    def validate_id(id, key_id, klass)
+      id == USER_CART_ID || super
     end
 
     def find_service_orders(id)

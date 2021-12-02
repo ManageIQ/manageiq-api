@@ -125,10 +125,10 @@ module Api
 
       private
 
-      def resource_search(id, type, klass = nil)
+      def resource_search(id, type, klass = nil, key_id = nil)
         klass  ||= collection_class(type)
-        validate_id(id, type, klass)
-        key_id = collection_config.resource_identifier(type)
+        key_id ||= collection_config.resource_identifier(type)
+        validate_id(id, key_id, klass)
         target =
           if respond_to?("find_#{type}")
             public_send("find_#{type}", id)

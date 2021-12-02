@@ -27,8 +27,7 @@ module Api
     # TODO: convert callers to accept an action hash
     # @returns model (not action result hash)
     def delete_resource(type, id, data = {})
-      id ||= data['name']
-      model = resource_search(id, type)
+      model = fetch_generic_object_definition(type, id, data)
       delete_resource_main_action(type, model, data)
       model
     rescue => err
@@ -137,17 +136,12 @@ module Api
     end
 
     def fetch_generic_object_definition(type, id, data)
-      id ||= data['name']
-      resource_search(id, type, collection_class(type))
+      resource_search(id || data['name'], type, nil, id ? nil : "name")
     end
 
-    def resource_search(id, type, klass = nil)
-      if id.to_s =~ /\A\d+\z/
-        super
-      else
-        go_def = klass.find_by!(:name => id)
-        filter_resource(go_def, type, klass)
-      end
+    def resource_search(id, type, klass = nil, key_id = nil)
+      key_id = "name" if id && !id.integer?
+      super
     end
   end
 end
