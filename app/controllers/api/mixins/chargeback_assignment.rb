@@ -119,8 +119,16 @@ module Api
       end
 
       def target(parameter_record, assignment_type, rate_type)
-        target_assignment_method = "#{assignment_type}_target_assignment"
-        send(target_assignment_method, parameter_record[assignment_type.to_s], assignment_type, rate_type)
+        case assignment_type.to_sym
+        when :tag
+          tag_target_assignment(parameter_record[assignment_type.to_s], assignment_type, rate_type)
+        when :label
+          label_target_assignment(parameter_record[assignment_type.to_s], assignment_type, rate_type)
+        when :resource
+          resource_target_assignment(parameter_record[assignment_type.to_s], assignment_type, rate_type)
+        else
+          raise BadRequestError, "Unknown assignment_type of #{assignment_type}"
+        end
       end
 
       def convert_assignment_key_from(parameter_key)
