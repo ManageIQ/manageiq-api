@@ -394,7 +394,7 @@ RSpec.describe "Requests API" do
 
       post(request1_url, :params => gen_request(:approve, :reason => "approval reason"))
 
-      expected_msg = "Request #{request1.id} approved"
+      expected_msg = /Approving Request id: #{request1.id}/
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_request_url(nil, request1))
     end
 
@@ -403,8 +403,7 @@ RSpec.describe "Requests API" do
 
       post(request1_url, :params => gen_request(:approve))
 
-      expected_msg = /Must specify a reason for approving a request/
-      expect_single_action_result(:success => false, :message => expected_msg)
+      expect_bad_request(/Must specify a reason for approving/)
     end
 
     it "supports denying a request" do
@@ -412,7 +411,7 @@ RSpec.describe "Requests API" do
 
       post(request1_url, :params => gen_request(:deny, :reason => "denial reason"))
 
-      expected_msg = "Request #{request1.id} denied"
+      expected_msg = /Denying Request id: #{request1.id}/
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_request_url(nil, request1))
     end
 
@@ -421,8 +420,7 @@ RSpec.describe "Requests API" do
 
       post(request1_url, :params => gen_request(:deny))
 
-      expected_msg = /Must specify a reason for denying a request/
-      expect_single_action_result(:success => false, :message => expected_msg)
+      expect_bad_request(/Must specify a reason for denying/)
     end
 
     it "supports approving multiple requests" do
@@ -434,12 +432,12 @@ RSpec.describe "Requests API" do
       expected = {
         "results" => a_collection_containing_exactly(
           {
-            "message" => a_string_matching(/Request #{request1.id} approved/i),
+            "message" => a_string_matching(/Approving Request id: #{request1.id}/i),
             "success" => true,
             "href"    => api_request_url(nil, request1)
           },
           {
-            "message" => a_string_matching(/Request #{request2.id} approved/i),
+            "message" => a_string_matching(/Approving Request id: #{request2.id}/i),
             "success" => true,
             "href"    => api_request_url(nil, request2)
           }
@@ -458,12 +456,12 @@ RSpec.describe "Requests API" do
       expected = {
         "results" => a_collection_containing_exactly(
           {
-            "message" => a_string_matching(/Request #{request1.id} denied/i),
+            "message" => a_string_matching(/Denying Request id: #{request1.id}/i),
             "success" => true,
             "href"    => api_request_url(nil, request1)
           },
           {
-            "message" => a_string_matching(/Request #{request2.id} denied/i),
+            "message" => a_string_matching(/Denying Request id: #{request2.id}/i),
             "success" => true,
             "href"    => api_request_url(nil, request2)
           }
@@ -538,15 +536,11 @@ RSpec.describe "Requests API" do
     end
 
     context "SubResource#cancel" do
-      let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for MiqRequestTask"} }
-      let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for MiqRequestTask"} }
       include_context "SubResource#cancel", [:request, :request_task], :service_template_provision_request, :miq_request_task, false
     end
   end
 
   context "Resource#cancel" do
-    let(:resource_1_response) { {"success" => false, "message" => "Cancel operation is not supported for VmMigrateRequest"} }
-    let(:resource_2_response) { {"success" => false, "message" => "Cancel operation is not supported for VmMigrateRequest"} }
     include_context "Resource#cancel", "request", :vm_migrate_request, false
   end
 end

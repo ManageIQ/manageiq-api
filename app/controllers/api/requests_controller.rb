@@ -1,6 +1,7 @@
 module Api
   class RequestsController < BaseController
     include Api::Mixins::ResourceCancel
+    include Api::Mixins::ResourceApproveDeny
     include Subcollections::RequestTasks
 
     def create_resource(type, _id, data)
@@ -32,28 +33,6 @@ module Api
       request = resource_search(id, type, collection_class(:requests))
       RequestEditor.edit(request, data)
       request
-    end
-
-    def approve_resource(type, id, data)
-      raise "Must specify a reason for approving a request" if data["reason"].blank?
-      api_action(type, id) do |klass|
-        request = resource_search(id, type, klass)
-        request.approve(User.current_user.userid, data["reason"])
-        action_result(true, "Request #{id} approved")
-      end
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def deny_resource(type, id, data)
-      raise "Must specify a reason for denying a request" if data["reason"].blank?
-      api_action(type, id) do |klass|
-        request = resource_search(id, type, klass)
-        request.deny(User.current_user.userid, data["reason"])
-        action_result(true, "Request #{id} denied")
-      end
-    rescue => err
-      action_result(false, err.to_s)
     end
 
     def find_requests(id)

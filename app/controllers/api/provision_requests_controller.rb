@@ -1,6 +1,7 @@
 module Api
   class ProvisionRequestsController < BaseController
     include Api::Mixins::ResourceCancel
+    include Api::Mixins::ResourceApproveDeny
     include Subcollections::RequestTasks
 
     def create_resource(type, _id, data)
@@ -23,26 +24,6 @@ module Api
       req = resource_search(id, type, collection_class(:provision_requests))
       RequestEditor.edit(req, data)
       req
-    end
-
-    def deny_resource(type, id, data)
-      api_action(type, id) do |klass|
-        provreq = resource_search(id, type, klass)
-        provreq.deny(User.current_user.userid, data['reason'])
-        action_result(true, "Provision request #{id} denied")
-      end
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
-    def approve_resource(type, id, data)
-      api_action(type, id) do |klass|
-        provreq = resource_search(id, type, klass)
-        provreq.approve(User.current_user.userid, data['reason'])
-        action_result(true, "Provision request #{id} approved")
-      end
-    rescue => err
-      action_result(false, err.to_s)
     end
 
     def find_provision_requests(id)

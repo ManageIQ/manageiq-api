@@ -101,7 +101,7 @@ describe "Service Requests API" do
 
       post(svcreq1_url, :params => gen_request(:approve, :reason => "approve reason"))
 
-      expected_msg = "Service request #{svcreq1.id} approved"
+      expected_msg = "Approving Service Request id: #{svcreq1.id}"
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_service_request_url(nil, svcreq1))
     end
 
@@ -110,7 +110,7 @@ describe "Service Requests API" do
 
       post(svcreq2_url, :params => gen_request(:deny, :reason => "deny reason"))
 
-      expected_msg = "Service request #{svcreq2.id} denied"
+      expected_msg = /Denying Service Request id: #{svcreq2.id}/
       expect_single_action_result(:success => true, :message => expected_msg, :href => api_service_request_url(nil, svcreq2))
     end
 
@@ -123,12 +123,12 @@ describe "Service Requests API" do
       expected = {
         "results" => a_collection_containing_exactly(
           {
-            "message" => a_string_matching(/Service request #{svcreq1.id} approved/i),
+            "message" => a_string_matching(/Approving Service Request id: #{svcreq1.id}/i),
             "success" => true,
             "href"    => api_service_request_url(nil, svcreq1)
           },
           {
-            "message" => a_string_matching(/Service request #{svcreq2.id} approved/i),
+            "message" => a_string_matching(/Approving Service Request id: #{svcreq2.id}/i),
             "success" => true,
             "href"    => api_service_request_url(nil, svcreq2)
           }
@@ -147,12 +147,12 @@ describe "Service Requests API" do
       expected = {
         "results" => a_collection_containing_exactly(
           {
-            "message" => a_string_matching(/Service request #{svcreq1.id} denied/i),
+            "message" => a_string_matching(/Denying Service Request id: #{svcreq1.id}/i),
             "success" => true,
             "href"    => api_service_request_url(nil, svcreq1)
           },
           {
-            "message" => a_string_matching(/Service request #{svcreq2.id} denied/i),
+            "message" => a_string_matching(/Denying Service Request id: #{svcreq2.id}/i),
             "success" => true,
             "href"    => api_service_request_url(nil, svcreq2)
           }
