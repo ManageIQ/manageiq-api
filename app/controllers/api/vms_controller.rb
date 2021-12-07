@@ -229,7 +229,7 @@ module Api
     central_admin :shutdown_guest_resource, :shutdown_guest
 
     def refresh_resource(type, id = nil, _data = nil)
-      enqueue_action(type, id, "Refreshing", :method_name => :refresh_ems)
+      enqueue_ems_action(type, id, "Refreshing", :method_name => :refresh_ems)
     end
 
     def request_console_resource(type, id = nil, data = nil)

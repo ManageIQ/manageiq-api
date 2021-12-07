@@ -44,7 +44,7 @@ module Api
     end
 
     def refresh_resource(type, id, _data = nil)
-      enqueue_action(type, id, "Refreshing", :method_name => :refresh_ems)
+      enqueue_ems_action(type, id, "Refreshing", :method_name => :refresh_ems)
     end
 
     # Process apply config pattern operation for single and multi-resources

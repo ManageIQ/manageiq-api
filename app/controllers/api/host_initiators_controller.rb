@@ -1,7 +1,7 @@
 module Api
   class HostInitiatorsController < BaseController
     def refresh_resource(type, id, _data = nil)
-      enqueue_action(type, id, "Refreshing", :method_name => :refresh_ems)
+      enqueue_ems_action(type, id, "Refreshing", :method_name => :refresh_ems)
     end
 
     def create_resource(_type, _id = nil, data = {})
