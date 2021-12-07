@@ -13,7 +13,7 @@ module Api
       end
 
       def delete_resource_flavors(_parent, type, id, _data)
-        flavor = resource_search(id, type, collection_class(type))
+        flavor = resource_search(id, type)
         task_id = flavor.delete_flavor_queue(User.current_userid)
         action_result(true, "Deleting #{flavor_ident(flavor)}", :task_id => task_id)
       rescue => err

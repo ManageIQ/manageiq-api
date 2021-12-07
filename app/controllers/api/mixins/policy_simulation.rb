@@ -20,7 +20,7 @@ module Api
       def simulate_policy_resource(type, id, data = {})
         raise BadRequestError, "Must specify an event for policy simulation" if data["event"].blank?
 
-        resource = resource_search(id, type, collection_class(type))
+        resource = resource_search(id, type)
 
         api_action(type, id) do
           api_log_info("Simulating policy for #{resource_ident(resource)}")

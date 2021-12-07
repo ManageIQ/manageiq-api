@@ -20,7 +20,7 @@ module Api
         raise BadRequestError, "Must specify an id for updating a #{type} resource" unless resource_id
 
         data.deep_symbolize_keys!
-        cloud_network = resource_search(resource_id, type, collection_class(type))
+        cloud_network = resource_search(resource_id, type)
         task_id = cloud_network.update_cloud_network_queue(User.current_user.userid, data)
         action_result(true, "Updating #{cloud_network.name}", :task_id => task_id)
       end

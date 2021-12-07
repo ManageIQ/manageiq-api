@@ -38,7 +38,7 @@ module Api
     def edit_resource(type, id, data)
       id.to_i == User.current_user.id ? validate_self_user_data(data) : validate_user_data(data)
       parse_set_group(data)
-      parse_set_settings(data, resource_search(id, type, collection_class(type)))
+      parse_set_settings(data, resource_search(id, type))
       super
     end
 
@@ -67,8 +67,8 @@ module Api
     end
 
     def revoke_sessions_resource(type, id, _data)
-      api_action(type, id) do |klass|
-        user = target_user(id, type, klass)
+      api_action(type, id) do
+        user = target_user(id, type)
         api_log_info("Revoking all sessions of user #{user.userid}")
 
         user.revoke_sessions
@@ -80,11 +80,11 @@ module Api
 
     private
 
-    def target_user(id, type, klass)
+    def target_user(id, type)
       if id == current_user.id
         current_user
       elsif current_user.role_allows?(:identifier => 'revoke_user_sessions')
-        resource_search(id, type, klass)
+        resource_search(id, type)
       else
         raise ForbiddenError, "The user is not authorized for this task or item."
       end

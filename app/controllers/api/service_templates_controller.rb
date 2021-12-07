@@ -34,7 +34,7 @@ module Api
     end
 
     def archive_resource(type, id, _data)
-      service_template = resource_search(id, type, collection_class(type))
+      service_template = resource_search(id, type)
       service_template.archive!
       action_result(true, "Archived Service Template")
     rescue => err
@@ -42,7 +42,7 @@ module Api
     end
 
     def unarchive_resource(type, id, _data)
-      service_template = resource_search(id, type, collection_class(type))
+      service_template = resource_search(id, type)
       service_template.unarchive!
       action_result(true, "Unarchived Service Template")
     rescue => err

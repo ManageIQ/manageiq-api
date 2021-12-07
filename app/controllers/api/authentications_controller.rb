@@ -49,7 +49,7 @@ module Api
       attrs = data.dup.except('manager_resource')
       href = Href.new(data['manager_resource']['href'])
       raise 'invalid manager_resource href specified' unless href.subject && href.subject_id
-      manager_resource = resource_search(href.subject_id, href.subject, collection_class(href.subject))
+      manager_resource = resource_search(href.subject_id, href.subject)
       [manager_resource, attrs]
     end
   end

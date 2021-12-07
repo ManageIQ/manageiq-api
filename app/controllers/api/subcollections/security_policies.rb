@@ -20,7 +20,7 @@ module Api
         raise BadRequestError, "Must specify an id for updating a #{type} resource" unless resource_id
 
         data.deep_symbolize_keys!
-        security_policy = resource_search(resource_id, type, collection_class(type))
+        security_policy = resource_search(resource_id, type)
         task_id = security_policy.update_security_policy_queue(User.current_user.userid, data)
         action_result(true, "Updating #{security_policy.name}", :task_id => task_id)
       end

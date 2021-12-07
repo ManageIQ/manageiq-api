@@ -69,7 +69,7 @@ module Api
       type = collection_config.name_for_subclass(params['target_type'].camelize)
       raise BadRequestError, "Invalid target_type #{params['target_type']}" unless type
 
-      target = resource_search(params['target_id'], type, collection_class(type))
+      target = resource_search(params['target_id'], type)
       resource_action = resource_search(params['resource_action_id'], :resource_actions, ResourceAction)
       [target, resource_action]
     end

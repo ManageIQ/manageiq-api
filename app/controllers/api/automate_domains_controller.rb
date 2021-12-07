@@ -67,7 +67,7 @@ module Api
       "Automate Domain id:#{domain.id} name:'#{domain.name}'"
     end
 
-    def resource_search(id, type, klass)
+    def resource_search(id, type, klass = nil)
       if id.to_s =~ /\A\d+\z/
         super
       else

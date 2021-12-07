@@ -23,7 +23,7 @@ module Api
       end
 
       def delete_resource_snapshots(parent, type, id, _data)
-        snapshot = resource_search(id, type, collection_class(type))
+        snapshot = resource_search(id, type)
         begin
           raise parent.unsupported_reason(:remove_snapshot) unless parent.supports?(:remove_snapshot)
 
@@ -38,7 +38,7 @@ module Api
 
       def snapshots_revert_resource(parent, type, id, _data)
         raise parent.unsupported_reason(:revert_to_snapshot) unless parent.supports?(:revert_to_snapshot)
-        snapshot = resource_search(id, type, collection_class(type))
+        snapshot = resource_search(id, type)
 
         message = "Reverting to snapshot #{snapshot.name} for #{snapshot_ident(parent)}"
         task_id = queue_object_action(parent, message, :method_name => "revert_to_snapshot", :args => [id])

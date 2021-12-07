@@ -4,7 +4,7 @@ module Api
     include Subcollections::Tags
 
     def create_resource(_type, _id, data = {})
-      ext_management_system = resource_search(data['ems_id'], :providers, collection_class(:providers))
+      ext_management_system = resource_search(data['ems_id'], :providers)
       data.delete('ems_id')
 
       task_id = CloudTenant.create_cloud_tenant_queue(session[:userid], ext_management_system, data)

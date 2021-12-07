@@ -28,7 +28,7 @@ module Api
     # @returns model (not action result hash)
     def delete_resource(type, id, data = {})
       id ||= data['name']
-      model = resource_search(id, type, collection_class(type))
+      model = resource_search(id, type)
       delete_resource_main_action(type, model, data)
       model
     rescue => err
@@ -127,7 +127,8 @@ module Api
     def add_picture_resource(data)
       return nil if data.empty?
       id = parse_id(data, :pictures)
-      return resource_search(id, :pictures, collection_class(:pictures)) if id
+      return resource_search(id, :pictures) if id
+
       Picture.create_from_base64(data)
     end
 
@@ -140,7 +141,7 @@ module Api
       resource_search(id, type, collection_class(type))
     end
 
-    def resource_search(id, type, klass)
+    def resource_search(id, type, klass = nil)
       if id.to_s =~ /\A\d+\z/
         super
       else

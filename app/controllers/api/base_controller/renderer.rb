@@ -125,7 +125,8 @@ module Api
 
       private
 
-      def resource_search(id, type, klass)
+      def resource_search(id, type, klass = nil)
+        klass  ||= collection_class(type)
         validate_id(id, type, klass)
         key_id = collection_config.resource_identifier(type)
         target =
@@ -550,9 +551,7 @@ module Api
 
       def render_update_resource_options(id)
         type = @req.collection.to_sym
-        klass = collection_class(type)
-
-        resource = resource_search(id, type, klass)
+        resource = resource_search(id, type)
         raise BadRequestError, resource.unsupported_reason(:update) unless resource.supports?(:update)
 
         render_options(type, :form_schema => resource.params_for_update)

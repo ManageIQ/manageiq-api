@@ -23,7 +23,7 @@ module Api
       end
 
       def cloud_templates_delete_resource(_parent, type, id, _data)
-        image = resource_search(id, type, collection_class(type))
+        image = resource_search(id, type)
         task_id = image.delete_image_queue(User.current_userid)
         action_result(true, "Deleting #{image_ident(image)}", :task_id => task_id)
       rescue => err
