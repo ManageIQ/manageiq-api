@@ -20,7 +20,7 @@ module Api
       validate_attrs(data)
       manager_id = parse_id(data['manager_resource'], :providers)
       raise 'Must specify a valid manager_resource href or id' unless manager_id
-      manager = resource_search(manager_id, :providers, collection_class(:providers))
+      manager = resource_search(manager_id, :providers)
 
       type = "#{manager.type}::ConfigurationScriptSource"
       klass = ConfigurationScriptSource.descendant_get(type)

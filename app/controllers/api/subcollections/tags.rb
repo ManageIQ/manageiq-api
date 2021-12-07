@@ -4,7 +4,7 @@ module Api
       include Api::Mixins::Tags
 
       def assign_tags_resource(type, id, data)
-        resource = resource_search(id, type, collection_class(type))
+        resource = resource_search(id, type)
         data['tags'].collect do |tag|
           tags_assign_resource(resource, type, tag['id'], tag)
         end
@@ -13,7 +13,7 @@ module Api
       end
 
       def unassign_tags_resource(type, id, data)
-        resource = resource_search(id, type, collection_class(type))
+        resource = resource_search(id, type)
         data['tags'].collect do |tag|
           tags_unassign_resource(resource, type, tag['id'], tag)
         end

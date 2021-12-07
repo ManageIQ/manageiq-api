@@ -24,14 +24,14 @@ module Api
     end
 
     def assign_resource(type, id, data)
-      profile = resource_search(id, type, collection_class(type))
+      profile = resource_search(id, type)
       data['resources'].each do |resource|
         raise 'Must specify resource href' unless resource.key?('href')
         href = Href.new(resource['href'])
         if resource.key?('tag')
           profile.assign_to_tags([fetch_tag_classification_resource(resource['tag'])], href.subject)
         else
-          assignable_resource = resource_search(href.subject_id, href.subject, collection_class(href.subject))
+          assignable_resource = resource_search(href.subject_id, href.subject)
           profile.assign_to_objects([assignable_resource])
         end
       end
@@ -41,14 +41,14 @@ module Api
     end
 
     def unassign_resource(type, id, data)
-      profile = resource_search(id, type, collection_class(type))
+      profile = resource_search(id, type)
       data['resources'].each do |resource|
         raise 'Must specify resource href' unless resource.key?('href')
         href = Href.new(resource['href'])
         if resource.key?('tag')
           profile.unassign_tags([fetch_tag_classification_resource(resource['tag'])], href.subject)
         else
-          assignable_resource = resource_search(href.subject_id, href.subject, collection_class(href.subject))
+          assignable_resource = resource_search(href.subject_id, href.subject)
           profile.unassign_objects([assignable_resource])
         end
       end

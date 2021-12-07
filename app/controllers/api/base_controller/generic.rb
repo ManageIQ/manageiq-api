@@ -31,7 +31,7 @@ module Api
           data_spec = data.collect { |key, val| "#{key}=#{val}" }.join(", ")
           raise NotFoundError, "Invalid #{type} resource specified - #{data_spec}"
         end
-        resource = resource_search(id, type, collection_class(type))
+        resource = resource_search(id, type)
         opts = {
           :name                  => type.to_s,
           :is_subcollection      => false,
@@ -43,8 +43,7 @@ module Api
       end
 
       def edit_resource(type, id, data)
-        klass = collection_class(type)
-        resource = resource_search(id, type, klass)
+        resource = resource_search(id, type)
         resource.update!(data.except(*ID_ATTRS))
         resource
       end
@@ -76,10 +75,9 @@ module Api
       end
 
       def retire_resource(type, id, data = nil)
-        klass = collection_class(type)
         if id
           msg = "Retiring #{type} id #{id}"
-          resource = resource_search(id, type, klass)
+          resource = resource_search(id, type)
           if data && data["date"]
             opts = {}
             opts[:date] = data["date"]
@@ -107,7 +105,7 @@ module Api
         end
 
         api_log_info("Invoking #{action} on #{type} id #{id}")
-        resource = resource_search(id, type, collection_class(type))
+        resource = resource_search(id, type)
         unless resource_custom_action_names(resource).include?(action)
           raise BadRequestError, "Unsupported Custom Action #{action} for the #{type} resource specified"
         end
@@ -247,9 +245,10 @@ module Api
         end
       end
 
-      def validate_id(id, type, klass)
-        return if collection_config.resource_identifier(type) != "id"
-        raise NotFoundError, "Invalid #{klass} id #{id} specified" unless id.kind_of?(Integer) || id =~ /\A\d+\z/
+      def validate_id(id, key_id, klass)
+        if id.nil? || (key_id == "id" && !id.integer?)
+          raise BadRequestError, "Invalid #{klass} #{key_id} #{id || "nil"} specified"
+        end
       end
     end
   end

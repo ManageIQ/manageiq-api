@@ -6,7 +6,7 @@ module Api
     end
 
     def sync_fw_binaries_resource(type, id, _data)
-      resource_search(id, type, collection_class(type)).sync_fw_binaries_queue
+      resource_search(id, type).sync_fw_binaries_queue
       action_result(true, "FirmwareBinary [id: #{id}] synced")
     rescue => err
       action_result(false, err.to_s)

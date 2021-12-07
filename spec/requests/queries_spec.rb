@@ -68,7 +68,7 @@ describe "Queries API" do
 
       get vm1_url + 'garbage'
 
-      expect(response).to have_http_status(:not_found)
+      expect_bad_request(/Invalid Vm.*garbage.* specified/i)
     end
   end
 
@@ -126,7 +126,7 @@ describe "Queries API" do
       api_basic_authorize
 
       get acct1_url + 'garbage'
-      expect(response).to have_http_status(:not_found)
+      expect_bad_request(/Invalid Account.*garbage.* specified/i)
     end
   end
 

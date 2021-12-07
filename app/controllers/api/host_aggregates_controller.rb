@@ -3,7 +3,7 @@ module Api
     include Subcollections::Tags
 
     def create_resource(_type, _id, data = {})
-      ext_management_system = resource_search(data.delete('ems_id'), :providers, collection_class(:providers))
+      ext_management_system = resource_search(data.delete('ems_id'), :providers)
       klass = ext_management_system.class_by_ems('HostAggregate')
       raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
 

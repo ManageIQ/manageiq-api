@@ -4,10 +4,7 @@ module Api
       private
 
       def api_action(type, id)
-        klass = collection_class(type)
-
-        result = yield(klass)
-
+        result = yield(collection_class(type))
         add_href_to_result(result, type, id) unless result[:href]
         log_result(result)
         result
@@ -19,12 +16,12 @@ module Api
       # - constructs action_result for successes and failures
       # - throws errors for single resources and use results for multiple resoruces
       def api_resource(type, id, action_phrase)
-        api_action(type, id) do |klass|
+        api_action(type, id) do
           id ||= @req.collection_id
           raise BadRequestError, "#{action_phrase} #{type.to_s.titleize} requires an id" unless id
 
           api_log_info("#{action_phrase} #{type.to_s.titleize} id: #{id}")
-          resource = resource_search(id, type, klass)
+          resource = resource_search(id, type)
           result_options = yield(resource)
           if result_options.key?(:success) # full action hash (finer grained messaging)
             result_options

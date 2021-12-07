@@ -2,10 +2,7 @@ module Api
   module Subcollections
     module Settings
       def settings
-        id       = @req.collection_id
-        type     = @req.collection
-        klass    = collection_class(@req.collection)
-        resource = resource_search(id, type, klass)
+        resource = resource_search(@req.collection_id, @req.collection)
 
         case @req.method
         when :patch

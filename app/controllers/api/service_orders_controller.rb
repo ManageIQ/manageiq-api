@@ -16,7 +16,7 @@ module Api
     end
 
     def clear_resource(type, id, _data)
-      service_order = resource_search(id, type, collection_class(type))
+      service_order = resource_search(id, type)
       begin
         service_order.clear
       rescue => e
@@ -26,13 +26,13 @@ module Api
     end
 
     def order_resource(type, id, _data)
-      service_order = resource_search(id, type, collection_class(type))
+      service_order = resource_search(id, type)
       service_order.checkout
       service_order
     end
 
-    def validate_id(id, type, klass)
-      id == USER_CART_ID || super(id, type, klass)
+    def validate_id(id, key_id, klass)
+      id == USER_CART_ID || super
     end
 
     def find_service_orders(id)
@@ -48,7 +48,7 @@ module Api
     end
 
     def copy_resource(type, id, data)
-      service_order = resource_search(id, type, collection_class(type))
+      service_order = resource_search(id, type)
       service_order.deep_copy(data)
     rescue => err
       raise BadRequestError, "Could not copy service order - #{err}"

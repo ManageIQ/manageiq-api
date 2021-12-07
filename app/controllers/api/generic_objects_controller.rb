@@ -16,7 +16,7 @@ module Api
     end
 
     def edit_resource(type, id, data)
-      resource_search(id, type, collection_class(type)).tap do |generic_object|
+      resource_search(id, type).tap do |generic_object|
         generic_object.update!(data.except(*ADDITIONAL_ATTRS))
         add_associations(generic_object, data, generic_object.generic_object_definition) if data.key?('associations')
         generic_object.save!
@@ -45,7 +45,7 @@ module Api
 
     def retrieve_generic_object_definition(data)
       definition_id = parse_id(data['generic_object_definition'], :generic_object_definitions)
-      resource_search(definition_id, :generic_object_definitions, collection_class(:generic_object_definitions))
+      resource_search(definition_id, :generic_object_definitions)
     end
 
     def queue_args(action, data)

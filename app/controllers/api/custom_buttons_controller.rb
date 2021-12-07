@@ -57,7 +57,7 @@ module Api
     end
 
     def fetch_custom_button(type, id)
-      resource_search(id, type, collection_class(type))
+      resource_search(id, type)
     end
   end
 end

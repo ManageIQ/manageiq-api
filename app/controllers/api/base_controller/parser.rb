@@ -106,7 +106,7 @@ module Api
         if data
           group_id = parse_group(data)
           raise BadRequestError, "Missing Group identifier href, id or description" if group_id.nil?
-          resource_search(group_id, :groups, collection_class(:groups))
+          resource_search(group_id, :groups)
         end
       end
 
@@ -114,7 +114,7 @@ module Api
         if data
           role_id = parse_role(data)
           raise BadRequestError, "Missing Role identifier href, id or name" if role_id.nil?
-          resource_search(role_id, :roles, collection_class(:roles))
+          resource_search(role_id, :roles)
         end
       end
 
@@ -122,7 +122,7 @@ module Api
         if data
           tenant_id = parse_tenant(data)
           raise BadRequestError, "Missing Tenant identifier href or id" if tenant_id.nil?
-          resource_search(tenant_id, :tenants, collection_class(:tenants))
+          resource_search(tenant_id, :tenants)
         end
       end
 

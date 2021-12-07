@@ -11,7 +11,7 @@ module Api
     end
 
     def copy_resource(type, id, data = {})
-      resource = resource_search(id, type, collection_class(type))
+      resource = resource_search(id, type)
       resource.dup.tap do |new_resource|
         new_resource.assign_attributes(data)
         new_resource.save!

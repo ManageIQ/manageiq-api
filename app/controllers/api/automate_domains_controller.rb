@@ -67,17 +67,9 @@ module Api
       "Automate Domain id:#{domain.id} name:'#{domain.name}'"
     end
 
-    def resource_search(id, type, klass)
-      if id.to_s =~ /\A\d+\z/
-        super
-      else
-        begin
-          domain = collection_class(:automate_domains).find_by!(:name => id)
-        rescue
-          raise NotFoundError, "Couldn't find #{klass} with 'name'=#{id}"
-        end
-        super(domain.id, type, klass)
-      end
+    def resource_search(id, type, klass = nil, key_id = nil)
+      key_id = "name" if id && !id.integer?
+      super
     end
 
     def current_tenant

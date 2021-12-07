@@ -13,8 +13,8 @@ module Api
       raise BadRequestError, "Parameter 'data' has to contain non-empty values for the keys '#{params.join(", ")}', received: '#{data.to_json}'" if data.values_at(*params).any?(&:blank?)
       raise BadRequestError, "Source and destination provider identifiers must differ" if data['dst_provider_id'] == data['src_provider_id']
 
-      ems_dst   = resource_search(data['dst_provider_id'], :providers, collection_class(:providers))
-      ems_src   = resource_search(data['src_provider_id'], :providers, collection_class(:providers))
+      ems_dst   = resource_search(data['dst_provider_id'], :providers)
+      ems_src   = resource_search(data['src_provider_id'], :providers)
       src_image = resource_search(data['src_image_id'],    :providers, collection_class(:templates))
 
       raise BadRequestError, "Source image specified by the id '#{data['src_image_id']}' does not belong to the source provider with id '#{ems_src.id}'" if src_image.ems_id != ems_src.id

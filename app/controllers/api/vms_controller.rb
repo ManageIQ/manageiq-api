@@ -104,7 +104,7 @@ module Api
     def edit_resource(type, id, data)
       attrs = validate_edit_data(data)
       parent, children = build_parent_children(data)
-      resource_search(id, type, collection_class(type)).tap do |vm|
+      resource_search(id, type).tap do |vm|
         vm.replace_children(children)
         vm.set_parent(parent)
         vm.update!(attrs)
@@ -255,14 +255,14 @@ module Api
     end
 
     def set_miq_server_resource(type, id, data)
-      vm = resource_search(id, type, collection_class(type))
+      vm = resource_search(id, type)
 
       miq_server = if data['miq_server'].empty?
                      nil
                    else
                      miq_server_id = parse_id(data['miq_server'], :servers)
                      raise 'Must specify a valid miq_server href or id' unless miq_server_id
-                     resource_search(miq_server_id, :servers, collection_class(:servers))
+                     resource_search(miq_server_id, :servers)
                    end
 
       vm.miq_server = miq_server
@@ -308,7 +308,7 @@ module Api
       subcollection_options_method = "#{@req.subject}_subcollection_options"
       return super unless respond_to?(subcollection_options_method)
 
-      vm = resource_search(params[:c_id], @req.collection, collection_class(@req.collection))
+      vm = resource_search(params[:c_id], @req.collection)
       render_options(@req.collection.to_sym, send(subcollection_options_method, vm))
     end
 
@@ -341,7 +341,7 @@ module Api
     def fetch_relationship(href)
       href = Href.new(href)
       raise "Invalid relationship type #{href.subject}" unless RELATIONSHIP_COLLECTIONS.include?(href.subject)
-      resource_search(href.subject_id, href.subject, collection_class(href.subject))
+      resource_search(href.subject_id, href.subject)
     end
 
     def valid_custom_attrs
