@@ -156,19 +156,19 @@ module Api
     def fetch_service(data)
       service_id = parse_id(data, :services)
       raise BadRequestError, 'Missing Service identifier id' if service_id.nil?
-      resource_search(service_id, :services, Service)
+      resource_search(service_id, :services)
     end
 
     def fetch_orchestration_template(data)
       orchestration_template_id = parse_id(data, :orchestration_templates)
       raise BadRequestError, 'Missing OrchestrationTemplate identifier id' if orchestration_template_id.nil?
-      resource_search(orchestration_template_id, :orchestration_templates, OrchestrationTemplate)
+      resource_search(orchestration_template_id, :orchestration_templates)
     end
 
     def fetch_configuration_script(data)
       configuration_script_id = parse_id(data, :configuration_script)
       raise BadRequestError, 'Missing ConfigurationScript identifier id' if configuration_script_id.nil?
-      resource_search(configuration_script_id, :configuration_scripts, ConfigurationScript)
+      resource_search(configuration_script_id, :configuration_scripts)
     end
 
     def service_ident(svc)

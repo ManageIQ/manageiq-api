@@ -82,7 +82,7 @@ module Api
 
       enqueue_ems_action(type, id, "Importing Vm to", :method_name => 'import_vm', :args => [vm_id, target_params]) do
         # check if user can access the VM
-        resource_search(vm_id, :vms, Vm)
+        resource_search(vm_id, :vms)
       end
     end
 

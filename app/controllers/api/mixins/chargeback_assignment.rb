@@ -295,7 +295,7 @@ module Api
       end
 
       def assign_resource(_type, rate_id, data)
-        rate = resource_search(rate_id, :chargebacks, ChargebackRate)
+        rate = resource_search(rate_id, :chargebacks)
 
         parsed_assignments = parse_resource_assignments(data['assignments'], rate)
 

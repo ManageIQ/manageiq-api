@@ -70,7 +70,7 @@ module Api
       raise BadRequestError, "Invalid target_type #{params['target_type']}" unless type
 
       target = resource_search(params['target_id'], type)
-      resource_action = resource_search(params['resource_action_id'], :resource_actions, ResourceAction)
+      resource_action = resource_search(params['resource_action_id'], :resource_actions)
       [target, resource_action]
     end
 
