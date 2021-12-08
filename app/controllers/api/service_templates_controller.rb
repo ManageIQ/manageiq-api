@@ -21,7 +21,7 @@ module Api
     end
 
     def edit_resource(type, id, data)
-      catalog_item = resource_search(id, type, collection_class(:service_templates))
+      catalog_item = resource_search(id, type)
       decode_picture(data) if data["picture"]
       catalog_item.update_catalog_item(data.deep_symbolize_keys, User.current_user.userid)
     rescue => err

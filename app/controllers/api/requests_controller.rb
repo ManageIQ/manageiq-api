@@ -30,7 +30,7 @@ module Api
 
     def edit_resource(type, id = nil, data = {})
       raise BadRequestError, "Must specify a id for editing a #{type} resource" unless id
-      request = resource_search(id, type, collection_class(:requests))
+      request = resource_search(id, type)
       RequestEditor.edit(request, data)
       request
     end

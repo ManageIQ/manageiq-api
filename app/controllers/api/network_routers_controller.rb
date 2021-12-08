@@ -14,7 +14,7 @@ module Api
     end
 
     def edit_resource(type, id, data)
-      network_router = resource_search(id, type, collection_class(:network_routers))
+      network_router = resource_search(id, type)
       raise BadRequestError, "Update for #{network_router_ident(network_router)}: #{network_router.unsupported_reason(:update)}" unless network_router.supports?(:update)
 
       task_id = network_router.update_network_router_queue(User.current_userid, data.deep_symbolize_keys)

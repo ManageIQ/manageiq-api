@@ -32,7 +32,7 @@ module Api
         raise BadRequestError, "Cannot set a non-system role to read-only."
       end
 
-      role = resource_search(id, type, collection_class(:roles))
+      role = resource_search(id, type)
 
       # Can't edit a read-only role
       if role.read_only

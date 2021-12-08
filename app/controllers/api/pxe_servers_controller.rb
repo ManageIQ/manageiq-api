@@ -38,7 +38,7 @@ module Api
     end
 
     def edit_resource(type, id, data)
-      server = resource_search(id, type, collection_class(:pxe_servers))
+      server = resource_search(id, type)
       menus = data.delete('pxe_menus')
       authentication = data.delete('authentication')
       PxeServer.transaction do

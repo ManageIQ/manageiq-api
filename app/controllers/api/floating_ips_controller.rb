@@ -12,7 +12,7 @@ module Api
     end
 
     def edit_resource(type, id, data)
-      floating_ip = resource_search(id, type, collection_class(:floating_ips))
+      floating_ip = resource_search(id, type)
       raise BadRequestError, "Update for #{floating_ip_ident(floating_ip)}: #{floating_ip.unsupported_reason(:update)}" unless floating_ip.supports?(:update)
 
       task_id = floating_ip.update_floating_ip_queue(session[:userid], data.deep_symbolize_keys)

@@ -15,7 +15,7 @@ module Api
     end
 
     def run_resource(type, id, _data)
-      report = resource_search(id, type, MiqReport)
+      report = resource_search(id, type)
       report_result = MiqReportResult.find(report.queue_generate_table(:userid => User.current_user.userid))
       run_report_result(true,
                         "running report #{report.id}",

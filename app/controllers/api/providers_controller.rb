@@ -52,7 +52,7 @@ module Api
       raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
       raise BadRequestError, "Provider type cannot be updated" if data.key?(TYPE_ATTR)
 
-      provider = resource_search(id, type, collection_class(:providers))
+      provider = resource_search(id, type)
 
       if data.delete(DDF_ATTR)
         edit_provider_ddf(provider, data)
@@ -101,6 +101,7 @@ module Api
       end
     end
 
+    # NOTE: _type == :providers
     def verify_credentials_resource(_type, id = nil, data = {})
       klass = fetch_provider_klass(collection_class(:providers), data)
       zone_name = data.delete('zone_name')

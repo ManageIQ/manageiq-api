@@ -15,7 +15,7 @@ module Api
 
     def edit_resource(type, id, data = {})
       raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
-      cloud_tenant = resource_search(id, type, collection_class(:cloud_tenants))
+      cloud_tenant = resource_search(id, type)
 
       task_id = cloud_tenant.update_cloud_tenant_queue(current_user.userid, data)
       action_result(true, "Updating #{cloud_tenant_ident(cloud_tenant)}", :task_id => task_id)

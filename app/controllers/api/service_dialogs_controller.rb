@@ -32,7 +32,7 @@ module Api
     end
 
     def edit_resource(type, id, data)
-      service_dialog = resource_search(id, type, Dialog)
+      service_dialog = resource_search(id, type)
       begin
         $api_log.warn("Both 'dialog_tabs':[...] and 'content':{'dialog_tabs':[...]} were specified. 'content':{'dialog_tabs':[...]} will be ignored.") if data.key?('dialog_tabs') && data['content'].try(:key?, 'dialog_tabs')
         service_dialog.update_tabs(data['dialog_tabs'] || data['content']['dialog_tabs']) if data['dialog_tabs'] || data['content']
@@ -44,7 +44,7 @@ module Api
     end
 
     def copy_resource(type, id, data)
-      service_dialog = resource_search(id, type, Dialog)
+      service_dialog = resource_search(id, type)
       attributes = data.dup
       attributes['label'] = "Copy of #{service_dialog.label}" unless attributes.key?('label')
       service_dialog.deep_copy(attributes).tap(&:save!)

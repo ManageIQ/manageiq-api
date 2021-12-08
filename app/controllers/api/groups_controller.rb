@@ -32,7 +32,7 @@ module Api
       validate_group_data(data)
       parse_set_role(data)
       parse_set_tenant(data)
-      group = resource_search(id, type, collection_class(:groups))
+      group = resource_search(id, type)
       parse_set_filters(data, :entitlement_id => group.entitlement.try(:id))
       raise ForbiddenError, "Cannot edit a read-only group" if group.read_only
       super

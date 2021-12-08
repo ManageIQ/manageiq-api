@@ -13,7 +13,7 @@ module Api
 
     def edit_resource(type, id = nil, data = {})
       raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
-      policy = resource_search(id, type, collection_class(:policies))
+      policy = resource_search(id, type)
       begin
         add_policies_content(data, policy) if data["policy_contents"]
         policy.conditions = Condition.where(:id => data.delete("conditions_ids")) if data["conditions_ids"]
