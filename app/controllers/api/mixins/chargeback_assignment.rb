@@ -81,10 +81,6 @@ module Api
         raise BadRequestError, "Cannot determine target resource for collection #{href.subject} and #{href.subject_id}: #{err.message}"
       end
 
-      def target_add_label_defaults(target)
-        [target, 'container_image']
-      end
-
       def tag_assigment(record, rate_type)
         tag_record_validation(record, rate_type)
         target_tag = parse_tag(record)
@@ -104,23 +100,20 @@ module Api
         @chargeback_rate[rate_id] ||= ChargebackRate.find(rate_id)
       end
 
-      def tag_target_assignment(record, _assignment_type, rate_type)
-        target = tag_assigment(record, rate_type)
-        [target, rate_type == "Storage" ? 'storage' : record['assignment_prefix']]
+      def tag_target_assignment(parameter_record, rate, rate_type)
+        record = parameter_record["tag"]
+        rate_tag = rate_type == "Storage" ? 'storage' : record['assignment_prefix']
+        {:cb_rate => rate, :tag => [tag_assigment(record, rate_type), rate_tag]}
       end
 
-      def label_target_assignment(record, assignment_type, rate_type)
-        target = target_from(record['href'], assignment_type, rate_type)
-        target_add_label_defaults(target)
+      def label_target_assignment(parameter_record, rate, rate_type)
+        record = parameter_record["label"] = parameter_record.delete("resource")
+        {:cb_rate => rate, :label => [target_from(record['href'], "label", rate_type), "container_image"]}
       end
 
-      def resource_target_assignment(record, assignment_type, rate_type)
-        target_from(record['href'], assignment_type, rate_type)
-      end
-
-      def target(parameter_record, assignment_type, rate_type)
-        target_assignment_method = "#{assignment_type}_target_assignment"
-        send(target_assignment_method, parameter_record[assignment_type.to_s], assignment_type, rate_type)
+      def resource_target_assignment(parameter_record, rate, rate_type)
+        record = parameter_record["resource"]
+        {:cb_rate => rate, :object => target_from(record['href'], "resource", rate_type)}
       end
 
       def convert_assignment_key_from(parameter_key)
@@ -128,11 +121,18 @@ module Api
       end
 
       def rate_assignment(parameter_record, assignment_type, rate_type)
-        parameter_record['label'] = parameter_record.delete('resource') if assignment_type == :label
-
         rate = chargeback_rate(parameter_record)
 
-        {:cb_rate => rate, convert_assignment_key_from(assignment_type) => target(parameter_record, assignment_type, rate_type)}
+        case assignment_type.to_sym
+        when :tag
+          tag_target_assignment(parameter_record, rate, rate_type)
+        when :label
+          label_target_assignment(parameter_record, rate, rate_type)
+        when :resource
+          resource_target_assignment(parameter_record, rate, rate_type)
+        else
+          raise BadRequestError, "Unknown assignment_type of #{assignment_type}"
+        end
       end
 
       def determine_assignment_type(parameter_records)
