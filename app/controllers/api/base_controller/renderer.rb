@@ -561,7 +561,7 @@ module Api
         type = @req.collection.to_sym
         base_klass = collection_class(type)
 
-        ems = resource_search(ems_id, :ext_management_systems, ExtManagementSystem)
+        ems = resource_search(ems_id, :providers)
         klass = ems.class_by_ems(base_klass.name)
         raise BadRequestError, "No #{type.to_s.titleize} support for - #{ems.name}" unless klass
         raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)

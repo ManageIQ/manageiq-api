@@ -150,7 +150,7 @@ module Api
     def fetch_ext_management_system(data)
       orchestration_manager_id = parse_id(data, :providers)
       raise BadRequestError, 'Missing ExtManagementSystem identifier id' if orchestration_manager_id.nil?
-      resource_search(orchestration_manager_id, :ext_management_systems, ExtManagementSystem)
+      resource_search(orchestration_manager_id, :providers)
     end
 
     def fetch_service(data)
