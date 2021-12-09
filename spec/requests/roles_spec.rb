@@ -138,7 +138,7 @@ describe "Roles API" do
       role = MiqUserRole.find(role_id)
 
       sample_role1['features'].each do |feature|
-        expect(role.allows?(feature)).to be_truthy
+        expect(role.allows?(**feature)).to be_truthy
       end
     end
 
@@ -153,7 +153,7 @@ describe "Roles API" do
       role_id = response.parsed_body["results"].first["id"]
       role = MiqUserRole.find(role_id)
       sample_role1['features'].each do |feature|
-        expect(role.allows?(feature)).to be_truthy
+        expect(role.allows?(**feature)).to be_truthy
       end
     end
 
@@ -173,10 +173,10 @@ describe "Roles API" do
       role2 = MiqUserRole.find(r2_id)
 
       sample_role1['features'].each do |feature|
-        expect(role1.allows?(feature)).to be_truthy
+        expect(role1.allows?(**feature)).to be_truthy
       end
       sample_role2['features'].each do |feature|
-        expect(role2.allows?(feature)).to be_truthy
+        expect(role2.allows?(**feature)).to be_truthy
       end
     end
   end
@@ -254,7 +254,7 @@ describe "Roles API" do
       expect(role.allows?(:identifier => 'miq_request_approval')).to be_truthy
 
       # Confirm new feature is not there
-      expect(role.allows?(new_feature)).to be_falsey
+      expect(role.allows?(**new_feature)).to be_falsey
     end
 
     it "supports assigning just a single product feature" do
@@ -273,7 +273,7 @@ describe "Roles API" do
       expect(role.allows?(:identifier => 'miq_request_approval')).to be_truthy
 
       # Confirm new feature
-      expect(role.allows?(new_feature)).to be_truthy
+      expect(role.allows?(**new_feature)).to be_truthy
     end
 
     it "supports assigning multiple product features" do
@@ -293,7 +293,7 @@ describe "Roles API" do
 
       # Confirm new features
       features_list['features'].each do |feature|
-        expect(role.allows?(feature)).to be_truthy
+        expect(role.allows?(**feature)).to be_truthy
       end
     end
 
