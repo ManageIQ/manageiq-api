@@ -1,4 +1,5 @@
 RSpec.describe 'FloatingIp API' do
+  include Spec::Support::SupportsHelper
   describe 'GET /api/floating_ips' do
     it 'lists all cloud subnets with an appropriate role' do
       floating_ip = FactoryBot.create(:floating_ip)
@@ -178,6 +179,35 @@ RSpec.describe 'FloatingIp API' do
 
       post(api_floating_ip_url(nil, floating_ip), :params => gen_request(:delete))
       expect_bad_request(/Delete for Floating Ip/)
+    end
+  end
+
+  describe 'OPTIONS /api/floating_ips' do
+    it 'returns a DDF schema for add when available via OPTIONS' do
+      zone = FactoryBot.create(:zone, :name => "api_zone")
+      provider = FactoryBot.create(:ems_network, :zone => zone)
+
+      stub_supports(provider.class::FloatingIp, :create)
+      stub_params_for(provider.class::FloatingIp, :create, :fields => [])
+
+      options(api_floating_ips_url(:ems_id => provider.id))
+
+      expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe 'OPTIONS /api/floating_ips/:id' do
+    it 'returns a DDF schema for edit when available via OPTIONS' do
+      floating_ip = FactoryBot.create(:floating_ip)
+
+      stub_supports(floating_ip.class, :update)
+      stub_params_for(floating_ip.class, :update, :fields => [])
+
+      options(api_floating_ip_url(nil, floating_ip))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['data']).to include("form_schema" => {"fields" => []})
     end
   end
 end
