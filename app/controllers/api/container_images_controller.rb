@@ -20,27 +20,13 @@ module Api
     end
 
     def check_compliance_resource(type, id, _data = nil)
-      api_action(type, id) do |klass|
-        container_image = resource_search(id, type, klass)
-        api_log_info("Checking compliance of #{container_image_ident(container_image)}")
-        request_compliance_check(container_image)
-      end
+      enqueue_ems_action(type, id, "Check Compliance for", :method_name => "check_compliance", :supports => true)
     end
 
     private
 
     def container_image_ident(image)
       "ContainerImage id:#{image.id} name:'#{image.name}'"
-    end
-
-    def request_compliance_check(container_image)
-      desc = "#{container_image_ident(container_image)} check compliance requested"
-      raise "#{container_image_ident(container_image)} has no compliance policies assigned" if container_image.compliance_policies.blank?
-
-      task_id = queue_object_action(container_image, desc, :method_name => "check_compliance")
-      action_result(true, desc, :task_id => task_id)
-    rescue StandardError => err
-      action_result(false, err.to_s)
     end
   end
 end

@@ -46,24 +46,39 @@ module Api
       # @option options :method_name   - method name for the queue
       # @option options :args          - args for the queue method
       # @option options :role          - role for queue (defaults: ems_operations)
+      # @option options :supports      - check that this method_name is supported by the model
       def enqueue_action(type, id, action_phrase = nil, options = {})
         if action_phrase.kind_of?(Hash)
           options = action_phrase
-          action_phrase ||= "Performing #{args[:method_name]} for "
+          action_phrase = nil
         end
+        action_phrase ||= "Performing #{options[:method_name]} for "
 
-        options[:role] ||= "ems_operations"
+        supports = options.delete(:supports)
+        supports = options[:method_name] if supports == true
+
         api_resource(type, id, action_phrase) do |model|
+          ensure_supports(type, model, options[:method_name], supports) if supports
           yield(model) if block_given?
           desc = "#{action_phrase} #{model_ident(model, type)}"
           {:task_id => queue_object_action(model, desc, options)}
         end
       end
 
+      def enqueue_ems_action(type, id, action_phrase = nil, options = {}, &block)
+        if action_phrase.kind_of?(Hash)
+          options = action_phrase
+          action_phrase = nil
+        end
+        options.reverse_merge!(:role => "ems_operations", :user => true)
+        enqueue_action(type, id, action_phrase, options, &block)
+      end
+
       def queue_object_action(object, summary, options)
+        user = User.current_user
         task_options = {
           :action => summary,
-          :userid => User.current_user.userid
+          :userid => user.userid
         }
 
         queue_options = {
@@ -74,22 +89,14 @@ module Api
           :role        => options[:role] || nil,
         }
 
-        queue_options.merge!(options[:user]) if options.key?(:user)
+        if options[:user]
+          queue_options[:user_id]   = user.id
+          queue_options[:group_id]  = user.current_group.id
+          queue_options[:tenant_id] = user.current_tenant.id
+        end
         queue_options[:zone] = object.my_zone if %w(ems_operations smartstate).include?(options[:role])
 
         MiqTask.generic_action_with_callback(task_options, queue_options)
-      end
-
-      def queue_options(method, role = nil)
-        {
-          :method_name => method,
-          :role        => role,
-          :user        => {
-            :user_id   => current_user.id,
-            :group_id  => current_user.current_group.id,
-            :tenant_id => current_user.current_tenant.id
-          }
-        }
       end
     end
   end

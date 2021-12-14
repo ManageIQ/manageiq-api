@@ -58,7 +58,7 @@ RSpec.describe "Instances API" do
 
       expect_single_action_result(
         :success => true,
-        :message => /#{instance.id}.* terminating/i,
+        :message => /Terminating.*#{instance.id}/i,
         :href    => api_instance_url(nil, instance)
       )
       expect(MiqQueue.where(:method_name => "vm_destroy",
@@ -75,12 +75,12 @@ RSpec.describe "Instances API" do
       expected = {
         "results" => a_collection_containing_exactly(
           a_hash_including(
-            "message" => a_string_matching(/#{instance1.id}.* terminating/i),
+            "message" => a_string_matching(/Terminating.*#{instance1.id}/i),
             "success" => true,
             "href"    => api_instance_url(nil, instance1)
           ),
           a_hash_including(
-            "message" => a_string_matching(/#{instance2.id}.* terminating/i),
+            "message" => a_string_matching(/Terminating.*#{instance2.id}/i),
             "success" => true,
             "href"    => api_instance_url(nil, instance2)
           )
@@ -114,7 +114,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:stop))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
+      expect_bad_request(/is not powered on/)
     end
 
     it "stops a valid instance" do
@@ -122,7 +122,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:stop))
 
-      expect_single_action_result(:success => true, :message => "stopping", :href => api_instance_url(nil, instance), :task => true)
+      expect_single_action_result(:success => true, :message => "Stopping", :href => api_instance_url(nil, instance), :task => true)
       expect(MiqQueue.where(:method_name => "stop",
                             :user_id     => @user.id,
                             :group_id    => @user.current_group.id,
@@ -161,7 +161,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:start))
 
-      expect_single_action_result(:success => false, :message => "is powered on", :href => api_instance_url(nil, instance))
+      expect_bad_request(/is powered on/)
     end
 
     it "starts an instance" do
@@ -170,7 +170,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:start))
 
-      expect_single_action_result(:success => true, :message => "starting", :href => api_instance_url(nil, instance), :task => true)
+      expect_single_action_result(:success => true, :message => "Starting", :href => api_instance_url(nil, instance), :task => true)
       expect(MiqQueue.where(:method_name => "start",
                             :user_id     => @user.id,
                             :group_id    => @user.current_group.id,
@@ -211,7 +211,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
+      expect_bad_request(/is not powered on/)
     end
 
     it "fails to pause a paused instance" do
@@ -220,7 +220,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
+      expect_bad_request(/is not powered on/)
     end
 
     it "pauses an instance" do
@@ -228,7 +228,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:pause))
 
-      expect_single_action_result(:success => true, :message => "pausing", :href => api_instance_url(nil, instance), :task => true)
+      expect_single_action_result(:success => true, :message => "Pausing", :href => api_instance_url(nil, instance), :task => true)
       expect(MiqQueue.where(:method_name => "pause",
                             :user_id     => @user.id,
                             :group_id    => @user.current_group.id,
@@ -268,7 +268,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:suspend))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
+      expect_bad_request(/is not powered on/)
     end
 
     it "cannot suspend a suspended instance" do
@@ -277,7 +277,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:suspend))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
+      expect_bad_request(/is not powered on/)
     end
 
     it "suspends an instance" do
@@ -285,7 +285,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:suspend))
 
-      expect_single_action_result(:success => true, :message => "suspending", :href => api_instance_url(nil, instance), :task => true)
+      expect_single_action_result(:success => true, :message => "Suspending", :href => api_instance_url(nil, instance), :task => true)
       expect(MiqQueue.where(:method_name => "suspend",
                             :user_id     => @user.id,
                             :group_id    => @user.current_group.id,
@@ -325,7 +325,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance))
+      expect_single_action_result(:success => true, :message => 'Shelving', :href => api_instance_url(nil, instance))
     end
 
     it "shelves a suspended instance" do
@@ -334,7 +334,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance))
+      expect_single_action_result(:success => true, :message => 'Shelving', :href => api_instance_url(nil, instance))
     end
 
     it "shelves a paused instance" do
@@ -343,7 +343,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true, :message => 'shelving', :href => api_instance_url(nil, instance))
+      expect_single_action_result(:success => true, :message => 'Shelving', :href => api_instance_url(nil, instance))
       expect(MiqQueue.where(:method_name => "shelve",
                             :user_id     => @user.id,
                             :group_id    => @user.current_group.id,
@@ -356,11 +356,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(
-        :success => false,
-        :message => "The VM can't be shelved, current state has to be powered on, off, suspended or paused",
-        :href    => api_instance_url(nil, instance)
-      )
+      expect_bad_request(/has to be powered on, off, suspended or paused/)
     end
 
     it "shelves an instance" do
@@ -368,10 +364,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:shelve))
 
-      expect_single_action_result(:success => true,
-                                  :message => "shelving",
-                                  :href    => api_instance_url(nil, instance),
-                                  :task    => true)
+      expect_single_action_result(:success => true, :message => "Shelving", :href => api_instance_url(nil, instance), :task => true)
     end
 
     it "shelves multiple instances" do
@@ -407,7 +400,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:reboot_guest))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
+      expect_bad_request(/is not powered on/)
     end
 
     it "reboots a valid instance" do
@@ -415,7 +408,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:reboot_guest))
 
-      expect_single_action_result(:success => true, :message => "rebooting", :href => api_instance_url(nil, instance), :task => true)
+      expect_single_action_result(:success => true, :message => "Rebooting", :href => api_instance_url(nil, instance), :task => true)
       expect(MiqQueue.where(:method_name => "reboot_guest",
                             :user_id     => @user.id,
                             :group_id    => @user.current_group.id,
@@ -455,7 +448,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:reset))
 
-      expect_single_action_result(:success => false, :message => "is not powered on", :href => api_instance_url(nil, instance))
+      expect_bad_request(/is not powered on/)
     end
 
     it "resets a valid instance" do
@@ -463,7 +456,7 @@ RSpec.describe "Instances API" do
 
       post(instance_url, :params => gen_request(:reset))
 
-      expect_single_action_result(:success => true, :message => "resetting", :href => api_instance_url(nil, instance), :task => true)
+      expect_single_action_result(:success => true, :message => "Resetting", :href => api_instance_url(nil, instance), :task => true)
       expect(MiqQueue.where(:method_name => "reset",
                             :user_id     => @user.id,
                             :group_id    => @user.current_group.id,

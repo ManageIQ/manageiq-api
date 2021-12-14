@@ -72,23 +72,17 @@ module Api
     end
 
     def import_vm_resource(type, id = nil, data = {})
-      raise BadRequestError, "Must specify an id for import of VM to a #{type} resource" unless id
+      target_params = {
+        :name       => data.fetch_path('target', 'name'),
+        :cluster_id => parse_id(data.fetch_path('target', 'cluster'), :clusters),
+        :storage_id => parse_id(data.fetch_path('target', 'data_store'), :data_stores),
+        :sparse     => data.fetch_path('target', 'sparse')
+      }
+      vm_id = parse_id(data['source'], :vms)
 
-      api_action(type, id) do |klass|
-        provider = resource_search(id, type, klass)
-
-        vm_id = parse_id(data['source'], :vms)
+      enqueue_ems_action(type, id, "Importing Vm to", :method_name => 'import_vm', :args => [vm_id, target_params]) do
         # check if user can access the VM
         resource_search(vm_id, :vms, Vm)
-
-        api_log_info("Importing VM to #{provider_ident(provider)}")
-        target_params = {
-          :name       => data.fetch_path('target', 'name'),
-          :cluster_id => parse_id(data.fetch_path('target', 'cluster'), :clusters),
-          :storage_id => parse_id(data.fetch_path('target', 'data_store'), :data_stores),
-          :sparse     => data.fetch_path('target', 'sparse')
-        }
-        import_vm_to_provider(provider, vm_id, target_params)
       end
     end
 
@@ -118,11 +112,7 @@ module Api
     end
 
     def check_compliance_resource(type, id, _data = nil)
-      api_action(type, id) do |klass|
-        provider = resource_search(id, type, klass)
-        api_log_info("Checking compliance of #{provider_ident(provider)}")
-        request_compliance_check(provider)
-      end
+      enqueue_ems_action(type, id, "Check Compliance for", :method_name => "check_compliance", :supports => true)
     end
 
     private
@@ -297,16 +287,6 @@ module Api
       raise BadRequestError, "Could not update the provider - #{err}"
     end
 
-    def import_vm_to_provider(provider, source_vm_id, target_params)
-      desc = "#{provider_ident(provider)} importing vm"
-      task_id = queue_object_action(provider, desc,
-                                    :method_name => 'import_vm',
-                                    :args        => [source_vm_id, target_params])
-      action_result(true, desc, :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
-    end
-
     def update_provider_authentication(provider, data)
       credentials = data[CREDENTIALS_ATTR]
       return if credentials.blank?
@@ -372,16 +352,6 @@ module Api
         end
       end
       @collection_klasses[:providers] = Provider
-    end
-
-    def request_compliance_check(provider)
-      desc = "#{provider_ident(provider)} check compliance requested"
-      raise "#{provider_ident(provider)} has no compliance policies assigned" if provider.compliance_policies.blank?
-
-      task_id = queue_object_action(provider, desc, :method_name => "check_compliance")
-      action_result(true, desc, :task_id => task_id)
-    rescue StandardError => err
-      action_result(false, err.to_s)
     end
 
     def fetch_deep_keys(hash, prefix = nil)

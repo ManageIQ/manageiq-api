@@ -72,54 +72,15 @@ module Api
     end
 
     def start_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        service = resource_search(id, type, klass)
-        api_log_info("Starting #{service_ident(service)}")
-
-        begin
-          description = "#{service_ident(service)} starting"
-          task_id = queue_object_action(service, description, :method_name => "start", :role => "ems_operations")
-          action_result(true, description, :task_id => task_id)
-        rescue => e
-          action_result(false, e.to_s)
-        end
-      end
+      enqueue_ems_action(type, id, "Starting", :method_name => "start")
     end
 
     def stop_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        service = resource_search(id, type, klass)
-        api_log_info("Stopping #{service_ident(service)}")
-
-        begin
-          description = "#{service_ident(service)} stopping"
-          task_id = queue_object_action(service, description, :method_name => "stop", :role => "ems_operations")
-          action_result(true, description, :task_id => task_id)
-        rescue => e
-          action_result(false, e.to_s)
-        end
-      end
+      enqueue_ems_action(type, id, "Stopping", :method_name => "stop")
     end
 
     def suspend_resource(type, id = nil, _data = nil)
-      raise BadRequestError, "Must specify an id for starting a #{type} resource" unless id
-
-      api_action(type, id) do |klass|
-        service = resource_search(id, type, klass)
-        api_log_info("Suspending #{service_ident(service)}")
-
-        begin
-          description = "#{service_ident(service)} suspending"
-          task_id = queue_object_action(service, description, :method_name => "suspend", :role => "ems_operations")
-          action_result(true, description, :task_id => task_id)
-        rescue => e
-          action_result(false, e.to_s)
-        end
-      end
+      enqueue_ems_action(type, id, "Suspending", :method_name => "suspend")
     end
 
     def add_provider_vms_resource(type, id, data)

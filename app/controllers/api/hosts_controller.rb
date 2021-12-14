@@ -25,27 +25,7 @@ module Api
     end
 
     def check_compliance_resource(type, id, _data = nil)
-      api_action(type, id) do |klass|
-        host = resource_search(id, type, klass)
-        api_log_info("Checking compliance of #{host_ident(host)}")
-        request_compliance_check(host)
-      end
-    end
-
-    private
-
-    def host_ident(host)
-      "Host id:#{host.id} name:'#{host.name}'"
-    end
-
-    def request_compliance_check(host)
-      desc = "#{host_ident(host)} check compliance requested"
-      raise "#{host_ident(host)} has no compliance policies assigned" if host.compliance_policies.blank?
-
-      task_id = queue_object_action(host, desc, :method_name => "check_compliance")
-      action_result(true, desc, :task_id => task_id)
-    rescue StandardError => err
-      action_result(false, err.to_s)
+      enqueue_ems_action(type, id, "Check Compliance for", :method_name => "check_compliance", :supports => true)
     end
   end
 end
