@@ -4744,6 +4744,8 @@
         :identifier: vm_guest_shutdown
       - :name: reboot_guest
         :identifier: vm_guest_restart
+      - :name: set_description
+        :identifier: vm_rename
       - :name: start
         :identifier:
         - vm_start

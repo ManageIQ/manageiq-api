@@ -131,6 +131,22 @@ module Api
     end
     central_admin :rename_resource, :rename
 
+    def set_description_resource(type, id, data = {})
+      raise BadRequestError, "Must specify an id for renaming a #{type} resource" unless id
+
+      new_description = data&.dig("new_description")&.strip
+      raise BadRequestError, "Must specify a new_description" if new_description.blank?
+
+      api_action(type, id) do |klass|
+        vm = resource_search(id, type, klass)
+        api_log_info("Setting description on #{vm_ident(vm)} to #{new_description}")
+
+        result = validate_vm_for_action(vm, "set_description")
+        result = set_description_vm(vm, new_description) if result[:success]
+        result
+      end
+    end
+
     def shutdown_guest_resource(type, id = nil, _data = nil)
       enqueue_ems_action(type, id, "Shutting Down", :method_name => "shutdown_guest", :supports => true)
     end
@@ -298,6 +314,14 @@ module Api
     def rename_vm(vm, new_name)
       desc = "#{vm_ident(vm)} renaming to #{new_name}"
       task_id = vm.rename_queue(User.current_user.userid, new_name)
+      action_result(true, desc, :task_id => task_id)
+    rescue => err
+      action_result(false, err.to_s)
+    end
+
+    def set_description_vm(vm, new_description)
+      desc = "#{vm_ident(vm)} setting description to #{new_description}"
+      task_id = vm.set_description_queue(User.current_user.userid, new_description)
       action_result(true, desc, :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
