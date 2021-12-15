@@ -114,6 +114,16 @@ module Api
     end
     central_admin :rename_resource, :rename
 
+    def set_description_resource(type, id, data = {})
+      new_description = data&.dig("new_description")&.strip
+      api_resource(type, id, "Setting description for", :supports => :set_description) do |vm|
+        raise BadRequestError, "Must specify a new_description" if new_description.blank?
+
+        task_id = vm.set_description_queue(User.current_userid, new_description)
+        action_result(true, "Setting description for #{model_ident(vm, type)} to #{new_description}", :task_id => task_id)
+      end
+    end
+
     def shutdown_guest_resource(type, id = nil, _data = nil)
       enqueue_ems_action(type, id, "Shutting Down", :method_name => "shutdown_guest", :supports => true)
     end
