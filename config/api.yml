@@ -847,6 +847,7 @@
     :verbs: *gpppd
     :subcollections:
     - :tags
+    - :cloud_volume_snapshots
     :klass: CloudVolume
     :collection_actions:
       :get:
@@ -884,6 +885,25 @@
         :identifier: cloud_volume_tag
       - :name: unassign
         :identifier: cloud_volume_tag
+    :cloud_volume_snapshots_subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_volume_snapshot_view
+      :post:
+      - :name: create
+        :identifier: cloud_volume_snapshot_create
+      - :name: delete
+        :identifier: cloud_volume_snapshot_delete
+    :cloud_volume_snapshots_subresource_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_volume_snapshot_view
+      :post:
+      - :name: delete
+        :identifier: cloud_volume_snapshot_delete
+      :delete:
+      - :name: delete
+        :identifier: cloud_volume_snapshot_delete
   :clusters:
     :description: Clusters
     :identifier: ems_cluster
