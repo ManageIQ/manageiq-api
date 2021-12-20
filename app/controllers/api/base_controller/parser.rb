@@ -35,7 +35,21 @@ module Api
 
       def validate_api_action
         return if @req.collection.blank? || ignore_http_method_validation?
-        send("validate_#{@req.method}_method")
+        case @req.method
+        when :post
+          type, target = request_type_target
+          validate_post_api_action(@req.subject, @req.method, type, target)
+        when :get
+          validate_method_action(:get, "read")
+        when :patch
+          validate_method_action(:post, "edit")
+        when :put
+          validate_method_action(:post, "edit")
+        when :delete
+          validate_method_action(:delete, "delete")
+        else
+          raise "invalid action"
+        end
       end
 
       def ensure_supports(type, model, action, supports = action)
@@ -134,34 +148,6 @@ module Api
 
       def ignore_http_method_validation?
         @req.subcollection == 'settings' || @req.method == :options
-      end
-
-      #
-      # For Posts we need to support actions, let's validate those
-      #
-      def validate_post_method
-        cname = @req.subject
-        type, target = request_type_target
-        validate_post_api_action(cname, @req.method, type, target)
-      end
-
-      #
-      # For Get, Delete, Patch and Put, we need to make sure we're entitled for them.
-      #
-      def validate_get_method
-        validate_method_action(:get, "read")
-      end
-
-      def validate_patch_method
-        validate_method_action(:post, "edit")
-      end
-
-      def validate_put_method
-        validate_method_action(:post, "edit")
-      end
-
-      def validate_delete_method
-        validate_method_action(:delete, "delete")
       end
 
       def validate_deprecation
