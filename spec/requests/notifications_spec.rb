@@ -24,8 +24,7 @@ describe 'Notifications API' do
       expected = {
         "actions" => a_collection_including(
           a_hash_including("name" => "mark_as_seen", "method" => "post"),
-          a_hash_including("name" => "delete", "method" => "post"),
-          a_hash_including("name" => "delete", "method" => "delete")
+          a_hash_including("name" => "delete", "method" => "post")
         )
       }
       expect(response.parsed_body).to include(expected)

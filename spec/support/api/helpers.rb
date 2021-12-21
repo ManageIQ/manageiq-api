@@ -49,7 +49,9 @@ module Spec
             .detect { |spec| spec[:name] == action.to_s }[:identifier]
         end
 
-        def action_identifier(type, action, selection = :resource_actions, method = :post)
+        def action_identifier(type, action, selection = :resource_actions, _method = :post)
+          method = action == :read ? :get : :post
+
           ::Api::ApiConfig
             .collections[type][selection][method]
             .detect { |spec| spec[:name] == action.to_s }[:identifier]

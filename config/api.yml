@@ -56,9 +56,6 @@
         :identifier: miq_action_edit
       - :name: delete
         :identifier: miq_action_delete
-      :delete:
-      - :name: delete
-        :identifier: miq_action_delete
     :resource_actions:
       :get:
       - :name: read
@@ -66,15 +63,6 @@
       :post:
       - :name: edit
         :identifier: miq_action_edit
-      - :name: delete
-        :identifier: miq_action_delete
-      :patch:
-      - :name: edit
-        :identifier: miq_action_edit
-      :put:
-      - :name: edit
-        :identifier: miq_action_edit
-      :delete:
       - :name: delete
         :identifier: miq_action_delete
   :alert_actions:
@@ -130,15 +118,6 @@
         :identifier: alert_definition_profile_edit
       - :name: unassign
         :identifier: alert_definition_profile_edit
-      :patch:
-      - :name: edit
-        :identifier: alert_definition_profile_edit
-      :put:
-      - :name: edit
-        :identifier: alert_definition_profile_edit
-      :delete:
-      - :name: delete
-        :identifier: alert_definition_profile_delete
     :alert_definitions_subcollection_actions:
       :post:
       - :name: assign
@@ -170,9 +149,6 @@
       :post:
       - :name: edit
         :identifier: alert_definition_edit
-      - :name: delete
-        :identifier: alert_definition_delete
-      :delete:
       - :name: delete
         :identifier: alert_definition_delete
   :alerts:
@@ -228,12 +204,6 @@
         :identifier: auth_key_pair_cloud_delete
       - :name: set_ownership
         :identifier: auth_key_pair_ownership
-      :put:
-      - :name: edit
-        :identifier: auth_key_pair_cloud_admin
-      :delete:
-      - :name: delete
-        :identifier: auth_key_pair_cloud_delete
   :authentications:
     :description: Authentications
     :options:
@@ -265,9 +235,6 @@
         :identifier: embedded_automation_manager_credentials_edit
       - :name: refresh
         :identifier: embedded_automation_manager_credentials_refresh
-      :delete:
-      - :name: delete
-        :identifier: embedded_automation_manager_credentials_delete
     :subcollection_actions:
       :get:
       - :name: read
@@ -317,9 +284,6 @@
         :identifier: miq_ae_class_edit
       - :name: delete
         :identifier: miq_ae_class_delete
-      :delete:
-      - :name: delete
-        :identifier: miq_ae_class_delete
   :automate_domains:
     :description: Automate Domains
     :options:
@@ -348,9 +312,6 @@
         :identifier: miq_ae_domain_new
       - :name: refresh_from_source
         :identifier: miq_ae_git_refresh
-      - :name: delete
-        :identifier: miq_ae_domain_delete
-      :delete:
       - :name: delete
         :identifier: miq_ae_domain_delete
   :automate_workspaces:
@@ -468,9 +429,6 @@
         :identifier: ops_settings
       - :name: delete
         :identifier: ops_settings
-      :delete:
-      - :name: delete
-        :identifier: ops_settings
     :tags_subcollection_actions:
       :post:
       - :name: create
@@ -536,9 +494,6 @@
         :identifier: chargeback_assignments
       - :name: unassign
         :identifier: chargeback_assignments
-      :delete:
-      - :name: delete
-        :identifier: chargeback_rates_delete
   :cloud_database_flavors:
     :description: Cloud Database Flavors
     :identifier: cloud_database_flavor
@@ -593,13 +548,9 @@
       :get:
       - :name: read
         :identifier: cloud_network_show
-      :patch:
+      :post:
       - :name: edit
         :identifier: cloud_network_edit
-      :put:
-      - :name: edit
-        :identifier: cloud_network_edit
-      :delete:
       - :name: delete
         :identifier: cloud_network_delete
     :subcollection_actions:
@@ -617,13 +568,9 @@
       :get:
       - :name: read
         :identifier: cloud_network_show
-      :patch:
+      :post:
       - :name: edit
         :identifier: cloud_network_edit
-      :put:
-      - :name: edit
-        :identifier: cloud_network_edit
-      :delete:
       - :name: delete
         :identifier: cloud_network_delete
     :tags_subcollection_actions:
@@ -682,15 +629,6 @@
       :post:
       - :name: edit
         :identifier: cloud_subnet_edit
-      - :name: delete
-        :identifier: cloud_subnet_delete
-      :patch:
-      - :name: edit
-        :identifier: cloud_subnet_edit
-      :put:
-      - :name: edit
-        :identifier: cloud_subnet_edit
-      :delete:
       - :name: delete
         :identifier: cloud_subnet_delete
     :subcollection_actions:
@@ -760,12 +698,6 @@
         :identifier: image_edit
       - :name: delete
         :identifier: image_delete
-      :put:
-      - :name: edit
-        :identifier: image_edit
-      :delete:
-      - :name: delete
-        :identifier: image_delete
   :cloud_tenants:
     :description: Cloud Tenants
     :identifier: cloud_tenant
@@ -798,15 +730,6 @@
       :post:
       - :name: edit
         :identifier: cloud_tenant_edit
-      - :name: delete
-        :identifier: cloud_tenant_delete
-      :patch:
-      - :name: edit
-        :identifier: cloud_tenant_edit
-      :put:
-      - :name: edit
-        :identifier: cloud_tenant_edit
-      :delete:
       - :name: delete
         :identifier: cloud_tenant_delete
     :subcollection_actions:
@@ -867,17 +790,11 @@
       :get:
       - :name: read
         :identifier: cloud_volume_show
-      :patch:
-      - :name: edit
-        :identifier: cloud_volume_edit
       :post:
       - :name: delete
         :identifier: cloud_volume_delete
       - :name: safe_delete
         :identifier: cloud_volume_safe_delete
-      :delete:
-      - :name: delete
-        :identifier: cloud_volume_delete
     :tags_subcollection_actions:
       :post:
       - :name: assign
@@ -907,7 +824,7 @@
       :get:
       - :name: read
         :identifier: ems_cluster_show
-      :delete:
+      :post:
       - :name: delete
         :identifier: ems_cluster_delete
     :tags_subcollection_actions:
@@ -962,9 +879,6 @@
       :post:
       - :name: edit
         :identifier: condition_edit
-      - :name: delete
-        :identifier: condition_delete
-      :delete:
       - :name: delete
         :identifier: condition_delete
   :configuration_profiles:
@@ -1050,9 +964,6 @@
         :identifier: embedded_configuration_script_source_delete
       - :name: refresh
         :identifier: embedded_configuration_script_source_refresh
-      :delete:
-      - :name: delete
-        :identifier: embedded_configuration_script_source_delete
   :configuration_scripts:
     :description: Configuration Scripts
     :options:
@@ -1267,8 +1178,6 @@
       :post:
       - :name: edit
       - :name: delete
-      :delete:
-      - :name: delete
   :custom_button_events:
     :description: Custom Button Events
     :options:
@@ -1306,12 +1215,6 @@
         :identifier: ab_group_edit
       - :name: delete
         :identifier: ab_group_delete
-      :put:
-      - :name: edit
-        :identifier: ab_group_edit
-      :delete:
-      - :name: delete
-        :identifier: ab_group_delete
   :custom_buttons:
     :description: Custom Buttons
     :identifier: ab_buttons_accord
@@ -1337,12 +1240,6 @@
       :post:
       - :name: edit
         :identifier: ab_group_edit
-      - :name: delete
-        :identifier: ab_group_delete
-      :put:
-      - :name: edit
-        :identifier: ab_group_edit
-      :delete:
       - :name: delete
         :identifier: ab_group_delete
   :customization_scripts:
@@ -1393,15 +1290,6 @@
         :identifier: customization_template_edit
       - :name: delete
         :identifier: customization_template_delete
-      :patch:
-      - :name: edit
-        :identifier: customization_template_edit
-      :put:
-      - :name: edit
-        :identifier: customization_template_edit
-      :delete:
-      - :name: delete
-        :identifier: customization_template_delete
     :subcollection_actions:
       :get:
       - :name: read
@@ -1434,9 +1322,6 @@
       - :name: read
         :identifier: storage_show
       :post:
-      - :name: delete
-        :identifier: storage_delete
-      :delete:
       - :name: delete
         :identifier: storage_delete
     :tags_subcollection_actions:
@@ -1575,10 +1460,9 @@
       :get:
       - :name: read
         :identifier: firmware
-      :delete:
+      :post:
       - :name: delete
         :identifier: firmware
-      :post:
       - :name: sync_fw_binaries
         :identifier: firmware
   :firmwares:
@@ -1640,9 +1524,6 @@
       :post:
       - :name: delete
         :identifier: flavor_delete
-      :delete:
-      - :name: delete
-        :identifier: flavor_delete
     :tags_subcollection_actions:
       :post:
       - :name: assign
@@ -1676,15 +1557,6 @@
       :post:
       - :name: edit
         :identifier: floating_ip_edit
-      - :name: delete
-        :identifier: floating_ip_delete
-      :patch:
-      - :name: edit
-        :identifier: floating_ip_edit
-      :put:
-      - :name: edit
-        :identifier: floating_ip_edit
-      :delete:
       - :name: delete
         :identifier: floating_ip_delete
   :folders:
@@ -1745,12 +1617,6 @@
         :identifier: generic_object_definition_edit
       - :name: remove_methods
         :identifier: generic_object_definition_edit
-      :put:
-      - :name: edit
-        :identifier: generic_object_definition_edit
-      :delete:
-      - :name: delete
-        :identifier: generic_object_definition_delete
   :generic_objects:
     :description: Generic Objects
     :options:
@@ -1779,9 +1645,6 @@
       :post:
       - :name: edit
         :identifier: generic_object_edit
-      - :name: delete
-        :identifier: generic_object_delete
-      :delete:
       - :name: delete
         :identifier: generic_object_delete
     :subcollection_actions:
@@ -1829,9 +1692,6 @@
       :post:
       - :name: edit
         :identifier: rbac_group_edit
-      - :name: delete
-        :identifier: rbac_group_delete
-      :delete:
       - :name: delete
         :identifier: rbac_group_delete
     :tags_subcollection_actions:
@@ -1886,15 +1746,6 @@
       :post:
       - :name: edit
         :identifier: host_aggregate_edit
-      - :name: delete
-        :identifier: host_aggregate_delete
-      :patch:
-      - :name: edit
-        :identifier: host_aggregate_edit
-      :put:
-      - :name: edit
-        :identifier: host_aggregate_edit
-      :delete:
       - :name: delete
         :identifier: host_aggregate_delete
     :tags_subcollection_actions:
@@ -1980,7 +1831,6 @@
         :identifier: host_check_compliance
       - :name: edit
         :identifier: host_edit
-      :delete:
       - :name: delete
         :identifier: host_delete
     :tags_subcollection_actions:
@@ -2105,9 +1955,6 @@
       :post:
       - :name: delete
         :identifier: cloud_volume_snapshot_delete
-      :delete:
-      - :name: delete
-        :identifier: cloud_volume_snapshot_delete
     :custom_attributes_subcollection_actions:
       :post:
       - :name: add
@@ -2139,9 +1986,6 @@
       - :name: read
         :identifier: iso_datastore_view
       :post:
-      - :name: delete
-        :identifier: iso_datastore_delete
-      :delete:
       - :name: delete
         :identifier: iso_datastore_delete
   :iso_images:
@@ -2326,15 +2170,6 @@
         :identifier: network_router_edit
       - :name: delete
         :identifier: network_router_delete
-      :patch:
-      - :name: edit
-        :identifier: network_router_edit
-      :put:
-      - :name: edit
-        :identifier: network_router_edit
-      :delete:
-      - :name: delete
-        :identifier: network_router_delete
     :tags_subcollection_actions:
       :post:
       - :name: assign
@@ -2402,8 +2237,6 @@
       :post:
       - :name: mark_as_seen
       - :name: delete
-      :delete:
-      - :name: delete
   :orchestration_stacks:
     :description: Orchestration Stacks
     :identifier: orchestration_stack
@@ -2460,9 +2293,6 @@
         :identifier: orchestration_template_remove
       - :name: copy
         :identifier: orchestration_template_copy
-      :delete:
-      - :name: delete
-        :identifier: orchestration_template_remove
   :physical_chassis:
     :description: Physical Chassis
     :identifier: physical_chassis
@@ -2617,9 +2447,6 @@
       :get:
       - :name: read
         :identifier: physical_storage_show
-      :patch:
-      - :name: edit
-        :identifier: physical_storage_edit
       :post:
       - :name: refresh
         :identifier: physical_storage_refresh
@@ -2698,9 +2525,6 @@
         :identifier: miq_policy_edit
       - :name: delete
         :identifier: miq_policy_delete
-      :delete:
-      - :name: delete
-        :identifier: miq_policy_delete
     :subcollection_actions:
       :post:
       - :name: assign
@@ -2762,15 +2586,6 @@
         :identifier: miq_policy_set_edit
       - :name: delete
         :identifier: miq_policy_set_delete
-      :delete:
-      - :name: delete
-        :identifier: miq_policy_set_delete
-      :patch:
-      - :name: edit
-        :identifier: miq_policy_set_edit
-      :put:
-      - :name: edit
-        :identifier: miq_policy_set_edit
     :policies_subcollection_actions:
       :post:
       - :name: assign
@@ -2892,15 +2707,6 @@
         :identifier: ems_infra_import_vm
         :options:
         - :validate_action
-      :delete:
-      - :name: delete
-        :identifier: ems_infra_delete
-      :patch:
-      - :name: edit
-        :identifier: ems_infra_edit
-      :put:
-      - :name: edit
-        :identifier: ems_infra_edit
     :configuration_profiles_subresource_actions:
       :get:
       - :name: read
@@ -3053,15 +2859,6 @@
         :identifier: pxe_image_type_edit
       - :name: delete
         :identifier: pxe_image_type_delete
-      :patch:
-      - :name: edit
-        :identifier: pxe_image_type_edit
-      :put:
-      - :name: edit
-        :identifier: pxe_image_type_edit
-      :delete:
-      - :name: delete
-        :identifier: pxe_image_type_delete
   :pxe_images:
     :description: PXE Images
     :identifier: pxe_server_accord
@@ -3137,15 +2934,11 @@
       :get:
       - :name: read
         :identifier: pxe_server_view
-      :patch:
-      - :name: edit
-        :identifier: pxe_server_edit
       :post:
       - :name: create
         :identifier: pxe_server_new
       - :name: edit
         :identifier: pxe_server_edit
-      :delete:
       - :name: delete
         :identifier: pxe_server_delete
   :quotas:
@@ -3176,12 +2969,6 @@
         :identifier: rbac_tenant_manage_quotas
       - :name: delete
         :identifier: rbac_tenant_manage_quotas
-      :put:
-      - :name: edit
-        :identifier: rbac_tenant_manage_quotas
-      :delete:
-      - :name: delete
-        :identifier: rbac_tenant_manage_quotas
   :rates:
     :description: Chargeback Rates
     :identifier: chargeback_rates
@@ -3210,15 +2997,6 @@
       :post:
       - :name: edit
         :identifier: chargeback_rates_edit
-      - :name: delete
-        :identifier: chargeback_rates_delete
-      :patch:
-      - :name: edit
-        :identifier: chargeback_rates_edit
-      :put:
-      - :name: edit
-        :identifier: chargeback_rates_edit
-      :delete:
       - :name: delete
         :identifier: chargeback_rates_delete
   :regions:
@@ -3274,9 +3052,6 @@
         :identifier: miq_report_export
     :results_subresource_actions:
       :post:
-      - :name: delete
-        :identifier: saved_report_delete
-      :delete:
       - :name: delete
         :identifier: saved_report_delete
   :request_tasks:
@@ -3404,7 +3179,7 @@
       :get:
       - :name: read
         :identifier: resource_pool_show
-      :delete:
+      :post:
       - :name: delete
         :identifier: resource_pool_delete
     :tags_subcollection_actions:
@@ -3487,9 +3262,6 @@
         :identifier: rbac_role_edit
       - :name: delete
         :identifier: rbac_role_delete
-      :delete:
-      - :name: delete
-        :identifier: rbac_role_delete
   :schedules:
     :description: Schedules
     :identifier: miq_report_reports
@@ -3507,9 +3279,6 @@
       - :name: edit
         :identifier: schedule_edit
     :subresource_actions:
-      :delete:
-      - :name: delete
-        :identifier: schedule_delete
       :get:
       - :name: read
         :identifier: miq_report_view
@@ -3540,9 +3309,6 @@
       - :name: read
         :identifier: my_settings_default_filters
       :post:
-      - :name: delete
-        :identifier: my_settings_default_filters
-      :delete:
       - :name: delete
         :identifier: my_settings_default_filters
   :security_groups:
@@ -3720,9 +3486,6 @@
         :identifier: ops_settings
       - :name: delete
         :identifier: ops_settings
-      :delete:
-      - :name: delete
-        :identifier: ops_settings
   :service_catalogs:
     :description: Service Catalogs
     :identifier: st_catalog_accord
@@ -3758,9 +3521,6 @@
       :post:
       - :name: edit
         :identifier: st_catalog_edit
-      - :name: delete
-        :identifier: st_catalog_delete
-      :delete:
       - :name: delete
         :identifier: st_catalog_delete
   :service_dialogs:
@@ -3811,9 +3571,6 @@
         :identifier: dialog_copy_editor
       - :name: template_service_dialog
         :identifier: dialog_new_editor
-      :delete:
-      - :name: delete
-        :identifier: dialog_delete
   :service_offerings:
     :description: Service Offerings
     :identifier: service_offerings
@@ -3888,11 +3645,6 @@
         :identifier:
         - svc_catalog_provision
         - sui_orders_duplicate
-      :delete:
-      - :name: delete
-        :identifier:
-        - svc_catalog_provision
-        - sui_orders_delete
   :service_parameters_sets:
     :description: Service Parameters Sets
     :identifier: service_parameters_sets
@@ -3976,11 +3728,6 @@
         :identifier:
         - miq_request_edit
         - sui_svc_catalog_cart
-      :delete:
-      - :name: delete
-        :identifier:
-        - miq_request_delete
-        - sui_cart_delete
     :subcollection_actions:
       :get:
       - :name: read
@@ -4090,9 +3837,6 @@
         :identifier: svc_catalog_unarchive
       - :name: set_ownership
         :identifier: catalogitem_ownership
-      :delete:
-      - :name: delete
-        :identifier: catalogitem_delete
     :subresource_actions:
       :post:
       - :name: edit
@@ -4107,7 +3851,6 @@
         :identifier: st_catalog_edit
       - :name: unassign
         :identifier: st_catalog_edit
-      :delete:
       - :name: delete
         :identifier: catalogitem_delete
     :tags_subcollection_actions:
@@ -4264,21 +4007,6 @@
         - sui_services_edit
       - :name: queue_chargeback_report
         :identifier: service_admin
-      :patch:
-      - :name: edit
-        :identifier:
-        - service_edit
-        - sui_services_edit
-      :put:
-      - :name: edit
-        :identifier:
-        - service_edit
-        - sui_services_edit
-      :delete:
-      - :name: delete
-        :identifier:
-        - service_delete
-        - sui_services_delete
     :tags_subcollection_actions:
       :post:
       - :name: assign
@@ -4408,9 +4136,6 @@
         :identifier: ops_settings
       - :name: delete
         :identifier: ops_settings
-      :delete:
-      - :name: delete
-        :identifier: ops_settings
     :subcollection_actions:
       :post:
       - :name: create
@@ -4450,9 +4175,6 @@
         - miq_task_all_ui
         - miq_task_my_ui
       :post:
-      - :name: delete
-        :identifier: miq_task_delete
-      :delete:
       - :name: delete
         :identifier: miq_task_delete
     :resource_entities:
@@ -4500,9 +4222,6 @@
         :identifier: miq_template_edit
       - :name: set_ownership
         :identifier: miq_template_ownership
-      - :name: delete
-        :identifier: miq_template_delete
-      :delete:
       - :name: delete
         :identifier: miq_template_delete
     :tags_subcollection_actions:
@@ -4572,9 +4291,6 @@
         :identifier: rbac_tenant_edit
       - :name: delete
         :identifier: rbac_tenant_delete
-      :delete:
-      - :name: delete
-        :identifier: rbac_tenant_delete
     :tags_subcollection_actions:
       :post:
       - :name: assign
@@ -4599,12 +4315,6 @@
       :post:
       - :name: edit
         :identifier: rbac_tenant_manage_quotas
-      - :name: delete
-        :identifier: rbac_tenant_manage_quotas
-      :put:
-      - :name: edit
-        :identifier: rbac_tenant_manage_quotas
-      :delete:
       - :name: delete
         :identifier: rbac_tenant_manage_quotas
   :time_profiles:
@@ -4634,15 +4344,6 @@
       :post:
       - :name: edit
         :identifier: tp_edit
-      - :name: delete
-        :identifier: tp_delete
-      :patch:
-      - :name: edit
-        :identifier: tp_edit
-      :put:
-      - :name: edit
-        :identifier: tp_edit
-      :delete:
       - :name: delete
         :identifier: tp_delete
   :users:
@@ -4686,9 +4387,6 @@
         :identifier: rbac_user_delete
       - :name: revoke_sessions
       - :name: set_current_group
-      :delete:
-      - :name: delete
-        :identifier: rbac_user_delete
     :tags_subcollection_actions:
       :post:
       - :name: assign
@@ -4869,9 +4567,6 @@
         :identifier: vm_scan
       - :name: simulate_policy
         :identifier: policy_simulation
-      :delete:
-      - :name: delete
-        :identifier: vm_delete
     :disks_subcollection_actions:
       :get:
       - :name: read
@@ -4966,11 +4661,6 @@
         :identifier:
         - vm_snapshot_delete
         - sui_vm_snapshot_delete
-      :delete:
-      - :name: delete
-        :identifier:
-        - vm_snapshot_delete
-        - sui_vm_snapshot_delete
   :volume_mappings:
     :description: Volume Mappings
     :identifier: volume_mapping
@@ -4997,9 +4687,6 @@
       :post:
       - :name: refresh
         :identifier: volume_mapping_refresh
-      - :name: delete
-        :identifier: volume_mapping_delete
-      :delete:
       - :name: delete
         :identifier: volume_mapping_delete
   :widgets:
@@ -5055,14 +4742,5 @@
       :post:
       - :name: edit
         :identifier: zone_edit
-      - :name: delete
-        :identifier: zone_delete
-      :patch:
-      - :name: edit
-        :identifier: zone_edit
-      :put:
-      - :name: edit
-        :identifier: zone_edit
-      :delete:
       - :name: delete
         :identifier: zone_delete

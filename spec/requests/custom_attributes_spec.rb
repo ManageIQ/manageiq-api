@@ -10,8 +10,7 @@ RSpec.describe "Custom Attributes API" do
       expected = {
         "actions" => a_collection_including(
           a_hash_including("name" => "edit", "method" => "post"),
-          a_hash_including("name" => "delete", "method" => "post"),
-          a_hash_including("name" => "delete", "method" => "delete")
+          a_hash_including("name" => "delete", "method" => "post")
         )
       }
       expect(response.parsed_body).to include(expected)

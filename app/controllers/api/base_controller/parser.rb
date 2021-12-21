@@ -41,12 +41,10 @@ module Api
           validate_post_api_action(@req.subject, @req.method, type, target)
         when :get
           validate_method_action(:get, "read")
-        when :patch
-          validate_method_action(:post, "edit")
-        when :put
+        when :patch, :put
           validate_method_action(:post, "edit")
         when :delete
-          validate_method_action(:delete, "delete")
+          validate_method_action(:post, "delete")
         else
           raise "invalid action"
         end
