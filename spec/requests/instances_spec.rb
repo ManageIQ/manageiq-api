@@ -1,4 +1,5 @@
 RSpec.describe "Instances API" do
+  include Spec::Support::SupportsHelper
   def update_raw_power_state(state, *instances)
     instances.each { |instance| instance.update!(:raw_power_state => state) }
   end
@@ -834,6 +835,27 @@ RSpec.describe "Instances API" do
         ]
       }
       expect(response.parsed_body).to include(expected)
+    end
+
+    it 'returns a DDF schema for add when available via OPTIONS' do
+      provider = FactoryBot.create(:ems_network, :zone => zone)
+      stub_supports(provider.class::SecurityGroup, :create)
+      stub_params_for(provider.class::SecurityGroup, :create, :fields => [])
+
+      options(api_security_groups_url(:ems_id => provider.id))
+
+      expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'returns a DDF schema for edit when available via OPTIONS' do
+      stub_supports(@security_group.class, :update)
+      stub_params_for(@security_group.class, :update, :fields => [])
+
+      options(api_security_group_url(nil, @security_group))
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['data']).to include("form_schema" => {"fields" => []})
     end
   end
 
