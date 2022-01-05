@@ -1,7 +1,7 @@
 module Api
   module Subcollections
     module CloudVolumeSnapshots
-      def snapshots_query_resource(object)
+      def cloud_volume_snapshots_query_resource(object)
         object.cloud_volume_snapshots
       end
 
