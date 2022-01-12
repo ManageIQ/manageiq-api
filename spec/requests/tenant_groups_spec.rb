@@ -8,7 +8,7 @@ describe "Tenant Groups API" do
   before do
     @user.miq_groups << group
     @user.miq_groups << tenant_group
-    api_basic_authorize collection_action_identifier('groups', 'read', :get)
+    api_basic_authorize collection_action_identifier('groups', :read, :get)
   end
 
   describe 'GET /tenant_groups' do

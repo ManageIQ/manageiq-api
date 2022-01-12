@@ -909,8 +909,7 @@ describe "Querying" do
       get(api_vm_snapshot_url(nil, vm, snapshot))
 
       actions = response.parsed_body['actions']
-      expect(actions.size).to eq(2)
-      expect(actions.collect { |a| a['name'] }).to match_array(%w(delete delete))
+      expect(actions.collect { |a| a['name'] }).to match_array(%w[delete])
       expect_result_to_have_keys(%w(href id actions))
     end
 
