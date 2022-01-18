@@ -2,7 +2,7 @@ module Api
   module Mixins
     module ServiceTemplates
       def order_service_template(id, data, scheduled_time = nil)
-        service_template = resource_search(id, :service_templates, ServiceTemplate)
+        service_template = resource_search(id, :service_templates)
         raise BadRequestError, "Service ordering via API is not allowed" unless api_request_allowed?
         raise BadRequestError, "#{service_template_ident(service_template)} cannot be ordered - #{service_template.unsupported_reason(:order)}" unless service_template.supports?(:order)
 

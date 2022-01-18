@@ -13,7 +13,7 @@ module Api
     def edit_resource(type, id, data = {})
       credentials = data.delete(CREDENTIALS_ATTR)
       raise BadRequestError, "Cannot update non-credentials attributes of host resource" if data.any?
-      resource_search(id, type, collection_class(:hosts)).tap do |host|
+      resource_search(id, type).tap do |host|
         all_credentials = Array.wrap(credentials).each_with_object({}) do |creds, hash|
           auth_type = creds.delete(AUTH_TYPE_ATTR) || DEFAULT_AUTH_TYPE
           creds.symbolize_keys!

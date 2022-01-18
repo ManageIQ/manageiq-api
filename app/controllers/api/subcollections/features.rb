@@ -68,7 +68,7 @@ module Api
           if feature.key?('identifier') && !feature['identifier'].nil?
             resource_search_by_criteria('identifier', feature['identifier'], feature_klass)
           else # Fallback to a feature id or href field.
-            resource_search(parse_id(feature, 'features'), 'features', feature_klass)
+            resource_search(parse_id(feature, 'features'), :features)
           end
         end
         new_features.compact

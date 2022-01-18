@@ -16,7 +16,7 @@ module Api
     def edit_resource(type, id, data = {})
       raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
 
-      host_aggregate = resource_search(id, type, collection_class(:host_aggregates))
+      host_aggregate = resource_search(id, type)
       raise "Edit not supported for #{host_aggregate.name}" unless host_aggregate.supports?(:update)
 
       task_id = host_aggregate.update_aggregate_queue(current_user.userid, data.symbolize_keys)

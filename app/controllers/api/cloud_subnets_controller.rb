@@ -22,7 +22,7 @@ module Api
     end
 
     def edit_resource(type, id, data)
-      cloud_subnet = resource_search(id, type, collection_class(:cloud_subnets))
+      cloud_subnet = resource_search(id, type)
       raise BadRequestError, "Cannot update #{cloud_subnet_ident(cloud_subnet)}: #{cloud_subnet.unsupported_reason(:update)}" unless cloud_subnet.supports?(:update)
 
       task_id = cloud_subnet.update_cloud_subnet_queue(session[:userid], data.deep_symbolize_keys)

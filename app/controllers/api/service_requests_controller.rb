@@ -8,7 +8,7 @@ module Api
     alias fetch_service_requests_picture fetch_picture
 
     def edit_resource(type, id, data)
-      request = resource_search(id, type, collection_class(:service_requests))
+      request = resource_search(id, type)
       RequestEditor.edit(request, data)
       request
     end
@@ -33,7 +33,7 @@ module Api
     def add_approver_resource(type, id, data)
       user = get_user(data)
       miq_approval = MiqApproval.create(:approver => user)
-      resource_search(id, type, collection_class(:service_requests)).tap do |service_request|
+      resource_search(id, type).tap do |service_request|
         service_request.miq_approvals << miq_approval
       end
     rescue => err
@@ -42,7 +42,7 @@ module Api
 
     def remove_approver_resource(type, id, data)
       user = get_user(data)
-      resource_search(id, type, collection_class(:service_requests)).tap do |service_request|
+      resource_search(id, type).tap do |service_request|
         miq_approval = service_request.miq_approvals.find_by(:approver_name => user.name)
         miq_approval.destroy if miq_approval
       end

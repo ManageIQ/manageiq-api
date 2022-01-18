@@ -89,7 +89,7 @@ module Api
       if service_template_id.blank?
         raise BadRequestError, "Must specify a service_template_href for adding a service_request"
       end
-      service_template = resource_search(service_template_id, :service_templates, ServiceTemplate)
+      service_template = resource_search(service_template_id, :service_templates)
       service_template.provision_workflow(User.current_user, service_request, :submit_workflow => true)
     end
 

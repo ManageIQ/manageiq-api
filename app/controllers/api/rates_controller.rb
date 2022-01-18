@@ -26,7 +26,7 @@ module Api
         resource_id = parse_id(resource_relation, collection)
         raise BadRequestError, "Missing #{type} identifier href or id" unless resource_id
 
-        resource = resource_search(resource_id, type, collection_class(collection))
+        resource = resource_search(resource_id, collection)
         data[parameter_key] = resource if resource
       end
     end

@@ -15,7 +15,7 @@ module Api
     def edit_resource(type, id, data = {})
       raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
 
-      physical_storage = resource_search(id, type, collection_class(:physical_storages))
+      physical_storage = resource_search(id, type)
 
       raise BadRequestError, physical_storage.unsupported_reason(:update) unless physical_storage.supports?(:update)
 

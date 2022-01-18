@@ -52,7 +52,7 @@ module Api
       raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
       raise BadRequestError, "Provider type cannot be updated" if data.key?(TYPE_ATTR)
 
-      provider = resource_search(id, type, collection_class(:providers))
+      provider = resource_search(id, type)
 
       if data.delete(DDF_ATTR)
         edit_provider_ddf(provider, data)
@@ -82,7 +82,7 @@ module Api
 
       enqueue_ems_action(type, id, "Importing Vm to", :method_name => 'import_vm', :args => [vm_id, target_params]) do
         # check if user can access the VM
-        resource_search(vm_id, :vms, Vm)
+        resource_search(vm_id, :vms)
       end
     end
 
@@ -101,6 +101,7 @@ module Api
       end
     end
 
+    # NOTE: _type == :providers
     def verify_credentials_resource(_type, id = nil, data = {})
       klass = fetch_provider_klass(collection_class(:providers), data)
       zone_name = data.delete('zone_name')
@@ -338,7 +339,7 @@ module Api
 
       zone_id = parse_id(data[ZONE_ATTR], :zone)
       raise BadRequestError, "Missing zone href or id" if zone_id.nil?
-      resource_search(zone_id, :zone, Zone) # Only support Rbac allowed zone
+      resource_search(zone_id, :zones) # Only support Rbac allowed zone
     end
 
     def validate_provider_class

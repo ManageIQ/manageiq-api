@@ -84,14 +84,13 @@ module Api
     end
 
     def show
-      klass = collection_class(@req.subject)
       opts  = {
         :name                  => @req.subject,
         :is_subcollection      => @req.subcollection?,
         :expand_actions        => true,
         :expand_custom_actions => true
       }
-      render_resource(@req.subject, resource_search(@req.subject_id, @req.subject, klass), opts)
+      render_resource(@req.subject, resource_search(@req.subject_id, @req.subject), opts)
     end
 
     def update

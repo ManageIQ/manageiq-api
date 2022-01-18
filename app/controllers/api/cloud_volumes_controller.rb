@@ -17,7 +17,7 @@ module Api
     def edit_resource(type, id, data = {})
       raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
 
-      cloud_volume = resource_search(id, type, collection_class(:cloud_volumes))
+      cloud_volume = resource_search(id, type)
 
       raise BadRequestError, cloud_volume.unsupported_reason(:update) unless cloud_volume.supports?(:update)
 

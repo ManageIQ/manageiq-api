@@ -21,7 +21,7 @@ module Api
     end
 
     def edit_resource(type, id, data)
-      req = resource_search(id, type, collection_class(:provision_requests))
+      req = resource_search(id, type)
       RequestEditor.edit(req, data)
       req
     end

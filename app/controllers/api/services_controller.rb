@@ -96,8 +96,8 @@ module Api
       action_result(false, err.to_s)
     end
 
-    def queue_chargeback_report_resource(_type, id, _data)
-      service = resource_search(id, :services, Service)
+    def queue_chargeback_report_resource(type, id, _data)
+      service = resource_search(id, type)
       task = service.queue_chargeback_report_generation(:userid => current_user.userid)
       action_result(true, "Queued chargeback report generation for #{service_ident(service)}", :task_id => task.id)
     rescue StandardError => err
@@ -150,25 +150,25 @@ module Api
     def fetch_ext_management_system(data)
       orchestration_manager_id = parse_id(data, :providers)
       raise BadRequestError, 'Missing ExtManagementSystem identifier id' if orchestration_manager_id.nil?
-      resource_search(orchestration_manager_id, :ext_management_systems, ExtManagementSystem)
+      resource_search(orchestration_manager_id, :providers)
     end
 
     def fetch_service(data)
       service_id = parse_id(data, :services)
       raise BadRequestError, 'Missing Service identifier id' if service_id.nil?
-      resource_search(service_id, :services, Service)
+      resource_search(service_id, :services)
     end
 
     def fetch_orchestration_template(data)
       orchestration_template_id = parse_id(data, :orchestration_templates)
       raise BadRequestError, 'Missing OrchestrationTemplate identifier id' if orchestration_template_id.nil?
-      resource_search(orchestration_template_id, :orchestration_templates, OrchestrationTemplate)
+      resource_search(orchestration_template_id, :orchestration_templates)
     end
 
     def fetch_configuration_script(data)
       configuration_script_id = parse_id(data, :configuration_script)
       raise BadRequestError, 'Missing ConfigurationScript identifier id' if configuration_script_id.nil?
-      resource_search(configuration_script_id, :configuration_scripts, ConfigurationScript)
+      resource_search(configuration_script_id, :configuration_scripts)
     end
 
     def service_ident(svc)
