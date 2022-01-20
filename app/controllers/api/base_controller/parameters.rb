@@ -90,7 +90,7 @@ module Api
       end
 
       def sort_directive(klass, attr, order, options)
-        arel = klass.arel_attribute(attr)
+        arel = klass.arel_table[attr]
         if order
           arel = arel.lower if options.map(&:downcase).include?("ignore_case")
           arel = %w[desc descending].include?(order.downcase) ? arel.desc : arel.asc
