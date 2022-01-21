@@ -16,6 +16,31 @@ module Api
         result
       end
 
+      # wrapper around api_action for creating a resource
+      # alternative to api_resource when creating a resource
+      #
+      # NOTE: would have been nice to only pass ems_id, and name
+      #       That way the external interface would be not this method's concern
+      #       but passing data also allows asserting that an id is not passed
+      def create_ems_resource(type, data, supports: false)
+        api_action(type, nil) do
+          assert_id_not_specified(data, type)
+          ems_id, model_name = data['ems_id'], data['name']
+          raise 'Must specify a Provider' unless ems_id
+
+          ems = resource_search(ems_id, :providers)
+          raise 'Must specify a valid Provider' unless ems
+
+          base_klass = collection_class(type).name.split(':').last
+          klass = ems.class_by_ems(base_klass)
+          raise "#{type} not supported by Provider #{ems.name}" unless klass
+
+          ensure_supports(type, klass, :create) if supports
+
+          full_action_results(yield(ems, klass)) { "Creating #{type.to_s.singularize.titleize} #{model_name} for Provider #{ems.name}" }
+        end
+      end
+
       # wrapper around api_action than adds a few things:
       #
       # - enforces id exists

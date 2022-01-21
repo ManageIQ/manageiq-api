@@ -1,15 +1,9 @@
 module Api
   class AuthKeyPairsController < BaseController
-    def create_resource(_type, _id = nil, data = {})
-      ext_management_system = resource_search(data['ems_id'], :providers)
-
-      klass = ManageIQ::Providers::CloudManager::AuthKeyPair.class_by_ems(ext_management_system)
-      raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
-
-      task_id = klass.create_key_pair_queue(session[:userid], ext_management_system, data)
-      action_result(true, "Creating Cloud Key Pair #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+    def create_resource(type, _id = nil, data = {})
+      create_ems_resource(type, data, :supports => true) do |ext_management_system, klass|
+        {:task_id => klass.create_key_pair_queue(User.current_userid, ext_management_system, data)}
+      end
     end
 
     def delete_resource_main_action(type, key_pair, _data)

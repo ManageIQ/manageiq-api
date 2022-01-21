@@ -17,7 +17,7 @@ describe "Physical Storages API" do
 
       post(api_physical_storages_url, :params => request)
 
-      expect_multiple_action_result(1, :success => true, :message => "Creating Physical Storage test_storage for Provider: #{provider.name}", :task => true)
+      expect_multiple_action_result(1, :success => true, :message => /Creating Physical Storage test_storage for Provider #{provider.name}/, :task => true)
     end
   end
 

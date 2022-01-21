@@ -32,7 +32,7 @@ describe "Host Initiator Groups API" do
 
       post(api_host_initiator_groups_url, :params => request)
 
-      expect_multiple_action_result(1, :success => true, :message => "Creating Host Initiator Group test_host_initiator_group for Provider: #{provider.name}", :task => true)
+      expect_multiple_action_result(1, :success => true, :message => /Creating Host Initiator Group test_host_initiator_group for Provider #{provider.name}/, :task => true)
     end
 
     it "Refuses to create without appropriate role" do

@@ -16,20 +16,18 @@ module Api
       {:task_id => config_script_src.delete_in_provider_queue}
     end
 
-    def create_resource(_type, _id, data)
-      validate_attrs(data)
-      manager_id = parse_id(data['manager_resource'], :providers)
-      raise 'Must specify a valid manager_resource href or id' unless manager_id
-      manager = resource_search(manager_id, :providers)
+    def create_resource(type, _id, data)
+      manager_id = parse_id(data.delete('manager_resource'), :providers) || data['ems_id']
 
-      type = "#{manager.type}::ConfigurationScriptSource"
-      klass = ConfigurationScriptSource.descendant_get(type)
-      raise "ConfigurationScriptSource cannot be added to #{manager_ident(manager)}" unless klass.respond_to?(:create_in_provider_queue)
+      # Since we are passing a custom hash to create_ems_resource (instead of data variable)
+      # we need to manually remove it from data.
+      data.delete('id')
+      create_ems_resource(type, {'ems_id' => manager_id, 'name' => data['name']}) do |manager, klass|
+        # TODO: introduce supports for configuration scripts create
+        raise "ConfigurationScriptSource cannot be added to #{model_ident(manager, :provider)}" unless klass.respond_to?(:create_in_provider_queue)
 
-      task_id = klass.create_in_provider_queue(manager.id, data.except('manager_resource').deep_symbolize_keys)
-      action_result(true, "Creating ConfigurationScriptSource for #{manager_ident(manager)}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+        {:task_id => klass.create_in_provider_queue(manager_id, data.deep_symbolize_keys)}
+      end
     end
 
     def refresh_resource(type, id, _data)
@@ -42,14 +40,6 @@ module Api
 
     def config_script_src_ident(config_script_src)
       "ConfigurationScriptSource id:#{config_script_src.id} name: '#{config_script_src.name}'"
-    end
-
-    def validate_attrs(data)
-      raise 'Must supply a manager resource' unless data['manager_resource']
-    end
-
-    def manager_ident(manager)
-      "Manager id:#{manager.id} name: '#{manager.name}'"
     end
   end
 end

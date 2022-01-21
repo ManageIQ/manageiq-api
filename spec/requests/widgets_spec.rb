@@ -71,7 +71,7 @@ describe "Widgets API" do
 
         post(api_widgets_url, :params => gen_request(:generate_content, [{"href" => api_widgets_url}, {"href" => api_widgets_url}]))
 
-        expect_bad_request(/Invalid MiqWidget id nil specified/i)
+        expect_multiple_action_result(2, :success => false, :message => /Invalid MiqWidget id nil specified/i)
       end
 
       context "generate_content for group" do

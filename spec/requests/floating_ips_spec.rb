@@ -68,7 +68,7 @@ RSpec.describe 'FloatingIp API' do
 
       post(api_floating_ips_url, :params => request)
 
-      expect_multiple_action_result(1, :success => true, :message => "Creating Floating Ip test_floating_ip for Provider: #{provider.name}", :task => true)
+      expect_multiple_action_result(1, :success => true, :message => /Creating Floating Ip test_floating_ip for Provider #{provider.name}/, :task => true)
     end
 
     it "raises error when provider does not support creating of floating ips" do
@@ -83,10 +83,7 @@ RSpec.describe 'FloatingIp API' do
       }
 
       post(api_floating_ips_url, :params => request)
-
-      expected = {"success" => false, "message" => a_string_including("Create floating ip for Provider #{provider.name}")}
-      expect(response.parsed_body["results"].first).to include(expected)
-      expect(response).to have_http_status(:bad_request)
+      expect_bad_request(/Create.*not.*supported/)
     end
   end
 

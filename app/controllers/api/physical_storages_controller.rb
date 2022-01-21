@@ -4,12 +4,11 @@ module Api
       enqueue_ems_action(type, id, "Refreshing", :method_name => :refresh_ems)
     end
 
-    def create_resource(_type, _id = nil, data = {})
-      ext_management_system = resource_search(data['ems_id'], :providers)
-      task_id = PhysicalStorage.create_physical_storage_queue(session[:userid], ext_management_system, data)
-      action_result(true, "Creating Physical Storage #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+    def create_resource(type, _id = nil, data = {})
+      # TODO: introduce supports for ems specific physical storage
+      create_ems_resource(type, data) do |ems, klass|
+        {:task_id => klass.create_physical_storage_queue(User.current_userid, ems, data)}
+      end
     end
 
     def edit_resource(type, id, data = {})
