@@ -4,8 +4,14 @@ module Api
       private
 
       def api_action(type, id)
-        result = yield(collection_class(type))
-        add_href_to_result(result, type, id) unless result[:href]
+        result = begin
+          yield(collection_class(type))
+        rescue ActiveRecord::RecordNotFound, ForbiddenError, BadRequestError, NotFoundError => err
+          single_resource? ? raise : action_result(false, err.to_s)
+        rescue => err
+          action_result(false, err.to_s)
+        end
+        add_href_to_result(result, type, id) if type && !result[:href]
         log_result(result)
         result
       end
@@ -14,7 +20,6 @@ module Api
       #
       # - enforces id exists
       # - constructs action_result for successes and failures
-      # - throws errors for single resources and use results for multiple resoruces
       def api_resource(type, id, action_phrase)
         api_action(type, id) do
           id ||= @req.collection_id
@@ -22,16 +27,20 @@ module Api
 
           api_log_info("#{action_phrase} #{type.to_s.titleize} id: #{id}")
           resource = resource_search(id, type)
-          result_options = yield(resource)
-          if result_options.key?(:success) # full action hash (finer grained messaging)
-            result_options
-          else # result_options is action_hash (preferred)
-            action_result(true, "#{action_phrase} #{model_ident(resource, type)}", result_options)
-          end
-        rescue ActiveRecord::RecordNotFound, ForbiddenError, BadRequestError, NotFoundError => err
-          single_resource? ? raise : action_result(false, err.to_s)
-        rescue => err
-          action_result(false, err.to_s)
+          full_action_results(yield(resource)) { "#{action_phrase} #{model_ident(resource, type)}" }
+        end
+      end
+
+      # api_resource, create_ems_resource yields to perform the action and fetch the results
+      # typically the block returns the result_options for action_result
+      # but sometimes, a complete action result is actually returned
+      #
+      # This method determines what is returned and helps fill out the action_result
+      def full_action_results(result_options)
+        if result_options.key?(:success) # full action hash (for finer grained messaging)
+          result_options
+        else # result_options is action_hash options (preferred)
+          action_result(true, yield, result_options)
         end
       end
 
