@@ -3,7 +3,7 @@ module Api
     include Subcollections::Tags
 
     def create_resource(_type, _id = nil, data = {})
-      ems = ExtManagementSystem.find(data['ems_id'])
+      ems = resource_search(data['ems_id'], :providers)
       klass = NetworkRouter.class_by_ems(ems)
       raise BadRequestError, "Create network router for Provider #{ems.name}: #{klass.unsupported_reason(:create)}" unless klass.supports?(:create)
 

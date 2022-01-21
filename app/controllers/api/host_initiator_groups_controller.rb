@@ -3,7 +3,7 @@ module Api
     def create_resource(type, _id = nil, data = {})
       raise BadRequestError, "ems_id not defined for #{type} resource" if data['ems_id'].blank?
 
-      ext_management_system = ExtManagementSystem.find(data['ems_id'])
+      ext_management_system = resource_search(data['ems_id'], :providers)
 
       klass = HostInitiatorGroup.class_by_ems(ext_management_system)
       raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)

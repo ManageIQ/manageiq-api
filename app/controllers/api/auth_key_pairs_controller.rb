@@ -1,7 +1,7 @@
 module Api
   class AuthKeyPairsController < BaseController
     def create_resource(_type, _id = nil, data = {})
-      ext_management_system = ExtManagementSystem.find(data['ems_id'])
+      ext_management_system = resource_search(data['ems_id'], :providers)
 
       klass = ManageIQ::Providers::CloudManager::AuthKeyPair.class_by_ems(ext_management_system)
       raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
