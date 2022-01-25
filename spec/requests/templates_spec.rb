@@ -28,9 +28,46 @@ RSpec.describe "Templates API" do
   end
 
   context "editing a template" do
-    let!(:template) { FactoryBot.create(:template, :name => 'foo', :description => 'bar') }
+    let!(:template)     { FactoryBot.create(:template, :name => 'foo', :description => 'bar') }
+    let(:ems)           { FactoryBot.create(:ems_vmware) }
+    let(:host)          { FactoryBot.create(:host) }
+    let(:template_openstack)       { FactoryBot.create(:template_openstack, :host => host, :ems_id => ems.id, :raw_power_state => "ACTIVE") }
+    let(:template_openstack1)      { FactoryBot.create(:template_openstack, :host => host, :ems_id => ems.id, :raw_power_state => "ACTIVE") }
+    let(:template_openstack2)      { FactoryBot.create(:template_openstack, :host => host, :ems_id => ems.id, :raw_power_state => "ACTIVE") }
+    let(:new_vms) { FactoryBot.create_list(:template_openstack, 2) }
     before { api_basic_authorize(action_identifier(:templates, :edit)) }
     subject { send(req, api_template_url(nil, template), :params => params) }
+
+    describe "POST /api/templates/:c_id" do
+      it 'can edit a template with an appropriate role' do
+        template.set_child(template_openstack)
+        template.set_parent(template_openstack1)
+        children = new_vms.collect do |vm|
+          {'href' => api_template_url(nil, vm)}
+        end
+        post(
+          api_template_url(nil, template),
+          :params => {
+            :action          => 'edit',
+            :description     => 'bar',
+            :name            => 'drew was here',
+            :child_resources => children,
+            :custom_1        => 'foobar',
+            :parent_resource => {:href => api_template_url(nil, template_openstack2)}
+          }
+        )
+
+        expected = {
+          'description' => 'bar'
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+        expect(template.reload.children).to match_array(new_vms)
+        expect(template.parent).to eq(template_openstack2)
+        expect(template.name).to eq('drew was here')
+        expect(template.custom_1).to eq('foobar')
+      end
+    end
 
     describe "PUT /api/templates/:c_id" do
       let(:req) { :put }
