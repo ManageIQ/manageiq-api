@@ -5,7 +5,7 @@ module Api
     end
 
     def create_resource(_type, _id = nil, data = {})
-      ext_management_system = ExtManagementSystem.find(data['ems_id'])
+      ext_management_system = resource_search(data['ems_id'], :providers)
       task_id = PhysicalStorage.create_physical_storage_queue(session[:userid], ext_management_system, data)
       action_result(true, "Creating Physical Storage #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
     rescue => err

@@ -11,7 +11,7 @@ module Api
     end
 
     def create_resource(_type, _id = nil, data = {})
-      ems = ExtManagementSystem.find(data['ems_id'])
+      ems = resource_search(data['ems_id'], :providers)
       klass = CloudSubnet.class_by_ems(ems)
       raise BadRequestError, "Cannot create cloud subnet for Provider #{ems.name}: #{klass.unsupported_reason(:create)}" unless klass.supports?(:create)
 

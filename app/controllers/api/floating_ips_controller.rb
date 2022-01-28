@@ -1,7 +1,7 @@
 module Api
   class FloatingIpsController < BaseController
     def create_resource(_type, _id = nil, data = {})
-      ems = ExtManagementSystem.find(data['ems_id'])
+      ems = resource_search(data['ems_id'], :providers)
       klass = FloatingIp.class_by_ems(ems)
       raise BadRequestError, "Create floating ip for Provider #{ems.name}: #{klass.unsupported_reason(:create)}" unless klass.supports?(:create)
 

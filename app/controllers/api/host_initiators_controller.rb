@@ -7,7 +7,7 @@ module Api
     def create_resource(_type, _id = nil, data = {})
       raise BadRequestError, "ems_id not defined for #{_type} resource" if data['ems_id'].blank?
 
-      ext_management_system = ExtManagementSystem.find(data['ems_id'])
+      ext_management_system = resource_search(data['ems_id'], :providers)
       task_id = HostInitiator.create_host_initiator_queue(session[:userid], ext_management_system, data)
       action_result(true, "Creating Host Initiator #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
     rescue => err
