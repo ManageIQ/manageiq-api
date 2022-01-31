@@ -129,6 +129,9 @@ module Api
           queue_options[:tenant_id] = user.current_tenant.id
         end
         queue_options[:zone] = object.my_zone if %w(ems_operations smartstate).include?(options[:role])
+        if !queue_options.key?(:queue_name) && options[:role] == "ems_operations"
+          queue_options[:queue_name] = object.ext_management_system&.queue_name_for_ems_operations
+        end
 
         MiqTask.generic_action_with_callback(task_options, queue_options)
       end
