@@ -2,6 +2,7 @@ module Api
   class VmsController < BaseController
     extend Api::Mixins::CentralAdmin
     include Api::Mixins::PolicySimulation
+    include Api::Mixins::Genealogy
     include Subcollections::Accounts
     include Subcollections::Cdroms
     include Subcollections::Compliances
@@ -15,9 +16,6 @@ module Api
     include Subcollections::Snapshots
     include Subcollections::Software
     include Subcollections::Tags
-
-    RELATIONSHIP_COLLECTIONS = %w[vms templates].freeze
-    VALID_EDIT_ATTRS = %w[description name child_resources parent_resource].freeze
 
     def start_resource(type, id = nil, _data = nil)
       enqueue_ems_action(type, id, "Starting", :method_name => "start", :supports => true)
@@ -47,13 +45,7 @@ module Api
     end
 
     def edit_resource(type, id, data)
-      attrs = validate_edit_data(data)
-      parent, children = build_parent_children(data)
-      resource_search(id, type).tap do |vm|
-        vm.replace_children(children)
-        vm.set_parent(parent)
-        vm.update!(attrs)
-      end
+      edit_resource_with_genealogy(type, id, data)
     rescue => err
       raise BadRequestError, "Cannot edit VM - #{err}"
     end
@@ -210,36 +202,6 @@ module Api
 
     def miq_server_message(miq_server)
       miq_server ? "Set miq_server id:#{miq_server.id}" : "Removed miq_server"
-    end
-
-    def validate_edit_data(data)
-      invalid_keys = data.keys - VALID_EDIT_ATTRS - valid_custom_attrs
-      raise BadRequestError, "Cannot edit values #{invalid_keys.join(', ')}" if invalid_keys.present?
-      data.except('parent_resource', 'child_resources')
-    end
-
-    def build_parent_children(data)
-      children = if data.key?('child_resources')
-                   data['child_resources'].collect do |child|
-                     fetch_relationship(child['href'])
-                   end
-                 end
-
-      parent = if data.key?('parent_resource')
-                 fetch_relationship(data['parent_resource']['href'])
-               end
-
-      [parent, Array(children)]
-    end
-
-    def fetch_relationship(href)
-      href = Href.new(href)
-      raise "Invalid relationship type #{href.subject}" unless RELATIONSHIP_COLLECTIONS.include?(href.subject)
-      resource_search(href.subject_id, href.subject)
-    end
-
-    def valid_custom_attrs
-      Vm.virtual_attribute_names.select { |name| name =~ /custom_\d/ }
     end
 
     def vm_ident(vm)
