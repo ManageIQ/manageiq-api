@@ -22,10 +22,7 @@ module Api
       # Since we are passing a custom hash to create_ems_resource (instead of data variable)
       # we need to manually remove it from data.
       data.delete('id')
-      create_ems_resource(type, {'ems_id' => manager_id, 'name' => data['name']}) do |manager, klass|
-        # TODO: introduce supports for configuration scripts create
-        raise "ConfigurationScriptSource cannot be added to #{model_ident(manager, :provider)}" unless klass.respond_to?(:create_in_provider_queue)
-
+      create_ems_resource(type, {'ems_id' => manager_id, 'name' => data['name']}, :supports => true) do |_manager, klass|
         {:task_id => klass.create_in_provider_queue(manager_id, data.deep_symbolize_keys)}
       end
     end
