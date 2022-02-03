@@ -302,61 +302,24 @@ RSpec.describe 'Configuration Script Sources API' do
     it 'creates a configuration script source with appropriate role' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :create, :post)
 
-      expected = {
-        'results' => [
-          a_hash_including(
-            'success' => true,
-            'message' => a_string_including('Creating ConfigurationScriptSource'),
-            'task_id' => a_kind_of(String)
-          )
-        ]
-      }
       post(api_configuration_script_sources_url, :params => create_params)
-
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      expect_multiple_action_result(1, :success => true, :task => true, :message => /Creating Configuration Script Source/)
     end
 
     it 'create a new configuration script source with manager_resource id' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :create, :post)
       create_params[:manager_resource] = { :id => manager.id }
 
-      expected = {
-        'results' => [
-          a_hash_including(
-            'success' => true,
-            'message' => "Creating ConfigurationScriptSource for Manager id:#{manager.id} name: '#{manager.name}'",
-            'task_id' => a_kind_of(String)
-          )
-        ]
-      }
       post(api_configuration_script_sources_url, :params => create_params)
-
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      expect_multiple_action_result(1, :success => true, :task => true, :message => /Creating Configuration Script Source/)
     end
 
     it 'can create new configuration script sources in bulk' do
       api_basic_authorize collection_action_identifier(:configuration_script_sources, :create, :post)
 
-      expected = {
-        'results' => [
-          a_hash_including(
-            'success' => true,
-            'message' => a_string_including('Creating ConfigurationScriptSource'),
-            'task_id' => a_kind_of(String)
-          ),
-          a_hash_including(
-            'success' => true,
-            'message' => a_string_including('Creating ConfigurationScriptSource'),
-            'task_id' => a_kind_of(String)
-          )
-        ]
-      }
       post(api_configuration_script_sources_url, :params => { :resources => [create_params, create_params] })
 
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      expect_multiple_action_result(2, :success => true, :task => true, :message => /Creating Configuration Script Source/)
     end
 
     it 'requires a manager_resource to be specified' do
@@ -364,14 +327,8 @@ RSpec.describe 'Configuration Script Sources API' do
 
       post(api_configuration_script_sources_url, :params => { :resources => [create_params.except(:manager_resource)] })
 
-      expected = {
-        'results' => [{
-          'success' => false,
-          'message' => 'Must supply a manager resource'
-        }]
-      }
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_multiple_action_result(1, :success => false, :message => /Must specify a Provider/)
     end
 
     it 'requires a valid manager' do
@@ -380,14 +337,7 @@ RSpec.describe 'Configuration Script Sources API' do
 
       post(api_configuration_script_sources_url, :params => { :resources => [create_params] })
 
-      expected = {
-        'results' => [{
-          'success' => false,
-          'message' => 'Must specify a valid manager_resource href or id'
-        }]
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_multiple_action_result(1, :success => false, :message => /Must specify a Provider/)
     end
 
     it 'forbids creation of new configuration script source without an appropriate role' do

@@ -113,7 +113,7 @@ RSpec.describe 'CloudSubnets API' do
 
       post(api_cloud_subnets_url, :params => request)
 
-      expect_multiple_action_result(1, :success => true, :message => "Creating Cloud Subnet test_cloud_subnet for Provider: #{ems.name}", :task => true)
+      expect_multiple_action_result(1, :success => true, :task => true, :message => /Creating Cloud Subnet test_cloud_subnet for Provider #{ems.name}/)
     end
 
     it "raises error when provider does not support creating of cloud subnets" do
@@ -128,10 +128,7 @@ RSpec.describe 'CloudSubnets API' do
       }
 
       post(api_cloud_subnets_url, :params => request)
-
-      expected = {"success" => false, "message" => a_string_including("Cannot create cloud subnet for Provider #{provider.name}")}
-      expect(response.parsed_body["results"].first).to include(expected)
-      expect(response).to have_http_status(:bad_request)
+      expect_bad_request(/Create for Cloud Subnet.*not.*supported/)
     end
   end
 

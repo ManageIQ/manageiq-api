@@ -3,14 +3,11 @@ module Api
     include Subcollections::SecurityGroups
     include Subcollections::Tags
 
-    def create_resource(_type, _id, data = {})
-      ext_management_system = resource_search(data['ems_id'], :providers)
-      data.delete('ems_id')
-
-      task_id = CloudTenant.create_cloud_tenant_queue(session[:userid], ext_management_system, data)
-      action_result(true, "Creating Cloud Tenant #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+    def create_resource(type, _id, data = {})
+      # TODO: introduce supports for CloudTenant creation
+      create_ems_resource(type, data) do |ems, klass|
+        {:task_id => klass.create_cloud_tenant_queue(User.current_userid, ems, data)}
+      end
     end
 
     def edit_resource(type, id, data = {})

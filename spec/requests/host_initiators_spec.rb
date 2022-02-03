@@ -39,7 +39,7 @@ describe "Host Initiators API" do
 
       post(api_host_initiators_url, :params => request)
 
-      expect_multiple_action_result(1, :success => true, :message => "Creating Host Initiator test_host_initiator for Provider: #{provider.name}", :task => true)
+      expect_multiple_action_result(1, :success => true, :message => /Creating Host Initiator test_host_initiator for Provider #{provider.name}/, :task => true)
     end
   end
 

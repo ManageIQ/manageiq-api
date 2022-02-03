@@ -2,15 +2,10 @@ module Api
   class HostAggregatesController < BaseController
     include Subcollections::Tags
 
-    def create_resource(_type, _id, data = {})
-      ext_management_system = resource_search(data.delete('ems_id'), :providers)
-      klass = ext_management_system.class_by_ems('HostAggregate')
-      raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
-
-      task_id = klass.create_aggregate_queue(session[:userid], ext_management_system, data.symbolize_keys)
-      action_result(true, "Creating Host Aggregate #{data['name']} for Provider: #{ext_management_system.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+    def create_resource(type, _id, data = {})
+      create_ems_resource(type, data, :supports => true) do |ems, klass|
+        {:task_id => klass.create_aggregate_queue(User.current_userid, ems, data)}
+      end
     end
 
     def edit_resource(type, id, data = {})

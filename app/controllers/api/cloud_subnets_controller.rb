@@ -10,15 +10,10 @@ module Api
       end
     end
 
-    def create_resource(_type, _id = nil, data = {})
-      ems = resource_search(data['ems_id'], :providers)
-      klass = CloudSubnet.class_by_ems(ems)
-      raise BadRequestError, "Cannot create cloud subnet for Provider #{ems.name}: #{klass.unsupported_reason(:create)}" unless klass.supports?(:create)
-
-      task_id = ems.create_cloud_subnet_queue(session[:userid], data.deep_symbolize_keys)
-      action_result(true, "Creating Cloud Subnet #{data['name']} for Provider: #{ems.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+    def create_resource(type, _id = nil, data = {})
+      create_ems_resource(type, data, :supports => true) do |ems, _klass|
+        {:task_id => ems.create_cloud_subnet_queue(User.current_userid, data.deep_symbolize_keys)}
+      end
     end
 
     def edit_resource(type, id, data)

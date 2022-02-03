@@ -77,7 +77,7 @@ RSpec.describe 'NetworkRouters API' do
 
       post(api_network_routers_url, :params => request)
 
-      expect_multiple_action_result(1, :success => true, :message => "Creating Network Router test_network_router for Provider: #{ems.name}", :task => true)
+      expect_multiple_action_result(1, :success => true, :message => /Creating Network Router test_network_router for Provider #{ems.name}/, :task => true)
     end
 
     it "raises error when provider does not support creating of network routers" do
@@ -92,13 +92,7 @@ RSpec.describe 'NetworkRouters API' do
       }
 
       post(api_network_routers_url, :params => request)
-
-      expected = {
-        "success" => false,
-        "message" => a_string_including("Create network router for Provider #{ems.name}")
-      }
-      expect(response.parsed_body["results"].first).to include(expected)
-      expect(response).to have_http_status(:bad_request)
+      expect_bad_request(/Create.*not.*supported/)
     end
   end
 

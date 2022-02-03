@@ -67,20 +67,7 @@ RSpec.describe "Auth Key Pairs API" do
 
         post(api_auth_key_pairs_url, :params => {'name' => 'foo', 'ems_id' => provider.id})
 
-        expect(response).to have_http_status(:ok)
-
-        expected = {
-          "results" => [
-            a_hash_including(
-              "success"   => true,
-              "message"   => a_string_matching(/Creating Cloud Key Pair/),
-              "task_id"   => anything,
-              "task_href" => a_string_matching(api_tasks_url)
-            )
-          ]
-        }
-
-        expect(response.parsed_body).to include(expected)
+        expect_multiple_action_result(1, :success => true, :task => true, :message => /Creating Auth Key Pair/)
       end
     end
 
@@ -91,18 +78,7 @@ RSpec.describe "Auth Key Pairs API" do
 
         post(api_auth_key_pairs_url, :params => {'name' => 'foo', 'ems_id' => provider.id})
 
-        expect(response).to have_http_status(:bad_request)
-
-        expected = {
-          "results" => [
-            a_hash_including(
-              "success" => false,
-              "message" => a_string_matching('not available')
-            )
-          ]
-        }
-
-        expect(response.parsed_body).to include(expected)
+        expect_bad_request(/not.*supported/)
       end
     end
 
