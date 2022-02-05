@@ -1,6 +1,6 @@
 # ManageIQ::Api
 
-[![Build Status](https://travis-ci.com/ManageIQ/manageiq-api.svg?branch=master)](https://travis-ci.com/github/ManageIQ/manageiq-api)
+[![CI](https://github.com/ManageIQ/manageiq-api/actions/workflows/ci.yaml/badge.svg)](https://github.com/ManageIQ/manageiq-api/actions/workflows/ci.yaml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/9105d34929af8f8ad103/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-api/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/9105d34929af8f8ad103/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-api/test_coverage)
 
