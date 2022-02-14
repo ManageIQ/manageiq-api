@@ -131,8 +131,10 @@ describe "Cloud Volumes API" do
 
   describe "safe delete" do
     it 'can safe delete cloud volumes which support safe_delete' do
-      ems = FactoryBot.create(:ems_autosde, :name => "Autosde")
-      volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => ems, :name => "my_volume")
+      ems    = FactoryBot.create(:ext_management_system)
+      volume = FactoryBot.create(:cloud_volume, :ext_management_system => ems)
+      stub_supports(volume, :safe_delete)
+
       api_basic_authorize(action_identifier(:cloud_volumes, :safe_delete, :resource_actions, :post))
 
       post(api_cloud_volume_url(nil, volume), :params => {"action" => "safe_delete"})
@@ -141,8 +143,10 @@ describe "Cloud Volumes API" do
     end
 
     it 'safe_delete will raise an error if the cloud volume does not support safe_delete' do
-      ems    = FactoryBot.create(:ems_autosde, :name => "Autosde")
-      volume = FactoryBot.create(:cloud_volume, :ext_management_system => ems, :name => "my_volume")
+      ems    = FactoryBot.create(:ext_management_system)
+      volume = FactoryBot.create(:cloud_volume, :ext_management_system => ems)
+      stub_supports_not(volume, :safe_delete)
+
       api_basic_authorize(action_identifier(:cloud_volumes, :safe_delete, :resource_actions, :post))
 
       post(api_cloud_volume_url(nil, volume), :params => {"action" => "safe_delete"})
@@ -150,13 +154,14 @@ describe "Cloud Volumes API" do
     end
 
     it "can safe delete a cloud volume as a resource action" do
-      ems = FactoryBot.create(:ems_autosde, :name => "Autosde")
-      volume1 = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => ems, :name => "my_volume")
+      ems    = FactoryBot.create(:ext_management_system)
+      volume = FactoryBot.create(:cloud_volume, :ext_management_system => ems)
+      stub_supports(volume, :safe_delete)
 
       api_basic_authorize(action_identifier(:cloud_volumes, :safe_delete, :resource_actions, :post))
-      post(api_cloud_volumes_url, :params => {"action" => "safe_delete", "resources" => [{"id" => volume1.id}]})
+      post(api_cloud_volumes_url, :params => {"action" => "safe_delete", "resources" => [{"id" => volume.id}]})
 
-      expect_multiple_action_result(1, :success => true, :message => /Deleting Cloud Volume.*#{volume1.name}/)
+      expect_multiple_action_result(1, :success => true, :message => /Deleting Cloud Volume/)
     end
   end
 
