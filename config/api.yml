@@ -1748,6 +1748,10 @@
         :identifier: host_aggregate_edit
       - :name: delete
         :identifier: host_aggregate_delete
+      - :name: add_host
+        :identifier: host_aggregate_edit
+      - :name: remove_host
+        :identifier: host_aggregate_edit
     :tags_subcollection_actions:
       :post:
       - :name: assign
