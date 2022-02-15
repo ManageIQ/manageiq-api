@@ -25,6 +25,34 @@ module Api
       {:task_id => host_aggregate.delete_aggregate_queue(current_user.userid)}
     end
 
+    def add_host_resource(type, id, data = {})
+      raise BadRequestError, "Must specify an id" if id.nil?
+      raise BadRequestError, "Must specify a host_id" if data["host_id"].nil?
+
+      host_aggregate = resource_search(id, type)
+      raise BadRequestError, host_aggregate.unsupported_reason(:add_host) unless host_aggregate.supports?(:add_host)
+
+      new_host = resource_search(data["host_id"], :hosts)
+      task_id = host_aggregate.add_host_queue(current_user.userid, new_host)
+      action_result(true, "Adding #{host_aggregate_ident(host_aggregate)}", :task_id => task_id)
+    rescue => err
+      action_result(false, err.to_s)
+    end
+
+    def remove_host_resource(type, id, data = {})
+      raise BadRequestError, "Must specify an id" if id.nil?
+      raise BadRequestError, "Must specify a host_id" if data["host_id"].nil?
+
+      host_aggregate = resource_search(id, type)
+      raise BadRequestError, host_aggregate.unsupported_reason(:remove_host) unless host_aggregate.supports?(:remove_host)
+
+      new_host = resource_search(data["host_id"], :hosts)
+      task_id = host_aggregate.remove_host_queue(current_user.userid, new_host)
+      action_result(true, "Removing #{host_aggregate_ident(host_aggregate)}", :task_id => task_id)
+    rescue => err
+      action_result(false, err.to_s)
+    end
+
     private
 
     def host_aggregate_ident(host_aggregate)

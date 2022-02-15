@@ -1,4 +1,6 @@
 RSpec.describe 'HostAggregates API' do
+  include Spec::Support::SupportsHelper
+
   describe 'GET /api/host_aggregates' do
     it 'lists all cloud tenants with an appropriate role' do
       host_aggregate = FactoryBot.create(:host_aggregate)
@@ -62,6 +64,46 @@ RSpec.describe 'HostAggregates API' do
         )]
       }
 
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+  end
+
+  describe 'POST /api/host_aggregates/:id' do
+    let(:zone) { FactoryBot.create(:zone) }
+    let(:ems)  { FactoryBot.create(:ems_cloud, :zone => zone) }
+    let(:host) { FactoryBot.create(:host, :ext_management_system => ems) }
+
+    it 'adds a host to the host aggregate' do
+      host_aggregate = FactoryBot.create(:host_aggregate, :ext_management_system => ems)
+      api_basic_authorize action_identifier(:host_aggregates, :edit)
+
+      stub_supports(host_aggregate.class, :add_host)
+
+      post(api_host_aggregate_url(nil, host_aggregate), :params => {:action => 'add_host', :resource => {:host_id => host.id.to_s}})
+
+      expected = {
+        'success' => true,
+        'message' => a_string_including('Adding Host Aggregate'),
+        'task_id' => a_kind_of(String)
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'removes a host from the host aggregate' do
+      host_aggregate = FactoryBot.create(:host_aggregate, :ext_management_system => ems, :hosts => [host])
+      api_basic_authorize action_identifier(:host_aggregates, :edit)
+
+      stub_supports(host_aggregate.class, :remove_host)
+
+      post(api_host_aggregate_url(nil, host_aggregate), :params => {:action => 'remove_host', :resource => {:host_id => host.id.to_s}})
+
+      expected = {
+        'success' => true,
+        'message' => a_string_including('Removing Host Aggregate'),
+        'task_id' => a_kind_of(String)
+      }
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
     end
