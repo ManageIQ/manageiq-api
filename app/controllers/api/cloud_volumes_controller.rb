@@ -22,8 +22,7 @@ module Api
     end
 
     def safe_delete_resource(type, id, _data = {})
-      api_resource(type, id, "Deleting") do |cloud_volume|
-        ensure_supports(type, cloud_volume, :safe_delete)
+      api_resource(type, id, "Deleting", :supports => :safe_delete) do |cloud_volume|
         {:task_id => cloud_volume.safe_delete_volume_queue(User.current_userid)}
       end
     end
