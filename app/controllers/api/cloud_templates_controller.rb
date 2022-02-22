@@ -14,6 +14,7 @@ module Api
       src_image = resource_search(data['src_image_id'], :providers, collection_class(:templates))
       resource_search(data['obj_storage_id'], :providers) if data['obj_storage_id'].present?
       resource_search(data['bucket_id'], :cloud_object_store_containers) if data['bucket_id'].present?
+      resource_search(data['bucket_id'], :cloud_volume_types) if data['disk_type_id'].present?
 
       raise BadRequestError, "Source image specified by the id '#{data['src_image_id']}' does not belong to the source provider with id '#{ems_src.id}'" if src_image.ems_id != ems_src.id
 
