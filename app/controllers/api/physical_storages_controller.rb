@@ -24,16 +24,10 @@ module Api
       action_result(false, err.to_s)
     end
 
-    # really shouldn't override, but want the word Detaching in there
-    def delete_resource_action(type, id = nil, data = nil)
-      api_resource(type, id, "Detaching") do |resource|
-        delete_resource_main_action(type, resource, data)
+    def delete_resource_action(type, id = nil, _data = nil)
+      api_resource(type, id, "Detaching", :supports => :delete) do |physical_storage|
+        {:task_id => physical_storage.delete_physical_storage_queue(User.current_user)}
       end
-    end
-
-    def delete_resource_main_action(type, physical_storage, _data = nil)
-      ensure_supports(type, physical_storage, :delete)
-      {:task_id => physical_storage.delete_physical_storage_queue(User.current_user)}
     end
   end
 end

@@ -45,13 +45,14 @@ module Api
       #
       # - enforces id exists
       # - constructs action_result for successes and failures
-      def api_resource(type, id, action_phrase)
+      def api_resource(type, id, action_phrase, supports: false)
         api_action(type, id) do
           id ||= @req.collection_id
           raise BadRequestError, "#{action_phrase} #{type.to_s.titleize} requires an id" unless id
 
           api_log_info("#{action_phrase} #{type.to_s.titleize} id: #{id}")
           resource = resource_search(id, type)
+          ensure_supports(type, resource, supports) if supports
           full_action_results(yield(resource)) { "#{action_phrase} #{model_ident(resource, type)}" }
         end
       end
@@ -91,8 +92,7 @@ module Api
         supports = options.delete(:supports)
         supports = options[:method_name] if supports == true
 
-        api_resource(type, id, action_phrase) do |model|
-          ensure_supports(type, model, options[:method_name], supports) if supports
+        api_resource(type, id, action_phrase, :supports => supports) do |model|
           yield(model) if block_given?
           desc = "#{action_phrase} #{model_ident(model, type)}"
           {:task_id => queue_object_action(model, desc, options)}
