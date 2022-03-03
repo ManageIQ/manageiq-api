@@ -11,7 +11,7 @@ module Api
 
       ems_dst   = resource_search(data['dst_provider_id'], :providers)
       ems_src   = resource_search(data['src_provider_id'], :providers)
-      src_image = resource_search(data['src_image_id'], :providers, collection_class(:templates))
+      src_image = resource_search(data['src_image_id'], :templates)
       resource_search(data['obj_storage_id'], :providers) if data['obj_storage_id'].present?
       resource_search(data['bucket_id'], :cloud_object_store_containers) if data['bucket_id'].present?
       resource_search(data['disk_type_id'], :cloud_volume_types) if data['disk_type_id'].present?
