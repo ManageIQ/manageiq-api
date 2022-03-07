@@ -208,7 +208,6 @@ RSpec.describe "Cloud Templates API" do
     it "fails without src_provider_id" do
       api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
 
-      src   = FactoryBot.create(:ems_cloud)
       dst   = FactoryBot.create(:ems_cloud)
       image = FactoryBot.create(:template)
 
@@ -222,6 +221,13 @@ RSpec.describe "Cloud Templates API" do
       )
 
       expect(response).to have_http_status(:bad_request)
+    end
+
+    it "fails without dst_provider_id" do
+      api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
+
+      src   = FactoryBot.create(:ems_cloud)
+      image = FactoryBot.create(:template)
 
       post(
         api_cloud_template_url(nil, ''),
@@ -233,6 +239,13 @@ RSpec.describe "Cloud Templates API" do
       )
 
       expect(response).to have_http_status(:bad_request)
+    end
+
+    it "fails without src_image_id" do
+      api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
+
+      src   = FactoryBot.create(:ems_cloud)
+      dst   = FactoryBot.create(:ems_cloud)
 
       post(
         api_cloud_template_url(nil, ''),
@@ -249,7 +262,6 @@ RSpec.describe "Cloud Templates API" do
     it "fails with not found src_provider_id" do
       api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
 
-      src    = FactoryBot.create(:ems_cloud)
       dst    = FactoryBot.create(:ems_cloud)
       image  = FactoryBot.create(:template)
 
@@ -264,6 +276,13 @@ RSpec.describe "Cloud Templates API" do
       )
 
       expect(response).to have_http_status(:bad_request)
+    end
+
+    it "fails with not found dst_provider_id" do
+      api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
+
+      src   = FactoryBot.create(:ems_cloud)
+      image = FactoryBot.create(:template)
 
       post(
         api_cloud_template_url(nil, ''),
@@ -276,6 +295,13 @@ RSpec.describe "Cloud Templates API" do
       )
 
       expect(response).to have_http_status(:bad_request)
+    end
+
+    it "fails with not found src_image_id" do
+      api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
+
+      src   = FactoryBot.create(:ems_cloud)
+      dst   = FactoryBot.create(:ems_cloud)
 
       post(
         api_cloud_template_url(nil, ''),
@@ -290,12 +316,12 @@ RSpec.describe "Cloud Templates API" do
       expect(response).to have_http_status(:bad_request)
     end
 
-    it "will fail since the specified image doesn't belong to the source manager" do
+    it "fails as the image doesn't belong to the source manager" do
+      api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
+
       src   = FactoryBot.create(:ems_cloud)
       dst   = FactoryBot.create(:ems_cloud)
       image = FactoryBot.create(:template, :ext_management_system => dst)
-
-      api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
 
       post(
         api_cloud_template_url(nil, ''),
@@ -310,12 +336,12 @@ RSpec.describe "Cloud Templates API" do
       expect(response).to have_http_status(:bad_request)
     end
 
-    it "will succeed since required parameters present, corresp. resources exist and dependencies are well-formed" do
+    it "succeeds as required parameters present, resources exist and image belongs to source provider" do
+      api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
+
       src   = FactoryBot.create(:ems_cloud)
       dst   = FactoryBot.create(:ems_cloud)
       image = FactoryBot.create(:template, :ext_management_system => src)
-
-      api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
 
       post(
         api_cloud_template_url(nil, ''),
