@@ -216,7 +216,6 @@ RSpec.describe "Cloud Templates API" do
         api_cloud_template_url(nil, ''),
         :params => {
           :action          => "import",
-          :src_provider_id => nil,
           :dst_provider_id => dst.id,
           :src_image_id    => image.id,
         }
@@ -229,7 +228,6 @@ RSpec.describe "Cloud Templates API" do
         :params => {
           :action          => "import",
           :src_provider_id => src.id,
-          :dst_provider_id => nil,
           :src_image_id    => image.id,
         }
       )
@@ -242,7 +240,6 @@ RSpec.describe "Cloud Templates API" do
           :action          => "import",
           :src_provider_id => src.id,
           :dst_provider_id => dst.id,
-          :src_image_id    => nil,
         }
       )
 
