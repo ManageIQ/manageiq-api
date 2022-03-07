@@ -135,8 +135,7 @@ describe "Automate Domains API" do
       expect(GitBasedDomainImportService).to receive(:available?).and_return(false)
 
       post(api_automate_domain_url(nil, git_domain), :params => gen_request(:refresh_from_source))
-      expect_single_action_result(:success => false,
-                                  :message => 'Git owner role is not enabled to be able to import git repositories')
+      expect_bad_request('Git owner role is not enabled to be able to import git repositories')
     end
 
     context 'with proper git_owner role' do
@@ -149,10 +148,7 @@ describe "Automate Domains API" do
         api_basic_authorize action_identifier(:automate_domains, :refresh_from_source)
 
         post(api_automate_domain_url(nil, non_git_domain), :params => gen_request(:refresh_from_source))
-        expect_single_action_result(
-          :success => false,
-          :message => a_string_matching(/Automate Domain .* did not originate from git repository/)
-        )
+        expect_bad_request(/Automate Domain .* did not originate from git repository/)
       end
 
       it 'refreshes domain from git_repository' do
@@ -162,7 +158,7 @@ describe "Automate Domains API" do
         post(api_automate_domain_url(nil, git_domain), :params => gen_request(:refresh_from_source))
         expect_single_action_result(
           :success => true,
-          :message => a_string_matching(/Refreshing Automate Domain .* from git repository/),
+          :message => /Refreshing Automate Domain .* from git repository/,
           :href    => api_automate_domain_url(nil, git_domain)
         )
       end
@@ -174,7 +170,7 @@ describe "Automate Domains API" do
         post(api_automate_domain_url(nil, git_domain.name), :params => gen_request(:refresh_from_source))
         expect_single_action_result(
           :success => true,
-          :message => a_string_matching(/Refreshing Automate Domain .* from git repository/),
+          :message => /Refreshing Automate Domain .* from git repository/,
           :href    => api_automate_domain_url(nil, git_domain.name)
         )
       end
