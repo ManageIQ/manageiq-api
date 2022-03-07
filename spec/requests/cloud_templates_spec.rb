@@ -205,6 +205,26 @@ RSpec.describe "Cloud Templates API" do
   end
 
   describe "POST /api/cloud_templates with import action" do
+    it "fails as user has no import action permissions" do
+      api_basic_authorize
+
+      src   = FactoryBot.create(:ems_cloud)
+      dst   = FactoryBot.create(:ems_cloud)
+      image = FactoryBot.create(:template, :ext_management_system => dst)
+
+      post(
+        api_cloud_template_url(nil, ''),
+        :params => {
+          :action          => "import",
+          :src_provider_id => src.id,
+          :dst_provider_id => dst.id,
+          :src_image_id    => image.id,
+        }
+      )
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
     it "fails without src_provider_id" do
       api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
 
