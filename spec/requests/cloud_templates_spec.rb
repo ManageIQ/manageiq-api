@@ -215,7 +215,7 @@ RSpec.describe "Cloud Templates API" do
       post(
         api_cloud_template_url(nil, ''),
         :params => {
-          :action    => "import",
+          :action          => "import",
           :src_provider_id => nil,
           :dst_provider_id => dst.id,
           :src_image_id    => image.id,
@@ -227,7 +227,7 @@ RSpec.describe "Cloud Templates API" do
       post(
         api_cloud_template_url(nil, ''),
         :params => {
-          :action    => "import",
+          :action          => "import",
           :src_provider_id => src.id,
           :dst_provider_id => nil,
           :src_image_id    => image.id,
@@ -239,7 +239,7 @@ RSpec.describe "Cloud Templates API" do
       post(
         api_cloud_template_url(nil, ''),
         :params => {
-          :action    => "import",
+          :action          => "import",
           :src_provider_id => src.id,
           :dst_provider_id => dst.id,
           :src_image_id    => nil,
@@ -252,14 +252,16 @@ RSpec.describe "Cloud Templates API" do
     it "will fail since although required parameters are present, one resource is missing in DB every time" do
       api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
 
-      src   = FactoryBot.create(:ems_cloud)
-      dst   = FactoryBot.create(:ems_cloud)
-      image = FactoryBot.create(:template)
+      src    = FactoryBot.create(:ems_cloud)
+      dst    = FactoryBot.create(:ems_cloud)
+      image  = FactoryBot.create(:template)
+      cos    = FactoryBot.create(:ems_storage)
+      bucket = FactoryBot.create(:ems_storage)
 
       post(
         api_cloud_template_url(nil, ''),
         :params => {
-          :action    => "import",
+          :action          => "import",
           :src_provider_id => -1,
           :dst_provider_id => dst.id,
           :src_image_id    => image.id,
@@ -271,7 +273,7 @@ RSpec.describe "Cloud Templates API" do
       post(
         api_cloud_template_url(nil, ''),
         :params => {
-          :action    => "import",
+          :action          => "import",
           :src_provider_id => src.id,
           :dst_provider_id => -1,
           :src_image_id    => image.id,
@@ -283,7 +285,7 @@ RSpec.describe "Cloud Templates API" do
       post(
         api_cloud_template_url(nil, ''),
         :params => {
-          :action    => "import",
+          :action          => "import",
           :src_provider_id => src.id,
           :dst_provider_id => dst.id,
           :src_image_id    => -1,
@@ -303,7 +305,7 @@ RSpec.describe "Cloud Templates API" do
       post(
         api_cloud_template_url(nil, ''),
         :params => {
-          :action    => "import",
+          :action          => "import",
           :src_provider_id => src.id,
           :dst_provider_id => dst.id,
           :src_image_id    => image.id,
@@ -323,7 +325,7 @@ RSpec.describe "Cloud Templates API" do
       post(
         api_cloud_template_url(nil, ''),
         :params => {
-          :action    => "import",
+          :action          => "import",
           :src_provider_id => src.id,
           :dst_provider_id => dst.id,
           :src_image_id    => image.id,
