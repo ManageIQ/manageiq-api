@@ -205,7 +205,7 @@ RSpec.describe "Cloud Templates API" do
   end
 
   describe "POST /api/cloud_templates with import action" do
-    it "will fail since one of required parameters missing in every case" do
+    it "fails without src_provider_id" do
       api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
 
       src   = FactoryBot.create(:ems_cloud)
