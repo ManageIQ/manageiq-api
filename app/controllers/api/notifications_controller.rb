@@ -9,8 +9,7 @@ module Api
     end
 
     def mark_as_seen_resource(type, id = nil, _data = nil)
-      api_action(type, id) do |klass|
-        notification = resource_search(id, type, klass)
+      api_resource(type, id, "Marking as Seen") do |notification|
         action_result(notification.update_attribute(:seen, true) || false)
       end
     end

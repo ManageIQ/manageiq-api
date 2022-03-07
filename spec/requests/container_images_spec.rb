@@ -73,7 +73,7 @@ describe "Container Images API" do
       post valid_image_url, :params => { :action => "scan" }
       expected = {
         "success" => false,
-        "message" => "ContainerImage id:#{container_image.id} name:'#{container_image.name}' failed to start scanning",
+        "message" => "Failed Scanning Container Image id: #{container_image.id} name: '#{container_image.name}'",
       }
       expect(response.parsed_body).to include(expected)
     end
@@ -86,7 +86,7 @@ describe "Container Images API" do
 
       expected = {
         "success"   => true,
-        "message"   => "ContainerImage id:#{container_image.id} name:'#{container_image.name}' scanning",
+        "message"   => "Scanning Container Image id: #{container_image.id} name: '#{container_image.name}'",
         "href"      => api_container_image_url(nil, container_image),
         "task_id"   => anything,
         "task_href" => a_string_matching(api_tasks_url)
