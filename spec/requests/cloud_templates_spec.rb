@@ -249,14 +249,12 @@ RSpec.describe "Cloud Templates API" do
       expect(response).to have_http_status(:bad_request)
     end
 
-    it "will fail since although required parameters are present, one resource is missing in DB every time" do
+    it "will fail since although required parameters are present, one resource is missing in DB every case" do
       api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
 
       src    = FactoryBot.create(:ems_cloud)
       dst    = FactoryBot.create(:ems_cloud)
       image  = FactoryBot.create(:template)
-      cos    = FactoryBot.create(:ems_storage)
-      bucket = FactoryBot.create(:ems_storage)
 
       post(
         api_cloud_template_url(nil, ''),
