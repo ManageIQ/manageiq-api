@@ -249,7 +249,7 @@ RSpec.describe "Cloud Templates API" do
       expect(response).to have_http_status(:bad_request)
     end
 
-    it "will fail since although required parameters are present, one resource is missing in DB every case" do
+    it "fails with not found src_provider_id" do
       api_basic_authorize(action_identifier(:cloud_templates, :import, :collection_actions))
 
       src    = FactoryBot.create(:ems_cloud)
