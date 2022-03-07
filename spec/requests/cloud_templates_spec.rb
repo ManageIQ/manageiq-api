@@ -210,7 +210,7 @@ RSpec.describe "Cloud Templates API" do
 
       src   = FactoryBot.create(:ems_cloud)
       dst   = FactoryBot.create(:ems_cloud)
-      image = FactoryBot.create(:template, :ext_management_system => dst)
+      image = FactoryBot.create(:template, :ext_management_system => src)
 
       post(
         api_cloud_template_url(nil, ''),
