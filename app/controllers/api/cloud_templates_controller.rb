@@ -11,7 +11,18 @@ module Api
 
       ems_dst   = resource_search(data['dst_provider_id'], :providers)
       ems_src   = resource_search(data['src_provider_id'], :providers)
-      src_image = resource_search(data['src_image_id'],    :providers, collection_class(:templates))
+      src_image = resource_search(data['src_image_id'], :templates)
+
+      opt_params = %w[obj_storage_id bucket_id disk_type_id]
+      if data.values_at(*opt_params).any?
+        raise BadRequestError, "Either provide all of the Object-Storage related parameters (well-formed) or none" if data.values_at(*opt_params).any?(&:blank?)
+
+        cos = resource_search(data['obj_storage_id'], :providers)
+        bucket = resource_search(data['bucket_id'], :cloud_object_store_containers)
+        resource_search(data['disk_type_id'], :cloud_volume_types)
+
+        raise BadRequestError, "Object bucket specified by the id '#{data['bucket_id']}' does not belong to the object storage provider with id '#{data['obj_storage_id']}'" if bucket.ems_id != cos.id
+      end
 
       raise BadRequestError, "Source image specified by the id '#{data['src_image_id']}' does not belong to the source provider with id '#{ems_src.id}'" if src_image.ems_id != ems_src.id
 
