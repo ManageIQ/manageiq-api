@@ -1,12 +1,10 @@
 module Api
   class AuthenticationsController < BaseController
     def edit_resource(type, id, data)
-      auth = resource_search(id, type)
-      raise "Update not supported for #{authentication_ident(auth)}" unless auth.respond_to?(:update_in_provider_queue)
-      task_id = auth.update_in_provider_queue(data.deep_symbolize_keys)
-      action_result(true, "Updating #{authentication_ident(auth)}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+      api_resource(type, id, "Updating") do |auth|
+        ensure_respond_to(type, auth, :update, :update_in_provider_queue)
+        {:task_id => auth.update_in_provider_queue(data.deep_symbolize_keys)}
+      end
     end
 
     def create_resource(_type, _id, data)
@@ -33,10 +31,6 @@ module Api
     end
 
     private
-
-    def authentication_ident(auth)
-      "Authentication id:#{auth.id} name: '#{auth.name}'"
-    end
 
     def build_additional_fields
       {

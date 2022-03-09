@@ -82,13 +82,7 @@ RSpec.describe 'HostAggregates API' do
 
       post(api_host_aggregate_url(nil, host_aggregate), :params => {:action => 'add_host', :resource => {:host_id => host.id.to_s}})
 
-      expected = {
-        'success' => true,
-        'message' => a_string_including('Adding Host Aggregate'),
-        'task_id' => a_kind_of(String)
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => true, :message => 'Adding Host to Host Aggregate', :task_id => true)
     end
 
     it 'removes a host from the host aggregate' do
@@ -99,13 +93,7 @@ RSpec.describe 'HostAggregates API' do
 
       post(api_host_aggregate_url(nil, host_aggregate), :params => {:action => 'remove_host', :resource => {:host_id => host.id.to_s}})
 
-      expected = {
-        'success' => true,
-        'message' => a_string_including('Removing Host Aggregate'),
-        'task_id' => a_kind_of(String)
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
+      expect_single_action_result(:success => true, :message => 'Removing Host from Host Aggregate', :task_id => true)
     end
   end
 

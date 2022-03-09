@@ -10,16 +10,9 @@ module Api
     end
 
     def edit_resource(type, id, data = {})
-      raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
-
-      cloud_volume = resource_search(id, type)
-
-      raise BadRequestError, cloud_volume.unsupported_reason(:update) unless cloud_volume.supports?(:update)
-
-      task_id = cloud_volume.update_volume_queue(User.current_user, data)
-      action_result(true, "Updating #{cloud_volume.name}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+      api_resource(type, id, "Updating", :supports => :update) do |cloud_volume|
+        {:task_id => cloud_volume.update_volume_queue(User.current_userid, data.deep_symbolize_keys)}
+      end
     end
 
     def safe_delete_resource(type, id, _data = {})
