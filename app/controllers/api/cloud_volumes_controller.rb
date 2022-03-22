@@ -41,5 +41,11 @@ module Api
         super
       end
     end
+
+    def create_backup_resource(type, id, data)
+      api_resource(type, id, "Creating backup", :supports => :backup_create) do |cloud_volume|
+        {:task_id => cloud_volume.backup_create_queue(User.current_userid, data)}
+      end
+    end
   end
 end
