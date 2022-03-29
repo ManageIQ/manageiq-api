@@ -47,5 +47,11 @@ module Api
         {:task_id => cloud_volume.backup_create_queue(User.current_userid, data)}
       end
     end
+
+    def restore_backup_resource(type, id, data)
+      api_resource(type, id, "Restoring backup for", :supports => :backup_restore) do |cloud_volume|
+        {:task_id => cloud_volume.backup_restore_queue(User.current_userid, data.symbolize_keys)}
+      end
+    end
   end
 end

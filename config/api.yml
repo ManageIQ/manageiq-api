@@ -797,6 +797,8 @@
         :identifier: cloud_volume_safe_delete
       - :name: create_backup
         :identifier: cloud_volume_backup_create
+      - :name: restore_backup
+        :identifier: cloud_volume_backup_restore
     :tags_subcollection_actions:
       :post:
       - :name: assign
