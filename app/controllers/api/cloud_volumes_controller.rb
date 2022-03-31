@@ -1,6 +1,7 @@
 module Api
   class CloudVolumesController < BaseController
     include Subcollections::Tags
+    include Subcollections::CloudVolumeSnapshots
 
     def create_resource(type, _id = nil, data = {})
       create_ems_resource(type, data, :supports => true) do |ems, klass|
