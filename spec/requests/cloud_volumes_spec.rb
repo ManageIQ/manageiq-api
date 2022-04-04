@@ -192,6 +192,68 @@ describe "Cloud Volumes API" do
       expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
       expect(response).to have_http_status(:ok)
     end
+
+    it 'attaches Cloud Volume to an instance' do
+      zone = FactoryBot.create(:zone)
+      ems = FactoryBot.create(:ems_autosde, :zone => zone)
+      vm = FactoryBot.create(:vm_vmware)
+      cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => ems)
+
+      api_basic_authorize(action_identifier(:cloud_volumes, :attach, :resource_actions, :post))
+      stub_supports(cloud_volume.class, :attach_volume)
+
+      payload = {:action => "attach", :resources => {:vm_id => vm.id.to_s}}
+      post(api_cloud_volume_url(nil, cloud_volume), :params => payload)
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'detaches Cloud Volume from an instance' do
+      zone = FactoryBot.create(:zone)
+      ems = FactoryBot.create(:ems_autosde, :zone => zone)
+      hw = FactoryBot.create(:hardware)
+      vm = FactoryBot.create(:vm_vmware, :hardware => hw)
+      cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => ems)
+      FactoryBot.create(:disk, :hardware => hw, :backing => cloud_volume)
+
+      api_basic_authorize(action_identifier(:cloud_volumes, :detach, :resource_actions, :post))
+      stub_supports(cloud_volume.class, :detach_volume)
+
+      payload = {:action => "detach", :resources => {:vm_id => vm.id.to_s}}
+      post(api_cloud_volume_url(nil, cloud_volume), :params => payload)
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "attach raise an error if the cloud volume does not support attach_volume" do
+      cloud_volume = FactoryBot.create(:cloud_volume_autosde)
+      stub_supports_not(:cloud_volumes, :attach_volume)
+
+      api_basic_authorize(action_identifier(:cloud_volumes, :attach, :resource_actions, :post))
+
+      post(api_cloud_volume_url(nil, cloud_volume), :params => {:action => "attach"})
+      expected = {
+        "success" => false,
+        "message" => a_string_including("Attach Volume for Cloud Volume id: #{cloud_volume.id} name: '': Feature not available\/supported")
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "detach raise an error if the cloud volume does not support detach_volume" do
+      cloud_volume = FactoryBot.create(:cloud_volume_autosde)
+      stub_supports_not(:cloud_volumes, :detach_volume)
+
+      api_basic_authorize(action_identifier(:cloud_volumes, :detach, :resource_actions, :post))
+
+      post(api_cloud_volume_url(nil, cloud_volume), :params => {:action => "detach"})
+      expected = {
+        "success" => false,
+        "message" => a_string_including("Detach Volume for Cloud Volume id: #{cloud_volume.id} name: '': Feature not available\/supported")
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:bad_request)
+    end
   end
 
   describe 'create backup' do

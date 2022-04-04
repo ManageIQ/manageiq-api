@@ -53,5 +53,27 @@ module Api
         {:task_id => cloud_volume.backup_restore_queue(User.current_userid, data.symbolize_keys)}
       end
     end
+
+    def attach_resource(type, id, data = {})
+      api_resource(type, id, "Attaching Resource to", :supports => :attach_volume) do |cloud_volume|
+        raise BadRequestError, "Must specify a vm_id" if data["vm_id"].blank?
+
+        vm = resource_search(data["vm_id"], :vms)
+        {:task_id => cloud_volume.attach_volume_queue(User.current_userid, vm.ems_ref, data["device"].presence)}
+      end
+    rescue => err
+      action_result(false, err.to_s)
+    end
+
+    def detach_resource(type, id, data = {})
+      api_resource(type, id, "Detaching Resource from", :supports => :detach_volume) do |cloud_volume|
+        raise BadRequestError, "Must specify a vm_id" if data["vm_id"].blank?
+
+        vm = resource_search(data["vm_id"], :vms)
+        {:task_id => cloud_volume.detach_volume_queue(User.current_userid, vm.ems_ref)}
+      end
+    rescue => err
+      action_result(false, err.to_s)
+    end
   end
 end
