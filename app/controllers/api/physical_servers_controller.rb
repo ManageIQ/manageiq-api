@@ -53,6 +53,14 @@ module Api
       end
     end
 
+    def decommission_server_resource(type, id, _data)
+      enqueue_ems_action(type, id, :method_name => :decommission_server)
+    end
+
+    def recommission_server_resource(type, id, _data)
+      enqueue_ems_action(type, id, :method_name => :recommission_server)
+    end
+
     private
 
     def ensure_resource_exists(type, id)
