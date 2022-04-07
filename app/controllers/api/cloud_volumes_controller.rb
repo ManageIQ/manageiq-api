@@ -44,13 +44,14 @@ module Api
 
     def create_backup_resource(type, id, data)
       api_resource(type, id, "Creating backup", :supports => :backup_create) do |cloud_volume|
-        {:task_id => cloud_volume.backup_create_queue(User.current_userid, data)}
+        {:task_id => cloud_volume.backup_create_queue(User.current_userid, data['resources'])}
       end
     end
 
     def restore_backup_resource(type, id, data)
       api_resource(type, id, "Restoring backup for", :supports => :backup_restore) do |cloud_volume|
-        {:task_id => cloud_volume.backup_restore_queue(User.current_userid, data.symbolize_keys)}
+        backup = cloud_volume.cloud_volume_backups.where(:id => data['resources']['backup_id']).first
+        {:task_id => cloud_volume.backup_restore_queue(User.current_userid, backup['ems_ref'])}
       end
     end
   end
