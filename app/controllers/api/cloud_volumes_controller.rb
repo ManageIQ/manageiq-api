@@ -48,34 +48,6 @@ module Api
       end
     end
 
-    def render_attach_resource_options_mels(ems_id)
-      p "-------------------------- mels attach options "
-      type = @req.collection.to_sym
-      base_klass = collection_class(type)
-
-      ems = resource_search(ems_id, :providers)
-      klass = ems.class_by_ems(base_klass.name)
-      raise BadRequestError, "No #{type.to_s.titleize} support for - #{ems.name}" unless klass
-      raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
-
-      p "content"
-      p klass
-      p type
-      p ems
-      p "---------------------- mels render options"
-      render_options(type, :form_schema => params_for_attach(ems)) ## resource or class
-    end
-
-    # def render_update_resource_options_mels(id)
-    #   p "-------------------------- mels update attach options "
-    #   type = @req.collection.to_sym
-    #   resource = resource_search(id, type)
-    #   raise BadRequestError, resource.unsupported_reason(:update) unless resource.supports?(:update)
-
-    #   p "---------------------- mels render options"
-    #   render_options(type, :form_schema => resource.params_for_attach)
-    # end
-
     def create_backup_resource(type, id, data)
       api_resource(type, id, "Creating backup", :supports => :backup_create) do |cloud_volume|
         {:task_id => cloud_volume.backup_create_queue(User.current_userid, data)}
