@@ -594,6 +594,8 @@
       :post:
       - :name: query
         :identifier: cloud_object_store_container_show_list
+      - :name: create
+        :identifier: cloud_object_store_container_new
     :resource_actions:
       :get:
       - :name: read
