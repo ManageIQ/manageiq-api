@@ -545,23 +545,24 @@ module Api
       end
 
       def render_options(resource, data = {})
-        p "mels pre render options 1" ## none of this is being hit
-        p "resource"
-        p resource
         klass = collection_class(resource)
-        p "klass"
-        p klass
-        p "mels collection class"
-        p klass
         render :json => OptionsSerializer.new(klass, data).serialize
       end
 
-      def render_update_resource_options(id)
+      def render_update_resource_options(id, action)
         type = @req.collection.to_sym
         resource = resource_search(id, type)
         raise BadRequestError, resource.unsupported_reason(:update) unless resource.supports?(:update)
 
-        render_options(type, :form_schema => resource.params_for_update)
+        if action == "attach"
+          if resource.try(:params_for_attach) ## TODO can we make this one line?
+            render_options(type, :form_schema => resource.params_for_attach)  
+          else
+            render_options(type, :form_schema => {})  
+          end
+        else
+          render_options(type, :form_schema => resource.params_for_update)
+        end
       end
 
       def render_create_resource_options(ems_id)
@@ -574,35 +575,6 @@ module Api
         raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
 
         render_options(type, :form_schema => klass.params_for_create(ems))
-      end
-
-      def render_attach_resource_options_mels(ems_id)
-        p "-------------------------- mels attach options "
-        type = @req.collection.to_sym
-        base_klass = collection_class(type)
-  
-        ## render_create_resource_options
-        ems = resource_search(ems_id, :providers) # TODO catch nil cases
-        klass = ems.class_by_ems(base_klass.name)
-        raise BadRequestError, "No #{type.to_s.titleize} support for - #{ems.name}" unless klass
-        raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
-  
-        ## render_update_resource_options
-        # type = @req.collection.to_sym # we do it above
-        resource = resource_search(ems_id, type)
-        raise BadRequestError, resource.unsupported_reason(:update) unless resource.supports?(:update)
-  
-        ## for hardcoding faster | storageManager: 5 | record id: 445 |
-        p "content"
-        p klass
-        p type
-        p ems
-        p "--------"
-        p type
-        p resource
-        p "---------------------- mels render options" ## this is the last thing that does get hit
-        render_options(type, :form_schema => klass.mels())
-        # render_options(type, :form_schema => resource.mels())
       end
 
       # This is a helper method used by both .determine_include_for_find and

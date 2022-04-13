@@ -34,15 +34,10 @@ module Api
 
     def options
       if (id = params["id"])
-        p "========================= mels id was called"
-        render_update_resource_options(id)
+        action = params["option_action"] || "update"
+        render_update_resource_options(id, action)
       elsif (ems_id = params["ems_id"])
-        p "========================= mels ems_id"
         render_create_resource_options(ems_id)
-        ## we can have a check for another param to see how it is maybe? if ems_id then if is also attach
-      elsif (ems_id_attach = params["ems_id_attach"])
-        p "========================= mels ems_id_attach"
-        render_attach_resource_options_mels(ems_id_attach) ## this figures out the provider on its own
       else
         super
       end
