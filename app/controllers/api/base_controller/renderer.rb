@@ -549,19 +549,23 @@ module Api
         render :json => OptionsSerializer.new(klass, data).serialize
       end
 
-      def render_update_resource_options(id, action)
+      def render_update_resource_options(id)
         type = @req.collection.to_sym
         resource = resource_search(id, type)
         raise BadRequestError, resource.unsupported_reason(:update) unless resource.supports?(:update)
 
-        if action == "attach"
-          if resource.try(:params_for_attach) ## TODO can we make this one line?
-            render_options(type, :form_schema => resource.params_for_attach)  
-          else
-            render_options(type, :form_schema => {})  
-          end
+        render_options(type, :form_schema => resource.params_for_update)
+      end
+
+      def render_attach_resource_options(id)
+        type = @req.collection.to_sym
+        resource = resource_search(id, type)
+        raise BadRequestError, resource.unsupported_reason(:attach_volume) unless resource.supports?(:attach_volume)
+
+        if resource.try(:params_for_attach) ## TODO can we make this one line?
+          render_options(type, :form_schema => resource.params_for_attach)  
         else
-          render_options(type, :form_schema => resource.params_for_update)
+          render_options(type, :form_schema => {})  
         end
       end
 

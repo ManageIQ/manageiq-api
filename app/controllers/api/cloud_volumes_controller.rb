@@ -35,7 +35,7 @@ module Api
     def options
       if (id = params["id"])
         action = params["option_action"] || "update"
-        render_update_resource_options(id, action)
+        send("render_#{action}_resource_options", id)
       elsif (ems_id = params["ems_id"])
         render_create_resource_options(ems_id)
       else
