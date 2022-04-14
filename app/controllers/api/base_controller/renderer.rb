@@ -565,7 +565,7 @@ module Api
         if resource.try(:params_for_attach) ## TODO can we make this one line?
           render_options(type, :form_schema => resource.params_for_attach)  
         else
-          render_options(type, :form_schema => {})  
+          render_options(type, :form_schema => {}) ## {:fields => []}
         end
       end
 
