@@ -2518,6 +2518,23 @@
         :identifier: physical_switch_refresh
       - :name: restart
         :identifier: physical_switch_restart
+  :physical_server_profiles:
+    :description: Physical Server Profiles
+    :identifier: physical_server_profile
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: PhysicalServerProfile
+    :subcollections:
+      - :event_streams
+    :collection_actions:
+      :get:
+        - :name: read
+          :identifier: physical_server_profile_show_list
+    :resource_actions:
+      :get:
+        - :name: read
+          :identifier: physical_server_profile_show
   :pictures:
     :description: Pictures
     :options:
