@@ -15,6 +15,7 @@ module Api
     end
 
     def action
+      # for basic HTTP POST, default action is "create" with data being the POST body
       @action ||= case method
                   when :get         then 'read'
                   when :put, :patch then 'edit'
