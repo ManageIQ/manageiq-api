@@ -184,6 +184,7 @@ describe "Cloud Volumes API" do
       provider = FactoryBot.create(:ems_autosde, :zone => zone)
       cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => provider)
 
+      api_basic_authorize(action_identifier(:cloud_volumes, :attach, :resource_actions, :post)) ## ?? this wasnt the fix
       stub_supports(cloud_volume.class, :attach_volume)
       stub_params_for(cloud_volume.class, :attach_volume, :fields => [])
       options(api_cloud_volume_url(nil, cloud_volume), :params => {"option_action" => "attach"})
