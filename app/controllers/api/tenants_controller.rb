@@ -30,7 +30,7 @@ module Api
     end
 
     def options
-      render_options(:tenants, :quota_definitions => TenantQuota.quota_definitions)
+      render_options(@req.collection, :quota_definitions => TenantQuota.quota_definitions)
     end
 
     private
