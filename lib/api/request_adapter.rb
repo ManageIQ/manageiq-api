@@ -25,6 +25,12 @@ module Api
                   end
     end
 
+    # currently only custom option actions are returned
+    # default options of :create and :update are not handled
+    def option_action
+      @params["option_action"]
+    end
+
     def api_prefix
       @api_prefix ||= "#{base}#{prefix}"
     end

@@ -190,6 +190,16 @@ describe "Cloud Volumes API" do
       expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
       expect(response).to have_http_status(:ok)
     end
+
+    it 'returns no DDF schema for non supported actions via OPTIONS' do
+      zone = FactoryBot.create(:zone)
+      provider = FactoryBot.create(:ems_autosde, :zone => zone)
+      cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => provider)
+
+      options(api_cloud_volume_url(nil, cloud_volume), :params => {"option_action" => "bogus"})
+
+      expect(response).to have_http_status(:bad_request)
+    end
   end
 
   describe 'OPTIONS /api/cloud_volumes/:id' do

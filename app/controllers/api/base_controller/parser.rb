@@ -22,7 +22,7 @@ module Api
         # Method Validation for the collection or sub-collection specified
         if cname && ctype
           mname = @req.method
-          unless collection_config.supports_http_method?(cname, mname) || ignore_http_method_validation?
+          unless collection_config.supports_http_method?(cname, mname) || ignore_http_method_validation? || mname == :options
             raise BadRequestError, "Unsupported HTTP Method #{mname} for the #{ctype} #{cname} specified"
           end
         end
@@ -45,6 +45,8 @@ module Api
           validate_method_action(:post, "edit")
         when :delete
           validate_method_action(:post, "delete")
+        when :options
+          validate_option_method_action
         else
           raise "invalid action"
         end
@@ -145,7 +147,7 @@ module Api
       private
 
       def ignore_http_method_validation?
-        @req.subcollection == 'settings' || @req.method == :options
+        @req.subcollection == 'settings'
       end
 
       def validate_deprecation
@@ -161,14 +163,7 @@ module Api
                           [@req.subject, request_type_target.last]
                         end
 
-        aspec = if request_is_for_resource_entity?
-                  collection_config.resource_entity_actions(@req.collection, @req.subcollection)
-                elsif @req.subcollection?
-                  collection_config.typed_subcollection_actions(@req.collection, cname, target) ||
-                    collection_config.typed_collection_actions(cname, target)
-                else
-                  collection_config.typed_collection_actions(cname, target)
-                end
+        aspec = lookup_aspec(cname, target)
         return if method_name == :get && aspec.nil?
         action_hash = fetch_action_hash(aspec, method_name, action_name)
         unless api_user_role_allows?(action_hash[:identifier])
@@ -209,6 +204,20 @@ module Api
         end
 
         validate_post_api_action_as_subcollection(cname, mname, aname)
+      end
+
+      def validate_option_method_action
+        # not currently validating options for the default create or update
+        return unless @req.option_action
+
+        cname = @req.subject
+        mname = :post
+        aname = @req.option_action
+        _type, target = request_type_target
+
+        aspec = lookup_aspec(cname, target)
+        action_hash = fetch_action_hash(aspec, mname, aname)
+        raise BadRequestError, "Unsupported Option #{aname} for the #{cname} collection" if action_hash.blank?
       end
 
       def validate_api_request_collection
@@ -298,6 +307,17 @@ module Api
 
       def request_is_for_resource_entity?
         collection_config.resource_entity?(@req.collection, @req.subcollection) && @req.subcollection_id.blank?
+      end
+
+      def lookup_aspec(cname, target)
+        if request_is_for_resource_entity?
+          collection_config.resource_entity_actions(@req.collection, @req.subcollection)
+        elsif @req.subcollection?
+          collection_config.typed_subcollection_actions(@req.collection, cname, target) ||
+            collection_config.typed_collection_actions(cname, target)
+        else
+          collection_config.typed_collection_actions(cname, target)
+        end
       end
     end
   end
