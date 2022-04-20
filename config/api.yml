@@ -808,6 +808,10 @@
         :identifier: cloud_volume_backup_create
       - :name: restore_backup
         :identifier: cloud_volume_backup_restore
+      - :name: attach_volume
+        :identifier: cloud_volume_edit
+      - :name: detach_volume
+        :identifier: cloud_volume_edit
     :tags_subcollection_actions:
       :post:
       - :name: assign
