@@ -549,12 +549,13 @@ module Api
         render :json => OptionsSerializer.new(klass, data).serialize
       end
 
-      def render_update_resource_options(id)
+      def render_resource_options(id, action)
         type = @req.collection.to_sym
         resource = resource_search(id, type)
-        raise BadRequestError, resource.unsupported_reason(:update) unless resource.supports?(:update)
+        raise BadRequestError, resource.unsupported_reason(action) unless resource.supports?(action)
 
-        render_options(type, :form_schema => resource.params_for_update)
+        schema = resource.send("params_for_#{action}".to_sym)
+        render_options(type, :form_schema => schema)
       end
 
       def render_create_resource_options(ems_id)

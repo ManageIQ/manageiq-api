@@ -177,6 +177,19 @@ describe "Cloud Volumes API" do
       expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
       expect(response).to have_http_status(:ok)
     end
+
+    it 'returns a DDF schema for attach cloud volume when available via OPTIONS' do
+      zone = FactoryBot.create(:zone)
+      provider = FactoryBot.create(:ems_autosde, :zone => zone)
+      cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => provider)
+
+      stub_supports(cloud_volume.class, :attach_volume)
+      stub_params_for(cloud_volume.class, :attach_volume, :fields => [])
+      options(api_cloud_volume_url(nil, cloud_volume), :params => {"option_action" => "attach_volume"})
+
+      expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   describe 'OPTIONS /api/cloud_volumes/:id' do
