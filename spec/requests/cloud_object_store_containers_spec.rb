@@ -58,7 +58,6 @@ describe "Cloud Object Store Containers API" do
       submit_data = {
         :ems_id          => provider.id,
         :name            => 'foo',
-        :emsType         => provider.type,
         :cloud_tenant_id => cloud_tenant.id,
       }
       post(api_cloud_object_store_containers_url, :params => submit_data)
