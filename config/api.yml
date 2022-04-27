@@ -514,12 +514,15 @@
     :identifier: cloud_database
     :options:
     - :collection
-    :verbs: *g
+    :verbs: *gp
     :klass: CloudDatabase
     :collection_actions:
       :get:
       - :name: read
         :identifier: cloud_database_show_list
+      :post:
+      - :name: create
+        :identifier: cloud_database_new
     :resource_actions:
       :get:
       - :name: read
