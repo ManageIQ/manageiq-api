@@ -1,5 +1,5 @@
 module Api
-  class FloatingIpsController < BaseController
+  class FloatingIpsController < BaseProviderController
     def create_resource(type, _id = nil, data = {})
       create_ems_resource(type, data, :supports => true) do |ems, _klass|
         {:task_id => ems.create_floating_ip_queue(User.current_userid, data.deep_symbolize_keys)}
@@ -19,16 +19,6 @@ module Api
     def delete_resource_main_action(type, floating_ip, _data)
       ensure_supports(type, floating_ip, :delete)
       {:task_id => floating_ip.delete_floating_ip_queue(User.current_userid)}
-    end
-
-    def options
-      if (id = params["id"])
-        render_update_resource_options(id)
-      elsif (ems_id = params["ems_id"])
-        render_create_resource_options(ems_id)
-      else
-        super
-      end
     end
 
     private

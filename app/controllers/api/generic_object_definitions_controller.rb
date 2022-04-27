@@ -111,7 +111,7 @@ module Api
     end
 
     def options
-      render_options(:generic_object_definitions, build_generic_object_definition_options)
+      render_options(@req.collection, build_generic_object_definition_options)
     end
 
     def build_generic_object_definition_options

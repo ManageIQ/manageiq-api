@@ -1,5 +1,5 @@
 module Api
-  class CloudVolumesController < BaseController
+  class CloudVolumesController < BaseProviderController
     include Subcollections::Tags
     include Subcollections::CloudVolumeSnapshots
 
@@ -31,16 +31,6 @@ module Api
     def delete_resource_main_action(_type, cloud_volume, _data)
       # TODO: ensure_supports(type, cloud_volume, :delete)
       {:task_id => cloud_volume.delete_volume_queue(User.current_userid)}
-    end
-
-    def options
-      if (id = params["id"])
-        render_update_resource_options(id)
-      elsif (ems_id = params["ems_id"])
-        render_create_resource_options(ems_id)
-      else
-        super
-      end
     end
 
     def create_backup_resource(type, id, data)

@@ -25,6 +25,12 @@ module Api
                   end
     end
 
+    # currently only custom option actions are returned
+    # default options of :create and :update are not handled
+    def option_action
+      @params["option_action"]
+    end
+
     def api_prefix
       @api_prefix ||= "#{base}#{prefix}"
     end
@@ -56,7 +62,7 @@ module Api
 
     def json_body
       @json_body ||= begin
-                       body = @request.body.read if @request.body
+                       body = @request.body.read if @request.body && method != :options
                        body.blank? || body == "null" ? {} : JSON.parse(body)
                      end
     end

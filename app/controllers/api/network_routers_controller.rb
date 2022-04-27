@@ -1,5 +1,5 @@
 module Api
-  class NetworkRoutersController < BaseController
+  class NetworkRoutersController < BaseProviderController
     include Subcollections::Tags
 
     def create_resource(type, _id = nil, data = {})
@@ -21,16 +21,6 @@ module Api
     def delete_resource_main_action(type, network_router, _data)
       ensure_respond_to(type, network_router, :delete, :delete_network_router_queue)
       {:task_id => network_router.delete_network_router_queue(User.current_userid)}
-    end
-
-    def options
-      if (id = params["id"])
-        render_update_resource_options(id)
-      elsif (ems_id = params["ems_id"])
-        render_create_resource_options(ems_id)
-      else
-        super
-      end
     end
 
     private

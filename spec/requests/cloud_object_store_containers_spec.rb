@@ -83,7 +83,7 @@ describe "Cloud Object Store Containers API" do
       stub_supports(provider.class::CloudObjectStoreContainer, :create)
       stub_params_for(provider.class::CloudObjectStoreContainer, :create, :fields => [])
 
-      options(api_cloud_object_store_container_url(nil, provider.id, :ems_id => provider.id))
+      options(api_cloud_object_store_containers_url(nil, :ems_id => provider.id))
 
       expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
       expect(response).to have_http_status(:ok)

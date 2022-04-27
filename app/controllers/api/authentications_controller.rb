@@ -29,7 +29,7 @@ module Api
     end
 
     def options
-      render_options(:authentications, build_additional_fields)
+      render_options(@req.collection, build_additional_fields)
     end
 
     private

@@ -32,7 +32,7 @@ module Api
     end
 
     def options
-      render_options(:custom_buttons, build_custom_button_options)
+      render_options(@req.collection, build_custom_button_options)
     end
 
     def build_custom_button_options
