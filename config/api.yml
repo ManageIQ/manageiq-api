@@ -2433,6 +2433,10 @@
         :identifier: physical_server_turn_off_loc_led
       - :name: apply_config_pattern
         :identifier: physical_server_apply_config_pattern
+      - :name: decommission_server
+        :identifier: physical_server_decommission
+      - :name: recommission_server
+        :identifier: physical_server_recommission
     :resource_actions:
       :get:
       - :name: read
@@ -2462,6 +2466,10 @@
         :identifier: physical_server_turn_off_loc_led
       - :name: apply_config_pattern
         :identifier: physical_server_apply_config_pattern
+      - :name: decommission_server
+        :identifier: physical_server_decommission
+      - :name: recommission_server
+        :identifier: physical_server_recommission
   :physical_storages:
     :description: Physical Storages
     :identifier: physical_storage
