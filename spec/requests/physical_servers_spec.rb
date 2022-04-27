@@ -164,6 +164,26 @@ RSpec.describe "physical_servers API" do
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to include("success" => true)
       end
+
+      it "decommissions a server successfully" do
+        ps = FactoryBot.create(:physical_server)
+
+        api_basic_authorize action_identifier(:physical_servers, :decommission_server, :resource_actions, :post)
+        post(api_physical_server_url(nil, ps), :params => gen_request(:decommission_server))
+
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body).to include("success" => true)
+      end
+
+      it "recommissions a server successfully" do
+        ps = FactoryBot.create(:physical_server)
+
+        api_basic_authorize action_identifier(:physical_servers, :recommission_server, :resource_actions, :post)
+        post(api_physical_server_url(nil, ps), :params => gen_request(:recommission_server))
+
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body).to include("success" => true)
+      end
     end
 
     context "without an appropriate role" do
@@ -236,6 +256,26 @@ RSpec.describe "physical_servers API" do
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body["error"]).to include("kind" => "forbidden")
       end
+
+      it "fails to decommission a physical server" do
+        ps = FactoryBot.create(:physical_server)
+
+        api_basic_authorize
+        post(api_physical_server_url(nil, ps), :params => gen_request(:decommission_server))
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body["error"]).to include("kind" => "forbidden")
+      end
+
+      it "fails to recommission a physical server" do
+        ps = FactoryBot.create(:physical_server)
+
+        api_basic_authorize
+        post(api_physical_server_url(nil, ps), :params => gen_request(:recommission_server))
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body["error"]).to include("kind" => "forbidden")
+      end
     end
 
     context "with a non existent physical server" do
@@ -246,7 +286,9 @@ RSpec.describe "physical_servers API" do
         :restart,
         :restart_now,
         :restart_to_sys_setup,
-        :restart_mgmt_controller
+        :restart_mgmt_controller,
+        :decommission_server,
+        :recommission_server
       ]
 
       actions.each do |action|
@@ -268,7 +310,9 @@ RSpec.describe "physical_servers API" do
         :restart,
         :restart_now,
         :restart_to_sys_setup,
-        :restart_mgmt_controller
+        :restart_mgmt_controller,
+        :decommission_server,
+        :recommission_server
       ]
 
       actions.each do |action|
