@@ -514,7 +514,7 @@
     :identifier: cloud_database
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpppd
     :klass: CloudDatabase
     :collection_actions:
       :get:
@@ -527,6 +527,11 @@
       :get:
       - :name: read
         :identifier: cloud_database_show
+      :post:
+      - :name: delete
+        :identifier: cloud_database_delete
+      - :name: edit
+        :identifier: cloud_network_edit
   :cloud_networks:
     :description: Cloud Networks
     :identifier: cloud_network

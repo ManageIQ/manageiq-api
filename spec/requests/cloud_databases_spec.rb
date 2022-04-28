@@ -24,6 +24,8 @@ RSpec.describe 'Cloud Databases API' do
       FactoryBot.create(:ems_amazon)
     end
 
+    let(:cloud_database) { FactoryBot.create(:cloud_database_ibm_cloud_vpc, :ext_management_system => ems, :name => "test-db") }
+
     context 'POST cloud database' do
       it "creates the cloud database" do
         api_basic_authorize collection_action_identifier(:cloud_databases, :create)
@@ -51,6 +53,25 @@ RSpec.describe 'Cloud Databases API' do
         }
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context 'DELETE cloud database' do
+      it "deletes the cloud database" do
+        api_basic_authorize(resource_action_identifier(:cloud_databases, :delete))
+
+        delete(api_cloud_database_url(nil, cloud_database))
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+
+    context 'PATCH cloud database' do
+      it "updates the cloud database name" do
+        api_basic_authorize(resource_action_identifier(:cloud_databases, :edit))
+
+        patch(api_cloud_database_url(nil, cloud_database), :params => [{:name => "test-db-updated"}])
+
+        expect_single_action_result(:success => true, :message => /Updating Cloud Database id: #{cloud_database.id} name: '#{cloud_database.name}'/, :task_id => true)
       end
     end
   end
