@@ -47,7 +47,7 @@ module Api
     end
 
     def attach_resource(type, id, data = {})
-      api_resource(type, id, "Attaching Resource to", :supports => :attach_volume) do |cloud_volume|
+      api_resource(type, id, "Attaching Resource to", :supports => :attach) do |cloud_volume|
         raise BadRequestError, "Must specify a vm_id" if data["vm_id"].blank?
 
         vm = resource_search(data["vm_id"], :vms)
@@ -58,7 +58,7 @@ module Api
     end
 
     def detach_resource(type, id, data = {})
-      api_resource(type, id, "Detaching Resource from", :supports => :detach_volume) do |cloud_volume|
+      api_resource(type, id, "Detaching Resource from", :supports => :detach) do |cloud_volume|
         raise BadRequestError, "Must specify a vm_id" if data["vm_id"].blank?
 
         vm = resource_search(data["vm_id"], :vms)

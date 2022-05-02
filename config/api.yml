@@ -816,9 +816,9 @@
         :identifier: cloud_volume_backup_create
       - :name: restore_backup
         :identifier: cloud_volume_backup_restore
-      - :name: attach_volume
+      - :name: attach
         :identifier: cloud_volume_edit
-      - :name: detach_volume
+      - :name: detach
         :identifier: cloud_volume_edit
     :tags_subcollection_actions:
       :post:
