@@ -1786,7 +1786,7 @@
     :identifier: host_initiator
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpd
     :klass: HostInitiator
     :subcollections:
     :collection_actions:
@@ -1798,6 +1798,8 @@
         :identifier: host_initiator_new
       - :name: refresh
         :identifier: host_initiator_refresh
+      - :name: delete
+        :identifier: host_initiator_delete
     :resource_actions:
       :get:
       - :name: read
@@ -1805,6 +1807,8 @@
       :post:
       - :name: refresh
         :identifier: host_initiator_refresh
+      - :name: delete
+        :identifier: host_initiator_delete
   :hosts:
     :description: Hosts
     :identifier: host
