@@ -310,4 +310,20 @@ describe "Cloud Volumes API" do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  describe 'create snapshot' do
+    it 'it can create cloud volume snapshot through POST' do
+      zone = FactoryBot.create(:zone)
+      provider = FactoryBot.create(:ems_autosde, :zone => zone)
+      cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => provider)
+
+      api_basic_authorize(action_identifier(:cloud_volumes, :create_snapshot, :resource_actions, :post))
+      stub_supports(cloud_volume.class, :snapshot_create)
+
+      payload = {:action => "create_snapshot", :resources => {:snapshot_name => "stub_snapshot_name"}}
+      post(api_cloud_volume_url(nil, cloud_volume), :params => payload)
+
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
