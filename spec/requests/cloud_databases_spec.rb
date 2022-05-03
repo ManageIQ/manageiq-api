@@ -1,4 +1,6 @@
 RSpec.describe 'Cloud Databases API' do
+  include Spec::Support::SupportsHelper
+
   context 'cloud databases index' do
     it 'rejects request without appropriate role' do
       api_basic_authorize
@@ -21,7 +23,7 @@ RSpec.describe 'Cloud Databases API' do
 
   describe 'cloud database actions' do
     let(:ems) do
-      FactoryBot.create(:ems_amazon)
+      FactoryBot.create(:ems_cloud)
     end
 
     let(:cloud_database) { FactoryBot.create(:cloud_database_ibm_cloud_vpc, :ext_management_system => ems, :name => "test-db") }
@@ -72,6 +74,18 @@ RSpec.describe 'Cloud Databases API' do
         patch(api_cloud_database_url(nil, cloud_database), :params => [{:name => "test-db-updated"}])
 
         expect_single_action_result(:success => true, :message => /Updating Cloud Database id: #{cloud_database.id} name: '#{cloud_database.name}'/, :task_id => true)
+      end
+    end
+
+    context 'OPTIONS /cloud_databases' do
+      it "returns a DDF schema" do
+        stub_supports(ems.class::CloudDatabase, :create)
+        stub_params_for(ems.class::CloudDatabase, :create, :fields => [])
+
+        options(api_cloud_databases_url(:ems_id => ems.id))
+
+        expect(response.parsed_body['data']).to match("form_schema" => {"fields" => []})
+        expect(response).to have_http_status(:ok)
       end
     end
   end
