@@ -1046,7 +1046,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:set_owner, "owner" => "bad_user"))
 
-      expect_single_action_result(:success => false, :message => /.*/, :href => api_vm_url(nil, vm))
+      expect_bad_request(/Invalid user/)
     end
 
     it "set_owner to a vm" do
@@ -1054,7 +1054,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:set_owner, "owner" => @user.userid))
 
-      expect_single_action_result(:success => true, :message => "setting owner", :href => api_vm_url(nil, vm))
+      expect_single_action_result(:success => true, :message => /Setting owner/i, :href => api_vm_url(nil, vm))
       expect(vm.reload.evm_owner).to eq(@user)
     end
 
@@ -1063,7 +1063,7 @@ describe "Vms API" do
 
       post(api_vms_url, :params => gen_request(:set_owner, {"owner" => @user.userid}, vm1_url, vm2_url))
 
-      expect_multiple_action_result(2)
+      expect_multiple_action_result(2, :success => true, :message => /Setting owner/i)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
       expect(vm1.reload.evm_owner).to eq(@user)
       expect(vm2.reload.evm_owner).to eq(@user)
@@ -1218,7 +1218,7 @@ describe "Vms API" do
 
       post(vm_url, :params => gen_request(:add_lifecycle_event, events[0]))
 
-      expect_single_action_result(:success => true, :message => /adding lifecycle event/i, :href => api_vm_url(nil, vm))
+      expect_single_action_result(:success => true, :message => /adding life cycle event/i, :href => api_vm_url(nil, vm))
       expect(vm.lifecycle_events.size).to eq(1)
       expect(vm.lifecycle_events.first.event).to eq(events[0][:event])
     end
@@ -1229,7 +1229,7 @@ describe "Vms API" do
       post(api_vms_url, :params => gen_request(:add_lifecycle_event,
                                                events.collect { |e| {:href => vm_url}.merge(e) }))
 
-      expect_multiple_action_result(3)
+      expect_multiple_action_result(3, :success => true)
       expect(vm.lifecycle_events.size).to eq(events.size)
       expect(vm.lifecycle_events.collect(&:event)).to match_array(events.collect { |e| e[:event] })
     end
@@ -1307,22 +1307,8 @@ describe "Vms API" do
         )
       )
 
-      expected = {
-        "results" => a_collection_containing_exactly(
-          {
-            "message" => a_string_matching(/adding event .*etype1/i),
-            "success" => true,
-            "href"    => api_vm_url(nil, vm1)
-          },
-          {
-            "message" => a_string_matching(/adding event .*etype2/i),
-            "success" => true,
-            "href"    => api_vm_url(nil, vm2)
-          }
-        )
-      }
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+      expect_multiple_action_result(2, :success => true, :message => /Adding Event/i)
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
     end
   end
 
@@ -1940,12 +1926,7 @@ describe "Vms API" do
 
       post(api_vm_url(nil, vm), :params => { :action => 'set_miq_server', :miq_server => { :href => api_server_url(nil, server)} })
 
-      expected = {
-        'success' => true,
-        'message' => "Set miq_server id:#{server.id} for VM id:#{vm.id} name:'#{vm.name}'"
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(expected)
+      expect_single_action_result(:success => true, :message => /Setting miq_server for Vm id: #{vm.id} name: '#{vm.name}'/)
       expect(vm.reload.miq_server).to eq(server)
     end
 
@@ -1963,14 +1944,7 @@ describe "Vms API" do
         }
       )
 
-      expected = {
-        'results' => [
-          { 'success' => true, 'message' => "Set miq_server id:#{server.id} for VM id:#{vm.id} name:'#{vm.name}'" },
-          { 'success' => true, 'message' => "Set miq_server id:#{server2.id} for VM id:#{vm1.id} name:'#{vm1.name}'" }
-        ]
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to eq(expected)
+      expect_multiple_action_result(2, :success => true, :message => /Setting miq_server for Vm/i)
       expect(vm.reload.miq_server).to eq(server)
       expect(vm1.reload.miq_server).to eq(server2)
     end
@@ -1979,14 +1953,10 @@ describe "Vms API" do
       api_basic_authorize action_identifier(:vms, :set_miq_server)
 
       post(api_vm_url(nil, vm), :params => { :action => 'set_miq_server', :miq_server => { :href => api_vm_url(nil, 1) } })
-
-      expected = { 'success' => false, 'message' => 'Failed to set miq_server - Must specify a valid miq_server href or id' }
-      expect(response.parsed_body).to eq(expected)
-      expect(response).to have_http_status(:bad_request)
+      expect_bad_request(/Must specify a valid miq_server href or id/)
 
       post(api_vm_url(nil, vm), :params => { :action => 'set_miq_server', :miq_server => { :id => nil } })
-      expect(response.parsed_body).to eq(expected)
-      expect(response).to have_http_status(:bad_request)
+      expect_bad_request(/Must specify a valid miq_server href or id/)
     end
 
     it "can unassign a server if an empty hash is passed" do
@@ -1995,9 +1965,7 @@ describe "Vms API" do
 
       post(api_vm_url(nil, vm), :params => { :action => 'set_miq_server', :miq_server => {} })
 
-      expected = {'success' => true, 'message' => "Removed miq_server for VM id:#{vm.id} name:'#{vm.name}'"}
-      expect(response.parsed_body).to eq(expected)
-      expect(vm.reload.miq_server).to be_nil
+      expect_single_action_result(:success => true, :message => "Removing miq_server from Vm id: #{vm.id} name: '#{vm.name}'")
     end
   end
 
