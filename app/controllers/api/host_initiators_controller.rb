@@ -11,7 +11,7 @@ module Api
     end
 
     def delete_resource_action(type, id = nil, _data = nil)
-      api_resource(type, id, "Detaching", :supports => :delete) do |host_initiator|
+      api_resource(type, id, "Deleting", :supports => :delete) do |host_initiator|
         {:task_id => host_initiator.delete_host_initiator_queue(User.current_user)}
       end
     end
