@@ -2389,6 +2389,39 @@
       :post:
       - :name: refresh
         :identifier: physical_rack_refresh
+  :physical_server_profiles:
+    :description: Physical Server Profiles
+    :identifier: physical_server_profile
+    :options:
+      - :collection
+    :verbs: *gp
+    :klass: PhysicalServerProfile
+    :subcollections:
+      - :event_streams
+    :collection_actions:
+      :get:
+        - :name: read
+          :identifier: physical_server_profile_show_list
+      :post:
+        - :name: query
+          :identifier: physical_server_profile_show_list
+        - :name: assign_server
+          :identifier: physical_server_profile_assign_server
+        - :name: deploy_server
+          :identifier: physical_server_profile_deploy_server
+        - :name: unassign_server
+          :identifier: physical_server_profile_unassign_server
+    :resource_actions:
+      :get:
+        - :name: read
+          :identifier: physical_server_profile_show
+      :post:
+        - :name: assign_server
+          :identifier: physical_server_profile_assign_server
+        - :name: deploy_server
+          :identifier: physical_server_profile_deploy_server
+        - :name: unassign_server
+          :identifier: physical_server_profile_unassign_server
   :physical_servers:
     :description: Physical Servers
     :identifier: physical_server
@@ -2518,39 +2551,6 @@
         :identifier: physical_switch_refresh
       - :name: restart
         :identifier: physical_switch_restart
-  :physical_server_profiles:
-    :description: Physical Server Profiles
-    :identifier: physical_server_profile
-    :options:
-    - :collection
-    :verbs: *gp
-    :klass: PhysicalServerProfile
-    :subcollections:
-    - :event_streams
-    :collection_actions:
-      :get:
-      - :name: read
-        :identifier: physical_server_profile_show_list
-      :post:
-      - :name: query
-        :identifier: physical_server_profile_show_list
-      - :name: assign_server
-        :identifier: physical_server_profile_assign_server
-      - :name: deploy_server
-        :identifier: physical_server_profile_deploy_server
-      - :name: unassign_server
-        :identifier: physical_server_profile_unassign_server
-    :resource_actions:
-      :get:
-      - :name: read
-        :identifier: physical_server_profile_show
-      :post:
-      - :name: assign_server
-        :identifier: physical_server_profile_assign_server
-      - :name: deploy_server
-        :identifier: physical_server_profile_deploy_server
-      - :name: unassign_server
-        :identifier: physical_server_profile_unassign_server
   :pictures:
     :description: Pictures
     :options:
