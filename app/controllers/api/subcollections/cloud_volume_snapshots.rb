@@ -10,7 +10,7 @@ module Api
           klass = parent.ext_management_system.class_by_ems(:CloudVolumeSnapshot)
           ensure_supports(type, klass, :create)
           message = "Creating cloud volume snapshot #{data["name"]} for #{model_ident(parent, :cloud_volumes)}"
-          task_id = parent.create_volume_snapshot_queue(User.current_userid, data.symbolize_keys)
+          task_id = klass.create_snapshot_queue(User.current_userid, parent, data.symbolize_keys)
 
           action_result(true, message, :task_id => task_id)
         end
