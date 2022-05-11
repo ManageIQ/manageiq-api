@@ -1247,6 +1247,8 @@
         :identifier: ab_group_edit
       - :name: delete
         :identifier: ab_group_delete
+      - :name: reorder
+        :identifier: ab_group_reorder
     :resource_actions:
       :get:
       - :name: read

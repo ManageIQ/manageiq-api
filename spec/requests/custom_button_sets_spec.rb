@@ -108,6 +108,25 @@ RSpec.describe 'CustomButtonSets API' do
       expect(response.parsed_body).to include(expected)
       expect(cb_set.reload.set_data[:button_icon]).to eq("ff ff-closed")
     end
+
+    it 'can reorder custom button set by ids' do
+      api_basic_authorize collection_action_identifier(:custom_button_sets, :reorder)
+
+      request = {
+        'action'   => 'reorder',
+        'resource' => {
+          'ids' => [cb_set.id, cb_set2.id]
+        }
+      }
+
+      post(api_custom_button_sets_url, :params => request)
+
+      expected = {
+        'results' => [{"href" => "#{api_custom_button_sets_url}/", "message" => 'Button Group Reorder saved', "success" => true}]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
   end
 
   describe 'POST /api/custom_button_sets/:id' do
