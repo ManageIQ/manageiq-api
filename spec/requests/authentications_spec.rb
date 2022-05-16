@@ -379,12 +379,7 @@ RSpec.describe 'Authentications API' do
 
       post(api_authentication_url(nil, auth), :params => { :action => 'edit', :resource => params })
 
-      expected = {
-        'success' => false,
-        'message' => "Update not supported for Authentication id:#{auth.id} name: '#{auth.name}'"
-      }
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body).to include(expected)
+      expect_bad_request("Update not supported for Authentication id: #{auth.id} name: '#{auth.name}'")
     end
 
     it 'will forbid update to an authentication without appropriate role' do

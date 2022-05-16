@@ -66,12 +66,20 @@ describe "Widgets API" do
     end
 
     context "with an appropriate role" do
+      it "rejects generate_content for a single unspecified Widget" do
+        api_basic_authorize(action_identifier(:widgets, :generate_content, :resource_actions, :post))
+
+        post(api_widgets_url, :params => gen_request(:generate_content, "href" => api_widgets_url))
+
+        expect_bad_request(/Generating Content for Widget.*requires/)
+      end
+
       it "rejects generate_content for an unspecified Widget" do
         api_basic_authorize(action_identifier(:widgets, :generate_content, :resource_actions, :post))
 
         post(api_widgets_url, :params => gen_request(:generate_content, [{"href" => api_widgets_url}, {"href" => api_widgets_url}]))
 
-        expect_multiple_action_result(2, :success => false, :message => /Invalid MiqWidget id nil specified/i)
+        expect_multiple_action_result(2, :success => false, :message => /Generating Content for Widgets requires an id/i)
       end
 
       context "generate_content for group" do

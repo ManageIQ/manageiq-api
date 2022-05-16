@@ -29,7 +29,7 @@ RSpec.shared_examples "simulate policy action" do |model, factory, event|
 
     post(target1_url, :params => {:action => :simulate_policy, :event => event})
 
-    expect_single_action_result(:success => true, :message => /#{model.camelize} id:#{target1.id} .* simulating policy on event #{event}/i, :href => target1_url, :task => true)
+    expect_single_action_result(:success => true, :message => /Simulating policy for #{model.camelize} id: #{target1.id} .*/i, :href => target1_url, :task => true)
   end
 
   it "to a single #{model} without appropriate role" do
@@ -48,14 +48,14 @@ RSpec.shared_examples "simulate policy action" do |model, factory, event|
     expected = {
       "results" => a_collection_containing_exactly(
         a_hash_including(
-          "message"   => a_string_matching(/#{model.camelize} id:#{target1.id} .* simulating policy on event #{event}/i),
+          "message"   => a_string_matching(/Simulating policy for #{model.camelize} id: #{target1.id}/i),
           "task_id"   => a_kind_of(String),
           "task_href" => a_string_matching(api_tasks_url),
           "success"   => true,
           "href"      => target1_url
         ),
         a_hash_including(
-          "message"   => a_string_matching(/#{model.camelize} id:#{target2.id} .* simulating policy on event #{event}/i),
+          "message"   => a_string_matching(/Simulating policy for #{model.camelize} id: #{target2.id}/i),
           "task_id"   => a_kind_of(String),
           "task_href" => a_string_matching(api_tasks_url),
           "success"   => true,

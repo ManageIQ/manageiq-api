@@ -310,7 +310,7 @@ RSpec.describe "reports API" do
       expect_single_action_result(
         :href    => api_report_url(nil, report),
         :success => true,
-        :message => "scheduling of report #{report.id}"
+        :message => "Scheduling Report id: #{report.id} name: '#{report.name}'"
       )
     end
 

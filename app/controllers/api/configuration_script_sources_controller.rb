@@ -3,12 +3,10 @@ module Api
     include Subcollections::ConfigurationScriptPayloads
 
     def edit_resource(type, id, data)
-      config_script_src = resource_search(id, type)
-      raise "Update not supported for #{config_script_src_ident(config_script_src)}" unless config_script_src.respond_to?(:update_in_provider_queue)
-      task_id = config_script_src.update_in_provider_queue(data.deep_symbolize_keys)
-      action_result(true, "Updating #{config_script_src_ident(config_script_src)}", :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+      api_resource(type, id, "Updating") do |config_script_src|
+        ensure_respond_to(type, config_script_src, :update, :update_in_provider_queue)
+        {:task_id => config_script_src.update_in_provider_queue(data.deep_symbolize_keys)}
+      end
     end
 
     def delete_resource_main_action(type, config_script_src, _data)
@@ -31,12 +29,6 @@ module Api
       api_resource(type, id, "Refreshing") do |config_script_src|
         {:task_ids => EmsRefresh.queue_refresh_task(config_script_src)}
       end
-    end
-
-    private
-
-    def config_script_src_ident(config_script_src)
-      "ConfigurationScriptSource id:#{config_script_src.id} name: '#{config_script_src.name}'"
     end
   end
 end

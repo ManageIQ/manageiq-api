@@ -20,30 +20,17 @@ module Api
       def simulate_policy_resource(type, id, data = {})
         raise BadRequestError, "Must specify an event for policy simulation" if data["event"].blank?
 
-        resource = resource_search(id, type)
-
-        api_action(type, id) do
-          api_log_info("Simulating policy for #{resource_ident(resource)}")
-          request_policy_simulation(resource, data["event"])
+        api_resource(type, id, "Simulating policy for") do |resource|
+          {:task_id => resource.class.base_class.rsop_async(data["event"], [resource], User.current_user)}
         end
       end
+
+      private
 
       def parse_collection_targets(type, targets)
         targets.collect do |target|
           parse_id(target, type) || parse_by_attr(target, type)
         end.compact.uniq
-      end
-
-      def request_policy_simulation(resource, event)
-        desc = "#{resource_ident(resource)} simulating policy on event #{event}"
-        task_id = resource.class.base_class.rsop_async(event, [resource], User.current_user)
-        action_result(true, desc, :task_id => task_id)
-      rescue => err
-        action_result(false, err.to_s)
-      end
-
-      def resource_ident(resource)
-        "#{resource.class.name.demodulize.underscore.humanize} id:#{resource.id} name: '#{resource.name}'"
       end
     end
   end

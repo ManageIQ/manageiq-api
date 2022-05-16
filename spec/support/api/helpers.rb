@@ -218,8 +218,9 @@ module Spec
         def expect_multiple_action_result(count, options = {})
           expect(response).to have_http_status(:ok)
           expected_result = {"success" => options.key?(:success) ? options[:success] : true}
-          expected_result.merge!(expected_task_response(options[:task])) if options[:task]
           expected_result["message"] = a_string_matching(options[:message]) if options[:message]
+          expected_result["href"] = a_string_matching(options[:href]) if options[:href]
+          expected_result.merge!(expected_task_response(options[:task])) if options[:task]
           expected = {"results" => Array.new(count) { a_hash_including(expected_result) }}
           expect(response.parsed_body).to include(expected)
         end

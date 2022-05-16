@@ -86,7 +86,7 @@ describe "Physical Switches API" do
 
         post(api_physical_switches_url, :params => gen_request(:refresh, [{"href" => api_physical_switch_url(nil, first_physical_switch)}, {"href" => api_physical_switch_url(nil, second_physical_switch)}]))
 
-        expect_multiple_action_result(2, :success => true, :href => true, :message => /Refreshing Physical Switch/)
+        expect_multiple_action_result(2, :success => true, :href => api_physical_switch_url(nil, ''), :message => /Refreshing Physical Switch/)
       end
     end
   end

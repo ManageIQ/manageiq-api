@@ -87,12 +87,12 @@ RSpec.describe 'Configuration Script Sources API' do
         'results' => [
           a_hash_including(
             'success' => true,
-            'message' => a_string_including('Updating ConfigurationScriptSource'),
+            'message' => a_string_including('Updating Configuration Script Source'),
             'task_id' => a_kind_of(String)
           ),
           a_hash_including(
             'success' => true,
-            'message' => a_string_including('Updating ConfigurationScriptSource'),
+            'message' => a_string_including('Updating Configuration Script Source'),
             'task_id' => a_kind_of(String)
           )
         ]
@@ -167,7 +167,7 @@ RSpec.describe 'Configuration Script Sources API' do
 
       expected = {
         'success' => true,
-        'message' => a_string_including('Updating ConfigurationScriptSource'),
+        'message' => a_string_including('Updating Configuration Script Source'),
         'task_id' => a_kind_of(String)
       }
       expect(response).to have_http_status(:ok)
@@ -191,7 +191,7 @@ RSpec.describe 'Configuration Script Sources API' do
 
       expected = {
         'success' => true,
-        'message' => a_string_including('Updating ConfigurationScriptSource'),
+        'message' => a_string_including('Updating Configuration Script Source'),
         'task_id' => a_kind_of(String)
       }
       expect(response).to have_http_status(:ok)
@@ -214,7 +214,7 @@ RSpec.describe 'Configuration Script Sources API' do
 
       expected = {
         'success' => true,
-        'message' => a_string_including('Updating ConfigurationScriptSource'),
+        'message' => a_string_including('Updating Configuration Script Source'),
         'task_id' => a_kind_of(String)
       }
       expect(response).to have_http_status(:ok)
@@ -227,12 +227,7 @@ RSpec.describe 'Configuration Script Sources API' do
 
       post(api_configuration_script_source_url(nil, config_script_src), :params => { :action => 'edit', :resource => params })
 
-      expected = {
-        'success' => false,
-        'message' => "Update not supported for ConfigurationScriptSource id:#{config_script_src.id} name: '#{config_script_src.name}'"
-      }
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body).to include(expected)
+      expect_bad_request("Update not supported for Configuration Script Source id: #{config_script_src.id} name: '#{config_script_src.name}'")
     end
 
     it 'forbids updating a configuration_script_source without an appropriate role' do

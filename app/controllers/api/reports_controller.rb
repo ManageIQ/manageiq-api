@@ -15,14 +15,15 @@ module Api
     end
 
     def run_resource(type, id, _data)
-      report = resource_search(id, type)
-      report_result = MiqReportResult.find(report.queue_generate_table(:userid => User.current_user.userid))
-      run_report_result(true,
-                        "running report #{report.id}",
-                        :task_id          => report_result.miq_task_id,
-                        :report_result_id => report_result.id)
-    rescue => err
-      run_report_result(false, err.to_s)
+      api_resource(type, id, "Running") do |report|
+        report_result = MiqReportResult.find(report.queue_generate_table(:userid => User.current_userid))
+        run_report_result(true,
+                          "running report #{report.id}",
+                          :task_id          => report_result.miq_task_id,
+                          :report_result_id => report_result.id)
+      rescue => err
+        run_report_result(false, err.to_s)
+      end
     end
 
     def run_report_result(success, message = nil, options = {})
@@ -41,9 +42,10 @@ module Api
     end
 
     def schedule_resource(type, id, data)
-      api_action(type, id) do |klass|
-        report = resource_search(id, type, klass)
-        schedule_reports(report, type, id, data)
+      api_resource(type, id, "Scheduling") do |report|
+        schedule = report.add_schedule(fetch_schedule_data(data))
+        res = action_result(true, "Scheduling #{model_ident(report, type)}")
+        add_report_schedule_to_result(res, schedule.id, report.id)
       end
     end
 
@@ -57,17 +59,6 @@ module Api
       if @req.subcollection == "results" && (@req.subcollection_id || @req.expand?(:resources)) && attribute_selection == "all"
         @additional_attributes = %w(result_set)
       end
-    end
-
-    def schedule_reports(report, type, id, data)
-      desc = "scheduling of report #{report.id}"
-      schedule = report.add_schedule fetch_schedule_data(data)
-      res = action_result(true, desc)
-      add_report_schedule_to_result(res, schedule.id, report.id)
-      add_href_to_result(res, type, id)
-      res
-    rescue => err
-      action_result(false, err.to_s)
     end
 
     def fetch_schedule_data(data)
