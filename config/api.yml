@@ -4569,6 +4569,8 @@
         :identifier:
         - vm_retire_now
         - sui_vm_retire
+      - :name: set_description
+        :identifier: vm_edit
       - :name: set_owner
         :identifier: vm_edit
       - :name: set_ownership
@@ -4650,6 +4652,8 @@
       - :name: delete
         :identifier: vm_delete
       - :name: set_owner
+        :identifier: vm_edit
+      - :name: set_description
         :identifier: vm_edit
       - :name: set_ownership
         :identifier: vm_ownership

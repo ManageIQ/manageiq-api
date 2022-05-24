@@ -1607,6 +1607,49 @@ describe "Vms API" do
     end
   end
 
+  context "Vm set_description action" do
+    it "to an invalid vm" do
+      api_basic_authorize action_identifier(:vms, :set_description)
+
+      post(invalid_vm_url, :params => gen_request(:set_description, "new_description" => "test"))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "to a valid vm without appropriate role" do
+      api_basic_authorize
+
+      post(invalid_vm_url, :params => gen_request(:set_description, "new_description" => "test"))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "to a vm with missing new_description" do
+      api_basic_authorize action_identifier(:vms, :set_description)
+
+      post(vm_url, :params => gen_request(:set_description))
+
+      expect_bad_request("Must specify a new_description")
+    end
+
+    it "to a single vm" do
+      api_basic_authorize action_identifier(:vms, :set_description)
+
+      post(vm_url, :params => gen_request(:set_description, "new_description" => "test"))
+
+      expect_single_action_result(:success => true, :message => /Setting description for Vm id: #{vm.id}.* to test/i, :href => api_vm_url(nil, vm))
+    end
+
+    it "to multiple vms" do
+      api_basic_authorize collection_action_identifier(:vms, :set_description)
+
+      post(api_vms_url, :params => gen_request(:set_description, [{"href" => vm1_url, "new_description" => "test1"}, {"href" => vm2_url, "new_description" => "test2"}]))
+
+      expect_multiple_action_result(2, :success => true, :task => true, :message => /Setting description for Vm.* to test[12]/i)
+      expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
+    end
+  end
+
   context "Vm request console action" do
     it "to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :request_console)
