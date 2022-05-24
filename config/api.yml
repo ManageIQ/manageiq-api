@@ -2537,6 +2537,8 @@
         :identifier: physical_storage_refresh
       - :name: delete
         :identifier: physical_storage_delete
+      - :name: validate
+        :identifier: physical_storage_validate
     :resource_actions:
       :get:
       - :name: read

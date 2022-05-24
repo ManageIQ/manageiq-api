@@ -22,5 +22,11 @@ module Api
         {:task_id => physical_storage.delete_physical_storage_queue(User.current_user)}
       end
     end
+
+    def validate_resource(type, _id = nil, data = {})
+      create_ems_resource(type, data, :supports => true) do |ems, klass|
+        {:task_id => klass.validate_storage_queue(User.current_userid, ems, data)}
+      end
+    end
   end
 end
