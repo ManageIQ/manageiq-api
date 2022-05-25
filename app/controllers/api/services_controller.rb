@@ -72,15 +72,15 @@ module Api
     end
 
     def start_resource(type, id = nil, _data = nil)
-      enqueue_ems_action(type, id, "Starting", :method_name => "start")
+      enqueue_action(type, id, "Starting", :method_name => "start")
     end
 
     def stop_resource(type, id = nil, _data = nil)
-      enqueue_ems_action(type, id, "Stopping", :method_name => "stop")
+      enqueue_action(type, id, "Stopping", :method_name => "stop")
     end
 
     def suspend_resource(type, id = nil, _data = nil)
-      enqueue_ems_action(type, id, "Suspending", :method_name => "suspend")
+      enqueue_action(type, id, "Suspending", :method_name => "suspend")
     end
 
     def add_provider_vms_resource(type, id, data)
