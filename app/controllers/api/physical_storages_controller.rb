@@ -23,19 +23,9 @@ module Api
       end
     end
 
-    def validate_resource(type, id = nil, data = {})
-      api_action(type, id) do |physical_storage|
-        raise BadRequestError, 'Validate Physical Storage API must get provider id' unless data.key?('ems_id')
-
-        ems = resource_search(data['ems_id'], :providers)
-
-        raise BadRequestError, "Couldn't find a provider by the provider id - '#{data['ems_id']}'" unless ems
-
-        klass = ems.class_by_ems(physical_storage.name.split(':').last)
-        ensure_supports(type, klass, :validate)
-
-        task_id = physical_storage.validate_storage_queue(User.current_userid, ems, data)
-        action_result(true, "Validating #{physical_storage.name}", :task_id => task_id)
+    def validate_resource(type, _id = nil, data = {})
+      api_ems_resource(type, data, "Validating", :supports => :validate) do |ems, physical_storage|
+        {:task_id => physical_storage.validate_storage_queue(User.current_userid, ems, data)}
       end
     end
   end
