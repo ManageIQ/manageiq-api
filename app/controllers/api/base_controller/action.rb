@@ -26,14 +26,14 @@ module Api
         api_action(type, nil) do
           assert_id_not_specified(data, type)
           ems_id, model_name = data['ems_id'], data['name']
-          raise 'Must specify a Provider' unless ems_id
+          raise BadRequestError, 'Must specify a Provider' unless ems_id
 
           ems = resource_search(ems_id, :providers)
-          raise 'Must specify a valid Provider' unless ems
+          raise BadRequestError, 'Must specify a valid Provider' unless ems
 
           base_klass = collection_class(type).name.split(':').last
           klass = ems.class_by_ems(base_klass)
-          raise "#{type} not supported by Provider #{ems.name}" unless klass
+          raise BadRequestError, "#{type} not supported by Provider #{ems.name}" unless klass
 
           ensure_supports(type, klass, :create) if supports
 
