@@ -820,6 +820,8 @@
         :identifier: cloud_volume_edit
       - :name: detach
         :identifier: cloud_volume_edit
+      - :name: clone
+        :identifier: cloud_volume_clone
     :tags_subcollection_actions:
       :post:
       - :name: assign

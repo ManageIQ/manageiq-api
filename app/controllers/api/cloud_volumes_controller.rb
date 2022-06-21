@@ -60,5 +60,15 @@ module Api
     rescue => err
       action_result(false, err.to_s)
     end
+
+    def clone_resource(type, id, data = {})
+      api_resource(type, id, "Cloning Resource from", :supports => :clone) do |cloud_volume|
+        raise BadRequestError, "Must specify a name" if data["name"].blank?
+
+        {:task_id => cloud_volume.clone_volume_queue(User.current_userid, data)}
+      end
+    rescue => err
+      action_result(false, err.to_s)
+    end
   end
 end

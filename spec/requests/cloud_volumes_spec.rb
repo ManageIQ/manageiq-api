@@ -309,5 +309,45 @@ describe "Cloud Volumes API" do
 
       expect(response).to have_http_status(:ok)
     end
+
+    describe 'clone cloud volume' do
+      it 'clones a Cloud Volume' do
+        zone = FactoryBot.create(:zone)
+        ems = FactoryBot.create(:ems_autosde, :zone => zone)
+        cloud_volume = FactoryBot.create(:cloud_volume_autosde, :ext_management_system => ems)
+
+        api_basic_authorize(action_identifier(:cloud_volumes, :clone, :resource_actions, :post))
+        stub_supports(cloud_volume.class, :clone)
+
+        payload = {:action => "clone", :resources => {:name => 'TestClone'}}
+        post(api_cloud_volume_url(nil, cloud_volume), :params => payload)
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'clone raises an error if the cloud volume does not support clone' do
+        cloud_volume = FactoryBot.create(:cloud_volume_autosde)
+        stub_supports_not(:cloud_volume, :clone)
+
+        api_basic_authorize(action_identifier(:cloud_volumes, :clone, :resource_actions, :post))
+
+        post(api_cloud_volume_url(nil, cloud_volume), :params => {:action => "clone"})
+        expected = {
+          "success" => false,
+          "message" => a_string_including("Clone for Cloud Volume id: #{cloud_volume.id} name: '': Feature not available\/supported")
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      let(:invalid_cloud_volume_url) { api_cloud_volume_url(nil, ApplicationRecord.id_in_region(999_999, ApplicationRecord.my_region_number)) }
+      it "to a valid cloud volume without appropriate role" do
+        api_basic_authorize
+
+        post(invalid_cloud_volume_url, :params => gen_request(:clone, "name" => "test"))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
   end
 end
