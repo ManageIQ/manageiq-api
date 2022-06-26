@@ -194,4 +194,53 @@ describe "Physical Storages API" do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  context "Physical Storages validate action" do
+    it "valid parameters" do
+      provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+      request = {
+        "action"   => "validate",
+        "resource" => {
+          "ems_id"                     => provider.id,
+          "name"                       => "test_storage",
+          "physical_storage_family_id" => "1",
+          "management_ip"              => "1.1.1.1",
+          "user"                       => "user",
+          "password"                   => "password"
+        }
+      }
+
+      api_basic_authorize('physical_storage_validate')
+      post(api_physical_storages_url, :params => request)
+
+      expect_multiple_action_result(1, :success => true, :message => /Validating Physical Storage test_storage for Provider #{provider.name}/, :task => true)
+    end
+
+    it "invalid parameters" do
+      provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+      request = {
+        "action"   => "validate",
+        "resource" => {"emss_id" => provider.id}
+      }
+
+      api_basic_authorize('physical_storage_validate')
+      post(api_physical_storages_url, :params => request)
+
+      expect(response).to(have_http_status(:bad_request))
+      expect(response.parsed_body).to(include_error_with_message("Must specify a Provider"))
+    end
+
+    it "invalid provider" do
+      request = {
+        "action"   => "validate",
+        "resource" => {"ems_id" => 999}
+      }
+
+      api_basic_authorize('physical_storage_validate')
+      post(api_physical_storages_url, :params => request)
+
+      expect(response).to(have_http_status(:not_found))
+      expect(response.parsed_body).to(include_error_with_message("Couldn't find ExtManagementSystem"))
+    end
+  end
 end
