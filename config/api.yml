@@ -2733,6 +2733,7 @@
     - :folders
     - :networks
     - :lans
+    - :cloud_volume_types
     :collection_actions:
       :get:
       - :name: read
@@ -2869,6 +2870,12 @@
         :identifier:
         - ems_infra_show
         - ems_storage_show
+    :cloud_volume_types_subcollection_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - ems_infra_show_list
+        - ems_storage_show_list
   :provision_dialogs:
     :description: Provisioning Dialogs
     :identifier: miq_ae_customization_explorer
