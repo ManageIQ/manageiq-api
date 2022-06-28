@@ -33,6 +33,7 @@ module Api
     include Subcollections::SecurityPolicyRules
     include Subcollections::Tags
     include Subcollections::Vms
+    include Subcollections::CloudVolumeTypes
 
     before_action :validate_provider_class
 
