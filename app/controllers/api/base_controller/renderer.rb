@@ -567,7 +567,8 @@ module Api
         raise BadRequestError, "No #{type.to_s.titleize} support for - #{ems.name}" unless klass
         raise BadRequestError, klass.unsupported_reason(:create) unless klass.supports?(:create)
 
-        render_options(type, :form_schema => klass.params_for_create(ems))
+        schema = klass.method(:params_for_create).arity == 0 ? klass.params_for_create : klass.params_for_create(ems)
+        render_options(type, :form_schema => schema)
       end
 
       # This is a helper method used by both .determine_include_for_find and
