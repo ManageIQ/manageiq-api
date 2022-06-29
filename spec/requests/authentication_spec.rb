@@ -240,10 +240,18 @@ describe "Authentication API" do
   end
 
   context "Token Based Authentication" do
-    %w(sql memory cache).each do |session_store|
-      context "when using a #{session_store} session store" do
-        before { stub_settings_merge(:server => {:session_store => session_store}) }
+    before do
+      # Keep this outside of the loop below with the `let` providing the value
+      # for the stub, otherwise it will not work as expected
+      stub_settings_merge(:server => {:session_store => session_store_value})
+      TokenStore.token_caches.clear
+    end
 
+    after { TokenStore.token_caches.clear }
+
+    %w[cache sql memory].each do |session_store|
+      context "when using a #{session_store} session store" do
+        let(:session_store_value) { session_store }
         it "gets a token based identifier" do
           api_basic_authorize
 
