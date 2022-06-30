@@ -12,8 +12,9 @@ module Api
 
     def generate_widget_content(widget)
       desc = "#{widget_ident(widget)} content generation"
-      widget.queue_generate_content
-      action_result(true, desc)
+      task_id = widget.queue_generate_content
+      task_results = task_id ? {:task_id => task_id} : {}
+      action_result(true, desc, task_results)
     rescue => err
       action_result(false, err.to_s)
     end

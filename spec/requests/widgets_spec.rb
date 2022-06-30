@@ -106,7 +106,7 @@ describe "Widgets API" do
         it "generates single widget content" do
           expect(miq_widget.miq_widget_contents.count).to eq(0)
           post(api_widget_url(nil, miq_widget), :params => gen_request(:generate_content))
-          expect(response).to have_http_status(:ok)
+          expect_single_action_result(:success => true, :task_id => true, :message => /content generation/)
           expect(MiqTask.count).to eq(1)
           expect(MiqQueue.count).to eq(1)
         end
@@ -116,7 +116,7 @@ describe "Widgets API" do
 
           expect(MiqTask.count).to eq(0)
           post(api_widgets_url, :params => gen_request(:generate_content, [{"href" => api_widget_url(nil, miq_widget)}, {"href" => api_widget_url(nil, second_miq_widget)}]))
-          expect(response).to have_http_status(:ok)
+          expect_multiple_action_result(2, :success => true, :task_id => true, :message => /content generation/)
           expect(MiqTask.count).to eq(2)
           expect(MiqQueue.count).to eq(2)
         end
