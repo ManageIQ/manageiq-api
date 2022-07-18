@@ -19,7 +19,7 @@ module Api
 
     def delete_resource_action(type, id = nil, _data = nil)
       api_resource(type, id, "Detaching", :supports => :delete) do |physical_storage|
-        {:task_id => physical_storage.delete_physical_storage_queue(User.current_user)}
+        {:task_id => physical_storage.delete_physical_storage_queue(User.current_userid)}
       end
     end
 
