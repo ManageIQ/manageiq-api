@@ -4766,7 +4766,7 @@
     :identifier: volume_mapping
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpd
     :klass: VolumeMapping
     :subcollections:
     :collection_actions:
