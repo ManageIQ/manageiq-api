@@ -604,33 +604,54 @@ describe "Service Templates API" do
       end
     end
 
-    context "with an unorderable template" do
-      let(:template_no_display) { FactoryBot.create(:service_template, :display => false) }
+    context "with a service template" do
+      context "that is not orderable" do
+        let(:template_no_display) { FactoryBot.create(:service_template) }
 
-      it "cannot be ordered" do
-        api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+        it "cannot be ordered" do
+          api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
 
-        post(api_service_template_url(nil, template_no_display), :params => { :action => "order" })
+          post(api_service_template_url(nil, template_no_display), :params => { :action => "order" })
 
-        expected = {
-          "error" => a_hash_including(
-            "kind"    => "bad_request",
-            "message" => /cannot be ordered - Service template is not configured to be displayed/
-          )
-        }
-        expect(response).to have_http_status(:bad_request)
-        expect(response.parsed_body).to include(expected)
+          expected = {
+            "error" => a_hash_including(
+              "kind"    => "bad_request",
+              "message" => /cannot be ordered - Service template does not belong to a service catalog/
+            )
+          }
+          expect(response).to have_http_status(:bad_request)
+          expect(response.parsed_body).to include(expected)
+        end
+
+        it "does not show the order action" do
+          api_basic_authorize(action_identifier(:service_templates, :order, :resource_actions, :post),
+                              action_identifier(:service_templates, :read, :resource_actions, :get),
+                              action_identifier(:service_templates, :edit, :resource_actions, :post))
+
+          get(api_service_template_url(nil, template_no_display))
+
+          actions = response.parsed_body["actions"].collect { |action| action["name"] }
+          expect(actions).to_not include("order")
+        end
       end
 
-      it "does not show the order action" do
-        api_basic_authorize(action_identifier(:service_templates, :order, :resource_actions, :post),
-                            action_identifier(:service_templates, :read, :resource_actions, :get),
-                            action_identifier(:service_templates, :edit, :resource_actions, :post))
+      context "that is not displayed" do
+        let(:template_no_display) { FactoryBot.create(:service_template, :orderable, :display => false) }
 
-        get(api_service_template_url(nil, template_no_display))
+        it "cannot be ordered" do
+          api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
 
-        actions = response.parsed_body["actions"].collect { |action| action["name"] }
-        expect(actions).to_not include("order")
+          post(api_service_template_url(nil, template_no_display), :params => { :action => "order" })
+
+          expected = {
+            "error" => a_hash_including(
+              "kind"    => "bad_request",
+              "message" => /cannot be ordered - Service template is not configured to be displayed/
+            )
+          }
+          expect(response).to have_http_status(:bad_request)
+          expect(response.parsed_body).to include(expected)
+        end
       end
     end
 
