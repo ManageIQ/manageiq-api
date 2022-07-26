@@ -121,6 +121,8 @@ RSpec.describe 'FloatingIp API' do
     it "can delete a floating ip" do
       api_basic_authorize(action_identifier(:floating_ips, :delete))
 
+      stub_supports(floating_ip, :delete)
+
       delete(api_floating_ip_url(nil, floating_ip))
 
       expect(response).to have_http_status(:no_content)
