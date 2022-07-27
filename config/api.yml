@@ -2721,6 +2721,7 @@
     - :cloud_networks
     - :cloud_subnets
     - :cloud_tenants
+    - :cloud_volume_types
     - :custom_attributes
     - :load_balancers
     - :network_services
@@ -2733,7 +2734,6 @@
     - :folders
     - :networks
     - :lans
-    - :cloud_volume_types
     :collection_actions:
       :get:
       - :name: read
