@@ -1453,7 +1453,7 @@ describe "Providers API" do
 
   context 'cloud volume types subcollection' do
     before do
-      @provider = FactoryBot.create(:ems_openstack)
+      @provider = FactoryBot.create(:ems_storage)
       @cloud_volume_type1 = FactoryBot.create(:cloud_volume_type, :ext_management_system => @provider)
       @cloud_volume_type2 = FactoryBot.create(:cloud_volume_type, :ext_management_system => @provider)
     end
