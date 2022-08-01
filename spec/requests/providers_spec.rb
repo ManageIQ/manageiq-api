@@ -1451,6 +1451,23 @@ describe "Providers API" do
     end
   end
 
+  context 'cloud volume types subcollection' do
+    before do
+      @provider = FactoryBot.create(:ems_openstack)
+      @cloud_volume_type1 = FactoryBot.create(:cloud_volume_type, :ext_management_system => @provider)
+      @cloud_volume_type2 = FactoryBot.create(:cloud_volume_type, :ext_management_system => @provider)
+    end
+
+    it 'queries all cloud volume types for this cloud provider' do
+      api_basic_authorize subcollection_action_identifier(:providers, :cloud_volume_types, :read, :get)
+
+      get(api_provider_cloud_volume_types_url(nil, @provider))
+
+      expect(response).to have_http_status(:ok)
+      # expect(response.parsed_body).to include(expected)
+    end
+  end
+
   context 'security groups subcollection' do
     before do
       @provider = FactoryBot.create(:ems_openstack).network_manager
