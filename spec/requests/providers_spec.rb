@@ -1464,7 +1464,7 @@ describe "Providers API" do
 
       expected = {
         'resources' => [
-          { 'href' => api_provider_cloud_volume_type_url(nil, @provider, @cloud_volume_types) }
+          {'href' => api_provider_cloud_volume_type_url(nil, @provider, @cloud_volume_types)}
         ]
       }
 
