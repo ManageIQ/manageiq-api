@@ -1454,8 +1454,7 @@ describe "Providers API" do
   context 'cloud volume types subcollection' do
     before do
       @provider = FactoryBot.create(:ems_storage)
-      @cloud_volume_type1 = FactoryBot.create(:cloud_volume_type, :ext_management_system => @provider)
-      @cloud_volume_type2 = FactoryBot.create(:cloud_volume_type, :ext_management_system => @provider)
+      @cloud_volume_types = FactoryBot.create(:cloud_volume_type, :ext_management_system => @provider)
     end
 
     it 'queries all cloud volume types for this cloud provider' do
@@ -1463,8 +1462,14 @@ describe "Providers API" do
 
       get(api_provider_cloud_volume_types_url(nil, @provider))
 
+      expected = {
+        'resources' => [
+          { 'href' => api_provider_cloud_volume_type_url(nil, @provider, @cloud_volume_types) }
+        ]:qq
+      }
+
       expect(response).to have_http_status(:ok)
-      # expect(response.parsed_body).to include(expected)
+      expect(response.parsed_body).to include(expected)
     end
   end
 
