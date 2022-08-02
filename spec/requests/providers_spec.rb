@@ -1465,7 +1465,7 @@ describe "Providers API" do
       expected = {
         'resources' => [
           { 'href' => api_provider_cloud_volume_type_url(nil, @provider, @cloud_volume_types) }
-        ]:qq
+        ]
       }
 
       expect(response).to have_http_status(:ok)
