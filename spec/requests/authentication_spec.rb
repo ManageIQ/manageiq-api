@@ -4,6 +4,10 @@
 describe "Authentication API" do
   ENTRYPOINT_KEYS = %w(name description version versions identity collections)
 
+  # some tests change token_ttl that affects authorization tokens.
+  before { Api::Environment.clear_caches }
+  after  { Api::Environment.clear_caches }
+
   context "Basic Authentication" do
     # Basic Auth challenge is intentionally not supported due to
     # possible CSRF security concerns.

@@ -43,5 +43,11 @@ module Api
     def self.encrypted_objects_checked
       @encrypted_objects_checked ||= Set.new
     end
+
+    # these are based upon ApiConfig values and have high chance of breaking tests
+    # the others are code centric and not changing across individual tests
+    def self.clear_caches
+      @user_token_service = nil
+    end
   end
 end
