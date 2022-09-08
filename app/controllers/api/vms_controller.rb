@@ -200,6 +200,22 @@ module Api
       render_options(@req.collection.to_sym, send(subcollection_options_method, vm))
     end
 
+    def associate_resource(type, id, data)
+      raise BadRequestError, "Must specify a floating_ip" if data["floating_ip"].nil?
+
+      api_resource(type, id, "Associating resource to", :supports => :associate_floating_ip) do |vm|
+        {:task_id => vm.associate_floating_ip_queue(User.current_userid, data["floating_ip"])}
+      end
+    end
+
+    def disassociate_resource(type, id, data)
+      raise BadRequestError, "Must specify a floating_ip" if data["floating_ip"].nil?
+
+      api_resource(type, id, "Disassociating resource from", :supports => :disassociate_floating_ip) do |vm|
+        {:task_id => vm.disassociate_floating_ip_queue(User.current_userid, data["floating_ip"])}
+      end
+    end
+
     private
 
     def lifecycle_event_from_data(data)

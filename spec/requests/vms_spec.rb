@@ -2139,6 +2139,68 @@ describe "Vms API" do
     end
   end
 
+  describe "POST /api/vms/:id" do
+    let(:ems) { FactoryBot.create(:ems_openstack) }
+    let(:tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
+    let(:floating_ip) { FactoryBot.create(:floating_ip_openstack, :ext_management_system => ems.network_manager, :cloud_tenant => tenant) }
+
+    it 'associates a floating ip to the vm' do
+      vm = FactoryBot.create(:vm_openstack, :ems_id => ems.id, :cloud_tenant => tenant)
+      api_basic_authorize action_identifier(:vms, :associate)
+
+      post(api_vms_url, :params => {:action => 'associate', :resource => {:id => vm.id, :floating_ip => floating_ip}})
+
+      expect(response).to have_http_status(:ok)
+      task_id = response.parsed_body["task_id"]
+      expected = {
+        "results" => [{
+          "message" => "Associating resource to Vm id: #{vm.id} name: '#{vm.name}",
+          "success" => true,
+          "task_id" => "#{task_id}",
+        }]
+      }
+      expect_single_action_result(expected)
+    end
+
+    it 'associates a second floating ip to the vm' do
+      ## Test
+      floating_ip_2 = FactoryBot.create(:floating_ip_openstack, :ext_management_system => ems.network_manager, :cloud_tenant => tenant)
+      vm = FactoryBot.create(:vm_openstack, :ems_id => ems.id, :cloud_tenant => tenant, :floating_ips => [floating_ip])
+      api_basic_authorize action_identifier(:vms, :associate)
+
+      post(api_vms_url, :params => {:action => 'associate', :resource => {:id => vm.id, :floating_ip => floating_ip_2}})
+
+      expect(response).to have_http_status(:ok)
+      task_id = response.parsed_body["task_id"]
+      expected = {
+        "results" => [{
+          "message" => "Disassociating resource to Vm id: #{vm.id} name: '#{vm.name}",
+          "success" => true,
+          "task_id" => "#{task_id}",
+        }]
+      }
+      expect_single_action_result(expected)
+    end
+
+    it 'disassociates a floating ip from the vm' do
+      vm = FactoryBot.create(:vm_openstack, :ems_id => ems.id, :cloud_tenant => tenant, :floating_ips => [floating_ip])
+      api_basic_authorize action_identifier(:vms, :disassociate)
+
+      post(api_vms_url, :params => {:action => 'disassociate', :resource => {:id => vm.id, :floating_ip => floating_ip}})
+
+      expect(response).to have_http_status(:ok)
+      task_id = response.parsed_body["task_id"]
+      expected = {
+        "results" => [{
+          "message" => "Disassociating resource to Vm id: #{vm.id} name: '#{vm.name}",
+          "success" => true,
+          "task_id" => "#{task_id}",
+        }]
+      }
+      expect_single_action_result(expected)
+    end
+  end
+
   describe "/api/vms central admin" do
     let(:resource_type) { "vm" }
 
