@@ -1,5 +1,5 @@
 module Api
-  class VmsController < BaseController
+  class VmsController < BaseProviderController
     extend Api::Mixins::CentralAdmin
     include Api::Mixins::PolicySimulation
     include Api::Mixins::Genealogy
@@ -214,6 +214,16 @@ module Api
       api_resource(type, id, "Disassociating resource from", :supports => :disassociate_floating_ip) do |vm|
         {:task_id => vm.disassociate_floating_ip_queue(User.current_userid, data["floating_ip"])}
       end
+    end
+
+    def resize_resource(type, id, data)
+      api_resource(type, id, "Resizing Resource", :supports => :resize) do |vm|
+        raise BadRequestError, "Must specify new resize value/s" if data["resizeValues"].blank?
+
+        {:task_id => vm.resize_queue(User.current_userid, data)}
+      end
+    rescue => err
+      action_result(false, err.to_s)
     end
 
     private

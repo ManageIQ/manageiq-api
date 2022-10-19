@@ -4682,6 +4682,8 @@
         :identifier: vm_edit
       - :name: disassociate
         :identifier: vm_edit
+      - :name: resize
+        :identifier: vm_resize
     :disks_subcollection_actions:
       :get:
       - :name: read
