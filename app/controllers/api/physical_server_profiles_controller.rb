@@ -15,5 +15,8 @@ module Api
     def unassign_server_resource(type, id, _data)
       enqueue_ems_action(type, id, :method_name => :unassign_server)
     end
+
+    # TODO issue_servicenow_ticket
+    
   end
 end
