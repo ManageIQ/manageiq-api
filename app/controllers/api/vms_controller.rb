@@ -1,5 +1,5 @@
 module Api
-  class VmsController < BaseController
+  class VmsController < BaseProviderController
     extend Api::Mixins::CentralAdmin
     include Api::Mixins::PolicySimulation
     include Api::Mixins::Genealogy
@@ -47,7 +47,7 @@ module Api
     def edit_resource(type, id, data)
       edit_resource_with_genealogy(type, id, data)
     rescue => err
-      raise BadRequestError, "Cannot edit VM - #{err}"
+      raise BadRequestError, _("Cannot edit VM - %{error}") % {:error => err}
     end
 
     def delete_resource(type, id, _data = nil)
@@ -57,10 +57,10 @@ module Api
     def set_owner_resource(type, id = nil, data = nil)
       api_resource(type, id, "Setting owner of") do |vm|
         owner = data.blank? ? "" : data["owner"].strip
-        raise BadRequestError, "Must specify an owner" if owner.blank?
+        raise BadRequestError, _("Must specify an owner") if owner.blank?
 
         user = User.lookup_by_identity(owner)
-        raise BadRequestError, "Invalid user #{owner} specified" unless user
+        raise BadRequestError, _("Invalid user %{owner} specified") % {:owner => owner} unless user
 
         vm.update!(:evm_owner => user, :miq_group => user.current_group)
         {}
@@ -80,7 +80,7 @@ module Api
     end
 
     def add_event_resource(type, id = nil, data = nil)
-      raise BadRequestError, "Must specify an id for adding an event to a #{type} resource" unless id
+      raise BadRequestError, _("Must specify an id for adding an event to a %{type} resource") % {:type => type} unless id
 
       data ||= {}
 
@@ -105,7 +105,7 @@ module Api
     def rename_resource(type, id, data = {})
       new_name = data.blank? ? "" : data["new_name"].strip
       api_resource(type, id, "Renaming", :supports => :rename) do |vm|
-        raise BadRequestError, "Must specify a new_name" if new_name.blank?
+        raise BadRequestError, _("Must specify a new_name") if new_name.blank?
 
         task_id = vm.rename_queue(User.current_user.userid, new_name)
 
@@ -117,7 +117,7 @@ module Api
     def set_description_resource(type, id, data = {})
       new_description = data&.dig("new_description")&.strip
       api_resource(type, id, "Setting description for", :supports => :set_description) do |vm|
-        raise BadRequestError, "Must specify a new_description" if new_description.blank?
+        raise BadRequestError, _("Must specify a new_description") if new_description.blank?
 
         task_id = vm.set_description_queue(User.current_userid, new_description)
         action_result(true, "Setting description for #{model_ident(vm, type)} to #{new_description}", :task_id => task_id)
@@ -134,7 +134,7 @@ module Api
     end
 
     def request_console_resource(type, id = nil, data = nil)
-      raise BadRequestError, "Must specify an id for requesting a console for a #{type} resource" unless id
+      raise BadRequestError, _("Must specify an id for requesting a console for a %{type} resource") % {:type => type} unless id
 
       # NOTE:
       # for Future ?:
@@ -163,7 +163,7 @@ module Api
       else
         api_resource(type, id, "Setting miq_server for") do |vm|
           miq_server_id = parse_id(data['miq_server'], :servers)
-          raise BadRequestError, 'Must specify a valid miq_server href or id' unless miq_server_id
+          raise BadRequestError, _('Must specify a valid miq_server href or id') unless miq_server_id
 
           miq_server = resource_search(miq_server_id, :servers)
           vm.miq_server = miq_server
@@ -173,7 +173,7 @@ module Api
     end
 
     def request_retire_resource(type, id = nil, data = nil)
-      raise BadRequestError, "Must specify an id for retiring a #{type} resource" unless id
+      raise BadRequestError, _("Must specify an id for retiring a %{type} resource") % {:type => type} unless id
 
       if data && data["date"]
         opts = {:date => data["date"]}
@@ -198,6 +198,32 @@ module Api
 
       vm = resource_search(params[:c_id], @req.collection)
       render_options(@req.collection.to_sym, send(subcollection_options_method, vm))
+    end
+
+    def associate_resource(type, id, data)
+      raise BadRequestError, _("Must specify a floating_ip") if data["floating_ip"].nil?
+
+      api_resource(type, id, "Associating resource to", :supports => :associate_floating_ip) do |vm|
+        {:task_id => vm.associate_floating_ip_queue(User.current_userid, data["floating_ip"])}
+      end
+    end
+
+    def disassociate_resource(type, id, data)
+      raise BadRequestError, _("Must specify a floating_ip") if data["floating_ip"].nil?
+
+      api_resource(type, id, "Disassociating resource from", :supports => :disassociate_floating_ip) do |vm|
+        {:task_id => vm.disassociate_floating_ip_queue(User.current_userid, data["floating_ip"])}
+      end
+    end
+
+    def resize_resource(type, id, data)
+      api_resource(type, id, "Resizing Resource", :supports => :resize) do |vm|
+        raise BadRequestError, _("Must specify new resize value/s") if data["resizeValues"].blank?
+
+        {:task_id => vm.resize_queue(User.current_userid, data)}
+      end
+    rescue => err
+      action_result(false, err.to_s)
     end
 
     private

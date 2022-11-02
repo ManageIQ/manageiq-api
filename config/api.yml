@@ -4525,6 +4525,10 @@
         - vm_show_list
         - sui_vm_details_view
       :post:
+      - :name: associate
+        :identifier: vm_edit
+      - :name: disassociate
+        :identifier: vm_edit
       - :name: query
         :identifier:
         - vm_show_list
@@ -4674,6 +4678,12 @@
         :identifier: vm_scan
       - :name: simulate_policy
         :identifier: policy_simulation
+      - :name: associate
+        :identifier: vm_edit
+      - :name: disassociate
+        :identifier: vm_edit
+      - :name: resize
+        :identifier: vm_resize
     :disks_subcollection_actions:
       :get:
       - :name: read

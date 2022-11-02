@@ -22,7 +22,7 @@ RSpec.describe 'Cloud Networks API' do
   end
 
   context 'Providers cloud_networks subcollection' do
-    let(:provider) { FactoryBot.create(:ems_amazon_with_cloud_networks) }
+    let(:provider) { FactoryBot.create(:ems_cloud).tap { |x| 2.times { x.cloud_networks << FactoryBot.create(:cloud_network) } } }
 
     it 'queries Providers cloud_networks' do
       cloud_network_ids = provider.cloud_networks.pluck(:id)
@@ -61,8 +61,8 @@ RSpec.describe 'Cloud Networks API' do
     end
 
     it 'successfully returns providers on query when providers do not have cloud_networks attribute' do
-      FactoryBot.create(:ems_openshift) # Openshift does not respond to #cloud_networks
-      FactoryBot.create(:ems_amazon_with_cloud_networks) # Provider with cloud networks
+      FactoryBot.create(:ems_container) # Openshift container manager does not respond to #cloud_networks
+      FactoryBot.create(:ems_cloud).tap { |x| 2.times { x.cloud_networks << FactoryBot.create(:cloud_network) } } # Provider with cloud networks
       api_basic_authorize collection_action_identifier(:providers, :read, :get)
 
       get api_providers_url, :params => { :expand => 'resources,cloud_networks' }
@@ -117,7 +117,7 @@ RSpec.describe 'Cloud Networks API' do
 
   describe 'OPTIONS /api/cloud_networks/:id' do
     it 'returns a DDF schema for edit when available via OPTIONS' do
-      provider = FactoryBot.create(:ems_amazon_with_cloud_networks)
+      provider = FactoryBot.create(:ems_cloud).tap { |x| 2.times { x.cloud_networks << FactoryBot.create(:cloud_network) } }
 
       cloud_network = provider.cloud_networks.first
       stub_supports(cloud_network.class, :update)
