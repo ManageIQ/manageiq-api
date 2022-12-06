@@ -2351,6 +2351,7 @@
     :identifier: physical_chassis
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gp
     :klass: PhysicalChassis
     :subcollections:
@@ -2386,6 +2387,7 @@
     :identifier: physical_rack
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gp
     :klass: PhysicalRack
     :subcollections:
@@ -2443,6 +2445,7 @@
     :identifier: physical_server
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gp
     :klass: PhysicalServer
     :subcollections:
@@ -2521,6 +2524,7 @@
     :identifier: physical_storage
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gpppd
     :klass: PhysicalStorage
     :subcollections:
@@ -2553,6 +2557,7 @@
     :identifier: physical_switch
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gp
     :klass: PhysicalSwitch
     :subcollections:
