@@ -181,11 +181,6 @@ describe "Rest API Collections" do
       test_collection_query(:hosts, api_hosts_url, Host, :guid)
     end
 
-    it "query IsoDatastores" do
-      FactoryBot.create(:iso_datastore)
-      test_collection_query(:iso_datastores, api_iso_datastores_url, IsoDatastore)
-    end
-
     it "query IsoImages" do
       FactoryBot.create(:iso_image)
       test_collection_query(:iso_images, api_iso_images_url, IsoImage)
@@ -524,11 +519,6 @@ describe "Rest API Collections" do
     it "bulk query Hosts" do
       FactoryBot.create(:host)
       test_collection_bulk_query(:hosts, api_hosts_url, Host)
-    end
-
-    it "bulk query IsoDatastores" do
-      FactoryBot.create(:iso_datastore)
-      test_collection_bulk_query(:iso_datastores, api_iso_datastores_url, IsoDatastore)
     end
 
     it "bulk query IsoImages" do
