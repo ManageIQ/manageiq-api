@@ -22,6 +22,9 @@ Gem::Specification.new do |spec|
   # 2.9.0 regressed serialization
   # See: https://github.com/rails/jbuilder/issues/461
   spec.add_dependency "jbuilder", "~> 2.5", "!= 2.9.0"
+  spec.add_dependency "multi_json"
+  spec.add_dependency "rails"
+  spec.add_dependency "responders"
 
   spec.add_development_dependency "codeclimate-test-reporter", "~> 1.0.0"
   spec.add_development_dependency "manageiq-style"

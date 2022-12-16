@@ -1,3 +1,8 @@
+require 'action_controller'
+require 'active_record'
+require 'responders'
+require 'multi_json'
+
 module Api
   class BaseController < ActionController::API
     TAG_NAMESPACE = "/managed".freeze

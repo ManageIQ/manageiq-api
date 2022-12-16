@@ -1,3 +1,5 @@
+require 'rails'
+
 module ManageIQ
   module Api
     class Engine < ::Rails::Engine

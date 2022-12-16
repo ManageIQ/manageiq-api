@@ -1,3 +1,6 @@
+require 'active_support'
+require "active_support/core_ext/module/delegation"
+
 module Api
   class RequestAdapter
     delegate :subject, :subject_id, :collection, :collection_id, :subcollection, :subcollection_id, :subcollection?, :path, :version?, :to => :href
