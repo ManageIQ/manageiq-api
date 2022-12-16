@@ -12,16 +12,16 @@ module Api
     #
     ID_ATTRS = %w(href id).freeze
 
-    include_concern 'Parameters'
-    include_concern 'Parser'
-    include_concern 'Manager'
-    include_concern 'Action'
-    include_concern 'Logger'
-    include_concern 'Normalizer'
-    include_concern 'Renderer'
-    include_concern 'Results'
-    include_concern 'Generic'
-    include_concern 'Authentication'
+    include Parameters
+    include Parser
+    include Manager
+    include Action
+    include Logger
+    include Normalizer
+    include Renderer
+    include Results
+    include Generic
+    include Authentication
     include ActionController::HttpAuthentication::Basic::ControllerMethods
     include ActionController::RequestForgeryProtection
 
