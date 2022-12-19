@@ -351,7 +351,7 @@ describe "Providers API" do
 
     it "formats custom attribute of type date" do
       api_basic_authorize action_identifier(:providers, :edit)
-      date_field = DateTime.new.in_time_zone
+      date_field = DateTime.now
 
       post(provider_ca_url, :params => gen_request(:add, [{"name"       => "name1",
                                                            "value"      => date_field,
@@ -359,7 +359,7 @@ describe "Providers API" do
 
       expect(response).to have_http_status(:ok)
 
-      expect(provider.custom_attributes.first.serialized_value).to eq(date_field)
+      expect(provider.custom_attributes.first.serialized_value).to be_within(1.second).of(date_field)
 
       expect(provider.custom_attributes.first.section).to eq("metadata")
     end
