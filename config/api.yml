@@ -2494,6 +2494,24 @@
         :identifier: physical_server_decommission
       - :name: recommission_server
         :identifier: physical_server_recommission
+  :physical_storage_families:
+    :description: Physical Storage Families
+    :identifier: physical_storage_family
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: PhysicalStorageFamily
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: physical_storage_family_show_list
+      :post:
+      - :name: query
+        :identifier: physical_storage_family_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: physical_storage_family_show
   :physical_storages:
     :description: Physical Storages
     :identifier: physical_storage
@@ -4165,6 +4183,42 @@
     - :subcollection
     :verbs: *g
     :klass: GuestApplication
+  :storage_resources:
+    :description: Storage Resources
+    :identifier: storage_resource
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: StorageResource
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: storage_resource_show_list
+      :post:
+      - :name: query
+        :identifier: storage_resource_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: storage_resource_show
+  :storage_services:
+    :description: Storage Services
+    :identifier: storage_service
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: StorageService
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: storage_service_show_list
+      :post:
+      - :name: query
+        :identifier: storage_service_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: storage_service_show
   :switches:
     :description: Switches
     :identifier: infra_networking
