@@ -145,12 +145,21 @@ module Api
       # protocol = "mks"
       protocol = data["protocol"] || "vnc"
 
-      args = [User.current_user.userid, MiqServer.my_server.id, protocol]
-      enqueue_ems_action(type, id, "Requesting Console", :method_name => "remote_console_acquire_ticket", :args => args) do |vm|
-        # NOTE: we are queuing the :remote_console_acquire_ticket and returning the task id and href.
-        #
-        # The remote console ticket/info can be stashed in the task's context_data by the *_acquire_ticket method
-        vm.validate_remote_console_acquire_ticket(protocol)
+      case protocol.downcase
+      when "native"
+        enqueue_ems_action(type, id, "Requesting Native Console", :method_name => "native_console_connection") do |vm|
+          raise _("Console protocol %{protocol} is not supported") % {:protocol => protocol} unless vm.console_supported?(protocol)
+
+          vm.validate_native_console_support
+        end
+      else
+        args = [User.current_user.userid, MiqServer.my_server.id, protocol]
+        enqueue_ems_action(type, id, "Requesting Console", :method_name => "remote_console_acquire_ticket", :args => args) do |vm|
+          # NOTE: we are queuing the :remote_console_acquire_ticket and returning the task id and href.
+          #
+          # The remote console ticket/info can be stashed in the task's context_data by the *_acquire_ticket method
+          vm.validate_remote_console_acquire_ticket(protocol)
+        end
       end
     end
 
