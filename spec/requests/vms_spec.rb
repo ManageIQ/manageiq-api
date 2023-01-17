@@ -1667,15 +1667,74 @@ describe "Vms API" do
       expect(response).to have_http_status(:forbidden)
     end
 
-    it "to a single Vm" do
-      auth = FactoryBot.create(:authentication, :authtype => "console")
-      ems = FactoryBot.create(:ems_vmware, :authentications => [auth])
-      vm = FactoryBot.create(:vm_vmware, :ext_management_system => ems)
-      api_basic_authorize action_identifier(:vms, :request_console)
+    context "to a single Vm" do
+      let(:auth) { FactoryBot.create(:authentication, :authtype => "console") }
+      let(:ems)  { FactoryBot.create(:ems_vmware, :authentications => [auth]) }
+      let!(:vm)  { FactoryBot.create(:vm_vmware, :ext_management_system => ems) }
 
-      post(api_vm_url(nil, vm), :params => gen_request(:request_console))
+      it "returns success" do
+        api_basic_authorize action_identifier(:vms, :request_console)
 
-      expect_single_action_result(:success => true, :message => /Requesting Console.*#{vm.id}/i, :href => api_vm_url(nil, vm))
+        post(api_vm_url(nil, vm), :params => gen_request(:request_console))
+
+        expect_single_action_result(:success => true, :message => /Requesting Console.*#{vm.id}/i, :href => api_vm_url(nil, vm))
+      end
+
+      it "defaults to vnc" do
+        api_basic_authorize action_identifier(:vms, :request_console)
+
+        post(api_vm_url(nil, vm), :params => gen_request(:request_console))
+
+        queue_item = MiqQueue.find_by(:class_name => vm.class.name, :method_name => "remote_console_acquire_ticket")
+        expect(queue_item.args.last).to eq("vnc")
+      end
+
+      context "with protocol: native" do
+        context "with a vm that doesn't support it" do
+          it "returns a failure" do
+            api_basic_authorize action_identifier(:vms, :request_console)
+
+            post(api_vm_url(nil, vm), :params => gen_request(:request_console, :protocol => "native"))
+            expect_single_action_result(:success => false, :message => /Console protocol native is not supported/, :href => api_vm_url(nil, vm))
+          end
+        end
+
+        context "with a vm that supports it" do
+          let!(:vm) { FactoryBot.create(:vm_redhat, :ext_management_system => ems) }
+
+          it "returns success" do
+            api_basic_authorize action_identifier(:vms, :request_console)
+
+            post(api_vm_url(nil, vm), :params => gen_request(:request_console, :protocol => "native"))
+
+            expect_single_action_result(:success => true, :message => /Requesting Native Console.*#{vm.id}/i, :href => api_vm_url(nil, vm))
+
+            expect(MiqQueue.find_by(:class_name => vm.class.name, :method_name => "native_console_connection")).not_to be_nil
+          end
+
+          context "but is not connected to a provider" do
+            let!(:vm) { FactoryBot.create(:vm_redhat, :ext_management_system => nil) }
+
+            it "returns a failure" do
+              api_basic_authorize action_identifier(:vms, :request_console)
+
+              post(api_vm_url(nil, vm), :params => gen_request(:request_console, :protocol => "native"))
+              expect_single_action_result(:success => false, :message => /Remote viewer requires the vm to be registered with a management system/, :href => api_vm_url(nil, vm))
+            end
+          end
+
+          context "but is not running" do
+            let!(:vm) { FactoryBot.create(:vm_redhat, :ext_management_system => ems, :raw_power_state => "down") }
+
+            it "returns a failure" do
+              api_basic_authorize action_identifier(:vms, :request_console)
+
+              post(api_vm_url(nil, vm), :params => gen_request(:request_console, :protocol => "native"))
+              expect_single_action_result(:success => false, :message => /Remote viewer requires the vm to be running./, :href => api_vm_url(nil, vm))
+            end
+          end
+        end
+      end
     end
   end
 
