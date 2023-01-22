@@ -4206,19 +4206,31 @@
     :identifier: storage_service
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpd
     :klass: StorageService
+    :subcollections:
     :collection_actions:
       :get:
       - :name: read
         :identifier: storage_service_show_list
       :post:
+      - :name: create
+        :identifier: storage_service_new
+      - :name: delete
+        :identifier: storage_service_delete
+      - :name: refresh
+        :identifier: storage_service_refresh
       - :name: query
         :identifier: storage_service_show_list
     :resource_actions:
       :get:
       - :name: read
         :identifier: storage_service_show
+      :post:
+      - :name: refresh
+        :identifier: storage_service_refresh
+      - :name: delete
+        :identifier: storage_service_delete
   :switches:
     :description: Switches
     :identifier: infra_networking
