@@ -22,7 +22,7 @@ describe "Logging" do
       log_io.rewind
       request_log_line = log_io.readlines.detect { |l| l =~ /MIQ\(.*\) Request:/ }
       expect(request_log_line).to include(':path=>"/api/users"', ':collection=>"users"', ":collection_id=>nil",
-                                          ":subcollection=>nil", ":subcollection_id=>nil")
+                                          ":subcollection=>nil", ":subcollection_id=>nil", "request_id=>\"#{request.request_id}\"")
     end
 
     it "logs all hash entries about the request" do
@@ -34,7 +34,7 @@ describe "Logging" do
       request_log_line = log_io.readlines.detect { |l| l =~ /MIQ\(.*\) Request:/ }
       expect(request_log_line).to include(":method", ":action", ":fullpath", ":url", ":base", ":path", ":prefix",
                                           ":version", ":api_prefix", ":collection", ":c_suffix", ":collection_id",
-                                          ":subcollection", ":subcollection_id")
+                                          ":subcollection", ":subcollection_id", ":request_id")
     end
 
     it "filters password attributes in nested parameters" do
@@ -45,7 +45,7 @@ describe "Logging" do
       expect(log_io.string).to include(
         'Parameters:     {"action"=>"create", "controller"=>"api/services", "format"=>"json", ' \
         '"body"=>{"action"=>"create", "resource"=>{"name"=>"new_service_1", ' \
-        '"options"=>{"password"=>"[FILTERED]"}}}}'
+        '"options"=>{"password"=>"[FILTERED]"}}},'
       )
     end
 
@@ -61,8 +61,8 @@ describe "Logging" do
 
         expect(log_io.string).to include(
           "System Auth:    {:x_miq_token=>\"#{miq_token}\", :server_guid=>\"#{server_guid}\", " \
-          ":userid=>\"api_user_id\", :timestamp=>2017-01-01 00:00:00 UTC}",
-          'Authentication: {:type=>"system", :token=>nil, :x_miq_group=>nil, :user=>"api_user_id"}'
+          ":userid=>\"api_user_id\", :timestamp=>2017-01-01 00:00:00 UTC",
+          'Authentication: {:type=>"system", :token=>nil, :x_miq_group=>nil, :user=>"api_user_id"'
         )
       end
     end
