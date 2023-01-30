@@ -1,5 +1,5 @@
 describe "Storage Services API" do
-  fcontext "GET /api/storage_services" do
+  context "GET /api/storage_services" do
     it "returns all storage_services" do
       storage_service = FactoryBot.create(:storage_service)
       api_basic_authorize('storage_service_show_list')

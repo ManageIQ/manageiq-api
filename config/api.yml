@@ -4201,6 +4201,24 @@
       :get:
       - :name: read
         :identifier: storage_resource_show
+  :storage_service_resource_attachments:
+    :description: Storage Service Resource Attachments
+    :identifier: storage_service_resource_attachment
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: StorageServiceResourceAttachment
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: storage_service_resource_attachment_show_list
+      :post:
+      - :name: query
+        :identifier: storage_service_resource_attachment_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: storage_service_resource_attachment_show
   :storage_services:
     :description: Storage Services
     :identifier: storage_service
