@@ -94,6 +94,7 @@ module Api
       end
 
       def log_request(header, data)
+        data = data.merge(:request_id => request.request_id) if data.respond_to?(:merge)
         api_log_info("#{('%s:' % header).ljust(15)} #{data}")
       end
     end
