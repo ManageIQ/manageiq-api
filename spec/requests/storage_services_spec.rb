@@ -1,5 +1,6 @@
 describe "Storage Services API" do
-  fcontext "GET /api/storage_services" do
+  include Spec::Support::SupportsHelper
+  context "GET /api/storage_services" do
     it "returns all storage_services" do
       storage_service = FactoryBot.create(:storage_service)
       api_basic_authorize('storage_service_show_list')
@@ -29,5 +30,53 @@ describe "Storage Services API" do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
     end
+  end
+
+  context "POST /api/storage_services" do
+    it "creates new Storage Service" do
+      api_basic_authorize(collection_action_identifier(:storage_services, :create))
+      provider = FactoryBot.create(:ems_autosde)
+      request = {
+        "action"   => "create",
+        "resource" => {
+          "ems_id"      => provider.id,
+          "name"        => "test_storage_service",
+          "description" => "description of test_storage_service",
+        }
+      }
+      stub_supports(StorageService, :create)
+      post(api_storage_services_url, :params => request)
+      expect_multiple_action_result(1, :success => true, :message => /Creating Storage Service test_storage_service for Provider #{provider.name}/, :task => true)
+    end
+  end
+
+  it "deletes a single Storage Service" do
+    provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+    service = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::StorageService", :name => 'test_service', :ext_management_system => provider)
+    api_basic_authorize('storage_service_delete')
+
+    stub_supports(StorageService, :delete)
+    post(api_storage_service_url(nil, service), :params => gen_request(:delete))
+
+    expect_single_action_result(:success => true, :message => /Deleting Storage Service id: #{service.id} name: '#{service.name}'/)
+  end
+
+  it "deletes multiple Storage Services" do
+    provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+    service1 = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::StorageService", :name => 'test_service1', :ext_management_system => provider)
+    service2 = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::StorageService", :name => 'test_service2', :ext_management_system => provider)
+    api_basic_authorize('storage_service_delete')
+
+    stub_supports(StorageService, :delete)
+    post(api_storage_services_url, :params => gen_request(:delete, [{"href" => api_storage_service_url(nil, service1)}, {"href" => api_storage_service_url(nil, service2)}]))
+
+    results = response.parsed_body["results"]
+
+    expect(results[0]["message"]).to match(/Deleting Storage Service id: #{service1.id} name: '#{service1.name}'/)
+    expect(results[0]["success"]).to match(true)
+    expect(results[1]["message"]).to match(/Deleting Storage Service id: #{service2.id} name: '#{service2.name}'/)
+    expect(results[1]["success"]).to match(true)
+
+    expect(response).to have_http_status(:ok)
   end
 end
