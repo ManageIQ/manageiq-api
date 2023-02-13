@@ -3672,6 +3672,40 @@
         :identifier: dialog_copy_editor
       - :name: template_service_dialog
         :identifier: dialog_new_editor
+  :service_nows:
+    :description: Service Now
+    :identifier: service_now
+    :options:
+    - :collection
+    :verbs: *gpd
+    :klass: ServiceNow
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: service_now_show_list
+      :post:
+      - :name: create
+        :identifier: service_now_new
+      - :name: connect
+        :identifier: service_now_connect
+      - :name: delete
+        :identifier: service_now_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: service_now_show
+      :post:
+      - :name: create
+        :identifier: service_now_new
+      - :name: connect
+        :identifier: service_now_connect
+      - :name: edit
+        :identifier: service_now_edit
+      - :name: delete
+        :identifier: service_now_delete
+      :delete:
+      - :name: delete
+        :identifier: service_now_delete
   :service_offerings:
     :description: Service Offerings
     :identifier: service_offerings
