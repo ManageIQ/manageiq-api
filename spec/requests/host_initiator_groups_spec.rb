@@ -71,4 +71,34 @@ describe "Host Initiator Groups API" do
       expect(response).to have_http_status(:bad_request)
     end
   end
+
+  it "deletes a single Host Initiator Group" do
+    provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+    host_initiator_group = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::HostInitiatorGroup", :name => 'test_host_initiator_group', :ext_management_system => provider)
+    api_basic_authorize('host_initiator_group_delete')
+
+    stub_supports(HostInitiatorGroup, :delete)
+    post(api_host_initiator_group_url(nil, host_initiator_group), :params => gen_request(:delete))
+
+    expect_single_action_result(:success => true, :message => /Deleting Host Initiator Group id: #{host_initiator_group.id} name: '#{host_initiator_group.name}'/)
+  end
+
+  it "deletes multiple Host Initiator Groups" do
+    provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
+    host_initiator_group1 = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::HostInitiatorGroup", :name => 'test_host_initiator_group1', :ext_management_system => provider)
+    host_initiator_group2 = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::HostInitiatorGroup", :name => 'test_host_initiator_group2', :ext_management_system => provider)
+    api_basic_authorize('host_initiator_group_delete')
+
+    stub_supports(HostInitiatorGroup, :delete)
+    post(api_host_initiator_groups_url, :params => gen_request(:delete, [{"href" => api_host_initiator_group_url(nil, host_initiator_group1)}, {"href" => api_host_initiator_group_url(nil, host_initiator_group2)}]))
+
+    results = response.parsed_body["results"]
+
+    expect(results[0]["message"]).to match(/Deleting Host Initiator Group id: #{host_initiator_group1.id} name: '#{host_initiator_group1.name}'/)
+    expect(results[0]["success"]).to match(true)
+    expect(results[1]["message"]).to match(/Deleting Host Initiator Group id: #{host_initiator_group2.id} name: '#{host_initiator_group2.name}'/)
+    expect(results[1]["success"]).to match(true)
+
+    expect(response).to have_http_status(:ok)
+  end
 end
