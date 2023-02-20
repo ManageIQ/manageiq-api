@@ -1,5 +1,5 @@
 module Api
-  class HostsController < BaseController
+  class HostsController < BaseProviderController
     CREDENTIALS_ATTR = "credentials".freeze
     AUTH_ATTR = "authentications".freeze
     AUTH_TYPE_ATTR = "auth_type".freeze
