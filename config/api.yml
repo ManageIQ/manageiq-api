@@ -758,10 +758,26 @@
         :identifier: cloud_tenant_tag
   :cloud_volume_snapshots:
     :description: Cloud Volume Snapshots
+    :identifier: cloud_volume_snapshots
     :options:
-    - :subcollection
-    :verbs: *gpppd
+    - :collection
+    :verbs: *gpd
     :klass: CloudVolumeSnapshot
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_volume_snapshot_view
+      :post:
+      - :name: delete
+        :identifier: cloud_volume_snapshot_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_volume_snapshot_view
+      :post:
+      - :name: delete
+        :identifier: cloud_volume_snapshot_delete
   :cloud_volume_types:
     :description: Cloud Volume Types
     :identifier: cloud_volume_type
