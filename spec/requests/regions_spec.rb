@@ -128,13 +128,13 @@ RSpec.describe "Regions API", :regions do
     context "/api/regions/:id?expand=settings" do
       it "expands the settings subcollection" do
         api_basic_authorize(action_identifier(:regions, :read, :resource_actions, :get), :ops_settings)
-        allow(Vmdb::Settings).to receive(:for_resource).and_return('authentications' => { 'bind_pwd' => 'bad_val'})
+        stub_settings_merge(:authentication => {:bind_pwd => 'passw0rd'})
         allow(User).to receive(:current_user).and_return(@user)
         allow(@user).to receive(:super_admin_user?).and_return(true)
 
         get(api_region_url(nil, region), :params => {:expand => 'settings'})
 
-        expect(response.parsed_body).to include('settings' => {'authentications' => {}})
+        expect(response.parsed_body).to_not have_key_path("settings", "authentication", "bind_pwd")
         expect(response).to have_http_status(:ok)
       end
 

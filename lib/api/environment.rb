@@ -14,6 +14,13 @@ module Api
                                 ::Vmdb::Settings::PASSWORD_FIELDS.map(&:to_s)
     end
 
+    def self.encrypted_attributes_whitelist
+      @encrypted_attributes_whitelist ||= Set.new(%w[
+        auth_token
+        verify_ssl
+      ])
+    end
+
     def self.time_attributes
       @time_attributes ||= ApiConfig.collections.each.with_object(Set.new(%w(expires_on))) do |(_, cspec), result|
         next if cspec[:klass].blank?
