@@ -102,15 +102,17 @@ module Api
       end
     end
 
-    # NOTE: _type == :providers
-    def verify_credentials_resource(_type, id = nil, data = {})
-      klass = fetch_provider_klass(collection_class(:providers), data)
-      zone_name = data.delete('zone_name')
-      data['id'] = id if id
-      task_id = klass.verify_credentials_task(current_user.userid, zone_name, data)
-      action_result(true, 'Credentials sent for verification', :task_id => task_id)
-    rescue => err
-      action_result(false, err.to_s)
+    # NOTE: the ui's zone drop down is currently passing the zone_id
+    def verify_credentials_resource(type, id = nil, data = {})
+      api_action(type, id) do |klass|
+        ems_klass = fetch_provider_klass(klass, data)
+        zone_name = data.delete('zone_name')
+        zone_id = data.delete('zone_id')
+        zone_name ||= resource_search(zone_id, :zones)&.name if zone_id
+        data['id'] = id if id
+        task_id = ems_klass.verify_credentials_task(current_user.userid, zone_name, data)
+        action_result(true, 'Credentials sent for verification', :task_id => task_id)
+      end
     end
 
     def check_compliance_resource(type, id, _data = nil)
