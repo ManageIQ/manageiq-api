@@ -11,7 +11,8 @@ module Api
   UnsupportedMediaTypeError = Class.new(ApiError)
 
   def self.encrypted_attribute?(attr)
-    Environment.encrypted_attributes.include?(attr.to_s) || attr.to_s.include?('password')
+    !Environment.encrypted_attributes_whitelist.include?(attr.to_s) &&
+      Environment.encrypted_attributes.any? { |a| attr.to_s.include?(a.to_s) }
   end
 
   def self.time_attribute?(attr)
