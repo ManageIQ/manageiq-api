@@ -326,8 +326,8 @@ describe "Cloud Volumes API" do
       end
 
       it 'clone raises an error if the cloud volume does not support clone' do
-        cloud_volume = FactoryBot.create(:cloud_volume_autosde)
-        stub_supports_not(:cloud_volume, :clone)
+        cloud_volume = FactoryBot.create(:cloud_volume)
+        stub_supports_not(cloud_volume, :clone)
 
         api_basic_authorize(action_identifier(:cloud_volumes, :clone, :resource_actions, :post))
 
