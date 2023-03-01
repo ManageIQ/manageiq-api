@@ -1808,7 +1808,7 @@
     :identifier: host_initiator_group
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpppd
     :klass: HostInitiatorGroup
     :subcollections:
     :collection_actions:
@@ -1818,10 +1818,23 @@
       :post:
       - :name: create
         :identifier: host_initiator_group_new
+      - :name: refresh
+        :identifier: host_initiator_group_refresh
+      - :name: delete
+        :identifier: host_initiator_group_delete
+      - :name: edit
+        :identifier: host_initiator_group_edit
     :resource_actions:
       :get:
       - :name: read
         :identifier: host_initiator_group_show
+      :post:
+      - :name: refresh
+        :identifier: host_initiator_group_refresh
+      - :name: delete
+        :identifier: host_initiator_group_delete
+      - :name: edit
+        :identifier: host_initiator_group_edit
   :host_initiators:
     :description: Host Initiators
     :identifier: host_initiator
