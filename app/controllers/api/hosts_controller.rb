@@ -30,6 +30,14 @@ module Api
       end
     end
 
+    def verify_credentials_resource(type, id = nil, data = {})
+      api_resource(type, id, "Verifying Credentials for") do |host|
+        remember_host = data["remember_host"] == "true"
+        authentications, auth_type = symbolize_password_keys!(data[AUTH_ATTR])
+        {:task_id => host.verify_credentials_task(User.current_userid, auth_type, :credentials => authentications, :remember_host => remember_host)}
+      end
+    end
+
     def check_compliance_resource(type, id, _data = nil)
       enqueue_ems_action(type, id, "Check Compliance for", :method_name => "check_compliance", :supports => true)
     end

@@ -149,6 +149,34 @@ RSpec.describe "hosts API" do
     end
   end
 
+  describe "#verify_credentials" do
+    let(:host) { FactoryBot.create(:host_with_authentication) }
+
+    it "creates a task" do
+      api_basic_authorize action_identifier(:hosts, :edit)
+
+      verify_options = {
+        :credentials   => {
+          "default" => {:userid => "root", :password => "abc123"}
+        },
+        :remember_host => true
+      }
+
+      api_options = {
+        "authentications" => {"default" => {"userid" => "root", "password" => "abc123"}},
+        "remember_host"   => "true"
+      }
+
+      post api_host_url(nil, host), :params => gen_request(:verify_credentials, api_options)
+      expect_single_action_result(:success => true, :message => /verifying/i, :task => true)
+      expect(host.reload.authentication_password(:default)).not_to eq("abc123")
+
+      q = MiqQueue.find_by(:class_name => "Host", :method_name => "verify_credentials?")
+      expect(q.instance_id).to eq(host.id)
+      expect(q.args).to eq(["default", verify_options])
+    end
+  end
+
   context "CustomAttributes subcollection" do
     let(:host) { FactoryBot.create(:host_with_authentication) }
 

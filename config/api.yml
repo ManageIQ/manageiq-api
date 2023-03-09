@@ -1888,6 +1888,8 @@
         :identifier: host_show_list
       - :name: edit
         :identifier: host_edit
+      - :name: verify_credentials
+        :identifier: host_edit
     :resource_actions:
       :get:
       - :name: read
