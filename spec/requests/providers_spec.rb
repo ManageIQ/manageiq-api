@@ -464,6 +464,22 @@ describe "Providers API" do
     end
   end
 
+  describe "verify_credentials" do
+    it "creates a task" do
+      api_basic_authorize collection_action_classed_identifier(:providers, :create, :post, "ManageIQ::Providers::InfraManager")
+      data = {
+        "type"            => "ManageIQ::Providers::Vmware::InfraManager",
+        "authentications" => {"userid" => "user", "password" => "pass"},
+        "endpoints"       => {"default" => {"hostname"=>"host"}}
+      }
+
+      expect(ManageIQ::Providers::Vmware::InfraManager).to receive(:verify_credentials_task).with(@user.userid, @zone.name, data).and_call_original
+
+      post(api_providers_url, :params => gen_request("verify_credentials", data.merge("zone_id" => @zone.id)))
+      expect_multiple_action_result(1, :success => true, :message => /verification/i, :task => true)
+    end
+  end
+
   describe "Providers create" do
     before(:each) do
       require "ovirtsdk4" # incase it hasn't been autoloaded yet
