@@ -344,7 +344,7 @@ describe "Authentication API" do
         end
 
         it "gets a token based identifier with an updated UI based token_ttl" do
-          ::Settings.session.timeout = 1234
+          stub_settings_merge(:session => {:timeout => 1234})
           api_basic_authorize
 
           get api_auth_url, :params => { :requester_type => "ui" }

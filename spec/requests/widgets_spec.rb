@@ -85,7 +85,7 @@ describe "Widgets API" do
       context "generate_content for group" do
         before do
           api_basic_authorize('widget_generate_content')
-          stub_settings(::Settings.to_hash.merge(:product => {:report_sync => true}))
+          stub_settings_merge(:product => {:report_sync => true})
         end
 
         it "generates single widget content" do
