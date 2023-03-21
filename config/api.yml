@@ -4237,7 +4237,7 @@
     :identifier: storage_service
     :options:
     - :collection
-    :verbs: *gpd
+    :verbs: *gpppd
     :klass: StorageService
     :subcollections:
     :collection_actions:
@@ -4247,6 +4247,8 @@
       :post:
       - :name: create
         :identifier: storage_service_new
+      - :name: edit
+        :identifier: storage_service_edit
       - :name: delete
         :identifier: storage_service_delete
       - :name: refresh
