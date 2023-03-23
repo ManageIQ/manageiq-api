@@ -72,7 +72,7 @@ RSpec.describe "hosts API" do
         expect(host2.reload.authentication_password(:default)).to eq("def456")
       end
 
-      it "can update passwords on multiple hosts by id" do
+      it "can update passwords on multiple hosts by id (via credentials)" do
         host1 = FactoryBot.create(:host_with_authentication)
         host2 = FactoryBot.create(:host_with_authentication)
         api_basic_authorize action_identifier(:hosts, :edit)
@@ -82,6 +82,24 @@ RSpec.describe "hosts API" do
         ]
 
         post api_hosts_url, :params => gen_request(:edit, options)
+        expect(response).to have_http_status(:ok)
+        expect(host1.reload.authentication_password(:default)).to eq("abc123")
+        expect(host2.reload.authentication_password(:default)).to eq("def456")
+      end
+
+      it "can update passwords on multiple hosts by id" do
+        host1 = FactoryBot.create(:host_with_authentication)
+        host2 = FactoryBot.create(:host_with_authentication)
+        api_basic_authorize action_identifier(:hosts, :edit)
+        params = {
+          "action"    => "edit",
+          "resources" => [
+            {:id => host1.id, :authentications => {"default" => {:username => "abc", :password => "abc123"}}},
+            {:id => host2.id, :authentications => {"default" => {:username => "def", :password => "def456"}}}
+          ]
+        }
+
+        post api_hosts_url, :params => params
         expect(response).to have_http_status(:ok)
         expect(host1.reload.authentication_password(:default)).to eq("abc123")
         expect(host2.reload.authentication_password(:default)).to eq("def456")
