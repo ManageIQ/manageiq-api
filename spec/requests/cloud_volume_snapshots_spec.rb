@@ -77,5 +77,16 @@ RSpec.describe "CloudVolumeSnapshots API" do
         expect_bad_request(/Feature not .*supported/)
       end
     end
+
+    describe "DELETE /api/cloud_volumes/:c_id/cloud_volume_snapshots/:s_id" do
+      it "create & delete cloud volume snapshot" do
+        api_basic_authorize('cloud_volume_snapshot_delete')
+
+        stub_supports(CloudVolumeSnapshot, :delete)
+        post(api_cloud_volume_snapshot_url(nil, cloud_volume_snapshot), :params => gen_request(:delete))
+
+        expect_single_action_result(:success => true, :message => /Deleting Cloud Volume Snapshot id: #{cloud_volume_snapshot.id} name: '#{cloud_volume_snapshot.name}'/)
+      end
+    end
   end
 end
