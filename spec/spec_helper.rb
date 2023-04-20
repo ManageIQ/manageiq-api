@@ -6,7 +6,7 @@ end
 Dir[Rails.root.join("spec/shared/**/*.rb")].each { |f| require f }
 Dir[File.join(__dir__, "support/**/*.rb")].each { |f| require f }
 
-require "manageiq-api"
+require "manageiq/api"
 
 RSpec.configure do |config|
   config.include Spec::Support::Api::Helpers, :type => :request
