@@ -1,4 +1,6 @@
 RSpec.describe 'Authentications API' do
+  include Spec::Support::SupportsHelper
+
   let(:manager) { FactoryBot.create(:automation_manager_ansible_tower) }
   let(:auth) { FactoryBot.create(:ansible_cloud_credential, :resource => manager) }
   let(:auth_2) { FactoryBot.create(:ansible_cloud_credential, :resource => manager) }
@@ -69,6 +71,7 @@ RSpec.describe 'Authentications API' do
 
     it 'will delete an authentication' do
       api_basic_authorize collection_action_identifier(:authentications, :delete, :post)
+      stub_supports(auth, :delete)
 
       post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }] })
 
@@ -86,14 +89,17 @@ RSpec.describe 'Authentications API' do
     it 'verifies that the type is supported' do
       api_basic_authorize collection_action_identifier(:authentications, :delete, :post)
       auth = FactoryBot.create(:authentication)
+      stub_supports_not(auth, :delete)
 
       post(api_authentications_url, :params => { :action => 'delete', :resources => [{ 'id' => auth.id }] })
 
-      expect_multiple_action_result(1, :success => false, :message => /Delete not supported/)
+      expect_multiple_action_result(1, :success => false, :message => /Feature not available\/supported/)
     end
 
     it 'will delete multiple authentications' do
       api_basic_authorize collection_action_identifier(:authentications, :delete, :post)
+      stub_supports(auth, :delete)
+      stub_supports(auth_2, :delete)
 
       post(api_authentications_url, :params => {:action => 'delete', :resources => [{'id' => auth.id}, {'id' => auth_2.id}]})
       expect_multiple_action_result(2, :task => true, :success => true, :message => 'Deleting Authentication')
@@ -109,6 +115,7 @@ RSpec.describe 'Authentications API' do
 
     it 'can update an authentication with an appropriate role' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
+      stub_supports(auth, :update)
 
       post(api_authentications_url, :params => { :action => 'edit', :resources => [params] })
 
@@ -128,6 +135,7 @@ RSpec.describe 'Authentications API' do
     it 'can update an authentication with an appropriate role' do
       params2 = params.dup.merge(:id => auth_2.id)
       api_basic_authorize collection_action_identifier(:authentications, :edit)
+      stub_supports(auth_2, :update)
 
       post(api_authentications_url, :params => { :action => 'edit', :resources => [params, params2] })
 
@@ -189,7 +197,7 @@ RSpec.describe 'Authentications API' do
 
       expected = {
         'results' => [
-          { 'success' => false, 'message' => 'type not currently supported' }
+          { 'success' => false, 'message' => 'Create for Authentications: Feature not available/supported' }
         ]
       }
       expect(response).to have_http_status(:bad_request)
@@ -198,6 +206,8 @@ RSpec.describe 'Authentications API' do
 
     it 'can create an authentication' do
       api_basic_authorize collection_action_identifier(:authentications, :create, :post)
+
+      stub_supports(create_params[:type].safe_constantize, :create)
 
       expected = {
         'results' => [a_hash_including(
@@ -298,6 +308,7 @@ RSpec.describe 'Authentications API' do
 
     it 'can update an authentication with an appropriate role' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
+      stub_supports(auth, :update)
 
       put(api_authentication_url(nil, auth), :params => { :resource => params })
 
@@ -322,6 +333,7 @@ RSpec.describe 'Authentications API' do
 
     it 'can update an authentication with an appropriate role' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
+      stub_supports(auth, :update)
 
       patch(api_authentication_url(nil, auth), :params => [params])
 
@@ -345,6 +357,7 @@ RSpec.describe 'Authentications API' do
 
     it 'will delete an authentication' do
       api_basic_authorize action_identifier(:authentications, :delete, :resource_actions, :post)
+      stub_supports(auth, :delete)
 
       post(api_authentication_url(nil, auth), :params => { :action => 'delete' })
 
@@ -361,6 +374,7 @@ RSpec.describe 'Authentications API' do
 
     it 'can update an authentication with an appropriate role' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
+      stub_supports(auth, :update)
 
       post(api_authentication_url(nil, auth), :params => { :action => 'edit', :resource => params })
 
@@ -376,10 +390,11 @@ RSpec.describe 'Authentications API' do
     it 'requires that the type support update_in_provider_queue' do
       api_basic_authorize collection_action_identifier(:authentications, :edit)
       auth = FactoryBot.create(:authentication)
+      stub_supports_not(auth, :update)
 
       post(api_authentication_url(nil, auth), :params => { :action => 'edit', :resource => params })
 
-      expect_bad_request("Update not supported for Authentication id: #{auth.id} name: '#{auth.name}'")
+      expect_bad_request("Update for Authentication id: #{auth.id} name: '#{auth.name}': Feature not available/supported")
     end
 
     it 'will forbid update to an authentication without appropriate role' do
@@ -418,6 +433,8 @@ RSpec.describe 'Authentications API' do
   describe 'DELETE /api/authentications/:id' do
     it 'will delete an authentication' do
       auth = FactoryBot.create(:embedded_ansible_openstack_credential)
+      stub_supports(auth, :delete)
+
       api_basic_authorize action_identifier(:authentications, :delete, :resource_actions, :delete)
 
       delete(api_authentication_url(nil, auth))

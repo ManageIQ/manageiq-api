@@ -1,4 +1,6 @@
 RSpec.describe 'Configuration Script Payloads API' do
+  include Spec::Support::SupportsHelper
+
   describe 'GET /api/configuration_script_payloads' do
     it 'lists all the configuration script payloads with an appropriate role' do
       script_payload = FactoryBot.create(:configuration_script_payload)
@@ -227,7 +229,7 @@ RSpec.describe 'Configuration Script Payloads API' do
 
       expected = {
         'results' => [
-          { 'success' => false, 'message' => 'type not currently supported' }
+          { 'success' => false, 'message' => 'Create for Authentications: Feature not available/supported' }
         ]
       }
       expect(response).to have_http_status(:bad_request)
@@ -236,6 +238,7 @@ RSpec.describe 'Configuration Script Payloads API' do
 
     it 'creates a new authentication with an appropriate role' do
       api_basic_authorize subcollection_action_identifier(:configuration_script_payloads, :authentications, :create)
+      stub_supports(Authentication, :create)
 
       post(api_configuration_script_payload_authentications_url(nil, playbook), :params => params)
 

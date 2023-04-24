@@ -5,8 +5,11 @@ module Api
         object.respond_to?(:authentications) ? object.authentications : []
       end
 
-      def authentications_create_resource(parent, _type, _id, data)
-        task_id = AuthenticationService.create_authentication_task(parent.manager, data)
+      def authentications_create_resource(parent, type, _id, data)
+        klass = ::Authentication.descendant_get(data['type'])
+        ensure_supports(type, klass, :create)
+
+        task_id = klass.create_in_provider_queue(parent.manager.id, data.deep_symbolize_keys)
         action_result(true, 'Creating Authentication', :task_id => task_id)
       rescue => err
         action_result(false, err.to_s)
