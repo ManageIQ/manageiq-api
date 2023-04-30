@@ -15,5 +15,11 @@ module Api
         {:task_id => storage_service.delete_storage_service_queue(User.current_userid)}
       end
     end
+
+    def edit_resource(type, id, data = {})
+      api_resource(type, id, "Updating", :supports => :update) do |storage_service|
+        {:task_id => storage_service.update_storage_service_queue(User.current_userid, data)}
+      end
+    end
   end
 end
