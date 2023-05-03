@@ -31,8 +31,6 @@ module Api
     before_action :ensure_pagination, :only => :index
     after_action :log_api_response
 
-    respond_to :json
-
     # Order *Must* be from most generic to most specific
     rescue_from(StandardError)                  { |e| api_error(:internal_server_error, e) }
     rescue_from(NoMethodError)                  { |e| api_error(:internal_server_error, e) }
