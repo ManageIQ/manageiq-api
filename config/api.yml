@@ -4931,34 +4931,6 @@
       :post:
       - :name: generate_content
         :identifier: widget_generate_content
-  :workflow_instances:
-    :description: Workflow Instances
-    :options:
-    - :collection
-    :verbs: *g
-    :klass: WorkflowInstance
-    :collection_actions:
-      :get:
-      - :name: read
-        :identifier: embedded_workflow_instance_show_list
-    :resource_actions:
-      :get:
-      - :name: read
-        :identifier: embedded_workflow_instance_view
-  :workflows:
-    :description: Workflows
-    :options:
-    - :collection
-    :verbs: *g
-    :klass: Workflow
-    :collection_actions:
-      :get:
-      - :name: read
-        :identifier: embedded_workflow_show_list
-    :resource_actions:
-      :get:
-      - :name: read
-        :identifier: embedded_workflow_view
   :zones:
     :description: Zones
     :identifier: zone
