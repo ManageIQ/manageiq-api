@@ -387,5 +387,23 @@ RSpec.describe Api::Filter do
       expected = {"REGULAR EXPRESSION DOES NOT MATCH" => {"field" => "MiqReport-name", "value" => "/foo/i"}}
       expect(actual.exp).to eq(expected)
     end
+
+    it "supports filtering with operators in the strings" do
+      filters = ["host.name='foo='"]
+
+      actual = described_class.parse(filters, Vm)
+
+      expected = {"=" => {"field" => "Vm.host-name", "value" => "foo="}}
+      expect(actual.exp).to eq(expected)
+    end
+
+    it "supports filtering with multiple operators in the strings" do
+      filters = ["host.name<'<=foo=>'"]
+
+      actual = described_class.parse(filters, Vm)
+
+      expected = {"<" => {"field" => "Vm.host-name", "value" => "<=foo=>"}}
+      expect(actual.exp).to eq(expected)
+    end
   end
 end
