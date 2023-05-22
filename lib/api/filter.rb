@@ -64,26 +64,8 @@ module Api
 
     def parse_filter(filter)
       logical_or = filter.gsub!(/^or /i, '').present?
-
-      operator = nil
-      operators_from_longest_to_shortest = OPERATORS.keys.sort_by(&:size).reverse
-      filter.size.times do |i|
-        operator = operators_from_longest_to_shortest.detect do |o|
-          o == filter[(i..(i + o.size - 1))]
-        end
-        break if operator
-      end
-
-      if operator.blank?
-        raise BadRequestError, "Unknown operator specified in filter #{filter}"
-      end
-
+      filter_field, operator, filter_value = split_filter_string(filter)
       methods = OPERATORS[operator]
-      filter_attr, _, filter_value = filter.partition(operator)
-      filter_attr.strip!
-      filter_value.strip!
-      *associations, attr = filter_attr.split(".")
-      filter_field = MiqExpression::Field.new(model, associations, attr)
 
       is_regex = filter_value =~ /%|\*/ && methods[:regex]
       str_method = is_regex ? methods[:regex] : methods[:default]
@@ -135,6 +117,27 @@ module Api
 
     def single_expression(field, operator, value)
       {operator => {"field" => field.to_s, "value" => value}}
+    end
+
+    def split_filter_string(filter)
+      operator = nil
+      operators_from_longest_to_shortest = OPERATORS.keys.sort_by(&:size).reverse
+      filter.size.times do |i|
+        operator = operators_from_longest_to_shortest.detect do |o|
+          o == filter[(i..(i + o.size - 1))]
+        end
+        break if operator
+      end
+
+      if operator.blank?
+        raise BadRequestError, "Unknown operator specified in filter #{filter}"
+      end
+
+      filter_attr, _op, filter_value = filter.partition(operator)
+      filter_value.strip!
+      filter_attr.strip!
+      *associations, attr_name = filter_attr.split(".")
+      [MiqExpression::Field.new(model, associations, attr_name), operator, filter_value]
     end
   end
 end
