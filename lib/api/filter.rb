@@ -33,8 +33,7 @@ module Api
     def parse
       filters.select(&:present?).each do |filter|
         parsed_filter = parse_filter(filter)
-        *associations, attr = parsed_filter[:attr].split(".")
-        field = MiqExpression::Field.new(model, associations, attr)
+        field = parsed_filter[:field]
         if field.associations.size > 1
           raise BadRequestError, "Filtering of attributes with more than one association away is not supported"
         end
@@ -83,6 +82,8 @@ module Api
       filter_attr, _, filter_value = filter.partition(operator)
       filter_attr.strip!
       filter_value.strip!
+      *associations, attr = filter_attr.split(".")
+      filter_field = MiqExpression::Field.new(model, associations, attr)
 
       is_regex = filter_value =~ /%|\*/ && methods[:regex]
       str_method = is_regex ? methods[:regex] : methods[:default]
@@ -97,7 +98,7 @@ module Api
                                [array_value, methods[:array]]
                              when /^'(.*)'$/, /^"(.*)"$/
                                unquoted_filter_value = $1
-                               if column_type(model, filter_attr) == :string_set && methods[:string_set]
+                               if filter_field.column_type == :string_set && methods[:string_set]
                                  [unquoted_filter_value, methods[:string_set]]
                                else
                                  [unquoted_filter_value, str_method]
@@ -105,7 +106,7 @@ module Api
                              when /^(NULL|nil)$/i
                                [nil, methods[:null] || methods[:default]]
                              else
-                               if column_type(model, filter_attr) == :datetime
+                               if filter_field.datetime?
                                  unless methods[:datetime]
                                    raise BadRequestError, "Unsupported operator for datetime: #{operator}"
                                  end
@@ -124,7 +125,7 @@ module Api
         filter_value.gsub!(/%|\\\*/, ".*")
       end
 
-      {:logical_or => logical_or, :operator => method, :attr => filter_attr, :value => filter_value}
+      {:logical_or => logical_or, :operator => method, :field => filter_field, :value => filter_value}
     end
 
     def composite_expression
