@@ -710,7 +710,7 @@ describe "Querying" do
       expected = {
         "error" => a_hash_including(
           "kind"    => "bad_request",
-          "message" => "Must filter on valid attributes for resource"
+          "message" => /attribute Vm-destroy does not exist/
         )
       }
       expect(response.parsed_body).to include(expected)

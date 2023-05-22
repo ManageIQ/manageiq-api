@@ -29,7 +29,7 @@ RSpec.describe "categories API" do
 
     get api_categories_url, :params => { :filter => ["not_an_attribute=foo"] }
 
-    expect_bad_request(/attribute not_an_attribute does not exist/)
+    expect_bad_request(/attribute Category-not_an_attribute does not exist/)
   end
 
   it "can read a category" do

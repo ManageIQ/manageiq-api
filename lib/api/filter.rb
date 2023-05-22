@@ -34,16 +34,14 @@ module Api
       filters.select(&:present?).each do |filter|
         parsed_filter = parse_filter(filter)
         *associations, attr = parsed_filter[:attr].split(".")
-        if associations.size > 1
+        field = MiqExpression::Field.new(model, associations, attr)
+        if field.associations.size > 1
           raise BadRequestError, "Filtering of attributes with more than one association away is not supported"
         end
-        unless virtual_or_physical_attribute?(target_class(model, associations), attr)
-          raise BadRequestError, "attribute #{attr} does not exist"
+        unless field.valid?
+          raise BadRequestError, "attribute #{field} does not exist"
         end
 
-        associations.map! { |assoc| ".#{assoc}" }
-
-        field = "#{model.name}#{associations.join}-#{attr}"
         op    = parsed_filter[:operator]
         expr  = if parsed_filter[:value].kind_of?(Array)
                   {"OR" => parsed_filter[:value].map { |val| single_expression(field, op, val) }}
@@ -135,19 +133,7 @@ module Api
     end
 
     def single_expression(field, operator, value)
-      {operator => {"field" => field, "value" => value}}
-    end
-
-    def target_class(klass, reflections)
-      if reflections.empty?
-        klass
-      else
-        target_class(klass.reflections_with_virtual[reflections.first.to_sym].klass, reflections[1..-1])
-      end
-    end
-
-    def virtual_or_physical_attribute?(klass, attribute)
-      klass.attribute_method?(attribute) || klass.virtual_attribute?(attribute)
+      {operator => {"field" => field.to_s, "value" => value}}
     end
   end
 end
