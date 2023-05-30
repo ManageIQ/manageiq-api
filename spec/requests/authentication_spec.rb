@@ -243,10 +243,14 @@ describe "Authentication API" do
     end
   end
 
-  context "Token Based Authentication" do
+  describe "Token Based Authentication" do
     %w(sql memory cache).each do |session_store|
       context "when using a #{session_store} session store" do
-        before { stub_settings_merge(:server => {:session_store => session_store}) }
+        before do
+          MiqMemcached.client({}).get("test") if session_store == "cache"
+
+          stub_settings_merge(:server => {:session_store => session_store})
+        end
 
         it "gets a token based identifier" do
           api_basic_authorize
@@ -344,7 +348,7 @@ describe "Authentication API" do
         end
 
         it "gets a token based identifier with an updated UI based token_ttl" do
-          ::Settings.session.timeout = 1234
+          stub_settings_merge(:session => {:timeout => 1234})
           api_basic_authorize
 
           get api_auth_url, :params => { :requester_type => "ui" }

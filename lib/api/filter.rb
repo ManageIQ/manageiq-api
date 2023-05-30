@@ -33,17 +33,14 @@ module Api
     def parse
       filters.select(&:present?).each do |filter|
         parsed_filter = parse_filter(filter)
-        *associations, attr = parsed_filter[:attr].split(".")
-        if associations.size > 1
+        field = parsed_filter[:field]
+        if field.associations.size > 1
           raise BadRequestError, "Filtering of attributes with more than one association away is not supported"
         end
-        unless virtual_or_physical_attribute?(target_class(model, associations), attr)
-          raise BadRequestError, "attribute #{attr} does not exist"
+        unless field.valid?
+          raise BadRequestError, "attribute #{field} does not exist"
         end
 
-        associations.map! { |assoc| ".#{assoc}" }
-
-        field = "#{model.name}#{associations.join}-#{attr}"
         op    = parsed_filter[:operator]
         expr  = if parsed_filter[:value].kind_of?(Array)
                   {"OR" => parsed_filter[:value].map { |val| single_expression(field, op, val) }}
@@ -67,24 +64,8 @@ module Api
 
     def parse_filter(filter)
       logical_or = filter.gsub!(/^or /i, '').present?
-
-      operator = nil
-      operators_from_longest_to_shortest = OPERATORS.keys.sort_by(&:size).reverse
-      filter.size.times do |i|
-        operator = operators_from_longest_to_shortest.detect do |o|
-          o == filter[(i..(i + o.size - 1))]
-        end
-        break if operator
-      end
-
-      if operator.blank?
-        raise BadRequestError, "Unknown operator specified in filter #{filter}"
-      end
-
+      filter_field, operator, filter_value = split_filter_string(filter)
       methods = OPERATORS[operator]
-      filter_attr, _, filter_value = filter.partition(operator)
-      filter_attr.strip!
-      filter_value.strip!
 
       is_regex = filter_value =~ /%|\*/ && methods[:regex]
       str_method = is_regex ? methods[:regex] : methods[:default]
@@ -99,7 +80,7 @@ module Api
                                [array_value, methods[:array]]
                              when /^'(.*)'$/, /^"(.*)"$/
                                unquoted_filter_value = $1
-                               if column_type(model, filter_attr) == :string_set && methods[:string_set]
+                               if filter_field.column_type == :string_set && methods[:string_set]
                                  [unquoted_filter_value, methods[:string_set]]
                                else
                                  [unquoted_filter_value, str_method]
@@ -107,7 +88,7 @@ module Api
                              when /^(NULL|nil)$/i
                                [nil, methods[:null] || methods[:default]]
                              else
-                               if column_type(model, filter_attr) == :datetime
+                               if filter_field.datetime?
                                  unless methods[:datetime]
                                    raise BadRequestError, "Unsupported operator for datetime: #{operator}"
                                  end
@@ -126,7 +107,7 @@ module Api
         filter_value.gsub!(/%|\\\*/, ".*")
       end
 
-      {:logical_or => logical_or, :operator => method, :attr => filter_attr, :value => filter_value}
+      {:logical_or => logical_or, :operator => method, :field => filter_field, :value => filter_value}
     end
 
     def composite_expression
@@ -135,19 +116,28 @@ module Api
     end
 
     def single_expression(field, operator, value)
-      {operator => {"field" => field, "value" => value}}
+      {operator => {"field" => field.to_s, "value" => value}}
     end
 
-    def target_class(klass, reflections)
-      if reflections.empty?
-        klass
-      else
-        target_class(klass.reflections_with_virtual[reflections.first.to_sym].klass, reflections[1..-1])
+    def split_filter_string(filter)
+      operator = nil
+      operators_from_longest_to_shortest = OPERATORS.keys.sort_by(&:size).reverse
+      filter.size.times do |i|
+        operator = operators_from_longest_to_shortest.detect do |o|
+          o == filter[(i..(i + o.size - 1))]
+        end
+        break if operator
       end
-    end
 
-    def virtual_or_physical_attribute?(klass, attribute)
-      klass.attribute_method?(attribute) || klass.virtual_attribute?(attribute)
+      if operator.blank?
+        raise BadRequestError, "Unknown operator specified in filter #{filter}"
+      end
+
+      filter_attr, _op, filter_value = filter.partition(operator)
+      filter_value.strip!
+      filter_attr.strip!
+      *associations, attr_name = filter_attr.split(".")
+      [MiqExpression::Field.new(model, associations, attr_name), operator, filter_value]
     end
   end
 end

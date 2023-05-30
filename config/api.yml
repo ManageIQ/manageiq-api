@@ -608,6 +608,24 @@
       :get:
       - :name: read
         :identifier: cloud_object_store_container_show
+  :cloud_object_store_objects:
+    :description: Cloud Object Store Objects
+    :identifier: cloud_object_store_object
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: CloudObjectStoreObject
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_object_store_object_show_list
+      :post:
+      - :name: query
+        :identifier: cloud_object_store_object_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_object_store_object_show
   :cloud_subnets:
     :description: Cloud Subnets
     :identifier: cloud_subnet
@@ -758,10 +776,26 @@
         :identifier: cloud_tenant_tag
   :cloud_volume_snapshots:
     :description: Cloud Volume Snapshots
+    :identifier: cloud_volume_snapshot
     :options:
-    - :subcollection
+    - :collection
     :verbs: *gpppd
     :klass: CloudVolumeSnapshot
+    :subcollections:
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_volume_snapshot_view
+      :post:
+      - :name: delete
+        :identifier: cloud_volume_snapshot_delete
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: cloud_volume_snapshot_view
+      :post:
+      - :name: delete
+        :identifier: cloud_volume_snapshot_delete
   :cloud_volume_types:
     :description: Cloud Volume Types
     :identifier: cloud_volume_type
@@ -1808,7 +1842,7 @@
     :identifier: host_initiator_group
     :options:
     - :collection
-    :verbs: *gp
+    :verbs: *gpppd
     :klass: HostInitiatorGroup
     :subcollections:
     :collection_actions:
@@ -1818,10 +1852,23 @@
       :post:
       - :name: create
         :identifier: host_initiator_group_new
+      - :name: refresh
+        :identifier: host_initiator_group_refresh
+      - :name: delete
+        :identifier: host_initiator_group_delete
+      - :name: edit
+        :identifier: host_initiator_group_edit
     :resource_actions:
       :get:
       - :name: read
         :identifier: host_initiator_group_show
+      :post:
+      - :name: refresh
+        :identifier: host_initiator_group_refresh
+      - :name: delete
+        :identifier: host_initiator_group_delete
+      - :name: edit
+        :identifier: host_initiator_group_edit
   :host_initiators:
     :description: Host Initiators
     :identifier: host_initiator
@@ -1874,6 +1921,8 @@
       - :name: query
         :identifier: host_show_list
       - :name: edit
+        :identifier: host_edit
+      - :name: verify_credentials
         :identifier: host_edit
     :resource_actions:
       :get:
@@ -4206,7 +4255,8 @@
     :identifier: storage_service
     :options:
     - :collection
-    :verbs: *gpd
+    - :custom_actions
+    :verbs: *gpppd
     :klass: StorageService
     :subcollections:
     :collection_actions:
@@ -4216,12 +4266,16 @@
       :post:
       - :name: create
         :identifier: storage_service_new
+      - :name: edit
+        :identifier: storage_service_edit
       - :name: delete
         :identifier: storage_service_delete
       - :name: refresh
         :identifier: storage_service_refresh
       - :name: query
         :identifier: storage_service_show_list
+      - :name: check_compliant_resources
+        :identifier: check_compliant_resources
     :resource_actions:
       :get:
       - :name: read

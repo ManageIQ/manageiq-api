@@ -1,5 +1,8 @@
 describe "Storage Services API" do
   include Spec::Support::SupportsHelper
+
+  let(:provider) { FactoryBot.create(:ems_autosde) }
+
   context "GET /api/storage_services" do
     it "returns all storage_services" do
       storage_service = FactoryBot.create(:storage_service)
@@ -35,7 +38,6 @@ describe "Storage Services API" do
   context "POST /api/storage_services" do
     it "creates new Storage Service" do
       api_basic_authorize(collection_action_identifier(:storage_services, :create))
-      provider = FactoryBot.create(:ems_autosde)
       request = {
         "action"   => "create",
         "resource" => {
@@ -51,8 +53,7 @@ describe "Storage Services API" do
   end
 
   it "deletes a single Storage Service" do
-    provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
-    service = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::StorageService", :name => 'test_service', :ext_management_system => provider)
+    service = FactoryBot.create(:storage_service, :name => 'test_service', :ext_management_system => provider)
     api_basic_authorize('storage_service_delete')
 
     stub_supports(StorageService, :delete)
@@ -62,9 +63,8 @@ describe "Storage Services API" do
   end
 
   it "deletes multiple Storage Services" do
-    provider = FactoryBot.create(:ems_autosde, :name => 'Autosde')
-    service1 = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::StorageService", :name => 'test_service1', :ext_management_system => provider)
-    service2 = FactoryBot.create("ManageIQ::Providers::Autosde::StorageManager::StorageService", :name => 'test_service2', :ext_management_system => provider)
+    service1 = FactoryBot.create(:storage_service, :name => 'test_service1', :ext_management_system => provider)
+    service2 = FactoryBot.create(:storage_service, :name => 'test_service2', :ext_management_system => provider)
     api_basic_authorize('storage_service_delete')
 
     stub_supports(StorageService, :delete)
@@ -78,5 +78,19 @@ describe "Storage Services API" do
     expect(results[1]["success"]).to match(true)
 
     expect(response).to have_http_status(:ok)
+  end
+
+  context 'Storage Services edit action' do
+    it "PUT /api/storage_services/:id'" do
+      storage_service = FactoryBot.create(:storage_service, :ext_management_system => provider)
+
+      api_basic_authorize('storage_service_edit')
+
+      stub_supports(StorageService, :update)
+      put(api_storage_service_url(nil, storage_service))
+
+      expect(response.parsed_body["message"]).to include("Updating")
+      expect(response).to have_http_status(:ok)
+    end
   end
 end

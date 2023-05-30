@@ -481,13 +481,6 @@ describe "Providers API" do
   end
 
   describe "Providers create" do
-    before(:each) do
-      require "ovirtsdk4" # incase it hasn't been autoloaded yet
-
-      allow(OvirtSDK4::Probe).to receive(:probe)
-        .and_return([OvirtSDK4::ProbeResult.new(:version => '3')])
-    end
-
     it 'invokes the DDF creation when ddf=true' do
       api_basic_authorize collection_action_identifier(:providers, :create)
 
@@ -758,13 +751,6 @@ describe "Providers API" do
   end
 
   describe "Providers edit" do
-    before(:each) do
-      require "ovirtsdk4" # incase it hasn't been autoloaded yet
-
-      allow(OvirtSDK4::Probe).to receive(:probe)
-        .and_return([OvirtSDK4::ProbeResult.new(:version => '3')])
-    end
-
     it 'invokes the DDF creation when ddf=true' do
       api_basic_authorize collection_action_identifier(:providers, :edit)
 
