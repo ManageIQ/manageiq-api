@@ -21,5 +21,12 @@ module Api
         {:task_id => storage_service.update_storage_service_queue(User.current_userid, data)}
       end
     end
+
+    def check_compliant_resources_resource(type, id = nil, data = {})
+      data["_id"] = id
+      api_ems_resource(type, data, "Checking Compliant Resources", :supports => :check_compliant_resources) do |ems, storage_service|
+        {:task_id => storage_service.check_compliant_resources_queue(User.current_userid, ems, data)}
+      end
+    end
   end
 end

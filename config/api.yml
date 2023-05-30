@@ -4255,6 +4255,7 @@
     :identifier: storage_service
     :options:
     - :collection
+    - :custom_actions
     :verbs: *gpppd
     :klass: StorageService
     :subcollections:
@@ -4273,6 +4274,8 @@
         :identifier: storage_service_refresh
       - :name: query
         :identifier: storage_service_show_list
+      - :name: check_compliant_resources
+        :identifier: check_compliant_resources
     :resource_actions:
       :get:
       - :name: read
