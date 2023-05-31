@@ -141,13 +141,13 @@ module Api
     end
 
     def permitted_subclasses
-      ActiveSupport::Dependencies.interlock.loading do
+      AsDependenciesInterlock.loading do
         ManageIQ::Providers::BaseManager.permitted_subclasses
       end
     end
 
     def supported_types_for_create
-      ActiveSupport::Dependencies.interlock.loading do
+      AsDependenciesInterlock.loading do
         ExtManagementSystem.supported_types_for_create
       end
     end
