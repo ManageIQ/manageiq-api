@@ -510,6 +510,39 @@ describe "Service Templates API" do
           expect(response).to have_http_status(:ok)
           expect(response.parsed_body).to include(expected)
         end
+
+        it "properly encodes password fields" do
+          dialog = service_template.resource_actions.first.dialog
+          dialog.dialog_tabs << FactoryBot.create(:dialog_tab)
+          dialog_fields = [
+            FactoryBot.create(:dialog_field_text_box, :name => 'username'),
+            FactoryBot.create(:dialog_field_text_box, :name => 'password', :protected => true)
+          ]
+          dialog.dialog_tabs.first.dialog_groups << FactoryBot.create(:dialog_group, :dialog_fields => dialog_fields)
+
+          api_basic_authorize action_identifier(:service_templates, :order, :resource_actions, :post)
+
+          params = {
+            :href                       => api_service_template_url(nil, service_template),
+            # option A:
+            "dialog_username"           => "user",
+            "password::dialog_password" => "pass"
+            # option B:
+            # "username" => "user",
+            # "password" => "pass",
+            # option C:
+            # "parameters" => {"username" => "user", "password" => "pass"}
+          }
+          post(api_service_template_url(nil, service_template), :params => {:action => "order", :resource => params})
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body.dig("options", "dialog")).to eq("dialog_username" => "user")
+          service_request_id = response.parsed_body["id"]
+          expect(service_request_id).not_to be_nil
+          # essentially: collections(:service_requests).find()
+          sr = ServiceTemplateProvisionRequest.find(service_request_id)
+          expect(sr.options[:dialog]["dialog_username"]).to eq("user")
+          expect(sr.options[:dialog]["password::dialog_password"]).to be_encrypted("pass")
+        end
       end
 
       context "with requests that are not coming from UI" do
