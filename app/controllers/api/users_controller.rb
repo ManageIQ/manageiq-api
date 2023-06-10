@@ -7,11 +7,23 @@ module Api
     include Subcollections::CustomButtonEvents
     include Subcollections::Tags
 
-    skip_before_action :validate_api_action, :only => :update
+    skip_before_action :validate_api_action, :only => [:index, :show, :update]
+
+    def index # rubocop:disable Lint/UselessMethodDefinition
+      # Rails style guide and Rubocop suggest this method to be lexically redefined since we are skipping validate_api_action
+      # See https://rails.rubystyle.guide/#lexically-scoped-action-filter
+      #     https://docs.rubocop.org/rubocop-rails/cops_rails.html#railslexicallyscopedactionfilter
+      super
+    end
+
+    def show
+      validate_api_action unless target_is_api_user?
+      super
+    end
 
     def update
       aname = @req.action
-      if aname == "edit" && !api_user_role_allows?(aname) && update_target_is_api_user?
+      if aname == "edit" && !api_user_role_allows?(aname) && target_is_api_user?
         if (Array(@req.resource.try(:keys)) - EDITABLE_ATTRS).present?
           raise BadRequestError,
                 "Cannot update attributes other than #{EDITABLE_ATTRS.join(', ')} for the authenticated user"
@@ -90,7 +102,7 @@ module Api
       end
     end
 
-    def update_target_is_api_user?
+    def target_is_api_user?
       User.current_user.id == @req.collection_id.to_i
     end
 
