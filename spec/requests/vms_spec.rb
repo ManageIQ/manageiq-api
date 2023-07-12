@@ -1190,51 +1190,6 @@ describe "Vms API" do
     end
   end
 
-  context "Vm add_lifecycle_event action" do
-    let(:events) do
-      1.upto(3).collect do |n|
-        {:event => "event#{n}", :status => "status#{n}", :message => "message#{n}", :created_by => "system"}
-      end
-    end
-
-    it "add_lifecycle_event to an invalid vm" do
-      api_basic_authorize action_identifier(:vms, :add_lifecycle_event)
-
-      post(invalid_vm_url, :params => gen_request(:add_lifecycle_event, :event => "event 1"))
-
-      expect(response).to have_http_status(:not_found)
-    end
-
-    it "add_lifecycle_event without appropriate action role" do
-      api_basic_authorize
-
-      post(vm_url, :params => gen_request(:add_lifecycle_event, :event => "event 1"))
-
-      expect(response).to have_http_status(:forbidden)
-    end
-
-    it "add_lifecycle_event to a vm" do
-      api_basic_authorize action_identifier(:vms, :add_lifecycle_event)
-
-      post(vm_url, :params => gen_request(:add_lifecycle_event, events[0]))
-
-      expect_single_action_result(:success => true, :message => /adding life cycle event/i, :href => api_vm_url(nil, vm))
-      expect(vm.lifecycle_events.size).to eq(1)
-      expect(vm.lifecycle_events.first.event).to eq(events[0][:event])
-    end
-
-    it "add_lifecycle_event to multiple vms" do
-      api_basic_authorize action_identifier(:vms, :add_lifecycle_event)
-
-      post(api_vms_url, :params => gen_request(:add_lifecycle_event,
-                                               events.collect { |e| {:href => vm_url}.merge(e) }))
-
-      expect_multiple_action_result(3, :success => true)
-      expect(vm.lifecycle_events.size).to eq(events.size)
-      expect(vm.lifecycle_events.collect(&:event)).to match_array(events.collect { |e| e[:event] })
-    end
-  end
-
   context "Vm scan action" do
     it "scans an invalid vm" do
       api_basic_authorize action_identifier(:vms, :scan)

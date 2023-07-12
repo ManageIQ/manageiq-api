@@ -67,14 +67,6 @@ module Api
       end
     end
 
-    def add_lifecycle_event_resource(type, id = nil, data = nil)
-      lifecycle_event = lifecycle_event_from_data(data)
-      api_resource(type, id, "Adding Life Cycle Event #{lifecycle_event['event']} to") do |vm|
-        LifecycleEvent.create_event(vm, lifecycle_event)
-        {}
-      end
-    end
-
     def scan_resource(type, id = nil, _data = nil)
       enqueue_ems_action(type, id, "Scanning", :method_name => "scan", :supports => :smartstate_analysis, :role => "smartstate")
     end
@@ -233,15 +225,6 @@ module Api
       end
     rescue => err
       action_result(false, err.to_s)
-    end
-
-    private
-
-    def lifecycle_event_from_data(data)
-      data ||= {}
-      data = data.slice("event", "status", "message", "created_by")
-      data.keys.each { |k| data[k] = data[k].to_s }
-      data
     end
   end
 end
