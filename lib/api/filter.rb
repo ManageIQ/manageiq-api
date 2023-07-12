@@ -68,7 +68,6 @@ module Api
       methods = OPERATORS[operator]
 
       is_regex = filter_value =~ /%|\*/ && methods[:regex]
-      str_method = is_regex ? methods[:regex] : methods[:default]
 
       filter_value, method = case filter_value
                              when /^\[(.*)\]$/
@@ -82,8 +81,10 @@ module Api
                                unquoted_filter_value = $1
                                if filter_field.column_type == :string_set && methods[:string_set]
                                  [unquoted_filter_value, methods[:string_set]]
+                               elsif is_regex
+                                 [unquoted_filter_value, methods[:regex]]
                                else
-                                 [unquoted_filter_value, str_method]
+                                 [unquoted_filter_value, methods[:default]]
                                end
                              when /^(NULL|nil)$/i
                                [nil, methods[:null] || methods[:default]]
