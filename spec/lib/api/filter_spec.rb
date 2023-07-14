@@ -406,4 +406,52 @@ RSpec.describe Api::Filter do
       expect(actual.exp).to eq(expected)
     end
   end
+
+  describe "#split_filter_string (private)" do
+    let(:name_field) { MiqExpression::Field.new(Vm, [], "name") }
+
+    Api::Filter::OPERATORS.each_key do |operator|
+      it "matches operator #{operator}" do
+        expect(split_filter_string("name#{operator}x")).to eq([name_field, operator, "x"])
+        expect(split_filter_string("name#{operator}>x")).to eq([name_field, operator, ">x"])
+      end
+    end
+
+    it "parses parses associations" do
+      field = MiqExpression::Field.new(Vm, ["host"], "name")
+      expect(split_filter_string("host.name=x")).to eq([field, "=", "x"])
+    end
+
+    it "handles whitespace" do
+      expect(split_filter_string("  name  = x ")).to eq([name_field, "=", "x"])
+    end
+
+    it "handles blank" do
+      expect(split_filter_string("  name  =  ")).to eq([name_field, "=", ""])
+    end
+
+    it "supports quotes" do
+      expect(split_filter_string("  name= \"x y\" ")).to eq([name_field, "=", "\"x y\""])
+      expect(split_filter_string("name  ='x y'")).to eq([name_field, "=", "'x y'"])
+    end
+
+    it "supports a non-operator that looks like an operator" do
+      expect(split_filter_string("name=~= x y ")).to eq([name_field, "=~", "= x y"])
+    end
+
+    [
+      'name^bb',
+      'name',
+    ].each do |str|
+      it "complains about '#{str}'" do
+        expect do
+          split_filter_string(str)
+        end.to raise_error(Api::BadRequestError, /Unknown operator specified/)
+      end
+    end
+
+    def split_filter_string(str)
+      described_class.new("", Vm).send(:split_filter_string, str)
+    end
+  end
 end
