@@ -441,6 +441,7 @@ RSpec.describe Api::Filter do
 
     [
       'name^bb',
+      '=bb',
       'name',
     ].each do |str|
       it "complains about '#{str}'" do
