@@ -23,6 +23,11 @@
     - :get
     - :post
     - :delete
+    :gppp: &gppp
+    - :get
+    - :put
+    - :post
+    - :patch
     :gpppd: &gpppd
     - :get
     - :put
@@ -986,11 +991,7 @@
     :options:
     - :collection
     - :subcollection
-    :verbs:
-    - :get
-    - :put
-    - :post
-    - :patch
+    :verbs: *gppp
     :klass: ConfigurationScriptPayload
     :subcollections:
     - :authentications
