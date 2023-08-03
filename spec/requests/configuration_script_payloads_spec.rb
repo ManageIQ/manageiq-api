@@ -50,7 +50,8 @@ RSpec.describe 'Configuration Script Payloads API' do
   end
 
   describe 'POST /api/configuration_script_payloads' do
-    let(:script_payload) { FactoryBot.create(:configuration_script_payload) }
+    let(:manager)        { FactoryBot.create(:ext_management_system) }
+    let(:script_payload) { FactoryBot.create(:configuration_script_payload, :manager => manager) }
 
     context "edit" do
       it 'forbids edit of a configuration_script_payload without an appropriate role' do
@@ -69,6 +70,62 @@ RSpec.describe 'Configuration Script Payloads API' do
         expect(response.parsed_body).to include('results' => [a_hash_including('name' => 'foo')])
         expect(script_payload.reload.name).to eq('foo')
         expect(script_payload.credentials).to include("my-cred" => "credential123")
+      end
+
+      it "fails if the credential can't be found" do
+        api_basic_authorize collection_action_identifier(:configuration_script_payloads, :edit, :post)
+
+        post(api_configuration_script_payloads_url, :params => {:action => 'edit', :resources => [{:id => script_payload.id, :name => 'foo', :credentials => {"my-cred" => {"credential_ref" => "my-credential", "credential_field" => "userid"}}}]})
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      context "with an authentication reference in credentials" do
+        let!(:authentication) { FactoryBot.create(:authentication, :ems_ref => "my-credential", :resource => manager) }
+
+        context "owned by another tenant" do
+          let(:tenant_1)        { FactoryBot.create(:tenant) }
+          let(:tenant_2)        { FactoryBot.create(:tenant) }
+          let(:group_1)         { FactoryBot.create(:miq_group, :tenant => tenant_1, :miq_user_role => @role) }
+          let(:group_2)         { FactoryBot.create(:miq_group, :tenant => tenant_2) }
+          let(:user_2)          { FactoryBot.create(:user, :miq_groups => [group_2]) }
+          let!(:authentication) { FactoryBot.create(:authentication, :ems_ref => "my-credential", :resource => manager, :evm_owner => user_2, :miq_group => group_2) }
+
+          before do
+            @user.miq_groups << group_1
+            @user.update!(:current_group => group_1)
+          end
+
+          it "fails if the credential is owned by another tenant" do
+            api_basic_authorize(collection_action_identifier(:configuration_script_payloads, :edit, :post))
+            post(api_configuration_script_payloads_url, :params => {:action => 'edit', :resources => [{:id => script_payload.id, :name => 'foo', :credentials => {"my-cred" => {"credential_ref" => "my-credential", "credential_field" => "userid"}}}]})
+            expect(response).to have_http_status(:bad_request)
+          end
+        end
+
+        it "adds the authentication to the configuration_script_payload.authentications" do
+          api_basic_authorize collection_action_identifier(:configuration_script_payloads, :edit, :post)
+
+          post(api_configuration_script_payloads_url, :params => {:action => 'edit', :resources => [{:id => script_payload.id, :name => 'foo', :credentials => {"my-cred" => {"credential_ref" => "my-credential", "credential_field" => "userid"}}}]})
+          expect(script_payload.reload.authentications).to include(authentication)
+        end
+
+        context "with an existing associated authentication record" do
+          before { script_payload.authentications << authentication }
+
+          it "doesn't duplicate records" do
+            api_basic_authorize collection_action_identifier(:configuration_script_payloads, :edit, :post)
+
+            post(api_configuration_script_payloads_url, :params => {:action => 'edit', :resources => [{:id => script_payload.id, :name => 'foo', :credentials => {"my-cred" => {"credential_ref" => "my-credential", "credential_field" => "userid"}}}]})
+            expect(script_payload.reload.authentications.count).to eq(1)
+          end
+
+          it "removes associated authentications" do
+            api_basic_authorize collection_action_identifier(:configuration_script_payloads, :edit, :post)
+
+            post(api_configuration_script_payloads_url, :params => {:action => 'edit', :resources => [{:id => script_payload.id, :name => 'foo', :credentials => {}}]})
+            expect(script_payload.reload.authentications.count).to be_zero
+          end
+        end
       end
 
       context "with a configuration_script_source" do
