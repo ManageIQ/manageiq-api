@@ -23,6 +23,11 @@
     - :get
     - :post
     - :delete
+    :gppp: &gppp
+    - :get
+    - :put
+    - :post
+    - :patch
     :gpppd: &gpppd
     - :get
     - :put
@@ -986,7 +991,7 @@
     :options:
     - :collection
     - :subcollection
-    :verbs: *g
+    :verbs: *gppp
     :klass: ConfigurationScriptPayload
     :subcollections:
     - :authentications
@@ -994,10 +999,16 @@
       :get:
       - :name: read
         :identifier: embedded_configuration_script_payload_view
+      :post:
+      - :name: edit
+        :identifier: embedded_configuration_script_payload_edit
     :resource_actions:
       :get:
       - :name: read
         :identifier: embedded_configuration_script_payload_view
+      :post:
+      - :name: edit
+        :identifier: embedded_configuration_script_payload_edit
     :subcollection_actions:
       :get:
       - :name: read
