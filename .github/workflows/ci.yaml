@@ -12,7 +12,6 @@ jobs:
     strategy:
       matrix:
         ruby-version:
-        - '2.7'
         - '3.0'
     services:
       postgres:
@@ -50,6 +49,6 @@ jobs:
     - name: Run core security tests
       run: bundle exec rake spec:security
     - name: Report code coverage
-      if: "${{ github.ref == 'refs/heads/master' && matrix.ruby-version == '2.7' }}"
+      if: "${{ github.ref == 'refs/heads/master' && matrix.ruby-version == '3.0' }}"
       continue-on-error: true
       uses: paambaati/codeclimate-action@v5
