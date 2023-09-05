@@ -2,6 +2,18 @@ module Api
   class ConfigurationScriptPayloadsController < BaseController
     include Subcollections::Authentications
 
+    def api_resource_action_options
+      # ConfigurationScriptPayloads do not have any passwords stored directly
+      # in the record, they reference the Authentication model via the
+      # credentials jsonb mapping.  The names of these mappings are user defined
+      # and can include e.g. "api_password" => {"credential_ref" => ..} and this
+      # entire key would be removed from the payload.
+      #
+      # Since there aren't any encrypted attributes in this record it is safe
+      # to include encrypted attributes in the payload response.
+      %w[include_encrypted_attributes]
+    end
+
     def edit_resource(type, id, data)
       resource = resource_search(id, type)
 

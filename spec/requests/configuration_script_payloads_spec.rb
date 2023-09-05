@@ -105,7 +105,22 @@ RSpec.describe 'Configuration Script Payloads API' do
         it "adds the authentication to the configuration_script_payload.authentications" do
           api_basic_authorize collection_action_identifier(:configuration_script_payloads, :edit, :post)
 
-          post(api_configuration_script_payloads_url, :params => {:action => 'edit', :resources => [{:id => script_payload.id, :name => 'foo', :credentials => {"my-cred" => {"credential_ref" => "my-credential", "credential_field" => "userid"}}}]})
+          expected_credentials = {
+            "my-cred-user"     => {"credential_ref" => "my-credential", "credential_field" => "userid"},
+            "my-cred-password" => {"credential_ref" => "my-credential", "credential_field" => "password"},
+          }
+
+          resource = {
+            :id          => script_payload.id,
+            :name        => 'foo',
+            :credentials => expected_credentials
+          }
+
+          post(api_configuration_script_payloads_url, :params => {:action => 'edit', :resources => [resource]})
+
+          expect(response.parsed_body["results"].first).to include(
+            "credentials" => expected_credentials
+          )
           expect(script_payload.reload.authentications).to include(authentication)
         end
 
