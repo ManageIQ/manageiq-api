@@ -80,7 +80,7 @@ RSpec.describe 'Configuration Script Payloads API' do
       end
 
       context "with an authentication reference in credentials" do
-        let!(:authentication) { FactoryBot.create(:authentication, :ems_ref => "my-credential", :resource => manager) }
+        let!(:authentication) { FactoryBot.create(:embedded_workflows_workflow_credential, :ems_ref => "my-credential", :resource => manager) }
 
         context "owned by another tenant" do
           let(:tenant_1)        { FactoryBot.create(:tenant) }
@@ -118,10 +118,29 @@ RSpec.describe 'Configuration Script Payloads API' do
 
           post(api_configuration_script_payloads_url, :params => {:action => 'edit', :resources => [resource]})
 
+          expect(response).to have_http_status(:ok)
           expect(response.parsed_body["results"].first).to include(
             "credentials" => expected_credentials
           )
           expect(script_payload.reload.authentications).to include(authentication)
+        end
+
+        it "fails if the credential_field isn't one of the allowed API_ATTRIBUTES" do
+          api_basic_authorize collection_action_identifier(:configuration_script_payloads, :edit, :post)
+
+          expected_credentials = {
+            "my-cred-user"     => {"credential_ref" => "my-credential", "credential_field" => "userid"},
+            "my-cred-password" => {"credential_ref" => "my-credential", "credential_field" => "evm_owner_id"},
+          }
+
+          resource = {
+            :id          => script_payload.id,
+            :name        => 'foo',
+            :credentials => expected_credentials
+          }
+
+          post(api_configuration_script_payloads_url, :params => {:action => 'edit', :resources => [resource]})
+          expect(response).to have_http_status(:bad_request)
         end
 
         context "with an existing associated authentication record" do
