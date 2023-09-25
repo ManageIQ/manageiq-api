@@ -29,12 +29,14 @@ module Api
       unless data["credentials"].nil?
         # Credentials can be a static string or a payload with an external
         # Authentication record referenced by credential_ref and credential_field.
-        credential_refs = data["credentials"].values.select { |val| val.kind_of?(Hash) }.pluck("credential_ref")
+        auth_references = data["credentials"].values.select { |val| val.kind_of?(Hash) }
+        credential_refs = auth_references.pluck("credential_ref")
         # Lookup the Authentication record by ems_ref in the parent manager's
         # list of authentications.
         credentials     = resource.manager&.authentications&.where(:ems_ref => credential_refs) || []
         # Filter the collection based on the current user's RBAC roles.
         credentials, _  = collection_filterer(credentials, "authentications", ::Authentication)
+        credentials_by_ems_ref = credentials.index_by(&:ems_ref)
         # If any requested authentications were unable to be found, either due
         # to a bad credential_ref or due to RBAC then raise a 400 BadRequestError.
         missing_credential_refs = credential_refs - credentials.pluck(:ems_ref)
@@ -43,6 +45,23 @@ module Api
                 _("Could not find credentials %{missing_credential_refs}") %
                 {:missing_credential_refs => missing_credential_refs}
         end
+        # Ensure that the only values allowed in credential_field are attributes
+        # which the credential class allows the user to set.  These values
+        # are present in the API_ATTRIBUTES and are already used for DDF
+        # parameters and API payload validation.
+        auth_references.each do |ref|
+          credential_ref, credential_field = ref.values_at("credential_ref", "credential_field")
+
+          credential_class          = credentials_by_ems_ref[credential_ref].class
+          allowed_credential_fields = defined?(credential_class::API_ATTRIBUTES) ? credential_class::API_ATTRIBUTES.pluck(:id) : []
+
+          next if allowed_credential_fields.include?(credential_field)
+
+          raise BadRequestError,
+                _("Invalid credential_field %{field}, allowed values are %{allowed_fields}" %
+                {:field => credential_field, :allowed_fields => allowed_credential_fields.join(", ")})
+        end
+
         # Reset the authentications collection with the current set of credentials.
         # This will also remove any credential references not in the new payload.
         resource.authentications = credentials
