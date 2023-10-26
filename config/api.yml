@@ -4646,8 +4646,6 @@
         - sui_vm_details_view
       - :name: edit
         :identifier: vm_edit
-      - :name: add_lifecycle_event
-        :identifier: vm_edit
       - :name: add_event
         :identifier: vm_edit
       - :name: check_compliance
@@ -4727,8 +4725,6 @@
         - sui_vm_details_view
       :post:
       - :name: edit
-        :identifier: vm_edit
-      - :name: add_lifecycle_event
         :identifier: vm_edit
       - :name: add_event
         :identifier: vm_edit
