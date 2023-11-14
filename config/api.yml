@@ -4562,7 +4562,9 @@
         :identifier: tp_delete
   :users:
     :description: Users
-    :identifier: rbac_user
+    :identifier:
+    - rbac_user
+    - my_settings_view
     :options:
     - :collection
     - :custom_actions
@@ -4575,10 +4577,14 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: rbac_user_show_list
+        :identifier:
+        - rbac_user_show_list
+        - my_settings_view
       :post:
       - :name: query
-        :identifier: rbac_user_show_list
+        :identifier:
+        - rbac_user_show_list
+        - my_settings_view
       - :name: create
         :identifier: rbac_user_add
       - :name: edit
@@ -4593,7 +4599,9 @@
     :resource_actions:
       :get:
       - :name: read
-        :identifier: rbac_user_show
+        :identifier:
+        - rbac_user_show
+        - my_settings_view
       :post:
       - :name: edit
         :identifier: rbac_user_edit
