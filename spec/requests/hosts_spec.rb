@@ -1,18 +1,6 @@
 RSpec.describe "hosts API" do
   describe "editing a host's password" do
     context "with an appropriate role" do
-      # credentials parameter is the legacy rail controller format for editing a host
-      it "can edit the password on a host" do
-        host = FactoryBot.create(:host_with_authentication)
-        api_basic_authorize action_identifier(:hosts, :edit)
-        options = {:credentials => {:authtype => "default", :password => "abc123"}}
-
-        expect do
-          post api_host_url(nil, host), :params => gen_request(:edit, options)
-        end.to change { host.reload.authentication_password(:default) }.to("abc123")
-        expect(response).to have_http_status(:ok)
-      end
-
       it "can edit the password on a host using new/react format" do
         host = FactoryBot.create(:host_with_authentication)
         api_basic_authorize action_identifier(:hosts, :edit)
@@ -21,28 +9,6 @@ RSpec.describe "hosts API" do
         expect do
           post api_host_url(nil, host), :params => gen_request(:edit, options)
         end.to change { host.reload.authentication_password(:default) }.to("abc123")
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "will update the default authentication if no type is given" do
-        host = FactoryBot.create(:host_with_authentication)
-        api_basic_authorize action_identifier(:hosts, :edit)
-        options = {:credentials => {:password => "abc123"}}
-
-        expect do
-          post api_host_url(nil, host), :params => gen_request(:edit, options)
-        end.to change { host.reload.authentication_password(:default) }.to("abc123")
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "can edit the password on a host without creating duplicate keys" do
-        host = FactoryBot.create(:host)
-        api_basic_authorize action_identifier(:hosts, :edit)
-        options = { :credentials => { 'userid' => "I'm", 'password' => 'abc123' } }
-
-        expect do
-          post api_host_url(nil, host), :params => gen_request(:edit, options)
-        end.to change { host.reload.authentication_password(:default) }.to('abc123')
         expect(response).to have_http_status(:ok)
       end
 
@@ -62,23 +28,8 @@ RSpec.describe "hosts API" do
         host2 = FactoryBot.create(:host_with_authentication)
         api_basic_authorize action_identifier(:hosts, :edit)
         options = [
-          {:href => api_host_url(nil, host1), :credentials => {:password => "abc123"}},
-          {:href => api_host_url(nil, host2), :credentials => {:password => "def456"}}
-        ]
-
-        post api_hosts_url, :params => gen_request(:edit, options)
-        expect(response).to have_http_status(:ok)
-        expect(host1.reload.authentication_password(:default)).to eq("abc123")
-        expect(host2.reload.authentication_password(:default)).to eq("def456")
-      end
-
-      it "can update passwords on multiple hosts by id (via credentials)" do
-        host1 = FactoryBot.create(:host_with_authentication)
-        host2 = FactoryBot.create(:host_with_authentication)
-        api_basic_authorize action_identifier(:hosts, :edit)
-        options = [
-          {:id => host1.id, :credentials => {:password => "abc123"}},
-          {:id => host2.id, :credentials => {:password => "def456"}}
+          {"href" => api_host_url(nil, host1), "authentications" => {"default" => {"password" => "abc123"}}},
+          {"href" => api_host_url(nil, host2), "authentications" => {"default" => {"password" => "def456"}}}
         ]
 
         post api_hosts_url, :params => gen_request(:edit, options)
@@ -94,8 +45,8 @@ RSpec.describe "hosts API" do
         params = {
           "action"    => "edit",
           "resources" => [
-            {:id => host1.id, :authentications => {"default" => {:username => "abc", :password => "abc123"}}},
-            {:id => host2.id, :authentications => {"default" => {:username => "def", :password => "def456"}}}
+            {"id" => host1.id, "authentications" => {"default" => {"username" => "abc", "password" => "abc123"}}},
+            {"id" => host2.id, "authentications" => {"default" => {"username" => "def", "password" => "def456"}}}
           ]
         }
 
@@ -110,7 +61,7 @@ RSpec.describe "hosts API" do
       it "cannot edit the password on a host" do
         host = FactoryBot.create(:host_with_authentication)
         api_basic_authorize
-        options = {:credentials => {:authtype => "default", :password => "abc123"}}
+        options = {"authentications" => {"default" => {"username" => "abc", "password" => "abc123"}}}
 
         expect do
           post api_host_url(nil, host), :params => gen_request(:edit, options)
@@ -174,15 +125,13 @@ RSpec.describe "hosts API" do
       api_basic_authorize action_identifier(:hosts, :edit)
 
       verify_options = {
-        :credentials   => {
-          "default" => {:userid => "root", :password => "abc123"}
-        },
-        :remember_host => true
+        "authentications" => {
+          "default" => {"userid" => "root", "password" => "abc123"}
+        }
       }
 
       api_options = {
-        "authentications" => {"default" => {"userid" => "root", "password" => "abc123"}},
-        "remember_host"   => "true"
+        "authentications" => {"default" => {"userid" => "root", "password" => "abc123"}}
       }
 
       post api_host_url(nil, host), :params => gen_request(:verify_credentials, api_options)
