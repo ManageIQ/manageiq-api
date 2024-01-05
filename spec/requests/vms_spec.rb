@@ -2,6 +2,8 @@
 # REST API Request Tests - /api/vms
 #
 describe "Vms API" do
+  include Spec::Support::SupportsHelper
+
   let(:zone)       { FactoryBot.create(:zone, :name => "api_zone") }
   let(:ems)        { FactoryBot.create(:ems_vmware, :zone => zone) }
   let(:host)       { FactoryBot.create(:host) }
@@ -1210,18 +1212,47 @@ describe "Vms API" do
     it "scan a Vm" do
       api_basic_authorize action_identifier(:vms, :scan)
 
+      stub_supports(vm, :smartstate_analysis)
+
       post(vm_url, :params => gen_request(:scan))
 
       expect_single_action_result(:success => true, :message => /Scanning/i, :href => api_vm_url(nil, vm), :task => true)
     end
 
+    it "scan a Vm that doesn't support smartstate_analysis" do
+      api_basic_authorize action_identifier(:vms, :scan)
+
+      stub_supports_not(vm, :smartstate_analysis)
+
+      post(vm_url, :params => gen_request(:scan))
+
+      expect_bad_request(/Feature not available\/supported/)
+    end
+
     it "scan multiple Vms" do
       api_basic_authorize action_identifier(:vms, :scan)
+
+      stub_supports(vm1, :smartstate_analysis)
+      stub_supports(vm2, :smartstate_analysis)
 
       post(api_vms_url, :params => gen_request(:scan, nil, vm1_url, vm2_url))
 
       expect_multiple_action_result(2, :task => true)
       expect_result_resources_to_include_hrefs("results", [api_vm_url(nil, vm1), api_vm_url(nil, vm2)])
+    end
+
+    it "scan multiple Vms where at least one doesn't support smartstate_analysis" do
+      api_basic_authorize action_identifier(:vms, :scan)
+
+      stub_supports(vm1, :smartstate_analysis)
+      stub_supports_not(vm_openstack, :smartstate_analysis)
+
+      post(api_vms_url, :params => gen_request(:scan, nil, vm1_url, vm_openstack_url))
+
+      expect(response).to have_http_status(:ok)
+
+      expect(response.parsed_body["results"].first["message"]).to match(/Scanning Vm id: #{vm1.id} name: '#{vm1.name}'/)
+      expect(response.parsed_body["results"].last["message"]).to match(/Feature not available\/supported/)
     end
   end
 
