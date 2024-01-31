@@ -11,6 +11,12 @@
     "parameters": {
     },
     "schemas": {
+      "ID": {
+        "type": "string",
+        "description": "ID of the resource",
+        "pattern": "^\\d+$",
+        "readOnly": true
+      },
       "Account": {
         "type": "object",
         "properties": {

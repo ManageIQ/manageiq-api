@@ -34,7 +34,16 @@ module ManageIQ
         end
 
         def build_schemas
-          ::Api::ApiConfig.collections.each_with_object({}) do |(_collection_name, collection), schemas|
+          schemas = {
+            "ID" => {
+              "type"        => "string",
+              "description" => "ID of the resource",
+              "pattern"     => "^\\d+$",
+              "readOnly"    => true,
+            }
+          }
+
+          ::Api::ApiConfig.collections.each do |_collection_name, collection|
             next unless collection.klass
 
             model = collection.klass.constantize
@@ -45,6 +54,8 @@ module ManageIQ
               "additionalProperties" => false
             }
           end
+
+          schemas
         end
 
         def build_schema_properties(model)
@@ -78,17 +89,6 @@ module ManageIQ
 
             properties_value
           end
-        end
-
-        def schemas
-          @schemas ||= {
-            "ID" => {
-              "type"        => "string",
-              "description" => "ID of the resource",
-              "pattern"     => "^\\d+$",
-              "readOnly"    => true,
-            }
-          }
         end
 
         def skeletal_openapi_spec
