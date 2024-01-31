@@ -43,20 +43,20 @@ module ManageIQ
             }
           }
 
-          ::Api::ApiConfig.collections.each do |_collection_name, collection|
+          models = ::Api::ApiConfig.collections.each_with_object({}) do |(_collection_name, collection), s|
             next unless collection.klass
 
             model       = collection.klass.constantize
             schema_name = model.name.gsub("::", "_")
 
-            schemas[schema_name] = {
+            s[schema_name] = {
               "type"                 => "object",
               "properties"           => build_schema_properties(model),
               "additionalProperties" => false
             }
           end
 
-          schemas
+          schemas.merge(models.sort.to_h)
         end
 
         def build_schema_properties(model)
