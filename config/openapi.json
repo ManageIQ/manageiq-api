@@ -1,15 +1,12 @@
 {
   "openapi": "3.0.0",
   "info": {
+    "version": "4.4.0-pre",
+    "title": "API",
+    "description": "REST API"
   },
-  "security": [
-
-  ],
   "paths": {
   },
-  "servers": [
-
-  ],
   "components": {
     "parameters": {
     },

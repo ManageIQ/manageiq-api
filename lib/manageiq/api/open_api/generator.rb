@@ -94,10 +94,12 @@ module ManageIQ
         def skeletal_openapi_spec
           {
             "openapi"    => OPENAPI_VERSION,
-            "info"       => {},
-            "security"   => [],
+            "info"       => {
+              "version"     => api_version,
+              "title"       => ::Api::ApiConfig.base.name,
+              "description" => ::Api::ApiConfig.base.description
+            },
             "paths"      => {},
-            "servers"    => [],
             "components" => {
               "parameters" => {},
               "schemas"    => {}
