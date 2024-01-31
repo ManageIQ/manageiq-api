@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
   },
-  "secuirty": [
+  "security": [
 
   ],
   "paths": {
@@ -1213,146 +1213,187 @@
             "$ref": "#/components/schemas/ID"
           },
           "vendor": {
-            "type": "string"
+            "type": "string",
+            "description": "The vendor for the VM, e.g. azure, amazon, etc."
           },
           "format": {
-            "type": "string"
+            "type": "string",
+            "description": "The format of the VM's disk, such as vmdk, qcow2, and tier1."
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "The version of the VM definition."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the VM/Template."
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "A description of the VM that is typically set by the provider, but may also be edited."
           },
           "location": {
-            "type": "string"
+            "type": "string",
+            "description": "The location of the VM, or its underlying storage."
           },
           "config_xml": {
-            "type": "string"
+            "type": "string",
+            "description": "The VM or Template configuration in XML format. Deprecated."
           },
           "autostart": {
-            "type": "string"
+            "type": "string",
+            "description": "Indicates whether or not the VM is set to autostart."
           },
           "host_id": {
             "$ref": "#/components/schemas/ID"
           },
           "last_sync_on": {
             "type": "string",
+            "description": "Timestamp for last SmartState analysis synchronization.",
             "format": "date-time"
           },
           "created_on": {
             "type": "string",
+            "description": "The timestamp the VM was added to the app inventory.",
             "format": "date-time"
           },
           "updated_on": {
             "type": "string",
+            "description": "The last timestamp the VM was modified within the app.",
             "format": "date-time"
           },
           "storage_id": {
             "$ref": "#/components/schemas/ID"
           },
           "guid": {
-            "type": "string"
+            "type": "string",
+            "description": "A value used to uniquely identify the VM internally."
           },
           "ems_id": {
             "$ref": "#/components/schemas/ID"
           },
           "last_scan_on": {
             "type": "string",
+            "description": "Timestamp for last SmartState analysis scan.",
             "format": "date-time"
           },
           "last_scan_attempt_on": {
             "type": "string",
+            "description": "Timestamp for last attempt to perform SmartState Analysis.",
             "format": "date-time"
           },
           "uid_ems": {
-            "type": "string"
+            "type": "string",
+            "description": "A globally unique reference for the VM across EMS."
           },
           "retires_on": {
             "type": "string",
+            "description": "Timestamp the VM is to be retired.",
             "format": "date-time"
           },
           "retired": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is retired."
           },
           "boot_time": {
             "type": "string",
+            "description": "The last time the VM was started.",
             "format": "date-time"
           },
           "tools_status": {
-            "type": "string"
+            "type": "string",
+            "description": "Status of guest tools."
           },
           "standby_action": {
-            "type": "string"
+            "type": "string",
+            "description": "Action taken when VM is put into standby mode."
           },
           "power_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The current power state, typically 'on' or 'off'."
           },
           "state_changed_on": {
             "type": "string",
+            "description": "The timestamp of the last power state change.",
             "format": "date-time"
           },
           "previous_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The previous power state change."
           },
           "connection_state": {
-            "type": "string"
+            "type": "string",
+            "description": "Indicates the connection state of the VM, e.g. connected, disconnected, etc."
           },
           "last_perf_capture_on": {
             "type": "string",
+            "description": "Timestamp for last performance metrics capture.",
             "format": "date-time"
           },
           "registered": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM registered to a Provider. Deprecated."
           },
           "busy": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is being scanned for SmartState analysis. Deprecated."
           },
           "smart": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not smart proxy is enabled. Deprecated."
           },
           "memory_reserve": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Amount of memory that is guaranteed available for the VM."
           },
           "memory_reserve_expand": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Amount the memory can grow beyond its normal limits if there are unreserved resources available."
           },
           "memory_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The absolute memory limit for the VM."
           },
           "memory_shares": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The number of memory shares allocated. Used to determine resource allocation in case of resource contention."
           },
           "memory_shares_level": {
-            "type": "string"
+            "type": "string",
+            "description": "Memory shares allocation level."
           },
           "cpu_reserve": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Amount of CPU that is guaranteed available for the VM."
           },
           "cpu_reserve_expand": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Amount the CPU can grow beyond its normal limits if there are unreserved resources available."
           },
           "cpu_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The CPU utilization limit for the VM."
           },
           "cpu_shares": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The number of CPU shares allocated. Used to determine resource allocation in case of resource contention."
           },
           "cpu_shares_level": {
-            "type": "string"
+            "type": "string",
+            "description": "CPU shares allocation level."
           },
           "cpu_affinity": {
-            "type": "string"
+            "type": "string",
+            "description": "A comma separated list of host CPUs to schedule the VM on."
           },
           "ems_created_on": {
             "type": "string",
+            "description": "The timestamp the VM or Templated was created on the EMS itself.",
             "format": "date-time"
           },
           "template": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether this is a VM or template."
           },
           "evm_owner_id": {
             "$ref": "#/components/schemas/ID"
@@ -1361,29 +1402,36 @@
             "$ref": "#/components/schemas/ID"
           },
           "linked_clone": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM is a linked clone, i.e its disk is a referencing disk pointing to snapshot of another VM."
           },
           "fault_tolerance": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is fault tolerant, i.e. if one host crashes it will immediately pick up on another host in the cluster."
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "description": "An internal class name that includes the provider type."
           },
           "ems_ref": {
-            "type": "string"
+            "type": "string",
+            "description": "A native unique reference for the VM within the EMS."
           },
           "ems_cluster_id": {
             "$ref": "#/components/schemas/ID"
           },
           "retirement_warn": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Warning message when VM was put into retirement."
           },
           "retirement_last_warn": {
             "type": "string",
+            "description": "Date of last retirement warning.",
             "format": "date-time"
           },
           "vnc_port": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Port or port range used for VNC connections."
           },
           "flavor_id": {
             "$ref": "#/components/schemas/ID"
@@ -1392,10 +1440,12 @@
             "$ref": "#/components/schemas/ID"
           },
           "cloud": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM/Template is cloud or infra."
           },
           "retirement_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The current retirement state."
           },
           "cloud_network_id": {
             "$ref": "#/components/schemas/ID"
@@ -1407,16 +1457,19 @@
             "$ref": "#/components/schemas/ID"
           },
           "raw_power_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The power state refreshed from the EMS."
           },
           "publicly_available": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM is public or private."
           },
           "orchestration_stack_id": {
             "$ref": "#/components/schemas/ID"
           },
           "retirement_requester": {
-            "type": "string"
+            "type": "string",
+            "description": "Userid of the user who requested retirement."
           },
           "tenant_id": {
             "$ref": "#/components/schemas/ID"
@@ -1425,25 +1478,31 @@
             "$ref": "#/components/schemas/ID"
           },
           "deprecated": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not a template is deprecated."
           },
           "storage_profile_id": {
             "$ref": "#/components/schemas/ID"
           },
           "cpu_hot_add_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates if CPUs can be added to the VM while it is powered on."
           },
           "cpu_hot_remove_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates if a CPU can be removed from a VM while powered on."
           },
           "memory_hot_add_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not memory can be hot added to the running VM."
           },
           "memory_hot_add_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The maximum amount of memory, in MB, that can be added to a running VM."
           },
           "memory_hot_add_increment": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Memory in MB that can be added to a running VM must be in increments of this value."
           },
           "hostname": {
             "type": "string"
@@ -4201,146 +4260,187 @@
             "$ref": "#/components/schemas/ID"
           },
           "vendor": {
-            "type": "string"
+            "type": "string",
+            "description": "The vendor for the VM, e.g. azure, amazon, etc."
           },
           "format": {
-            "type": "string"
+            "type": "string",
+            "description": "The format of the VM's disk, such as vmdk, qcow2, and tier1."
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "The version of the VM definition."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the VM/Template."
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "A description of the VM that is typically set by the provider, but may also be edited."
           },
           "location": {
-            "type": "string"
+            "type": "string",
+            "description": "The location of the VM, or its underlying storage."
           },
           "config_xml": {
-            "type": "string"
+            "type": "string",
+            "description": "The VM or Template configuration in XML format. Deprecated."
           },
           "autostart": {
-            "type": "string"
+            "type": "string",
+            "description": "Indicates whether or not the VM is set to autostart."
           },
           "host_id": {
             "$ref": "#/components/schemas/ID"
           },
           "last_sync_on": {
             "type": "string",
+            "description": "Timestamp for last SmartState analysis synchronization.",
             "format": "date-time"
           },
           "created_on": {
             "type": "string",
+            "description": "The timestamp the VM was added to the app inventory.",
             "format": "date-time"
           },
           "updated_on": {
             "type": "string",
+            "description": "The last timestamp the VM was modified within the app.",
             "format": "date-time"
           },
           "storage_id": {
             "$ref": "#/components/schemas/ID"
           },
           "guid": {
-            "type": "string"
+            "type": "string",
+            "description": "A value used to uniquely identify the VM internally."
           },
           "ems_id": {
             "$ref": "#/components/schemas/ID"
           },
           "last_scan_on": {
             "type": "string",
+            "description": "Timestamp for last SmartState analysis scan.",
             "format": "date-time"
           },
           "last_scan_attempt_on": {
             "type": "string",
+            "description": "Timestamp for last attempt to perform SmartState Analysis.",
             "format": "date-time"
           },
           "uid_ems": {
-            "type": "string"
+            "type": "string",
+            "description": "A globally unique reference for the VM across EMS."
           },
           "retires_on": {
             "type": "string",
+            "description": "Timestamp the VM is to be retired.",
             "format": "date-time"
           },
           "retired": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is retired."
           },
           "boot_time": {
             "type": "string",
+            "description": "The last time the VM was started.",
             "format": "date-time"
           },
           "tools_status": {
-            "type": "string"
+            "type": "string",
+            "description": "Status of guest tools."
           },
           "standby_action": {
-            "type": "string"
+            "type": "string",
+            "description": "Action taken when VM is put into standby mode."
           },
           "power_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The current power state, typically 'on' or 'off'."
           },
           "state_changed_on": {
             "type": "string",
+            "description": "The timestamp of the last power state change.",
             "format": "date-time"
           },
           "previous_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The previous power state change."
           },
           "connection_state": {
-            "type": "string"
+            "type": "string",
+            "description": "Indicates the connection state of the VM, e.g. connected, disconnected, etc."
           },
           "last_perf_capture_on": {
             "type": "string",
+            "description": "Timestamp for last performance metrics capture.",
             "format": "date-time"
           },
           "registered": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM registered to a Provider. Deprecated."
           },
           "busy": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is being scanned for SmartState analysis. Deprecated."
           },
           "smart": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not smart proxy is enabled. Deprecated."
           },
           "memory_reserve": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Amount of memory that is guaranteed available for the VM."
           },
           "memory_reserve_expand": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Amount the memory can grow beyond its normal limits if there are unreserved resources available."
           },
           "memory_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The absolute memory limit for the VM."
           },
           "memory_shares": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The number of memory shares allocated. Used to determine resource allocation in case of resource contention."
           },
           "memory_shares_level": {
-            "type": "string"
+            "type": "string",
+            "description": "Memory shares allocation level."
           },
           "cpu_reserve": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Amount of CPU that is guaranteed available for the VM."
           },
           "cpu_reserve_expand": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Amount the CPU can grow beyond its normal limits if there are unreserved resources available."
           },
           "cpu_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The CPU utilization limit for the VM."
           },
           "cpu_shares": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The number of CPU shares allocated. Used to determine resource allocation in case of resource contention."
           },
           "cpu_shares_level": {
-            "type": "string"
+            "type": "string",
+            "description": "CPU shares allocation level."
           },
           "cpu_affinity": {
-            "type": "string"
+            "type": "string",
+            "description": "A comma separated list of host CPUs to schedule the VM on."
           },
           "ems_created_on": {
             "type": "string",
+            "description": "The timestamp the VM or Templated was created on the EMS itself.",
             "format": "date-time"
           },
           "template": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether this is a VM or template."
           },
           "evm_owner_id": {
             "$ref": "#/components/schemas/ID"
@@ -4349,29 +4449,36 @@
             "$ref": "#/components/schemas/ID"
           },
           "linked_clone": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM is a linked clone, i.e its disk is a referencing disk pointing to snapshot of another VM."
           },
           "fault_tolerance": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is fault tolerant, i.e. if one host crashes it will immediately pick up on another host in the cluster."
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "description": "An internal class name that includes the provider type."
           },
           "ems_ref": {
-            "type": "string"
+            "type": "string",
+            "description": "A native unique reference for the VM within the EMS."
           },
           "ems_cluster_id": {
             "$ref": "#/components/schemas/ID"
           },
           "retirement_warn": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Warning message when VM was put into retirement."
           },
           "retirement_last_warn": {
             "type": "string",
+            "description": "Date of last retirement warning.",
             "format": "date-time"
           },
           "vnc_port": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Port or port range used for VNC connections."
           },
           "flavor_id": {
             "$ref": "#/components/schemas/ID"
@@ -4380,10 +4487,12 @@
             "$ref": "#/components/schemas/ID"
           },
           "cloud": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM/Template is cloud or infra."
           },
           "retirement_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The current retirement state."
           },
           "cloud_network_id": {
             "$ref": "#/components/schemas/ID"
@@ -4395,16 +4504,19 @@
             "$ref": "#/components/schemas/ID"
           },
           "raw_power_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The power state refreshed from the EMS."
           },
           "publicly_available": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM is public or private."
           },
           "orchestration_stack_id": {
             "$ref": "#/components/schemas/ID"
           },
           "retirement_requester": {
-            "type": "string"
+            "type": "string",
+            "description": "Userid of the user who requested retirement."
           },
           "tenant_id": {
             "$ref": "#/components/schemas/ID"
@@ -4413,25 +4525,31 @@
             "$ref": "#/components/schemas/ID"
           },
           "deprecated": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not a template is deprecated."
           },
           "storage_profile_id": {
             "$ref": "#/components/schemas/ID"
           },
           "cpu_hot_add_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates if CPUs can be added to the VM while it is powered on."
           },
           "cpu_hot_remove_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates if a CPU can be removed from a VM while powered on."
           },
           "memory_hot_add_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not memory can be hot added to the running VM."
           },
           "memory_hot_add_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The maximum amount of memory, in MB, that can be added to a running VM."
           },
           "memory_hot_add_increment": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Memory in MB that can be added to a running VM must be in increments of this value."
           },
           "hostname": {
             "type": "string"
@@ -7581,7 +7699,8 @@
             "type": "string"
           },
           "initiator": {
-            "type": "string"
+            "type": "string",
+            "description": "Entity that initiated the service creation"
           },
           "lifecycle_state": {
             "type": "string"
@@ -7916,49 +8035,62 @@
             "$ref": "#/components/schemas/ID"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the task. Typically doubles as a description."
           },
           "state": {
-            "type": "string"
+            "type": "string",
+            "description": "The current state of the task - Initialized, Queued, Active, Finished, etc."
           },
           "status": {
-            "type": "string"
+            "type": "string",
+            "description": "The current status of the task - Ok, Warn, Error, Timeout, Expired, or Unknown."
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "Message associated with the task for logging or UI purposes."
           },
           "userid": {
-            "type": "string"
+            "type": "string",
+            "description": "The userid that created the task, or 'system' if created by the appliance."
           },
           "created_on": {
             "type": "string",
+            "description": "[builtin] The timestamp the record was created.",
             "format": "date-time"
           },
           "updated_on": {
             "type": "string",
+            "description": "[builtin] The timestamp the record was last updated.",
             "format": "date-time"
           },
           "pct_complete": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The current completion percentage of the task."
           },
           "context_data": {
-            "type": "string"
+            "type": "string",
+            "description": "Serialized metadata that may contain more detailed information about the task."
           },
           "results": {
-            "type": "string"
+            "type": "string",
+            "description": "Task execution result. Deprecated."
           },
           "miq_server_id": {
             "$ref": "#/components/schemas/ID"
           },
           "identifier": {
-            "type": "string"
+            "type": "string",
+            "description": "The resource this task is related to in 'class:id' format."
           },
           "started_on": {
             "type": "string",
+            "description": "The timestamp the task was actually started.",
             "format": "date-time"
           },
           "zone": {
-            "type": "string"
+            "type": "string",
+            "description": "The zone in which the task should be executed, or any zone if null."
           }
         },
         "additionalProperties": false
@@ -7970,146 +8102,187 @@
             "$ref": "#/components/schemas/ID"
           },
           "vendor": {
-            "type": "string"
+            "type": "string",
+            "description": "The vendor for the VM, e.g. azure, amazon, etc."
           },
           "format": {
-            "type": "string"
+            "type": "string",
+            "description": "The format of the VM's disk, such as vmdk, qcow2, and tier1."
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "The version of the VM definition."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the VM/Template."
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "A description of the VM that is typically set by the provider, but may also be edited."
           },
           "location": {
-            "type": "string"
+            "type": "string",
+            "description": "The location of the VM, or its underlying storage."
           },
           "config_xml": {
-            "type": "string"
+            "type": "string",
+            "description": "The VM or Template configuration in XML format. Deprecated."
           },
           "autostart": {
-            "type": "string"
+            "type": "string",
+            "description": "Indicates whether or not the VM is set to autostart."
           },
           "host_id": {
             "$ref": "#/components/schemas/ID"
           },
           "last_sync_on": {
             "type": "string",
+            "description": "Timestamp for last SmartState analysis synchronization.",
             "format": "date-time"
           },
           "created_on": {
             "type": "string",
+            "description": "The timestamp the VM was added to the app inventory.",
             "format": "date-time"
           },
           "updated_on": {
             "type": "string",
+            "description": "The last timestamp the VM was modified within the app.",
             "format": "date-time"
           },
           "storage_id": {
             "$ref": "#/components/schemas/ID"
           },
           "guid": {
-            "type": "string"
+            "type": "string",
+            "description": "A value used to uniquely identify the VM internally."
           },
           "ems_id": {
             "$ref": "#/components/schemas/ID"
           },
           "last_scan_on": {
             "type": "string",
+            "description": "Timestamp for last SmartState analysis scan.",
             "format": "date-time"
           },
           "last_scan_attempt_on": {
             "type": "string",
+            "description": "Timestamp for last attempt to perform SmartState Analysis.",
             "format": "date-time"
           },
           "uid_ems": {
-            "type": "string"
+            "type": "string",
+            "description": "A globally unique reference for the VM across EMS."
           },
           "retires_on": {
             "type": "string",
+            "description": "Timestamp the VM is to be retired.",
             "format": "date-time"
           },
           "retired": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is retired."
           },
           "boot_time": {
             "type": "string",
+            "description": "The last time the VM was started.",
             "format": "date-time"
           },
           "tools_status": {
-            "type": "string"
+            "type": "string",
+            "description": "Status of guest tools."
           },
           "standby_action": {
-            "type": "string"
+            "type": "string",
+            "description": "Action taken when VM is put into standby mode."
           },
           "power_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The current power state, typically 'on' or 'off'."
           },
           "state_changed_on": {
             "type": "string",
+            "description": "The timestamp of the last power state change.",
             "format": "date-time"
           },
           "previous_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The previous power state change."
           },
           "connection_state": {
-            "type": "string"
+            "type": "string",
+            "description": "Indicates the connection state of the VM, e.g. connected, disconnected, etc."
           },
           "last_perf_capture_on": {
             "type": "string",
+            "description": "Timestamp for last performance metrics capture.",
             "format": "date-time"
           },
           "registered": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM registered to a Provider. Deprecated."
           },
           "busy": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is being scanned for SmartState analysis. Deprecated."
           },
           "smart": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not smart proxy is enabled. Deprecated."
           },
           "memory_reserve": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Amount of memory that is guaranteed available for the VM."
           },
           "memory_reserve_expand": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Amount the memory can grow beyond its normal limits if there are unreserved resources available."
           },
           "memory_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The absolute memory limit for the VM."
           },
           "memory_shares": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The number of memory shares allocated. Used to determine resource allocation in case of resource contention."
           },
           "memory_shares_level": {
-            "type": "string"
+            "type": "string",
+            "description": "Memory shares allocation level."
           },
           "cpu_reserve": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Amount of CPU that is guaranteed available for the VM."
           },
           "cpu_reserve_expand": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Amount the CPU can grow beyond its normal limits if there are unreserved resources available."
           },
           "cpu_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The CPU utilization limit for the VM."
           },
           "cpu_shares": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The number of CPU shares allocated. Used to determine resource allocation in case of resource contention."
           },
           "cpu_shares_level": {
-            "type": "string"
+            "type": "string",
+            "description": "CPU shares allocation level."
           },
           "cpu_affinity": {
-            "type": "string"
+            "type": "string",
+            "description": "A comma separated list of host CPUs to schedule the VM on."
           },
           "ems_created_on": {
             "type": "string",
+            "description": "The timestamp the VM or Templated was created on the EMS itself.",
             "format": "date-time"
           },
           "template": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether this is a VM or template."
           },
           "evm_owner_id": {
             "$ref": "#/components/schemas/ID"
@@ -8118,29 +8291,36 @@
             "$ref": "#/components/schemas/ID"
           },
           "linked_clone": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM is a linked clone, i.e its disk is a referencing disk pointing to snapshot of another VM."
           },
           "fault_tolerance": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is fault tolerant, i.e. if one host crashes it will immediately pick up on another host in the cluster."
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "description": "An internal class name that includes the provider type."
           },
           "ems_ref": {
-            "type": "string"
+            "type": "string",
+            "description": "A native unique reference for the VM within the EMS."
           },
           "ems_cluster_id": {
             "$ref": "#/components/schemas/ID"
           },
           "retirement_warn": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Warning message when VM was put into retirement."
           },
           "retirement_last_warn": {
             "type": "string",
+            "description": "Date of last retirement warning.",
             "format": "date-time"
           },
           "vnc_port": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Port or port range used for VNC connections."
           },
           "flavor_id": {
             "$ref": "#/components/schemas/ID"
@@ -8149,10 +8329,12 @@
             "$ref": "#/components/schemas/ID"
           },
           "cloud": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM/Template is cloud or infra."
           },
           "retirement_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The current retirement state."
           },
           "cloud_network_id": {
             "$ref": "#/components/schemas/ID"
@@ -8164,16 +8346,19 @@
             "$ref": "#/components/schemas/ID"
           },
           "raw_power_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The power state refreshed from the EMS."
           },
           "publicly_available": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM is public or private."
           },
           "orchestration_stack_id": {
             "$ref": "#/components/schemas/ID"
           },
           "retirement_requester": {
-            "type": "string"
+            "type": "string",
+            "description": "Userid of the user who requested retirement."
           },
           "tenant_id": {
             "$ref": "#/components/schemas/ID"
@@ -8182,25 +8367,31 @@
             "$ref": "#/components/schemas/ID"
           },
           "deprecated": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not a template is deprecated."
           },
           "storage_profile_id": {
             "$ref": "#/components/schemas/ID"
           },
           "cpu_hot_add_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates if CPUs can be added to the VM while it is powered on."
           },
           "cpu_hot_remove_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates if a CPU can be removed from a VM while powered on."
           },
           "memory_hot_add_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not memory can be hot added to the running VM."
           },
           "memory_hot_add_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The maximum amount of memory, in MB, that can be added to a running VM."
           },
           "memory_hot_add_increment": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Memory in MB that can be added to a running VM must be in increments of this value."
           },
           "hostname": {
             "type": "string"
@@ -8382,146 +8573,187 @@
             "$ref": "#/components/schemas/ID"
           },
           "vendor": {
-            "type": "string"
+            "type": "string",
+            "description": "The vendor for the VM, e.g. azure, amazon, etc."
           },
           "format": {
-            "type": "string"
+            "type": "string",
+            "description": "The format of the VM's disk, such as vmdk, qcow2, and tier1."
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "The version of the VM definition."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the VM/Template."
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "A description of the VM that is typically set by the provider, but may also be edited."
           },
           "location": {
-            "type": "string"
+            "type": "string",
+            "description": "The location of the VM, or its underlying storage."
           },
           "config_xml": {
-            "type": "string"
+            "type": "string",
+            "description": "The VM or Template configuration in XML format. Deprecated."
           },
           "autostart": {
-            "type": "string"
+            "type": "string",
+            "description": "Indicates whether or not the VM is set to autostart."
           },
           "host_id": {
             "$ref": "#/components/schemas/ID"
           },
           "last_sync_on": {
             "type": "string",
+            "description": "Timestamp for last SmartState analysis synchronization.",
             "format": "date-time"
           },
           "created_on": {
             "type": "string",
+            "description": "The timestamp the VM was added to the app inventory.",
             "format": "date-time"
           },
           "updated_on": {
             "type": "string",
+            "description": "The last timestamp the VM was modified within the app.",
             "format": "date-time"
           },
           "storage_id": {
             "$ref": "#/components/schemas/ID"
           },
           "guid": {
-            "type": "string"
+            "type": "string",
+            "description": "A value used to uniquely identify the VM internally."
           },
           "ems_id": {
             "$ref": "#/components/schemas/ID"
           },
           "last_scan_on": {
             "type": "string",
+            "description": "Timestamp for last SmartState analysis scan.",
             "format": "date-time"
           },
           "last_scan_attempt_on": {
             "type": "string",
+            "description": "Timestamp for last attempt to perform SmartState Analysis.",
             "format": "date-time"
           },
           "uid_ems": {
-            "type": "string"
+            "type": "string",
+            "description": "A globally unique reference for the VM across EMS."
           },
           "retires_on": {
             "type": "string",
+            "description": "Timestamp the VM is to be retired.",
             "format": "date-time"
           },
           "retired": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is retired."
           },
           "boot_time": {
             "type": "string",
+            "description": "The last time the VM was started.",
             "format": "date-time"
           },
           "tools_status": {
-            "type": "string"
+            "type": "string",
+            "description": "Status of guest tools."
           },
           "standby_action": {
-            "type": "string"
+            "type": "string",
+            "description": "Action taken when VM is put into standby mode."
           },
           "power_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The current power state, typically 'on' or 'off'."
           },
           "state_changed_on": {
             "type": "string",
+            "description": "The timestamp of the last power state change.",
             "format": "date-time"
           },
           "previous_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The previous power state change."
           },
           "connection_state": {
-            "type": "string"
+            "type": "string",
+            "description": "Indicates the connection state of the VM, e.g. connected, disconnected, etc."
           },
           "last_perf_capture_on": {
             "type": "string",
+            "description": "Timestamp for last performance metrics capture.",
             "format": "date-time"
           },
           "registered": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM registered to a Provider. Deprecated."
           },
           "busy": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is being scanned for SmartState analysis. Deprecated."
           },
           "smart": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not smart proxy is enabled. Deprecated."
           },
           "memory_reserve": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Amount of memory that is guaranteed available for the VM."
           },
           "memory_reserve_expand": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Amount the memory can grow beyond its normal limits if there are unreserved resources available."
           },
           "memory_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The absolute memory limit for the VM."
           },
           "memory_shares": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The number of memory shares allocated. Used to determine resource allocation in case of resource contention."
           },
           "memory_shares_level": {
-            "type": "string"
+            "type": "string",
+            "description": "Memory shares allocation level."
           },
           "cpu_reserve": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Amount of CPU that is guaranteed available for the VM."
           },
           "cpu_reserve_expand": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Amount the CPU can grow beyond its normal limits if there are unreserved resources available."
           },
           "cpu_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The CPU utilization limit for the VM."
           },
           "cpu_shares": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The number of CPU shares allocated. Used to determine resource allocation in case of resource contention."
           },
           "cpu_shares_level": {
-            "type": "string"
+            "type": "string",
+            "description": "CPU shares allocation level."
           },
           "cpu_affinity": {
-            "type": "string"
+            "type": "string",
+            "description": "A comma separated list of host CPUs to schedule the VM on."
           },
           "ems_created_on": {
             "type": "string",
+            "description": "The timestamp the VM or Templated was created on the EMS itself.",
             "format": "date-time"
           },
           "template": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether this is a VM or template."
           },
           "evm_owner_id": {
             "$ref": "#/components/schemas/ID"
@@ -8530,29 +8762,36 @@
             "$ref": "#/components/schemas/ID"
           },
           "linked_clone": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM is a linked clone, i.e its disk is a referencing disk pointing to snapshot of another VM."
           },
           "fault_tolerance": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM is fault tolerant, i.e. if one host crashes it will immediately pick up on another host in the cluster."
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "description": "An internal class name that includes the provider type."
           },
           "ems_ref": {
-            "type": "string"
+            "type": "string",
+            "description": "A native unique reference for the VM within the EMS."
           },
           "ems_cluster_id": {
             "$ref": "#/components/schemas/ID"
           },
           "retirement_warn": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Warning message when VM was put into retirement."
           },
           "retirement_last_warn": {
             "type": "string",
+            "description": "Date of last retirement warning.",
             "format": "date-time"
           },
           "vnc_port": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Port or port range used for VNC connections."
           },
           "flavor_id": {
             "$ref": "#/components/schemas/ID"
@@ -8561,10 +8800,12 @@
             "$ref": "#/components/schemas/ID"
           },
           "cloud": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not the VM/Template is cloud or infra."
           },
           "retirement_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The current retirement state."
           },
           "cloud_network_id": {
             "$ref": "#/components/schemas/ID"
@@ -8576,16 +8817,19 @@
             "$ref": "#/components/schemas/ID"
           },
           "raw_power_state": {
-            "type": "string"
+            "type": "string",
+            "description": "The power state refreshed from the EMS."
           },
           "publicly_available": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether the VM is public or private."
           },
           "orchestration_stack_id": {
             "$ref": "#/components/schemas/ID"
           },
           "retirement_requester": {
-            "type": "string"
+            "type": "string",
+            "description": "Userid of the user who requested retirement."
           },
           "tenant_id": {
             "$ref": "#/components/schemas/ID"
@@ -8594,25 +8838,31 @@
             "$ref": "#/components/schemas/ID"
           },
           "deprecated": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not a template is deprecated."
           },
           "storage_profile_id": {
             "$ref": "#/components/schemas/ID"
           },
           "cpu_hot_add_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates if CPUs can be added to the VM while it is powered on."
           },
           "cpu_hot_remove_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates if a CPU can be removed from a VM while powered on."
           },
           "memory_hot_add_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates whether or not memory can be hot added to the running VM."
           },
           "memory_hot_add_limit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The maximum amount of memory, in MB, that can be added to a running VM."
           },
           "memory_hot_add_increment": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Memory in MB that can be added to a running VM must be in increments of this value."
           },
           "hostname": {
             "type": "string"

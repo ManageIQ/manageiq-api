@@ -20,7 +20,7 @@ module ManageIQ
 
         def generate!
           openapi_spec["components"]["schemas"] = build_schemas
-          File.write(openapi_path, JSON.pretty_generate(openapi_spec) + "\n")
+          File.write(openapi_path, "#{JSON.pretty_generate(openapi_spec)}\n")
         end
 
         private
@@ -34,7 +34,7 @@ module ManageIQ
         end
 
         def build_schemas
-          ::Api::ApiConfig.collections.each_with_object({}) do |(collection_name, collection), schemas|
+          ::Api::ApiConfig.collections.each_with_object({}) do |(_collection_name, collection), schemas|
             next unless collection.klass
 
             model = collection.klass.constantize
@@ -60,6 +60,8 @@ module ManageIQ
             properties_value = {
               "type" => "string"
             }
+
+            properties_value["description"] = value.comment if value.comment.present?
 
             case value.sql_type_metadata.type
             when :datetime
@@ -93,7 +95,7 @@ module ManageIQ
           {
             "openapi"    => OPENAPI_VERSION,
             "info"       => {},
-            "secuirty"   => [],
+            "security"   => [],
             "paths"      => {},
             "servers"    => [],
             "components" => {
