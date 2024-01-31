@@ -276,7 +276,7 @@
         },
         "additionalProperties": false
       },
-      "ManageIQ::Providers::CloudManager::AuthKeyPair": {
+      "ManageIQ_Providers_CloudManager_AuthKeyPair": {
         "type": "object",
         "properties": {
           "id": {
@@ -1209,7 +1209,7 @@
         },
         "additionalProperties": false
       },
-      "ManageIQ::Providers::CloudManager::Template": {
+      "ManageIQ_Providers_CloudManager_Template": {
         "type": "object",
         "properties": {
           "id": {
@@ -4256,7 +4256,7 @@
         },
         "additionalProperties": false
       },
-      "ManageIQ::Providers::CloudManager::Vm": {
+      "ManageIQ_Providers_CloudManager_Vm": {
         "type": "object",
         "properties": {
           "id": {

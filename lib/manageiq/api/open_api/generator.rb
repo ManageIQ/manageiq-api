@@ -46,9 +46,10 @@ module ManageIQ
           ::Api::ApiConfig.collections.each do |_collection_name, collection|
             next unless collection.klass
 
-            model = collection.klass.constantize
+            model       = collection.klass.constantize
+            schema_name = model.name.gsub("::", "_")
 
-            schemas[model.name] = {
+            schemas[schema_name] = {
               "type"                 => "object",
               "properties"           => build_schema_properties(model),
               "additionalProperties" => false
