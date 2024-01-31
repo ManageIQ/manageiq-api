@@ -20,7 +20,7 @@ module ManageIQ
 
         def generate!
           openapi_spec["components"]["schemas"] = build_schemas
-          File.write(openapi_path, "#{JSON.pretty_generate(openapi_spec)}\n")
+          openapi_path.write("#{JSON.pretty_generate(openapi_spec)}\n")
         end
 
         private
