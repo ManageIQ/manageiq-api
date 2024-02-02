@@ -74,7 +74,7 @@ module ManageIQ
             properties_value["format"] = "date-time"
           when :integer
             if key == model.primary_key || key.ends_with?("_id")
-              properties_value = {"$ref" => "##{SCHEMAS_PATH}/ID"}
+              properties_value["$ref"] = "##{SCHEMAS_PATH}/ID"
             else
               properties_value["type"] = "integer"
             end
