@@ -66,30 +66,40 @@ module ManageIQ
         end
 
         def build_schema_properties_value(model, key, value)
-          if key == model.primary_key || key.ends_with?("_id")
-            {"$ref" => "##{SCHEMAS_PATH}/ID"}
-          else
-            properties_value = {
-              "type" => "string"
-            }
+          properties_value = {}
 
-            properties_value["description"] = value.comment if value.comment.present?
-
-            case value.sql_type_metadata.type
-            when :datetime
-              properties_value["format"] = "date-time"
-            when :integer
+          case value.sql_type_metadata.type
+          when :datetime
+            properties_value["type"]   = "string"
+            properties_value["format"] = "date-time"
+          when :integer
+            if key == model.primary_key || key.ends_with?("_id")
+              properties_value = {"$ref" => "##{SCHEMAS_PATH}/ID"}
+            else
               properties_value["type"] = "integer"
-            when :float
-              properties_value["type"] = "number"
-            when :boolean
-              properties_value["type"] = "boolean"
-            when :jsonb
-              properties_value["type"] = "object"
             end
-
-            properties_value
+          when :float
+            properties_value["type"] = "number"
+          when :boolean
+            properties_value["type"] = "boolean"
+          when :jsonb
+            properties_value["type"] = "object"
+          else
+            properties_value["type"] = "string"
           end
+
+          # If there is a comment present on the column and the property is
+          # a $ref we have to use allOf since all other properties of a $ref
+          # are ignored
+          if value.comment.present?
+            if properties_value.key?("$ref")
+              properties_value = {"allOf" => [properties_value, {"description" => value.comment}]}
+            else
+              properties_value["description"] = value.comment
+            end
+          end
+
+          properties_value
         end
 
         def skeletal_openapi_spec

@@ -609,7 +609,7 @@
             "type": "string"
           },
           "provider_segmentation_id": {
-            "$ref": "#/components/schemas/ID"
+            "type": "string"
           },
           "vlan_transparent": {
             "type": "boolean"
@@ -1904,7 +1904,7 @@
             "type": "string"
           },
           "common_volume_id": {
-            "$ref": "#/components/schemas/ID"
+            "type": "string"
           },
           "common_partition": {
             "type": "string"
@@ -3741,7 +3741,14 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "The internal database ID."
+              }
+            ]
           },
           "vendor": {
             "type": "string",
@@ -3776,42 +3783,63 @@
             "description": "Indicates whether or not the VM is set to autostart."
           },
           "host_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the host that the VM/Template resides on."
+              }
+            ]
           },
           "last_sync_on": {
             "type": "string",
-            "description": "Timestamp for last SmartState analysis synchronization.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last SmartState analysis synchronization."
           },
           "created_on": {
             "type": "string",
-            "description": "The timestamp the VM was added to the app inventory.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp the VM was added to the app inventory."
           },
           "updated_on": {
             "type": "string",
-            "description": "The last timestamp the VM was modified within the app.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The last timestamp the VM was modified within the app."
           },
           "storage_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the storage object associated with the VM."
+              }
+            ]
           },
           "guid": {
             "type": "string",
             "description": "A value used to uniquely identify the VM internally."
           },
           "ems_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the ExtManagementSystem associated with the VM."
+              }
+            ]
           },
           "last_scan_on": {
             "type": "string",
-            "description": "Timestamp for last SmartState analysis scan.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last SmartState analysis scan."
           },
           "last_scan_attempt_on": {
             "type": "string",
-            "description": "Timestamp for last attempt to perform SmartState Analysis.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last attempt to perform SmartState Analysis."
           },
           "uid_ems": {
             "type": "string",
@@ -3819,8 +3847,8 @@
           },
           "retires_on": {
             "type": "string",
-            "description": "Timestamp the VM is to be retired.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp the VM is to be retired."
           },
           "retired": {
             "type": "boolean",
@@ -3828,8 +3856,8 @@
           },
           "boot_time": {
             "type": "string",
-            "description": "The last time the VM was started.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The last time the VM was started."
           },
           "tools_status": {
             "type": "string",
@@ -3845,8 +3873,8 @@
           },
           "state_changed_on": {
             "type": "string",
-            "description": "The timestamp of the last power state change.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp of the last power state change."
           },
           "previous_state": {
             "type": "string",
@@ -3858,8 +3886,8 @@
           },
           "last_perf_capture_on": {
             "type": "string",
-            "description": "Timestamp for last performance metrics capture.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last performance metrics capture."
           },
           "registered": {
             "type": "boolean",
@@ -3919,18 +3947,32 @@
           },
           "ems_created_on": {
             "type": "string",
-            "description": "The timestamp the VM or Templated was created on the EMS itself.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp the VM or Templated was created on the EMS itself."
           },
           "template": {
             "type": "boolean",
             "description": "Indicates whether this is a VM or template."
           },
           "evm_owner_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "Typically, the ID of the user that provisioned the VM (if provisioned through the app).Can also be set via inventory, the UI or Automate."
+              }
+            ]
           },
           "miq_group_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the MIQ Group owner."
+              }
+            ]
           },
           "linked_clone": {
             "type": "boolean",
@@ -3949,7 +3991,14 @@
             "description": "A native unique reference for the VM within the EMS."
           },
           "ems_cluster_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of associated cluster."
+              }
+            ]
           },
           "retirement_warn": {
             "type": "integer",
@@ -3957,18 +4006,32 @@
           },
           "retirement_last_warn": {
             "type": "string",
-            "description": "Date of last retirement warning.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Date of last retirement warning."
           },
           "vnc_port": {
             "type": "integer",
             "description": "Port or port range used for VNC connections."
           },
           "flavor_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of associated flavor."
+              }
+            ]
           },
           "availability_zone_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the availability zone that the VM is part of."
+              }
+            ]
           },
           "cloud": {
             "type": "boolean",
@@ -3979,13 +4042,34 @@
             "description": "The current retirement state."
           },
           "cloud_network_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the cloud (virtual) network the VM/Template is associated with."
+              }
+            ]
           },
           "cloud_subnet_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "Subnet ID associated with the VM."
+              }
+            ]
           },
           "cloud_tenant_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the cloud tenant associated with the VM."
+              }
+            ]
           },
           "raw_power_state": {
             "type": "string",
@@ -3996,24 +4080,52 @@
             "description": "Indicates whether the VM is public or private."
           },
           "orchestration_stack_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the orchestration stack associated with the VM."
+              }
+            ]
           },
           "retirement_requester": {
             "type": "string",
             "description": "Userid of the user who requested retirement."
           },
           "tenant_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the tenant associated with the VM."
+              }
+            ]
           },
           "resource_group_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the resource group that the VM/Template belongs to."
+              }
+            ]
           },
           "deprecated": {
             "type": "boolean",
             "description": "Indicates whether or not a template is deprecated."
           },
           "storage_profile_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the storage profile associated with the VM."
+              }
+            ]
           },
           "cpu_hot_add_enabled": {
             "type": "boolean",
@@ -4057,7 +4169,14 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "The internal database ID."
+              }
+            ]
           },
           "vendor": {
             "type": "string",
@@ -4092,42 +4211,63 @@
             "description": "Indicates whether or not the VM is set to autostart."
           },
           "host_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the host that the VM/Template resides on."
+              }
+            ]
           },
           "last_sync_on": {
             "type": "string",
-            "description": "Timestamp for last SmartState analysis synchronization.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last SmartState analysis synchronization."
           },
           "created_on": {
             "type": "string",
-            "description": "The timestamp the VM was added to the app inventory.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp the VM was added to the app inventory."
           },
           "updated_on": {
             "type": "string",
-            "description": "The last timestamp the VM was modified within the app.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The last timestamp the VM was modified within the app."
           },
           "storage_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the storage object associated with the VM."
+              }
+            ]
           },
           "guid": {
             "type": "string",
             "description": "A value used to uniquely identify the VM internally."
           },
           "ems_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the ExtManagementSystem associated with the VM."
+              }
+            ]
           },
           "last_scan_on": {
             "type": "string",
-            "description": "Timestamp for last SmartState analysis scan.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last SmartState analysis scan."
           },
           "last_scan_attempt_on": {
             "type": "string",
-            "description": "Timestamp for last attempt to perform SmartState Analysis.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last attempt to perform SmartState Analysis."
           },
           "uid_ems": {
             "type": "string",
@@ -4135,8 +4275,8 @@
           },
           "retires_on": {
             "type": "string",
-            "description": "Timestamp the VM is to be retired.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp the VM is to be retired."
           },
           "retired": {
             "type": "boolean",
@@ -4144,8 +4284,8 @@
           },
           "boot_time": {
             "type": "string",
-            "description": "The last time the VM was started.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The last time the VM was started."
           },
           "tools_status": {
             "type": "string",
@@ -4161,8 +4301,8 @@
           },
           "state_changed_on": {
             "type": "string",
-            "description": "The timestamp of the last power state change.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp of the last power state change."
           },
           "previous_state": {
             "type": "string",
@@ -4174,8 +4314,8 @@
           },
           "last_perf_capture_on": {
             "type": "string",
-            "description": "Timestamp for last performance metrics capture.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last performance metrics capture."
           },
           "registered": {
             "type": "boolean",
@@ -4235,18 +4375,32 @@
           },
           "ems_created_on": {
             "type": "string",
-            "description": "The timestamp the VM or Templated was created on the EMS itself.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp the VM or Templated was created on the EMS itself."
           },
           "template": {
             "type": "boolean",
             "description": "Indicates whether this is a VM or template."
           },
           "evm_owner_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "Typically, the ID of the user that provisioned the VM (if provisioned through the app).Can also be set via inventory, the UI or Automate."
+              }
+            ]
           },
           "miq_group_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the MIQ Group owner."
+              }
+            ]
           },
           "linked_clone": {
             "type": "boolean",
@@ -4265,7 +4419,14 @@
             "description": "A native unique reference for the VM within the EMS."
           },
           "ems_cluster_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of associated cluster."
+              }
+            ]
           },
           "retirement_warn": {
             "type": "integer",
@@ -4273,18 +4434,32 @@
           },
           "retirement_last_warn": {
             "type": "string",
-            "description": "Date of last retirement warning.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Date of last retirement warning."
           },
           "vnc_port": {
             "type": "integer",
             "description": "Port or port range used for VNC connections."
           },
           "flavor_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of associated flavor."
+              }
+            ]
           },
           "availability_zone_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the availability zone that the VM is part of."
+              }
+            ]
           },
           "cloud": {
             "type": "boolean",
@@ -4295,13 +4470,34 @@
             "description": "The current retirement state."
           },
           "cloud_network_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the cloud (virtual) network the VM/Template is associated with."
+              }
+            ]
           },
           "cloud_subnet_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "Subnet ID associated with the VM."
+              }
+            ]
           },
           "cloud_tenant_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the cloud tenant associated with the VM."
+              }
+            ]
           },
           "raw_power_state": {
             "type": "string",
@@ -4312,24 +4508,52 @@
             "description": "Indicates whether the VM is public or private."
           },
           "orchestration_stack_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the orchestration stack associated with the VM."
+              }
+            ]
           },
           "retirement_requester": {
             "type": "string",
             "description": "Userid of the user who requested retirement."
           },
           "tenant_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the tenant associated with the VM."
+              }
+            ]
           },
           "resource_group_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the resource group that the VM/Template belongs to."
+              }
+            ]
           },
           "deprecated": {
             "type": "boolean",
             "description": "Indicates whether or not a template is deprecated."
           },
           "storage_profile_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the storage profile associated with the VM."
+              }
+            ]
           },
           "cpu_hot_add_enabled": {
             "type": "boolean",
@@ -6199,7 +6423,14 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "[builtin] The internal record ID. This is the primary key."
+              }
+            ]
           },
           "name": {
             "type": "string",
@@ -6223,13 +6454,13 @@
           },
           "created_on": {
             "type": "string",
-            "description": "[builtin] The timestamp the record was created.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "[builtin] The timestamp the record was created."
           },
           "updated_on": {
             "type": "string",
-            "description": "[builtin] The timestamp the record was last updated.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "[builtin] The timestamp the record was last updated."
           },
           "pct_complete": {
             "type": "integer",
@@ -6244,7 +6475,14 @@
             "description": "Task execution result. Deprecated."
           },
           "miq_server_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "The ID of the ManageIQ server where the task was executed."
+              }
+            ]
           },
           "identifier": {
             "type": "string",
@@ -6252,8 +6490,8 @@
           },
           "started_on": {
             "type": "string",
-            "description": "The timestamp the task was actually started.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp the task was actually started."
           },
           "zone": {
             "type": "string",
@@ -6266,7 +6504,14 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "The internal database ID."
+              }
+            ]
           },
           "vendor": {
             "type": "string",
@@ -6301,42 +6546,63 @@
             "description": "Indicates whether or not the VM is set to autostart."
           },
           "host_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the host that the VM/Template resides on."
+              }
+            ]
           },
           "last_sync_on": {
             "type": "string",
-            "description": "Timestamp for last SmartState analysis synchronization.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last SmartState analysis synchronization."
           },
           "created_on": {
             "type": "string",
-            "description": "The timestamp the VM was added to the app inventory.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp the VM was added to the app inventory."
           },
           "updated_on": {
             "type": "string",
-            "description": "The last timestamp the VM was modified within the app.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The last timestamp the VM was modified within the app."
           },
           "storage_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the storage object associated with the VM."
+              }
+            ]
           },
           "guid": {
             "type": "string",
             "description": "A value used to uniquely identify the VM internally."
           },
           "ems_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the ExtManagementSystem associated with the VM."
+              }
+            ]
           },
           "last_scan_on": {
             "type": "string",
-            "description": "Timestamp for last SmartState analysis scan.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last SmartState analysis scan."
           },
           "last_scan_attempt_on": {
             "type": "string",
-            "description": "Timestamp for last attempt to perform SmartState Analysis.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last attempt to perform SmartState Analysis."
           },
           "uid_ems": {
             "type": "string",
@@ -6344,8 +6610,8 @@
           },
           "retires_on": {
             "type": "string",
-            "description": "Timestamp the VM is to be retired.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp the VM is to be retired."
           },
           "retired": {
             "type": "boolean",
@@ -6353,8 +6619,8 @@
           },
           "boot_time": {
             "type": "string",
-            "description": "The last time the VM was started.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The last time the VM was started."
           },
           "tools_status": {
             "type": "string",
@@ -6370,8 +6636,8 @@
           },
           "state_changed_on": {
             "type": "string",
-            "description": "The timestamp of the last power state change.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp of the last power state change."
           },
           "previous_state": {
             "type": "string",
@@ -6383,8 +6649,8 @@
           },
           "last_perf_capture_on": {
             "type": "string",
-            "description": "Timestamp for last performance metrics capture.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last performance metrics capture."
           },
           "registered": {
             "type": "boolean",
@@ -6444,18 +6710,32 @@
           },
           "ems_created_on": {
             "type": "string",
-            "description": "The timestamp the VM or Templated was created on the EMS itself.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp the VM or Templated was created on the EMS itself."
           },
           "template": {
             "type": "boolean",
             "description": "Indicates whether this is a VM or template."
           },
           "evm_owner_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "Typically, the ID of the user that provisioned the VM (if provisioned through the app).Can also be set via inventory, the UI or Automate."
+              }
+            ]
           },
           "miq_group_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the MIQ Group owner."
+              }
+            ]
           },
           "linked_clone": {
             "type": "boolean",
@@ -6474,7 +6754,14 @@
             "description": "A native unique reference for the VM within the EMS."
           },
           "ems_cluster_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of associated cluster."
+              }
+            ]
           },
           "retirement_warn": {
             "type": "integer",
@@ -6482,18 +6769,32 @@
           },
           "retirement_last_warn": {
             "type": "string",
-            "description": "Date of last retirement warning.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Date of last retirement warning."
           },
           "vnc_port": {
             "type": "integer",
             "description": "Port or port range used for VNC connections."
           },
           "flavor_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of associated flavor."
+              }
+            ]
           },
           "availability_zone_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the availability zone that the VM is part of."
+              }
+            ]
           },
           "cloud": {
             "type": "boolean",
@@ -6504,13 +6805,34 @@
             "description": "The current retirement state."
           },
           "cloud_network_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the cloud (virtual) network the VM/Template is associated with."
+              }
+            ]
           },
           "cloud_subnet_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "Subnet ID associated with the VM."
+              }
+            ]
           },
           "cloud_tenant_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the cloud tenant associated with the VM."
+              }
+            ]
           },
           "raw_power_state": {
             "type": "string",
@@ -6521,24 +6843,52 @@
             "description": "Indicates whether the VM is public or private."
           },
           "orchestration_stack_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the orchestration stack associated with the VM."
+              }
+            ]
           },
           "retirement_requester": {
             "type": "string",
             "description": "Userid of the user who requested retirement."
           },
           "tenant_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the tenant associated with the VM."
+              }
+            ]
           },
           "resource_group_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the resource group that the VM/Template belongs to."
+              }
+            ]
           },
           "deprecated": {
             "type": "boolean",
             "description": "Indicates whether or not a template is deprecated."
           },
           "storage_profile_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the storage profile associated with the VM."
+              }
+            ]
           },
           "cpu_hot_add_enabled": {
             "type": "boolean",
@@ -8633,7 +8983,14 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "The internal database ID."
+              }
+            ]
           },
           "vendor": {
             "type": "string",
@@ -8668,42 +9025,63 @@
             "description": "Indicates whether or not the VM is set to autostart."
           },
           "host_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the host that the VM/Template resides on."
+              }
+            ]
           },
           "last_sync_on": {
             "type": "string",
-            "description": "Timestamp for last SmartState analysis synchronization.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last SmartState analysis synchronization."
           },
           "created_on": {
             "type": "string",
-            "description": "The timestamp the VM was added to the app inventory.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp the VM was added to the app inventory."
           },
           "updated_on": {
             "type": "string",
-            "description": "The last timestamp the VM was modified within the app.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The last timestamp the VM was modified within the app."
           },
           "storage_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the storage object associated with the VM."
+              }
+            ]
           },
           "guid": {
             "type": "string",
             "description": "A value used to uniquely identify the VM internally."
           },
           "ems_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the ExtManagementSystem associated with the VM."
+              }
+            ]
           },
           "last_scan_on": {
             "type": "string",
-            "description": "Timestamp for last SmartState analysis scan.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last SmartState analysis scan."
           },
           "last_scan_attempt_on": {
             "type": "string",
-            "description": "Timestamp for last attempt to perform SmartState Analysis.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last attempt to perform SmartState Analysis."
           },
           "uid_ems": {
             "type": "string",
@@ -8711,8 +9089,8 @@
           },
           "retires_on": {
             "type": "string",
-            "description": "Timestamp the VM is to be retired.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp the VM is to be retired."
           },
           "retired": {
             "type": "boolean",
@@ -8720,8 +9098,8 @@
           },
           "boot_time": {
             "type": "string",
-            "description": "The last time the VM was started.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The last time the VM was started."
           },
           "tools_status": {
             "type": "string",
@@ -8737,8 +9115,8 @@
           },
           "state_changed_on": {
             "type": "string",
-            "description": "The timestamp of the last power state change.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp of the last power state change."
           },
           "previous_state": {
             "type": "string",
@@ -8750,8 +9128,8 @@
           },
           "last_perf_capture_on": {
             "type": "string",
-            "description": "Timestamp for last performance metrics capture.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp for last performance metrics capture."
           },
           "registered": {
             "type": "boolean",
@@ -8811,18 +9189,32 @@
           },
           "ems_created_on": {
             "type": "string",
-            "description": "The timestamp the VM or Templated was created on the EMS itself.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The timestamp the VM or Templated was created on the EMS itself."
           },
           "template": {
             "type": "boolean",
             "description": "Indicates whether this is a VM or template."
           },
           "evm_owner_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "Typically, the ID of the user that provisioned the VM (if provisioned through the app).Can also be set via inventory, the UI or Automate."
+              }
+            ]
           },
           "miq_group_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the MIQ Group owner."
+              }
+            ]
           },
           "linked_clone": {
             "type": "boolean",
@@ -8841,7 +9233,14 @@
             "description": "A native unique reference for the VM within the EMS."
           },
           "ems_cluster_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of associated cluster."
+              }
+            ]
           },
           "retirement_warn": {
             "type": "integer",
@@ -8849,18 +9248,32 @@
           },
           "retirement_last_warn": {
             "type": "string",
-            "description": "Date of last retirement warning.",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Date of last retirement warning."
           },
           "vnc_port": {
             "type": "integer",
             "description": "Port or port range used for VNC connections."
           },
           "flavor_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of associated flavor."
+              }
+            ]
           },
           "availability_zone_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the availability zone that the VM is part of."
+              }
+            ]
           },
           "cloud": {
             "type": "boolean",
@@ -8871,13 +9284,34 @@
             "description": "The current retirement state."
           },
           "cloud_network_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the cloud (virtual) network the VM/Template is associated with."
+              }
+            ]
           },
           "cloud_subnet_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "Subnet ID associated with the VM."
+              }
+            ]
           },
           "cloud_tenant_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the cloud tenant associated with the VM."
+              }
+            ]
           },
           "raw_power_state": {
             "type": "string",
@@ -8888,24 +9322,52 @@
             "description": "Indicates whether the VM is public or private."
           },
           "orchestration_stack_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the orchestration stack associated with the VM."
+              }
+            ]
           },
           "retirement_requester": {
             "type": "string",
             "description": "Userid of the user who requested retirement."
           },
           "tenant_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the tenant associated with the VM."
+              }
+            ]
           },
           "resource_group_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the resource group that the VM/Template belongs to."
+              }
+            ]
           },
           "deprecated": {
             "type": "boolean",
             "description": "Indicates whether or not a template is deprecated."
           },
           "storage_profile_id": {
-            "$ref": "#/components/schemas/ID"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "description": "ID of the storage profile associated with the VM."
+              }
+            ]
           },
           "cpu_hot_add_enabled": {
             "type": "boolean",
