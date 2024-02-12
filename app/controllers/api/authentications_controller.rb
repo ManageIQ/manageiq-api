@@ -1,22 +1,25 @@
 module Api
   class AuthenticationsController < BaseController
     def edit_resource(type, id, data)
-      api_resource(type, id, "Updating") do |auth|
-        ensure_respond_to(type, auth, :update, :update_in_provider_queue)
+      api_resource(type, id, "Updating", :supports => :update) do |auth|
         {:task_id => auth.update_in_provider_queue(data.deep_symbolize_keys)}
       end
     end
 
-    def create_resource(_type, _id, data)
+    def create_resource(type, _id, data)
       manager_resource, attrs = validate_auth_attrs(data)
-      task_id = AuthenticationService.create_authentication_task(manager_resource, attrs)
+
+      klass = ::Authentication.descendant_get(attrs['type'])
+      ensure_supports(type, klass, :create)
+
+      task_id = klass.create_in_provider_queue(manager_resource.id, attrs.deep_symbolize_keys)
       action_result(true, 'Creating Authentication', :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
     end
 
     def delete_resource_main_action(type, auth, _data)
-      ensure_respond_to(type, auth, :delete, :delete_in_provider_queue)
+      ensure_supports(type, auth, :delete)
       {:task_id => auth.delete_in_provider_queue}
     end
 
