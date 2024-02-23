@@ -3233,6 +3233,8 @@
       :post:
       - :name: cancel
         :identifier: miq_request_control
+      - :name: execute
+        :identifier: miq_request_control
     :subcollection_actions:
       :get:
       - :name: read
