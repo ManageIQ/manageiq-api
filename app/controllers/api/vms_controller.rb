@@ -1,4 +1,5 @@
 module Api
+  require 'byebug'
   class VmsController < BaseProviderController
     extend Api::Mixins::CentralAdmin
     include Api::Mixins::PolicySimulation
@@ -52,6 +53,98 @@ module Api
 
     def delete_resource(type, id, _data = nil)
       enqueue_ems_action(type, id, "Deleting", :method_name => "destroy")
+    end
+ 
+    def vm_reconfigure_resource(type, id, data)
+    
+      new_row = {
+        :id        => id.to_s,
+        :long_id   => id.to_s,
+        :cells     => []
+      }
+      
+      unless id
+          data_spec = data.collect { |key, val| "#{key}=#{val}" }.join(", ")
+          raise NotFoundError, "Invalid #{type} resource specified - #{data_spec}"
+        end
+        resource = resource_search(id, type)
+        new_row = vm_data_collection(new_row,resource)
+        
+        opts = {
+          :name                  => type.to_s,
+          :is_subcollection      => false,
+          :expand_resources      => true,
+          :expand_actions        => true,
+          :expand_custom_actions => true
+        }
+        resource_to_jbuilder(type, type, resource, opts).attributes!
+    end
+
+    def vm_data_collection(new_row,resource)
+      new_row[:tree_id] = TreeBuilder.build_node_id(resource) if resource
+      new_row[:cells] << {:is_checkbox => true}
+      new_row[:cells] << {:name => resource.name}
+      new_row[:cells] << {:hostname => resource&.host&.name}
+      new_row[:cells] << {:num_cpu => resource.num_cpu}
+      new_row[:cells] << {:cpu_cores_per_socket => resource.cpu_cores_per_socket}
+      new_row[:cells] << {:mem_cpu => "#{(resource.mem_cpu.to_i / 1024.0).to_i}GB"}
+      new_row
+    end
+
+    def vm_reconfigure_single_resource(type, id, data)
+      new_row = {
+        :id               => id.to_s,
+        :long_id          => id.to_s,
+        :cells            => [],
+        :network_adapters => [],
+        :disks            => []
+      }
+      
+      unless id
+          data_spec = data.collect { |key, val| "#{key}=#{val}" }.join(", ")
+          raise NotFoundError, "Invalid #{type} resource specified - #{data_spec}"
+        end
+        resource = resource_search(id, type)
+
+        new_row = vm_data_collection(new_row,resource)
+        
+        resource.hardware.guest_devices.order(:device_name => 'asc').each do |guest_device|
+          lan = Lan.find_by(:id => guest_device.lan_id)
+          new_row[:network_adapters] << {:name => guest_device.device_name, :vlan => lan.name, :mac => guest_device.address, :add_remove => ''} unless lan.nil?
+        end
+
+        resource.hardware.disks.order(:filename).each do |disk|
+          next if disk.device_type != 'disk'
+          dsize, dunit = reconfigure_calculations(disk.size / (1024 * 1024))
+          new_row[:disks] << {:hdFilename  => disk.filename,
+                        :hdType      => disk.disk_type,
+                        :hdMode      => disk.mode,
+                        :hdSize      => dsize,
+                        :hdUnit      => dunit,
+                        :add_remove  => '',
+                        :cb_bootable => disk.bootable}
+
+
+        end
+        
+        opts = {
+          :name                  => type.to_s,
+          :is_subcollection      => false,
+          :expand_resources      => true,
+          :expand_actions        => true,
+          :expand_custom_actions => true
+        }
+        resource_to_jbuilder(type, type, resource, opts).attributes!
+    end
+
+    def reconfigure_calculations(mbsize)
+      humansize = mbsize
+      fmt = "MB"
+      if mbsize.to_i > 1024 && (mbsize.to_i % 1024).zero?
+        humansize = mbsize.to_i / 1024
+        fmt = "GB"
+      end
+      return humansize.to_s, fmt
     end
 
     def set_owner_resource(type, id = nil, data = nil)

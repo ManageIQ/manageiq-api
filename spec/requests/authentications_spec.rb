@@ -489,4 +489,4 @@ RSpec.describe 'Authentications API' do
       end
     end.deep_stringify_keys
   end
-end
+end 
