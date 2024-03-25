@@ -35,6 +35,18 @@ module Api
         @collection_klasses[type.to_sym] || collection_config.klass(type)
       end
 
+      def collection_param_class(base_type, child_type)
+        klass = collection_class(base_type)
+
+        # lookup children for a given type
+        param_klass = child_type&.safe_constantize
+        if param_klass && param_klass < klass
+          param_klass
+        else
+          klass
+        end
+      end
+
       #
       # Patching a resource, post syntax
       #
