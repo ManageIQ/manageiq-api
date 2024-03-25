@@ -45,7 +45,7 @@ module Api
     rescue_from(UnsupportedMediaTypeError)      { |e| api_error(:unsupported_media_type, e) }
 
     def index
-      klass = collection_class(@req.subject)
+      klass = collection_param_class(@req.subject, params[:type])
       res, subquery_count = collection_search(@req.subcollection?, @req.subject, klass)
       res_count = (res.kind_of?(ActiveRecord::Relation) ? res.except(:select) : res).count
       opts = {
