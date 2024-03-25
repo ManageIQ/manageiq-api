@@ -88,6 +88,7 @@ module Api
         :expand_actions        => true,
         :expand_custom_actions => true
       }
+      byebug
       render_resource(@req.subject, resource_search(@req.subject_id, @req.subject), opts)
     end
 

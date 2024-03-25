@@ -246,8 +246,10 @@ module Api
       end
 
       def validate_id(id, key_id, klass)
-        if id.nil? || (key_id == "id" && !id.integer?)
-          raise BadRequestError, "Invalid #{klass} #{key_id} #{id || "nil"} specified"
+        id.split(',').map(&:to_i).each do |id|
+          if id.nil? || (key_id == "id" && !id.integer?)
+            raise BadRequestError, "Invalid #{klass} #{key_id} #{id || "nil"} specified"
+          end
         end
       end
     end

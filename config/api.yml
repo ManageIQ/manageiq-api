@@ -801,6 +801,17 @@
       :post:
       - :name: delete
         :identifier: cloud_volume_snapshot_delete
+  :vm_infras:
+    :description: Vm Infras
+    :identifier: vm_infra,
+    :options:
+    - :collection
+    :verbs: *gpppd
+    :klass: Vm
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: vm_infra_view
   :cloud_volume_types:
     :description: Cloud Volume Types
     :identifier: cloud_volume_type
@@ -2647,7 +2658,7 @@
         :identifier: picture_new
   :policies:
     :description: Policies
-    :identifier: miq_policy
+    :identifier: miq_policy,,
     :options:
     - :collection
     - :subcollection

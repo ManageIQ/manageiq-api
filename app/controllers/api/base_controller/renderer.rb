@@ -1,4 +1,5 @@
 require 'jbuilder'
+require 'byebug'
 
 module Api
   class BaseController
@@ -14,6 +15,9 @@ module Api
       # Helper proc to render a single resource
       #
       def render_resource(type, resource, opts = {})
+      byebug
+      puts"=====type===="+type.inspect
+      puts"=====resource===="+resource.inspect
         render :json => resource_to_jbuilder(type, gen_reftype(type, opts), resource, opts).target!, :status => status_from_resource(resource)
       end
 
@@ -21,6 +25,7 @@ module Api
       # We want reftype to reflect subcollection if targeting as such.
       #
       def gen_reftype(type, opts)
+        byebug
         opts[:is_subcollection] ? "#{@req.collection}/#{@req.collection_id}/#{type}" : type
       end
 
@@ -129,12 +134,17 @@ module Api
         klass  ||= collection_class(type)
         key_id ||= collection_config.resource_identifier(type)
         validate_id(id, key_id, klass)
+        puts"====type====="+type.inspect
         target =
           if respond_to?("find_#{type}")
             public_send("find_#{type}", id)
+          elsif type == "vm_infras"
+            vm_infra_reconfigure_form(type,klass,id)
+            #find_resource(klass, key_id, id)
           else
             find_resource(klass, key_id, id)
           end
+          puts"======tagget======"+target.inspect
         raise NotFoundError, "Couldn't find #{klass} with '#{key_id}'=#{id}" unless target
         filter_resource(target, type, klass)
       end
@@ -147,6 +157,185 @@ module Api
         res = Rbac.filtered_object(target, :user => User.current_user, :class => klass)
         raise ForbiddenError, "Access to the resource #{type}/#{target.id} is forbidden" unless res
         res
+      end
+
+      def vm_infra_reconfigure_form(type, klass, id)
+        @request_id = "new" 
+        request_data = id
+        reconfigure_ids = request_data.split(/\s*,\s*/)
+        request_hash = build_reconfigure_hash(reconfigure_ids)
+      end
+
+      def build_reconfigure_hash(reconfigure_ids)
+        puts"=====1========"
+        @req = nil
+        @reconfig_values = {}
+        if @request_id == 'new'
+          @reconfig_values = get_reconfig_info(reconfigure_ids)
+        else
+          @req = MiqRequest.find_by(:id => @request_id)
+          @reconfig_values[:src_ids] = @req.options[:src_ids]
+          @reconfig_values[:memory], @reconfig_values[:memory_type] = @req.options[:vm_memory] ? reconfigure_calculations(@req.options[:vm_memory]) : ['', '']
+          @reconfig_values[:cores_per_socket_count] = @req.options[:cores_per_socket] ? @req.options[:cores_per_socket].to_s : ''
+          @reconfig_values[:socket_count] = @req.options[:number_of_sockets] ? @req.options[:number_of_sockets].to_s : ''
+          # check if there is only one VM that supports disk reconfiguration
+
+          @reconfig_values[:disk_add] = @req.options[:disk_add]
+          @reconfig_values[:disk_resize] = @req.options[:disk_resize]
+          @reconfig_values[:cdrom_connect] = @req.options[:cdrom_connect]
+          @reconfig_values[:cdrom_disconnect] = @req.options[:cdrom_disconnect]
+          vmdisks = []
+          vmcdroms = []
+          @req.options[:disk_add]&.each do |disk|
+            adsize, adunit = reconfigure_calculations(disk[:disk_size_in_mb])
+            vmdisks << {:hdFilename          => disk[:disk_name],
+                        :hdType              => disk[:thin_provisioned] ? 'thin' : 'thick',
+                        :hdMode              => disk[:persistent] ? 'persistent' : 'nonpersistent',
+                        :hdSize              => adsize.to_s,
+                        :hdUnit              => adunit,
+                        :new_controller_type => disk[:new_controller_type].to_s,
+                        :cb_dependent        => disk[:dependent],
+                        :cb_bootable         => disk[:bootable],
+                        :add_remove          => 'add'}
+          end
+
+          reconfig_item = Vm.find(reconfigure_ids)
+          if reconfig_item
+            reconfig_item.first.hardware.disks.each do |disk|
+              next if disk.device_type != 'disk'
+
+              removing = ''
+              delbacking = false
+              if disk.filename && @req.options[:disk_remove]
+                @req.options[:disk_remove].each do |remdisk|
+                  if remdisk[:disk_name] == disk.filename
+                    removing = 'remove'
+                    delbacking = remdisk[:delete_backing]
+                  end
+                end
+              end
+              dsize, dunit = reconfigure_calculations(disk.size / (1024 * 1024))
+              vmdisk = {:hdFilename     => disk.filename,
+                        :hdType         => disk.disk_type.to_s,
+                        :hdMode         => disk.mode.to_s,
+                        :hdSize         => dsize.to_s,
+                        :hdUnit         => dunit.to_s,
+                        :delete_backing => delbacking,
+                        :cb_bootable    => disk.bootable,
+                        :add_remove     => removing}
+              vmdisks << vmdisk
+            end
+            cdroms = reconfig_item.first.hardware.cdroms
+            if cdroms.present?
+              vmcdroms = build_request_cdroms_list(cdroms)
+            end
+          end
+          @reconfig_values[:disks] = vmdisks
+          @reconfig_values[:cdroms] = vmcdroms
+        end
+
+        @reconfig_values[:cb_memory] = !!(@req && @req.options[:vm_memory]) # default for checkbox is false for new request
+        @reconfig_values[:cb_cpu] = !!(@req && (@req.options[:number_of_sockets] || @req.options[:cores_per_socket])) # default for checkbox is false for new request
+        @reconfig_values
+      end
+
+      def get_reconfig_info(reconfigure_ids)
+        @reconfigureitems = Vm.find(reconfigure_ids).sort_by(&:name)
+        # set memory to nil if multiple items were selected with different mem_cpu values
+        memory = @reconfigureitems.first.mem_cpu
+        memory = nil unless @reconfigureitems.all? { |vm| vm.mem_cpu == memory }
+
+        socket_count = @reconfigureitems.first.num_cpu
+        socket_count = '' unless @reconfigureitems.all? { |vm| vm.num_cpu == socket_count }
+
+        cores_per_socket = @reconfigureitems.first.cpu_cores_per_socket
+        cores_per_socket = '' unless @reconfigureitems.all? { |vm| vm.cpu_cores_per_socket == cores_per_socket }
+        memory, memory_type = reconfigure_calculations(memory)
+        
+        # if only one vm that supports disk reconfiguration is selected, get the disks information
+        vmdisks = []
+        @reconfigureitems.first.hardware.disks.order(:filename).each do |disk|
+          next if disk.device_type != 'disk'
+
+          dsize, dunit = reconfigure_calculations(disk.size / (1024 * 1024))
+          vmdisks << {:hdFilename  => disk.filename,
+                      :hdType      => disk.disk_type,
+                      :hdMode      => disk.mode,
+                      :hdSize      => dsize,
+                      :hdUnit      => dunit,
+                      :add_remove  => '',
+                      :cb_bootable => disk.bootable}
+        end
+        
+        # reconfiguring network adapters is only supported when one vm was selected
+        network_adapters = []
+        vmcdroms = []
+        if @reconfigureitems.size == 1
+          vm = @reconfigureitems.first
+
+          if vm.supports?(:reconfigure_network_adapters)
+            network_adapters = build_network_adapters_list(vm)
+          end
+
+          if vm.supports?(:reconfigure_cdroms)
+            # CD-ROMS
+            vmcdroms = build_vmcdrom_list(vm)
+          end
+        end
+
+        {:objectIds              => reconfigure_ids,
+         :memory                 => memory,
+         :memory_type            => memory_type,
+         :socket_count           => socket_count.to_s,
+         :cores_per_socket_count => cores_per_socket.to_s,
+         :disks                  => vmdisks,
+         :network_adapters       => network_adapters,
+         :cdroms                 => vmcdroms,
+         :vm_vendor              => @reconfigureitems.first.vendor,
+         :vm_type                => @reconfigureitems.first.class.name,
+         :orchestration_stack_id => @reconfigureitems.first.try(:orchestration_stack_id),
+         :disk_default_type      => @reconfigureitems.first.try(:disk_default_type) || 'thin'}
+      end
+
+      def reconfigure_calculations(mbsize)
+        humansize = mbsize
+        fmt = "MB"
+        if mbsize.to_i > 1024 && (mbsize.to_i % 1024).zero?
+          humansize = mbsize.to_i / 1024
+          fmt = "GB"
+        end
+        return humansize.to_s, fmt
+      end
+
+      def build_network_adapters_list(vm)
+        network_adapters = []
+        vm.hardware.guest_devices.order(:device_name => 'asc').each do |guest_device|
+          lan = Lan.find_by(:id => guest_device.lan_id)
+          network_adapters << {:name => guest_device.device_name, :vlan => lan.name, :mac => guest_device.address, :add_remove => ''} unless lan.nil?
+        end
+
+        if vm.kind_of?(ManageIQ::Providers::Vmware::CloudManager::Vm)
+          vm.network_ports.order(:name).each do |port|
+            network_adapters << { :name => port.name, :network => port.cloud_subnets.try(:first).try(:name) || _('None'), :mac => port.mac_address, :add_remove => '' }
+          end
+        end
+        network_adapters
+      end
+
+      def build_vmcdrom_list(vm)
+        vmcdroms = []
+        cdroms = vm.hardware.cdroms
+        if cdroms.present?
+          cdroms.map do |cd|
+            id = cd.id
+            device_name = cd.device_name
+            type = cd.device_type
+            filename = filename_string(cd.filename)
+            storage_id = cd.storage_id || ''
+            vmcdroms << {:id => id, :device_name => device_name, :filename => filename, :type => type, :storage_id => storage_id}
+          end
+          vmcdroms
+        end
       end
 
       def collection_search(is_subcollection, type, klass)
