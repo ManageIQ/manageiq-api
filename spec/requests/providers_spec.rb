@@ -1629,6 +1629,7 @@ describe "Providers API" do
       context 'valid provider' do
         before do
           class DummyProvider
+            include SupportsFeatureMixin
             def self.permitted?
               true
             end

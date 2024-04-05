@@ -266,7 +266,7 @@ describe "Cloud Volumes API" do
 
     it 'attach raise an error if the cloud volume does not support attach' do
       cloud_volume = FactoryBot.create(:cloud_volume_autosde)
-      stub_supports_not(:cloud_volume, :attach)
+      stub_supports_not(cloud_volume, :attach)
 
       api_basic_authorize(action_identifier(:cloud_volumes, :attach, :resource_actions, :post))
 
@@ -281,7 +281,7 @@ describe "Cloud Volumes API" do
 
     it 'detach raise an error if the cloud volume does not support detach' do
       cloud_volume = FactoryBot.create(:cloud_volume_autosde)
-      stub_supports_not(:cloud_volume, :detach)
+      stub_supports_not(cloud_volume, :detach)
 
       api_basic_authorize(action_identifier(:cloud_volumes, :detach, :resource_actions, :post))
 
