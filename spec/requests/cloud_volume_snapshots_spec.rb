@@ -4,6 +4,7 @@ RSpec.describe "CloudVolumeSnapshots API" do
   let(:ems) { FactoryBot.create(:ems_cinder) }
   let(:cloud_volume) { FactoryBot.create(:cloud_volume_openstack, :ext_management_system => ems) }
   let(:cloud_volume_snapshot) { FactoryBot.create(:cloud_volume_snapshot_openstack, :cloud_volume => cloud_volume, :ext_management_system => ems) }
+  let(:snapshot_klass) { ems.class_by_ems(:CloudVolumeSnapshot) }
 
   describe "as a subcollection of cloud volumes" do
     describe "GET /api/cloud_volumes/:c_id/cloud_volume_snapshots" do
@@ -61,7 +62,7 @@ RSpec.describe "CloudVolumeSnapshots API" do
     describe "POST /api/cloud_volumes/:c_id/cloud_volume_snapshots" do
       it "can queue the creation of a cloud volume snapshot" do
         api_basic_authorize(subcollection_action_identifier(:cloud_volumes, :cloud_volume_snapshots, :create))
-        stub_supports(CloudVolumeSnapshot, :create)
+        stub_supports(snapshot_klass, :create)
 
         post(api_cloud_volume_cloud_volume_snapshots_url(nil, cloud_volume), :params => {:name => "new snapshot"})
 
@@ -70,7 +71,7 @@ RSpec.describe "CloudVolumeSnapshots API" do
 
       it "renders a failed action response if cloud volume snapshotting is not supported" do
         api_basic_authorize(subcollection_action_identifier(:cloud_volumes, :cloud_volume_snapshots, :create))
-        stub_supports_not(ems.class_by_ems(:CloudVolumeSnapshot), :create)
+        stub_supports_not(snapshot_klass, :create)
 
         post(api_cloud_volume_cloud_volume_snapshots_url(nil, cloud_volume), :params => {:name => "Alice's snapshot"})
 
@@ -82,7 +83,7 @@ RSpec.describe "CloudVolumeSnapshots API" do
       it "create & delete cloud volume snapshot" do
         api_basic_authorize('cloud_volume_snapshot_delete')
 
-        stub_supports(CloudVolumeSnapshot, :delete)
+        stub_supports(snapshot_klass, :delete)
         post(api_cloud_volume_snapshot_url(nil, cloud_volume_snapshot), :params => gen_request(:delete))
 
         expect_single_action_result(:success => true, :message => /Deleting Cloud Volume Snapshot id: #{cloud_volume_snapshot.id} name: '#{cloud_volume_snapshot.name}'/)
