@@ -25,6 +25,7 @@ module Api
     include Subcollections::Folders
     include Subcollections::Lans
     include Subcollections::LoadBalancers
+    include Subcollections::MetricRollups
     include Subcollections::Networks
     include Subcollections::NetworkServices
     include Subcollections::Policies

@@ -2782,6 +2782,7 @@
     - :cloud_volume_types
     - :custom_attributes
     - :load_balancers
+    - :metric_rollups
     - :network_services
     - :security_groups
     - :security_policies
@@ -2904,6 +2905,12 @@
         :identifier:
         - ems_infra_show
         - ems_storage_show
+    :metric_rollups_subcollection_actions:
+      :get:
+      - :name: read
+        :identifier:
+        - ems_infra_show
+        - ems_storage_show_list
     :networks_subcollection_actions:
       :get:
       - :name: read

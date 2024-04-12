@@ -2,7 +2,8 @@ module Api
   module Subcollections
     module MetricRollups
       RESOURCE_TYPES = {
-        'vms' => 'VmOrTemplate'
+        'vms'       => 'VmOrTemplate',
+        'providers' => 'ExtManagementSystem'
       }.freeze
 
       def metric_rollups_query_resource(object)
