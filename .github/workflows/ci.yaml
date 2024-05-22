@@ -25,7 +25,7 @@ jobs:
         ports:
         - 5432:5432
       memcached:
-        image: manageiq/memcached:1.5
+        image: manageiq/memcached:1.6
         ports:
         - 11211:11211
     env:
@@ -51,4 +51,4 @@ jobs:
     - name: Report code coverage
       if: "${{ github.ref == 'refs/heads/master' && matrix.ruby-version == '3.0' }}"
       continue-on-error: true
-      uses: paambaati/codeclimate-action@v5
+      uses: paambaati/codeclimate-action@v6

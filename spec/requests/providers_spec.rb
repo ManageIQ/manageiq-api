@@ -1453,6 +1453,42 @@ describe "Providers API" do
     end
   end
 
+  describe "metric rollups subcollection" do
+    let(:provider) { FactoryBot.create(:ems_redhat) }
+    let(:provider1) { FactoryBot.create(:ems_redhat) }
+    let(:url) { api_provider_metric_rollups_url(nil, provider) }
+
+    before do
+      FactoryBot.create_list(:metric_rollup_cm_hr, 3, :resource => provider, :timestamp => 1.hour.ago)
+      FactoryBot.create_list(:metric_rollup_cm_daily, 1, :resource => provider)
+      FactoryBot.create_list(:metric_rollup_cm_hr, 1, :resource => provider1)
+    end
+
+    it 'returns the metric rollups for the provider' do
+      api_basic_authorize subcollection_action_identifier(:providers, :metric_rollups, :read, :get)
+
+      provider.metric_rollups.where(:capture_interval_name => 'hourly').name
+      get(url, :params => { :capture_interval => 'hourly', :start_date => Time.zone.today.to_s })
+
+      expected = {
+        'count'    => 5,
+        'subcount' => 3,
+        'pages'    => 1
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+      expect(response.parsed_body['links'].keys).to match_array(%w[self first last])
+    end
+
+    it 'will not return metric rollups without an appropriate role' do
+      api_basic_authorize
+
+      get(url, :params => { :capture_interval => 'hourly', :start_date => Time.zone.today.to_s })
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   context 'cloud volume types subcollection' do
     before do
       @provider = FactoryBot.create(:ems_storage)
@@ -1629,6 +1665,7 @@ describe "Providers API" do
       context 'valid provider' do
         before do
           class DummyProvider
+            include SupportsFeatureMixin
             def self.permitted?
               true
             end

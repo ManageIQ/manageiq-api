@@ -37,7 +37,7 @@ module Api
 
     def build_additional_fields
       {
-        :credential_types => ::Authentication.build_credential_options
+        :credential_types => ::Authentication.credential_types
       }
     end
 

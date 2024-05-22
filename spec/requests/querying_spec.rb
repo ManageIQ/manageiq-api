@@ -1007,5 +1007,19 @@ describe "Querying" do
       expect_query_result(:vms, 2, 2)
       expect(response.parsed_body["resources"].collect { |vm| vm["name"] }).to match_array(%w(bb cc))
     end
+
+    it "finds child classes given a parent class" do
+      FactoryBot.create(:vm_vmware, :name => "aa")
+      FactoryBot.create(:vm_vmware_cloud, :name => "bb")
+      FactoryBot.create(:vm_amazon, :name => "cc")
+
+      # parent of amazon and vmware_cloud.
+      vmc = FactoryBot.build(:vm_cloud)
+
+      get api_vms_url, :params => { :expand => "resources", :collection_class => vmc.class.name }
+
+      expect_query_result(:vms, 2, 2)
+      expect(response.parsed_body["resources"].collect { |vm| vm["name"] }).to match_array(%w(bb cc))
+    end
   end
 end

@@ -2,6 +2,7 @@ describe "Storage Services API" do
   include Spec::Support::SupportsHelper
 
   let(:provider) { FactoryBot.create(:ems_autosde) }
+  let(:storage_service_klass) { FactoryBot.build(:storage_service).class }
 
   context "GET /api/storage_services" do
     it "returns all storage_services" do
@@ -46,7 +47,7 @@ describe "Storage Services API" do
           "description" => "description of test_storage_service",
         }
       }
-      stub_supports(StorageService, :create)
+      stub_supports(storage_service_klass, :create)
       post(api_storage_services_url, :params => request)
       expect_multiple_action_result(1, :success => true, :message => /Creating Storage Service test_storage_service for Provider #{provider.name}/, :task => true)
     end
@@ -56,7 +57,7 @@ describe "Storage Services API" do
     service = FactoryBot.create(:storage_service, :name => 'test_service', :ext_management_system => provider)
     api_basic_authorize('storage_service_delete')
 
-    stub_supports(StorageService, :delete)
+    stub_supports(storage_service_klass, :delete)
     post(api_storage_service_url(nil, service), :params => gen_request(:delete))
 
     expect_single_action_result(:success => true, :message => /Deleting Storage Service id: #{service.id} name: '#{service.name}'/)
@@ -67,7 +68,7 @@ describe "Storage Services API" do
     service2 = FactoryBot.create(:storage_service, :name => 'test_service2', :ext_management_system => provider)
     api_basic_authorize('storage_service_delete')
 
-    stub_supports(StorageService, :delete)
+    stub_supports(storage_service_klass, :delete)
     post(api_storage_services_url, :params => gen_request(:delete, [{"href" => api_storage_service_url(nil, service1)}, {"href" => api_storage_service_url(nil, service2)}]))
 
     results = response.parsed_body["results"]
@@ -86,7 +87,7 @@ describe "Storage Services API" do
 
       api_basic_authorize('storage_service_edit')
 
-      stub_supports(StorageService, :update)
+      stub_supports(storage_service_klass, :update)
       put(api_storage_service_url(nil, storage_service))
 
       expect(response.parsed_body["message"]).to include("Updating")

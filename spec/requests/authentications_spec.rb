@@ -465,21 +465,26 @@ RSpec.describe 'Authentications API' do
       options(api_authentications_url)
 
       additional_options = {
-        'credential_types' => build_credential_options
+        "credential_types" => credential_types
       }
       expect_options_results(:authentications, additional_options)
     end
   end
 
-  def build_credential_options
-    Authentication::CREDENTIAL_TYPES.each_with_object({}) do |(description, klass), hash|
-      hash[description] = klass.constantize.descendants.each_with_object({}) do |subklass, fields|
-        next unless defined? subklass::API_OPTIONS
-        subklass::API_OPTIONS.tap do |options|
+  def credential_types
+    credential_subclasses = Authentication.descendants.select { |d| d.try(:credential_type) }.sort_by(&:name)
+
+    credential_subclasses.each_with_object({}) do |klass, credential_hash|
+      unless credential_hash.key?(klass.credential_type.to_sym)
+        credential_hash[klass.credential_type.to_sym] = {}
+      end
+
+      if defined? klass::API_OPTIONS
+        klass::API_OPTIONS.tap do |options|
           options[:attributes].each do |_k, val|
             val[:type] = val[:type].to_s if val && val[:type]
           end
-          fields[subklass.name] = options
+          credential_hash[klass.credential_type.to_sym].merge!({klass.name => options})
         end
       end
     end.deep_stringify_keys
