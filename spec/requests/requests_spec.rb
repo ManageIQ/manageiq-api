@@ -263,14 +263,12 @@ RSpec.describe "Requests API" do
       request.add_tag(t.name, t.children.first.name)
 
       api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
-      get api_request_url(nil, request), :params => { :attributes => "workflow,v_allowed_tags,v_workflow_class" }
+      get api_request_url(nil, request), :params => {:attributes => "workflow,v_allowed_tags"}
 
       expected_response = a_hash_including(
-        "id"               => request.id.to_s,
-        "workflow"         => a_hash_including("values"),
-        "v_allowed_tags"   => [a_hash_including("children")],
-        "v_workflow_class" => a_hash_including(
-          "instance_logger" => a_hash_including("klass" => request.workflow.class.to_s))
+        "id"             => request.id.to_s,
+        "workflow"       => a_hash_including("values"),
+        "v_allowed_tags" => [a_hash_including("children")]
       )
 
       expect(response.parsed_body).to match(expected_response)
@@ -314,11 +312,10 @@ RSpec.describe "Requests API" do
                                    :source_type => vm_template.class.name)
 
       api_basic_authorize action_identifier(:requests, :read, :resource_actions, :get)
-      get api_request_url(nil, request), :params => { :attributes => "workflow,v_allowed_tags,v_workflow_class" }
+      get api_request_url(nil, request), :params => {:attributes => "workflow,v_allowed_tags"}
 
       expected_response = a_hash_including(
-        "id"               => request.id.to_s,
-        "v_workflow_class" => {}
+        "id" => request.id.to_s
       )
 
       expect(response.parsed_body).to match(expected_response)
