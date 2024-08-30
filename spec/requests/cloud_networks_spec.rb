@@ -62,16 +62,21 @@ RSpec.describe 'Cloud Networks API' do
 
     it 'successfully returns providers on query when providers do not have cloud_networks attribute' do
       FactoryBot.create(:ems_container) # Openshift container manager does not respond to #cloud_networks
-      FactoryBot.create(:ems_cloud).tap { |x| 2.times { x.cloud_networks << FactoryBot.create(:cloud_network) } } # Provider with cloud networks
-      api_basic_authorize collection_action_identifier(:providers, :read, :get)
 
+      ems_cloud = FactoryBot.create(:ems_cloud) # Provider with cloud networks
+      cloud_network_1 = FactoryBot.create(:cloud_network, :ext_management_system => ems_cloud.network_manager)
+      cloud_network_2 = FactoryBot.create(:cloud_network, :ext_management_system => ems_cloud.network_manager)
+      api_basic_authorize collection_action_identifier(:providers, :read, :get)
       get api_providers_url, :params => { :expand => 'resources,cloud_networks' }
 
       expected = {
         'resources' => a_collection_including(
           a_hash_including(
             'type'           => 'ManageIQ::Providers::Amazon::CloudManager',
-            'cloud_networks' => a_collection_including
+            'cloud_networks' => a_collection_including(
+              a_hash_including('id' => cloud_network_1.id.to_s),
+              a_hash_including('id' => cloud_network_2.id.to_s)
+            )
           ),
           a_hash_including(
             'type' => 'ManageIQ::Providers::Openshift::ContainerManager'
