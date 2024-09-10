@@ -259,7 +259,7 @@ RSpec.describe "reports API" do
 
       # Includes roles "API" and "Overview"
       MiqProductFeature.seed
-      api_basic_authorize :dashboard, :miq_report, :chargeback, :timeline, :rss, :api_exclusive
+      api_basic_authorize :dashboard, :miq_report, :chargeback, :timeline, :api_exclusive
       get api_reports_url
 
       expect_result_resources_to_include_hrefs(
