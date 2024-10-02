@@ -126,7 +126,7 @@ RSpec.describe "hosts API" do
 
       verify_options = {
         "authentications" => {
-          "default" => {"userid" => "root", "password" => "abc123"}
+          "default" => {"userid" => "root", "password" => ManageIQ::Password.encrypt("abc123")}
         }
       }
 
