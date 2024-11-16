@@ -4659,6 +4659,10 @@
         :identifier:
         - vm_show_list
         - sui_vm_details_view
+      - :name: vm_reconfigure
+        :identifier: vm_infras
+      - :name: vm_reconfigure_single
+        :identifier: vm_infras_single
       - :name: edit
         :identifier: vm_edit
       - :name: add_event
