@@ -21,7 +21,7 @@ module Api
       if !@req.attributes.empty? || @additional_attributes
         @req.attributes | Array(@additional_attributes) | ID_ATTRS
       else
-        Picture.attribute_names - %w(content)
+        Picture.attribute_names | Picture.try(:attribute_aliases)&.keys - %w(content)
       end
     end
   end
