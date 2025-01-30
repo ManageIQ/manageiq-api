@@ -44,13 +44,16 @@ RSpec.describe "Flavors API" do
       it "can show a provider's flavor" do
         api_basic_authorize(action_identifier(:flavors, :read, :subresource_actions, :get))
         ems = FactoryBot.create(:ems_cloud)
-        flavor = FactoryBot.create(:flavor, :ext_management_system => ems)
+        # declaring cpus to ensure alias_attribute works
+        flavor = FactoryBot.create(:flavor, :ext_management_system => ems, :cpus => 5)
 
         get(api_provider_flavor_url(nil, ems, flavor))
 
         expected = {
           "href" => api_provider_flavor_url(nil, ems, flavor),
-          "id"   => flavor.id.to_s
+          "id"   => flavor.id.to_s,
+          "cpus" => 5,
+          "cpu_total_cores" => 5
         }
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)

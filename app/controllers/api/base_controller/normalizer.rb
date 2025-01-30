@@ -126,9 +126,9 @@ module Api
         if opts[:render_attributes].present?
           opts[:render_attributes]
         elsif obj.respond_to?(:attributes) && obj.class.respond_to?(:virtual_attribute_names)
-          obj.attributes.keys - obj.class.virtual_attribute_names
+          obj.class.all_attribute_names - obj.class.virtual_attribute_names
         elsif obj.respond_to?(:attributes)
-          obj.attributes.keys
+          obj.class.all_attribute_names
         else
           obj.keys
         end
