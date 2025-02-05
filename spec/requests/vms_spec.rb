@@ -2179,7 +2179,7 @@ describe "Vms API" do
 
       options(api_vm_snapshots_url(nil, vm))
 
-      expect(response.parsed_body['data']['snapshot_form_schema']).to be_an_instance_of(Hash)
+      expect(response.parsed_body['data']['snapshot_form_schema']).to be_kind_of(Hash)
       expect(response).to have_http_status(:ok)
     end
   end
