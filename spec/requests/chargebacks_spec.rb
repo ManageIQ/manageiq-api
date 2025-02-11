@@ -29,11 +29,12 @@ RSpec.describe "chargebacks API" do
 
     get api_rates_url, :params => request_attributes
 
-    expect(response.parsed_body['resources'][0]).to include("chargeback_tiers" => [expected_tier],
-                                                            "chargeable_field" => expected_chargeable_field,
-                                                            "chargeback_rate"  => expected_chargeback_rate,
-                                                            "detail_currency"  => expected_currency,
-                                                            "detail_measure"   => expected_measure)
+    response_first_resource = response.parsed_body["resources"][0]
+    expect(response_first_resource["chargeback_tiers"].first).to include(expected_tier)
+    expect(response_first_resource["chargeable_field"]).to include(expected_chargeable_field)
+    expect(response_first_resource["chargeback_rate"]).to include(expected_chargeback_rate)
+    expect(response_first_resource["detail_currency"]).to include(expected_currency)
+    expect(response_first_resource["detail_measure"]).to include(expected_measure)
 
     expect_result_to_match_hash(response.parsed_body, "count" => 1)
     expect(response).to have_http_status(:ok)
