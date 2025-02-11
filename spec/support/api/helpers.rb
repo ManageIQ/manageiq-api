@@ -250,7 +250,7 @@ module Spec
 
         def expect_options_results(type, data = nil)
           klass = ::Api::ApiConfig.collections[type].klass.constantize
-          attributes = select_attributes(klass.attribute_names - klass.virtual_attribute_names)
+          attributes = select_attributes(klass.all_attribute_names - klass.virtual_attribute_names)
           reflections = (klass.reflections.keys | klass.virtual_reflections.keys.collect(&:to_s)).sort
           subcollections = Array(::Api::ApiConfig.collections[type].subcollections).collect(&:to_s).sort
           expected = {
