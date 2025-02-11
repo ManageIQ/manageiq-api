@@ -52,7 +52,6 @@ RSpec.describe "Flavors API" do
         expected = {
           "href" => api_provider_flavor_url(nil, ems, flavor),
           "id"   => flavor.id.to_s,
-          "cpus" => 5,
           "cpu_total_cores" => 5
         }
         expect(response.parsed_body).to include(expected)
