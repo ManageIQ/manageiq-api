@@ -6,6 +6,30 @@ describe 'Notifications API' do
   let(:notification_url) { api_notification_url(nil, notification_recipient) }
   let(:foreign_notification_url) { api_notification_url(nil, foreign_notification.notification_recipient_ids.first) }
 
+  def query_match_regexp(*tables)
+    /SELECT.*FROM\s"(?:#{tables.flatten.join("|")})"/m
+  end
+
+  describe "#index" do
+    it "avoids N+1 notification queries" do
+      api_basic_authorize
+
+      query_match = query_match_regexp("notifications")
+      notifications = FactoryBot.create_list(:notification, 5, :initiator => @user)
+
+      expect {
+        get api_notifications_url, :params => {
+          :expand     => "resources",
+          :attributes => "details"
+        }
+      }.to make_database_queries(:count => 1, :matching => query_match)
+
+      expect(response.parsed_body).to include(
+        "count" => 5
+      )
+    end
+  end
+
   describe 'notification create' do
     it 'is not supported' do
       api_basic_authorize
