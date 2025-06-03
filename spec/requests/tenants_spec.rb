@@ -109,21 +109,20 @@ RSpec.describe "tenants API" do
       expect(tenant.description).to eq("New Tenant description")
     end
 
-    context "query root tenant that uses configuration settings" do
+    context "query root tenant" do
       before do
-        root_tenant.use_config_for_attributes = true
-        root_tenant.name = 'Some other name'
-        root_tenant.save
+        root_tenant.update(:name => 'Some other name')
       end
 
-      it "shows properties from configuration settings" do
+      # we used to use settings to override this (specifically the root case).
+      it "shows properties from the tenant" do
         api_basic_authorize action_identifier(:tenants, :read, :resource_actions, :get)
         get api_tenant_url(nil, root_tenant)
 
         expect_result_to_match_hash(response.parsed_body,
                                     "href" => api_tenant_url(nil, root_tenant),
                                     "id"   => root_tenant.id.to_s,
-                                    "name" => ::Settings.server.company,
+                                    "name" => "Some other name"
                                    )
         expect(response).to have_http_status(:ok)
       end
