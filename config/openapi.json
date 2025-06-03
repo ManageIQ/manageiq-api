@@ -8845,9 +8845,6 @@
           "description": {
             "type": "string"
           },
-          "use_config_for_attributes": {
-            "type": "boolean"
-          },
           "default_miq_group_id": {
             "$ref": "#/components/schemas/ID"
           },
