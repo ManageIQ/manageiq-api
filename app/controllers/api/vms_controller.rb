@@ -140,7 +140,7 @@ module Api
       case protocol.downcase
       when "native"
         enqueue_ems_action(type, id, "Requesting Native Console", :method_name => "native_console_connection") do |vm|
-          raise _("Console protocol %{protocol} is not supported") % {:protocol => protocol} unless vm.console_supported?(protocol)
+          raise _("Console protocol %{protocol} is not supported") % {:protocol => protocol} unless vm.supports?(:native_console)
 
           vm.validate_native_console_support
         end
