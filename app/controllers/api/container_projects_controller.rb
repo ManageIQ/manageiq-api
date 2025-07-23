@@ -15,9 +15,10 @@ module Api
       end
     end
 
-    def delete_resource_main_action(type, container_project, _data)
-      ensure_respond_to(type, container_project, :delete, :delete_container_project_queue)
-      {:task_id => container_project.delete_container_project_queue(User.current_userid)}
+    def delete_resource_action(type, id = nil, _data = nil)
+      api_resource(type, id, "Deleting", :supports => :delete) do |container_project|
+        {:task_id => container_project.delete_container_project_queue(User.current_userid)}
+      end
     end
   end
 end
