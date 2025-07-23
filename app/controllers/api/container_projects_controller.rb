@@ -10,7 +10,7 @@ module Api
     end
 
     def edit_resource(type, id, data = {})
-      api_resource(type, id, "Updating") do |container_project|
+      api_resource(type, id, "Updating", :supports => :update) do |container_project|
         {:task_id => container_project.update_container_project_queue(User.current_userid, data)}
       end
     end
