@@ -4,7 +4,7 @@ module Api
     include Subcollections::CustomAttributes
 
     def create_resource(type, _id, data = {})
-      create_ems_resource(type, data) do |ems, klass|
+      create_ems_resource(type, data, :supports => true) do |ems, klass|
         {:task_id => klass.create_container_project_queue(User.current_userid, ems, data)}
       end
     end
