@@ -1173,10 +1173,14 @@
     :description: Container Projects
     :identifier: container_project
     :klass: ContainerProject
-    :verbs: *gp
+    :verbs: *gpppd
     :options:
     - :collection
+    - :subcollection
     - :custom_actions
+    :subcollections:
+    - :tags
+    - :custom_attributes
     :collection_actions:
       :get:
       - :name: read
@@ -1184,10 +1188,19 @@
       :post:
       - :name: query
         :identifier: container_project_show_list
+      - :name: create
+        :identifier: container_project_new
+      - :name: delete
+        :identifier: container_project_delete
     :resource_actions:
       :get:
       - :name: read
         :identifier: container_project_show
+      :post:
+      - :name: edit
+        :identifier: container_project_edit
+      - :name: delete
+        :identifier: container_project_delete
   :container_templates:
     :description: Container Templates
     :identifier: container_template
