@@ -1,5 +1,6 @@
 describe "Container Projects API" do
   include Spec::Support::SupportsHelper
+
   context 'GET /api/container_projects' do
     it 'forbids access to container projects without an appropriate role' do
       api_basic_authorize
@@ -72,171 +73,155 @@ describe "Container Projects API" do
   end
 
   context "create operations" do
+    let(:ems) { FactoryBot.create(:ems_container) }
+
     it "forbids creation of container projects without an appropriate role" do
       api_basic_authorize
+
       post(api_container_projects_url, :params => { :name => 'test-project' })
 
       expect(response).to have_http_status(:forbidden)
     end
 
-    it "can create a container project" do
-      zone = FactoryBot.create(:zone, :name => "api_zone")
-      provider = FactoryBot.create(:ems_kubernetes, :zone => zone)
+    context "with a provider supporting create" do
+      before { stub_supports(ems.class::ContainerProject, :create) }
 
-      api_basic_authorize collection_action_identifier(:container_projects, :create, :post)
+      it "can create a container project" do
+        api_basic_authorize collection_action_identifier(:container_projects, :create, :post)
 
-      post(api_container_projects_url, :params => { :ems_id => provider.id, :name => 'test-project' })
+        post(api_container_projects_url, :params => { :ems_id => ems.id, :name => 'test-project' })
 
-      expected = {
-        'results' => a_collection_containing_exactly(
-          a_hash_including(
-            'success' => true,
-            'message' => a_string_including('Creating Container Project')
+        expected = {
+          'results' => a_collection_containing_exactly(
+            a_hash_including(
+              'success' => true,
+              'message' => a_string_including('Creating Container Project')
+            )
           )
-        )
-      }
+        }
 
-      expect(response.parsed_body).to include(expected)
-      expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "with a provider not supporting create" do
+      before { stub_supports_not(ems.class::ContainerProject, :create) }
+
+      it "rejects creation when provider does not support create" do
+        api_basic_authorize collection_action_identifier(:container_projects, :create, :post)
+
+        post(api_container_projects_url, :params => { :ems_id => ems.id, :name => 'test-project' })
+
+        expect(response).to have_http_status(:bad_request)
+        expect(response.parsed_body['error']['message']).to include('Feature not available/supported')
+      end
     end
   end
 
   context "delete operations" do
+    let(:ems) { FactoryBot.create(:ems_container) }
+    let(:container_project1) { FactoryBot.create(:container_project, :name => 'TestProject1', :ext_management_system => ems) }
+    let(:container_project2) { FactoryBot.create(:container_project, :name => 'TestProject2', :ext_management_system => ems) }
+
     it "forbids delete request without appropriate role" do
       api_basic_authorize
+
       post(api_container_projects_url, :params => { :action => 'delete' })
 
       expect(response).to have_http_status(:forbidden)
     end
 
-    it "deletes a single Container Project" do
-      zone = FactoryBot.create(:zone, :name => "api_zone")
-      k8s = FactoryBot.create(:ems_kubernetes, :zone => zone)
-      container_project = FactoryBot.create(:container_project, :name => 'TestProject', :ext_management_system => k8s)
+    context "with a provider supporting delete" do
+      before { stub_supports(ContainerProject, :delete) }
 
-      api_basic_authorize('container_project_delete')
-      stub_supports(ContainerProject, :delete)
+      it "deletes a single Container Project" do
+        api_basic_authorize('container_project_delete')
 
-      post(api_container_project_url(nil, container_project), :params => gen_request(:delete))
+        post(api_container_project_url(nil, container_project1), :params => gen_request(:delete))
 
-      expect_single_action_result(:success => true, :message => /Deleting Container Project id: #{container_project.id} name: '#{container_project.name}'/)
+        expect_single_action_result(:success => true, :message => /Deleting Container Project id: #{container_project1.id} name: '#{container_project1.name}'/)
+      end
+
+      it "deletes multiple Container Projects" do
+        api_basic_authorize('container_project_delete')
+
+        post(api_container_projects_url, :params => gen_request(:delete, [{"href" => api_container_project_url(nil, container_project1)}, {"href" => api_container_project_url(nil, container_project2)}]))
+
+        results = response.parsed_body["results"]
+        expect(results[0]["message"]).to match(/Deleting Container Project id: #{container_project1.id} name: '#{container_project1.name}'/)
+        expect(results[0]["success"]).to match(true)
+        expect(results[1]["message"]).to match(/Deleting Container Project id: #{container_project2.id} name: '#{container_project2.name}'/)
+        expect(results[1]["success"]).to match(true)
+        expect(response).to have_http_status(:ok)
+      end
     end
 
-    it "deletes multiple Container Projects" do
-      zone = FactoryBot.create(:zone, :name => "api_zone")
-      k8s = FactoryBot.create(:ems_kubernetes, :zone => zone)
-      container_project1 = FactoryBot.create(:container_project, :name => 'TestProject1', :ext_management_system => k8s)
-      container_project2 = FactoryBot.create(:container_project, :name => 'TestProject2', :ext_management_system => k8s)
+    context "without appropriate role using HTTP DELETE" do
+      it "rejects delete request as a resource action" do
+        api_basic_authorize
 
-      api_basic_authorize('container_project_delete')
-      stub_supports(ContainerProject, :delete)
+        delete api_container_project_url(nil, container_project1)
 
-      post(api_container_projects_url, :params => gen_request(:delete, [{"href" => api_container_project_url(nil, container_project1)}, {"href" => api_container_project_url(nil, container_project2)}]))
-
-      results = response.parsed_body["results"]
-      expect(results[0]["message"]).to match(/Deleting Container Project id: #{container_project1.id} name: '#{container_project1.name}'/)
-      expect(results[0]["success"]).to match(true)
-      expect(results[1]["message"]).to match(/Deleting Container Project id: #{container_project2.id} name: '#{container_project2.name}'/)
-      expect(results[1]["success"]).to match(true)
-      expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:forbidden)
+      end
     end
 
-    it "rejects delete request with DELETE as a resource action without appropriate role" do
-      container_project = FactoryBot.create(:container_project)
+    context "with valid role using HTTP DELETE" do
+      it 'raises error if the container project does not exist' do
+        api_basic_authorize action_identifier(:container_projects, :delete, :resource_actions, :delete)
+  
+        delete(api_container_project_url(nil, 999_999))
 
-      api_basic_authorize
-
-      delete api_container_project_url(nil, container_project)
-
-      expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(:not_found)
+      end
     end
 
-    it 'DELETE will raise an error if the container project does not exist' do
-      api_basic_authorize action_identifier(:container_projects, :delete, :resource_actions, :delete)
-      delete(api_container_project_url(nil, 999_999))
+    context "with a provider not supporting delete" do
+      before { stub_supports_not(ContainerProject, :delete) }
 
-      expect(response).to have_http_status(:not_found)
-    end
-  end
+      it "rejects deletion when container project does not support delete" do
+        api_basic_authorize('container_project_delete')
 
-  context "create operations - supports/unsupported tests" do
-    it "rejects creation when provider does not support create" do
-      zone = FactoryBot.create(:zone, :name => "api_zone")
-      provider = FactoryBot.create(:ems_kubernetes, :zone => zone)
+        post(api_container_project_url(nil, container_project1), :params => gen_request(:delete))
 
-      # Stub that create is NOT supported
-      stub_supports_not(provider.class::ContainerProject, :create)
+        expect(response).to have_http_status(:bad_request)
+        expect(response.parsed_body['error']['message']).to include('Feature not available/supported')
+      end
 
-      api_basic_authorize collection_action_identifier(:container_projects, :create, :post)
+      it "rejects bulk deletion when container projects do not support delete" do
+        api_basic_authorize('container_project_delete')
 
-      post(api_container_projects_url, :params => { :ems_id => provider.id, :name => 'test-project' })
+        post(api_container_projects_url, :params => gen_request(:delete, [{"href" => api_container_project_url(nil, container_project1)}, {"href" => api_container_project_url(nil, container_project2)}]))
 
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body['error']['message']).to include('Feature not available/supported')
-    end
-  end
-
-  context "delete operations - supports/unsupported tests" do
-    it "rejects deletion when container project does not support delete" do
-      zone = FactoryBot.create(:zone, :name => "api_zone")
-      k8s = FactoryBot.create(:ems_kubernetes, :zone => zone)
-      container_project = FactoryBot.create(:container_project, :name => 'TestProject', :ext_management_system => k8s)
-
-      # Stub that delete is NOT supported
-      stub_supports_not(ContainerProject, :delete)
-
-      api_basic_authorize('container_project_delete')
-
-      post(api_container_project_url(nil, container_project), :params => gen_request(:delete))
-
-      expect(response).to have_http_status(:bad_request)
-      expect(response.parsed_body['error']['message']).to include('Feature not available/supported')
-    end
-
-    it "rejects bulk deletion when container projects do not support delete" do
-      zone = FactoryBot.create(:zone, :name => "api_zone")
-      k8s = FactoryBot.create(:ems_kubernetes, :zone => zone)
-      container_project1 = FactoryBot.create(:container_project, :name => 'TestProject1', :ext_management_system => k8s)
-      container_project2 = FactoryBot.create(:container_project, :name => 'TestProject2', :ext_management_system => k8s)
-
-      # Stub that delete is NOT supported
-      stub_supports_not(ContainerProject, :delete)
-
-      api_basic_authorize('container_project_delete')
-
-      post(api_container_projects_url, :params => gen_request(:delete, [{"href" => api_container_project_url(nil, container_project1)}, {"href" => api_container_project_url(nil, container_project2)}]))
-
-      results = response.parsed_body["results"]
-      expect(results[0]["success"]).to be false
-      expect(results[0]["message"]).to include('Feature not available/supported')
-      expect(results[1]["success"]).to be false
-      expect(results[1]["message"]).to include('Feature not available/supported')
-      expect(response).to have_http_status(:ok)
+        results = response.parsed_body["results"]
+        expect(results[0]["success"]).to be false
+        expect(results[0]["message"]).to include('Feature not available/supported')
+        expect(results[1]["success"]).to be false
+        expect(results[1]["message"]).to include('Feature not available/supported')
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 
   context "additional permission edge cases" do
-    it "forbids creation with wrong permission type" do
-      zone = FactoryBot.create(:zone, :name => "api_zone")
-      provider = FactoryBot.create(:ems_kubernetes, :zone => zone)
+    let(:ems) { FactoryBot.create(:ems_container) }
+    let(:container_project1) { FactoryBot.create(:container_project, :name => 'TestProject1', :ext_management_system => ems) }
 
+    it "forbids creation with wrong permission type" do
       # Authorize with read permission instead of create
       api_basic_authorize(collection_action_identifier(:container_projects, :read, :get))
 
-      post(api_container_projects_url, :params => { :ems_id => provider.id, :name => 'test-project' })
+      post(api_container_projects_url, :params => { :ems_id => ems.id, :name => 'test-project' })
 
       expect(response).to have_http_status(:forbidden)
     end
 
     it "forbids deletion with wrong permission type" do
-      zone = FactoryBot.create(:zone, :name => "api_zone")
-      k8s = FactoryBot.create(:ems_kubernetes, :zone => zone)
-      container_project = FactoryBot.create(:container_project, :name => 'TestProject', :ext_management_system => k8s)
-
       # Authorize with read permission instead of delete
       api_basic_authorize(action_identifier(:container_projects, :read, :resource_actions, :get))
 
-      post(api_container_project_url(nil, container_project), :params => gen_request(:delete))
+      post(api_container_project_url(nil, container_project1), :params => gen_request(:delete))
 
       expect(response).to have_http_status(:forbidden)
     end
