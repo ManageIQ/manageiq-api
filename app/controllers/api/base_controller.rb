@@ -1,5 +1,11 @@
 module Api
   class BaseController < ActionController::API
+    after_action :skip_session
+
+    def skip_session
+      request.session_options[:skip] = true
+    end
+
     TAG_NAMESPACE = "/managed".freeze
 
     #
