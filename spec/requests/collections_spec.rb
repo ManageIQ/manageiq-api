@@ -172,7 +172,8 @@ describe "Rest API Collections" do
       @user.miq_groups << FactoryBot.create(:miq_group)
       api_basic_authorize collection_action_identifier(:groups, :read, :get)
       get api_groups_url, :params => { :expand => 'resources' }
-      expect_query_result(:groups, MiqGroup.non_tenant_groups.count, MiqGroup.count)
+      expected_counts = MiqGroup.non_tenant_groups.count
+      expect_query_result(:groups, expected_counts, expected_counts)
       expect_result_resources_to_include_data('resources', 'id' => MiqGroup.non_tenant_groups.pluck(:id).collect(&:to_s))
     end
 

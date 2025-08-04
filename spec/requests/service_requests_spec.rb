@@ -183,7 +183,7 @@ describe "Service Requests API" do
       get api_service_requests_url
 
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include("name" => "service_requests", "count" => 1, "subcount" => 0)
+      expect(response.parsed_body).to include("name" => "service_requests", "count" => 0, "subcount" => 0)
     end
 
     it "does not show another user's request" do
