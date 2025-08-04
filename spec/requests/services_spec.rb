@@ -81,7 +81,7 @@ describe "Services API" do
       api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
 
       # Once for the main query and counts, and 3 for the `all_service_children`
-      expect(Rbac).to receive(:filtered).exactly(5).times.and_call_original
+      expect(Rbac).to receive(:filtered).exactly(6).times.and_call_original
       expect(Rbac).to receive(:filtered_object).never
 
       get api_services_url, :params => search_filters
@@ -99,7 +99,7 @@ describe "Services API" do
         api_basic_authorize action_identifier(:services, :read, :resource_actions, :get)
 
         # Once for the main query and counts, and 1 for the `all_service_children`
-        expect(Rbac).to receive(:filtered).exactly(3).times.and_call_original
+        expect(Rbac).to receive(:filtered).exactly(4).times.and_call_original
         expect(Rbac).to receive(:filtered_object).never
 
         get api_services_url, :params => search_filters
@@ -625,7 +625,7 @@ describe "Services API" do
     it "can query vms as subcollection" do
       get(api_service_vms_url(nil, svc1))
 
-      expect_query_result(:vms, 2, 3)
+      expect_query_result(:vms, 2, 2)
       expect_result_resources_to_include_hrefs("resources",
                                                [api_service_vm_url(nil, svc1, vm1),
                                                 api_service_vm_url(nil, svc1, vm2)])

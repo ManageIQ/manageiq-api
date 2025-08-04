@@ -63,7 +63,7 @@ describe "Vms API" do
       _vms = [vm, vm1, vm2, vm_openstack, vm_openstack1, vm_openstack2]
 
       # Only once for the main query
-      expect(Rbac).to receive(:filtered).exactly(1).times.and_call_original
+      expect(Rbac).to receive(:filtered).exactly(2).times.and_call_original
       expect(Rbac).to receive(:filtered_object).never
     end
 

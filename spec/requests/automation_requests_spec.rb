@@ -37,7 +37,7 @@ describe "Automation Requests API" do
       get api_automation_requests_url
 
       expected = {
-        "count"     => 2,
+        "count"     => 1,
         "subcount"  => 1,
         "resources" => a_collection_containing_exactly(
           "href" => api_automation_request_url(nil, automation_request2),

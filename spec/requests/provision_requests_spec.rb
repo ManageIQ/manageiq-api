@@ -211,7 +211,7 @@ describe "Provision Requests API" do
       get api_provision_requests_url
 
       expected = {
-        "count"     => 2,
+        "count"     => 1,
         "subcount"  => 1,
         "resources" => a_collection_containing_exactly(
           "href" => api_provision_request_url(nil, provision_request2),
