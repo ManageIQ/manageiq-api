@@ -48,13 +48,20 @@ module Api
       klass = collection_class(@req.subject)
       res, subquery_count = collection_search(@req.subcollection?, @req.subject, klass)
       res_count = (res.kind_of?(ActiveRecord::Relation) ? res.except(:select) : res).count
+
+      search_conditions = respond_to?("#{@req.subject}_search_conditions") ? public_send("#{@req.subject}_search_conditions") : {}
+      filtered_count = Rbac.filtered(klass.where(search_conditions), :user => User.current_user).count
+
+      # Allow subclasses to modify the scope for includes before rendering
+      res = public_send("#{@req.subject}_index_includes", res) if respond_to?("#{@req.subject}_index_includes")
+
       opts = {
         :name                  => @req.subject,
         :is_subcollection      => @req.subcollection?,
         :expand_actions        => true,
         :expand_custom_actions => false,
         :expand_resources      => @req.expand?(:resources),
-        :counts                => Api::QueryCounts.new(klass.count, res_count, subquery_count)
+        :counts                => Api::QueryCounts.new(filtered_count, res_count, subquery_count)
       }
       render_collection(@req.subject, res, opts)
     end

@@ -6,8 +6,6 @@
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build history for spassky branch](https://buildstats.info/github/chart/ManageIQ/manageiq-api?branch=spassky&buildCount=50&includeBuildsFromPullRequest=false&showstats=false)](https://github.com/ManageIQ/manageiq-api/actions?query=branch%3Amaster)
-
 REST API plugin for ManageIQ.
 
 ## Development

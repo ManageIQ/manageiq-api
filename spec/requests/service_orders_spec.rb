@@ -17,7 +17,7 @@ RSpec.describe "service orders API" do
     get api_service_orders_url
 
     expected = {
-      "count"     => 2,
+      "count"     => 1,
       "subcount"  => 1,
       "resources" => [{"href" => api_service_order_url(nil, shopping_cart_for_user)}]
     }

@@ -1,28 +1,10 @@
 module Api
   # NOTE: This uses the NotificationRecipients model to then map to notifications
   class NotificationsController < BaseController
-    # based upon BaseController#index
-    def index
-      klass = collection_class(@req.subject)
-      res, subquery_count = collection_search(@req.subcollection?, @req.subject, klass)
+    def notifications_index_includes(scope)
+      return scope unless @req.expand?(:resources)
 
-      res_count = (res.kind_of?(ActiveRecord::Relation) ? res.except(:select) : res).count
-      expand_resources = @req.expand?(:resources)
-
-      opts = {
-        :name                  => @req.subject,
-        :is_subcollection      => @req.subcollection?,
-        :expand_actions        => true,
-        :expand_custom_actions => false,
-        :expand_resources      => expand_resources,
-        :counts                => Api::QueryCounts.new(klass.count, res_count, subquery_count)
-      }
-
-      # added line
-      res = res.includes(:notification => {:notification_type => {}, :subject => [:miq_requests, :services]}) if expand_resources
-      # end added line
-
-      render_collection(@req.subject, res, opts)
+      scope.includes(:notification => {:notification_type => {}, :subject => [:miq_requests, :services]})
     end
 
     def notifications_search_conditions

@@ -28,6 +28,50 @@ describe 'Notifications API' do
         "count" => 5
       )
     end
+
+    it "only includes notifications for the current user" do
+      api_basic_authorize
+
+      notifications = FactoryBot.create_list(:notification, 2, :initiator => @user)
+      notification_recipients = notifications.map { |n| n.notification_recipients.first }
+      notification_hrefs = notification_recipients.map { |nr| api_notification_url(nil, nr) }
+
+      other_user = FactoryBot.create(:user)
+      other_user_notifications = FactoryBot.create_list(:notification, 1, :initiator => other_user)
+      other_user_recipients = other_user_notifications.map { |n| n.notification_recipients.first }
+      other_user_hrefs = other_user_recipients.map { |nr| api_notification_url(nil, nr) }
+
+      get api_notifications_url
+
+      # Verify the count only includes the current user's notifications
+      expect(response.parsed_body).to include("count" => 2)
+
+      # Verify the hrefs in the response match the current user's notifications
+      response_hrefs = response.parsed_body["resources"].map { |r| r["href"] }
+      expect(response_hrefs).to match_array(notification_hrefs)
+      expect(response_hrefs & other_user_hrefs).to be_empty
+    end
+
+    it "only includes notifications for the current user with resources expanded" do
+      api_basic_authorize
+
+      notifications = FactoryBot.create_list(:notification, 2, :initiator => @user)
+      notification_ids = notifications.map { |n| n.notification_recipients.first.id.to_s }
+
+      other_user = FactoryBot.create(:user)
+      other_user_notifications = FactoryBot.create_list(:notification, 1, :initiator => other_user)
+      other_user_recipient_ids = other_user_notifications.map { |n| n.notification_recipients.first.id.to_s }
+
+      get api_notifications_url, :params => {:expand => "resources"}
+
+      # Verify the count only includes the current user's notifications
+      expect(response.parsed_body).to include("count" => 2)
+
+      # Verify the ids in the response match the current user's notifications
+      response_ids = response.parsed_body["resources"].map { |r| r["id"] }
+      expect(response_ids).to match_array(notification_ids)
+      expect(response_ids & other_user_recipient_ids).to be_empty
+    end
   end
 
   describe 'notification create' do
