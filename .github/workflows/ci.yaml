@@ -50,6 +50,6 @@ jobs:
     - name: Run core security tests
       run: bundle exec rake spec:security
     - name: Report code coverage
-      if: ${{ github.ref == 'refs/heads/master' && matrix.ruby-version == '3.3' }}
+      if: "${{ github.ref == 'refs/heads/master' && matrix.ruby-version == '3.3' }}"
       continue-on-error: true
       uses: paambaati/codeclimate-action@v9
