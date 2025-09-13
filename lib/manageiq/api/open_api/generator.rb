@@ -560,7 +560,7 @@ module ManageIQ
               }
             }
           }
-  
+
           models = ::Api::ApiConfig.collections.each_with_object({}) do |(_collection_name, collection), s|
             next unless collection.klass
             
@@ -574,7 +574,7 @@ module ManageIQ
               "additionalProperties" => false
             }
           end
-  
+
           schemas.merge(models.sort.to_h)
         end
 
@@ -586,7 +586,7 @@ module ManageIQ
 
         def build_schema_properties_value(model, key, value)
           properties_value = {}
-  
+
           case value.sql_type_metadata.type
           when :datetime
             properties_value["type"]   = "string"
