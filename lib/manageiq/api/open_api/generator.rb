@@ -12,6 +12,7 @@ module ManageIQ
 
         def initialize
           manageiq_api_engine = Vmdb::Plugins.all.detect { |e| e.name == "ManageIQ::Api::Engine" }
+
           @manageiq_api_path = manageiq_api_engine.root
           @openapi_path      = manageiq_api_path.join("config", "openapi.json")
           @openapi_spec      = skeletal_openapi_spec
@@ -559,7 +560,7 @@ module ManageIQ
               }
             }
           }
-          
+  
           models = ::Api::ApiConfig.collections.each_with_object({}) do |(_collection_name, collection), s|
             next unless collection.klass
             
@@ -573,7 +574,7 @@ module ManageIQ
               "additionalProperties" => false
             }
           end
-          
+  
           schemas.merge(models.sort.to_h)
         end
 
@@ -585,7 +586,7 @@ module ManageIQ
 
         def build_schema_properties_value(model, key, value)
           properties_value = {}
-          
+  
           case value.sql_type_metadata.type
           when :datetime
             properties_value["type"]   = "string"
@@ -633,10 +634,10 @@ module ManageIQ
               properties_value["description"] = value.comment
             end
           end
-          
+
           properties_value
         end
- 
+
         def skeletal_openapi_spec
           {
             "openapi"    => OPENAPI_VERSION,
