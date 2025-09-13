@@ -3,27 +3,27 @@ module ManageIQ
     module OpenApi
       class Generator
         require 'json'
-        
+
         OPENAPI_VERSION = "3.0.0".freeze
         PARAMETERS_PATH = "/components/parameters".freeze
         SCHEMAS_PATH    = "/components/schemas".freeze
-        
+
         attr_reader :manageiq_api_path, :openapi_path, :openapi_spec
-        
+
         def initialize
           manageiq_api_engine = Vmdb::Plugins.all.detect { |e| e.name == "ManageIQ::Api::Engine" }
           @manageiq_api_path = manageiq_api_engine.root
           @openapi_path      = manageiq_api_path.join("config", "openapi.json")
           @openapi_spec      = skeletal_openapi_spec
         end
-        
+
         def generate!
           openapi_spec["components"]["schemas"] = build_schemas
           openapi_spec["components"]["parameters"] = build_common_parameters
           openapi_spec["paths"] = build_paths
           openapi_path.write("#{JSON.pretty_generate(openapi_spec)}\n")
         end
-        
+
         # Helper method to safely get model class from klass (string or class)
         def get_model_class(klass)
           case klass
@@ -40,22 +40,22 @@ module ManageIQ
             nil
           end
         end
-        
+
         # Helper method to get schema name from model class
         def get_schema_name(model_class)
           model_class.name.gsub("::", "_")
         end
-        
+
         private
-        
+
         def api_version
           ManageIQ::Api::VERSION
         end
-        
+
         def server_base_path
           "/api(/:version)"
         end
-        
+     
         # Build comprehensive paths with full CRUD operations
         def build_paths
           paths = {}
@@ -88,7 +88,7 @@ module ManageIQ
           
           paths
         end
-        
+
         # Build collection-level operations (GET /api/vms, POST /api/vms)
         def build_collection_operations(collection_name, collection, model_class, schema_name)
           operations = {}
@@ -167,7 +167,7 @@ module ManageIQ
           
           operations
         end
-        
+
         # Build resource-level operations (GET /api/vms/{id}, PATCH /api/vms/{id}, DELETE /api/vms/{id})
         def build_resource_operations(collection_name, collection, model_class, schema_name)
           operations = {}
@@ -255,7 +255,7 @@ module ManageIQ
           
           operations
         end
-        
+
         # Build subcollection paths
         def build_subcollection_paths(paths, collection_name, subcollections)
           subcollections.each do |subcoll_name, subcollection|
@@ -299,7 +299,7 @@ module ManageIQ
             }
           end
         end
-        
+
         # Build resource action operation (POST /api/vms/{id} with action)
         def build_resource_action_operation(collection_name, resource_actions)
           action_examples = resource_actions.first(3).map { |action| {"action" => action.to_s} }
@@ -338,7 +338,7 @@ module ManageIQ
             "tags" => [collection_name.to_s.titleize]
           }
         end
-        
+
         # Build authentication paths
         def build_auth_paths
           {
@@ -401,18 +401,18 @@ module ManageIQ
             }
           }
         end
-        
+
         # Helper methods for checking collection/resource capabilities
         def supports_collection_action?(collection, action)
           collection.respond_to?(:collection_actions) && 
           collection.collection_actions&.key?(action)
         end
-        
+
         def supports_resource_action?(collection, action)
           collection.respond_to?(:resource_actions) && 
           collection.resource_actions&.key?(action)
         end
-        
+
         def get_resource_actions(collection)
           if collection.respond_to?(:resource_actions) && collection.resource_actions
             collection.resource_actions.keys
@@ -420,7 +420,7 @@ module ManageIQ
             []
           end
         end
-        
+
         # Build schema for create operations (excludes read-only fields)
         def build_create_schema(model_class, schema_name)
           {
@@ -429,7 +429,7 @@ module ManageIQ
             "additionalProperties" => false
           }
         end
-        
+
         # Build schema for update operations (all fields optional, excludes read-only)
         def build_update_schema(model_class, schema_name)
           properties = build_writable_properties(model_class)
@@ -442,7 +442,7 @@ module ManageIQ
             "additionalProperties" => false
           }
         end
-        
+
         # Get writable properties (exclude read-only fields like id, timestamps)
         def build_writable_properties(model_class)
           read_only_fields = %w[id created_at updated_at created_on updated_on]
@@ -454,7 +454,7 @@ module ManageIQ
             properties[key] = build_schema_properties_value(model_class, key, value)
           end
         end
-        
+
         # Build comprehensive common parameters
         def build_common_parameters
           {
@@ -534,7 +534,7 @@ module ManageIQ
             }
           }
         end
-        
+
         # Build schemas with comprehensive error handling
         def build_schemas
           schemas = {
@@ -576,13 +576,13 @@ module ManageIQ
           
           schemas.merge(models.sort.to_h)
         end
-        
+
         def build_schema_properties(model)
           model.columns_hash.each_with_object({}) do |(key, value), properties|
             properties[key] = build_schema_properties_value(model, key, value)
           end
         end
-        
+
         def build_schema_properties_value(model, key, value)
           properties_value = {}
           
@@ -636,7 +636,7 @@ module ManageIQ
           
           properties_value
         end
-        
+ 
         def skeletal_openapi_spec
           {
             "openapi"    => OPENAPI_VERSION,
