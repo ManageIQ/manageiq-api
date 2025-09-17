@@ -14,6 +14,7 @@ module Api
           parent,
           message,
           :method_name => "create_snapshot",
+          :role        => "ems_operations",
           :args        => [data["name"], data["description"], data.fetch("memory", false)]
         )
 
@@ -28,7 +29,7 @@ module Api
           raise parent.unsupported_reason(:remove_snapshot) unless parent.supports?(:remove_snapshot)
 
           message = "Deleting snapshot #{snapshot.name} for #{snapshot_ident(parent)}"
-          task_id = queue_object_action(parent, message, :method_name => "remove_snapshot", :args => [id])
+          task_id = queue_object_action(parent, message, :method_name => "remove_snapshot", :role => "ems_operations", :args => [id])
           action_result(true, message, :task_id => task_id)
         rescue => e
           action_result(false, e.to_s)
@@ -41,7 +42,7 @@ module Api
         snapshot = resource_search(id, type)
 
         message = "Reverting to snapshot #{snapshot.name} for #{snapshot_ident(parent)}"
-        task_id = queue_object_action(parent, message, :method_name => "revert_to_snapshot", :args => [id])
+        task_id = queue_object_action(parent, message, :method_name => "revert_to_snapshot", :role => "ems_operations", :args => [id])
         action_result(true, message, :task_id => task_id)
       rescue => e
         action_result(false, e.to_s)
