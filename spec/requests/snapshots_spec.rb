@@ -83,6 +83,12 @@ RSpec.describe "Snapshots API" do
         }
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)
+
+        queue_item = MiqQueue.find_by(:class_name => vm.class.name, :method_name => "create_snapshot")
+        expect(queue_item).to have_attributes(
+          :zone       => ems.zone_name,
+          :queue_name => ems.queue_name_for_ems_operations
+        )
       end
 
       it "renders a failed action response if snapshotting is not supported" do
@@ -168,8 +174,15 @@ RSpec.describe "Snapshots API" do
           "task_href" => a_string_matching(api_tasks_url),
           "task_id"   => anything
         }
+
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)
+
+        queue_item = MiqQueue.find_by(:class_name => vm.class.name, :method_name => "revert_to_snapshot")
+        expect(queue_item).to have_attributes(
+          :zone       => ems.zone_name,
+          :queue_name => ems.queue_name_for_ems_operations
+        )
       end
 
       it "renders a failed action response if reverting is not supported" do
@@ -216,6 +229,12 @@ RSpec.describe "Snapshots API" do
         }
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)
+
+        queue_item = MiqQueue.find_by(:class_name => vm.class.name, :method_name => "remove_snapshot")
+        expect(queue_item).to have_attributes(
+          :zone       => ems.zone_name,
+          :queue_name => ems.queue_name_for_ems_operations
+        )
       end
 
       it "renders a failed action response if deleting is not supported" do
