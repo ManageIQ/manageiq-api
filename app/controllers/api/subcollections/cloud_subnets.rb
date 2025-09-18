@@ -11,7 +11,7 @@ module Api
 
         begin
           message = "Creating subnet #{data[:name]}"
-          task_id = queue_object_action(parent, message, :method_name => "create_cloud_subnet", :args => [data])
+          task_id = parent.create_cloud_subnet_queue(User.current_user.userid, data)
           action_result(true, message, :task_id => task_id)
         rescue StandardError => e
           action_result(false, e.to_s)

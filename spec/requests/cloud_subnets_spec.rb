@@ -69,6 +69,12 @@ RSpec.describe 'CloudSubnets API' do
       }
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
+
+      queue_item = MiqQueue.find_by(:class_name => ems.class.name, :method_name => "create_cloud_subnet")
+      expect(queue_item).to have_attributes(
+        :zone       => ems.zone_name,
+        :queue_name => ems.queue_name_for_ems_operations
+      )
     end
 
     it "will not create a subnet unless authorized" do

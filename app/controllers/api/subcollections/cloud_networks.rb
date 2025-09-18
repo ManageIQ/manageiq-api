@@ -10,7 +10,7 @@ module Api
         raise 'Must specify a name for the cloud network' unless data[:name]
 
         message = "Creating cloud network"
-        task_id = queue_object_action(provider, message, :method_name => "create_cloud_network", :args => [data])
+        task_id = provider.create_cloud_network_queue(User.current_user.userid, data)
         action_result(true, message, :task_id => task_id)
       rescue => e
         action_result(false, e.to_s)
