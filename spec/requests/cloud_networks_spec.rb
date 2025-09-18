@@ -103,6 +103,35 @@ RSpec.describe 'Cloud Networks API' do
       expect(response.parsed_body).to include(expected)
       expect(response).to have_http_status(:ok)
     end
+
+    describe "POST /api/providers/:ems_id/cloud_networks" do
+      let(:ems_network) { FactoryBot.create(:ems_network) }
+
+      it "queues creation of the cloud network" do
+        api_basic_authorize subcollection_action_identifier(:providers, :cloud_networks, :create)
+        post api_provider_cloud_networks_url(nil, ems_network), :params => {:name => "new cloud network"}
+
+        expected = {
+          "results" => [
+            a_hash_including(
+              "success"   => true,
+              "message"   => "Creating cloud network",
+              "task_id"   => anything,
+              "task_href" => a_string_matching(api_tasks_url)
+            )
+          ]
+        }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+
+        queue_item = MiqQueue.find_by(:class_name => ems_network.class.name, :method_name => "create_cloud_network")
+        expect(queue_item).to have_attributes(
+          :zone       => ems_network.zone_name,
+          :queue_name => ems_network.queue_name_for_ems_operations
+        )
+      end
+    end
   end
 
   describe 'OPTIONS /api/cloud_networks' do
