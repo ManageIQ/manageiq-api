@@ -25,23 +25,6 @@ module ManageIQ
           openapi_path.write("#{JSON.pretty_generate(openapi_spec)}\n")
         end
 
-        # Helper method to safely get model class from klass (string or class)
-        def get_model_class(klass)
-          case klass
-          when String
-            begin
-              klass.constantize
-            rescue NameError => e
-              puts "Warning: Could not constantize #{klass}: #{e.message}"
-              nil
-            end
-          when Class
-            klass
-          else
-            nil
-          end
-        end
-
         # Helper method to get schema name from model class
         def get_schema_name(model_class)
           model_class.name.gsub("::", "_")
@@ -65,8 +48,8 @@ module ManageIQ
             next unless collection.klass
             
             # Skip if we can't get a valid model class
-            model_class = get_model_class(collection.klass)
-            next unless model_class
+            model_class = collection.klass&.safe_constantize
+            next if model_class.nil?
             
             schema_name = get_schema_name(model_class)
             
@@ -116,8 +99,8 @@ module ManageIQ
                       "type" => "object",
                       "properties" => {
                         "name" => {"type" => "string", "example" => collection_name},
-                        "count" => {"type" => "integer", "description" => "Total number of resources"},
-                        "subcount" => {"type" => "integer", "description" => "Number of resources returned"},
+                        "count" => {"type" => "integer", "description" => "Total number of resources without filters applied"},
+                        "subcount" => {"type" => "integer", "description" => "Number of resources returned after filters applied"},
                         "pages" => {"type" => "integer", "description" => "Total number of pages"},
                         "resources" => {
                           "type" => "array",
@@ -191,9 +174,9 @@ module ManageIQ
                   }
                 }
               },
-              "404" => {"description" => "Resource not found"},
               "401" => {"description" => "Unauthorized"},
-              "403" => {"description" => "Forbidden"}
+              "403" => {"description" => "Forbidden"},
+              "404" => {"description" => "Resource not found"}
             },
             "tags" => [collection_name.to_s.titleize]
           }
@@ -405,21 +388,15 @@ module ManageIQ
 
         # Helper methods for checking collection/resource capabilities
         def supports_collection_action?(collection, action)
-          collection.respond_to?(:collection_actions) && 
-          collection.collection_actions&.key?(action)
+          collection.try(:collection_actions)&.key?(action)
         end
 
         def supports_resource_action?(collection, action)
-          collection.respond_to?(:resource_actions) && 
-          collection.resource_actions&.key?(action)
+          collection.try(:resource_actions)&.key?(action)
         end
 
         def get_resource_actions(collection)
-          if collection.respond_to?(:resource_actions) && collection.resource_actions
-            collection.resource_actions.keys
-          else
-            []
-          end
+          collection.try(:resource_actions)&.keys || []
         end
 
         # Build schema for create operations (excludes read-only fields)
@@ -435,7 +412,7 @@ module ManageIQ
         def build_update_schema(model_class, schema_name)
           properties = build_writable_properties(model_class)
           # Make all properties optional for PATCH
-          properties.each { |_, prop| prop.delete("required") if prop.is_a?(Hash) }
+          properties.each_value { |prop| prop.delete("required") if prop.is_a?(Hash) }
           
           {
             "type" => "object",
@@ -467,8 +444,8 @@ module ManageIQ
               "schema" => {"$ref" => "##{SCHEMAS_PATH}/ID"},
               "example" => "123"
             },
-            "subcoll_id" => {
-              "name" => "subcoll_id",
+            "subcollection_id" => {
+              "name" => "subcollection_id",
               "in" => "path",
               "description" => "ID of the subcollection resource",
               "required" => true,
