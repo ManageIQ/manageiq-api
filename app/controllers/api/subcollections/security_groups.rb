@@ -10,7 +10,7 @@ module Api
         raise "Cannot add #{security_group} to #{parent.name}" unless parent.supports?(:add_security_group)
 
         message = "Adding security group #{security_group} to #{parent.name}"
-        task_id = queue_object_action(parent, message, :method_name => "add_security_group", :args => [security_group])
+        task_id = parent.add_security_group_queue(User.current_user.userid, security_group)
         action_result(true, message, :task_id => task_id)
       rescue => e
         action_result(false, e.to_s)
@@ -21,7 +21,7 @@ module Api
         raise "Cannot remove #{security_group} from #{parent.name}" unless parent.supports?(:remove_security_group)
 
         message = "Removing security group #{security_group} from #{parent.name}"
-        task_id = queue_object_action(parent, message, :method_name => "remove_security_group", :args => [security_group])
+        task_id = parent.remove_security_group_queue(User.current_user.userid, security_group)
         action_result(true, message, :task_id => task_id)
       rescue => e
         action_result(false, e.to_s)
@@ -32,7 +32,7 @@ module Api
         raise 'Must specify a name for the security group' unless data[:name]
 
         message = "Creating security group"
-        task_id = queue_object_action(provider, message, :method_name => "create_security_group", :args => [data])
+        task_id = provider.create_security_group_queue(User.current_user.userid, data)
         action_result(true, message, :task_id => task_id)
       rescue => e
         action_result(false, e.to_s)

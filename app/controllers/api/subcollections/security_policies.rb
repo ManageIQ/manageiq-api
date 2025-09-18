@@ -10,7 +10,7 @@ module Api
         raise 'Must specify a name for the security policy' unless data[:name]
 
         message = "Creating security policy"
-        task_id = queue_object_action(provider, message, :method_name => "create_security_policy", :args => [data])
+        task_id = provider.create_security_policy_queue(User.current_user.userid, data)
         action_result(true, message, :task_id => task_id)
       rescue => e
         action_result(false, e.to_s)
