@@ -541,8 +541,8 @@ module ManageIQ
           models = ::Api::ApiConfig.collections.each_with_object({}) do |(_collection_name, collection), s|
             next unless collection.klass
             
-            model_class = get_model_class(collection.klass)
-            next unless model_class
+            model_class = collection.klass&.safe_constantize
+            next if model_class.nil?
             
             schema_name = get_schema_name(model_class)
             s[schema_name] = {
