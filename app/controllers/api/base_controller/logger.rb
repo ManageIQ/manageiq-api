@@ -57,8 +57,8 @@ module Api
       end
 
       def api_get_method_name(call_stack, method)
-        match = /`(?<mname>[^']*)'/.match(call_stack)
-        (match ? match[:mname] : method).sub(/block .*in /, "")
+        match = /['`](?<mname>[^']*)'/.match(call_stack)
+        (match ? match[:mname] : method.to_s).sub(/block .*in /, "")
       end
 
       def api_log_error(msg)
