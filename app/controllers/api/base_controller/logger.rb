@@ -33,7 +33,7 @@ module Api
         return unless api_log_info?
         log_request("Request", @req.to_hash)
         unfiltered_params = request.query_parameters
-                                   .merge(params.permit(:action, :controller, :format).to_h)
+                                   .merge(params.slice(:action, :controller, :format).permit!)
                                    .merge("body" => @req.json_body)
         log_request("Parameters", @parameter_filter.filter(unfiltered_params))
         log_request_body
@@ -57,8 +57,8 @@ module Api
       end
 
       def api_get_method_name(call_stack, method)
-        match = /`(?<mname>[^']*)'/.match(call_stack)
-        (match ? match[:mname] : method).sub(/block .*in /, "")
+        match = /['`](?<mname>[^']*)'/.match(call_stack)
+        (match ? match[:mname] : method.to_s).sub(/block .*in /, "")
       end
 
       def api_log_error(msg)
