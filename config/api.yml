@@ -3338,13 +3338,14 @@
     - :subcollection
     :verbs: *g
     :klass: ResourceAction
-  :resource_pools:
-    :description: Resource Pools
-    :identifier: resource_pool
+
+  :resource_pool_clouds:
+    :description: Cloud Resource Pools
+    :identifier: resource_pool_cloud
     :options:
     - :collection
     :verbs: *gp
-    :klass: ResourcePool
+    :klass: ManageIQ::Providers::CloudManager::ResourcePool
     :subcollections:
     - :tags
     - :policies
@@ -3352,35 +3353,79 @@
     :collection_actions:
       :get:
       - :name: read
-        :identifier: resource_pool_show_list
+        :identifier: resource_pool_cloud_show_list
       :post:
       - :name: query
-        :identifier: resource_pool_show_list
+        :identifier: resource_pool_cloud_show_list
     :resource_actions:
       :get:
       - :name: read
-        :identifier: resource_pool_show
+        :identifier: resource_pool_cloud_show
       :post:
       - :name: delete
-        :identifier: resource_pool_delete
+        :identifier: resource_pool_cloud_delete
     :tags_subcollection_actions:
       :post:
       - :name: assign
-        :identifier: resource_pool_tag
+        :identifier: resource_pool_cloud_tag
       - :name: unassign
-        :identifier: resource_pool_tag
+        :identifier: resource_pool_cloud_tag
     :policies_subcollection_actions:
       :post:
       - :name: assign
-        :identifier: resource_pool_protect
+        :identifier: resource_pool_cloud_protect
       - :name: unassign
-        :identifier: resource_pool_protect
+        :identifier: resource_pool_cloud_protect
     :policy_profiles_subcollection_actions:
       :post:
       - :name: assign
-        :identifier: resource_pool_protect
+        :identifier: resource_pool_cloud_protect
       - :name: unassign
-        :identifier: resource_pool_protect
+        :identifier: resource_pool_cloud_protect
+
+  :resource_pool_infras:
+    :description: Infrastructure Resource Pools
+    :identifier: resource_pool_infra
+    :options:
+    - :collection
+    :verbs: *gp
+    :klass: ManageIQ::Providers::InfraManager::ResourcePool
+    :subcollections:
+    - :tags
+    - :policies
+    - :policy_profiles
+    :collection_actions:
+      :get:
+      - :name: read
+        :identifier: resource_pool_infra_show_list
+      :post:
+      - :name: query
+        :identifier: resource_pool_infra_show_list
+    :resource_actions:
+      :get:
+      - :name: read
+        :identifier: resource_pool_infra_show
+      :post:
+      - :name: delete
+        :identifier: resource_pool_infra_delete
+    :tags_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: resource_pool_infra_tag
+      - :name: unassign
+        :identifier: resource_pool_infra_tag
+    :policies_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: resource_pool_infra_protect
+      - :name: unassign
+        :identifier: resource_pool_infra_protect
+    :policy_profiles_subcollection_actions:
+      :post:
+      - :name: assign
+        :identifier: resource_pool_infra_protect
+      - :name: unassign
+        :identifier: resource_pool_infra_protect
   :results:
     :description: Report Results
     :identifier: miq_report_reports

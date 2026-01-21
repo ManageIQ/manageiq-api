@@ -1,5 +1,5 @@
 module Api
-  class ResourcePoolsController < BaseController
+  class ResourcePoolInfrasController < BaseController
     include Subcollections::Policies
     include Subcollections::PolicyProfiles
     include Subcollections::Tags

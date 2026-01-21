@@ -412,50 +412,98 @@ describe "Tag Collections API" do
     end
   end
 
-  context "Resource Pool Tag subcollection" do
-    let(:rp)          { FactoryBot.create(:resource_pool, :name => "Resource Pool 1") }
-
-    it "query all tags of a Resource Pool and verify tag category and names" do
+  context "Resource Pool Cloud Tag subcollection" do
+    let(:rp) { FactoryBot.create(:resource_pool, :name => "Resource Pool 1", :type => "ManageIQ::Providers::CloudManager::ResourcePool") }
+  
+    it "queries all tags of a Resource Pool Cloud and verifies tag category and names" do
       api_basic_authorize
       classify_resource(rp)
 
-      get api_resource_pool_tags_url(nil, rp), :params => { :expand => "resources" }
+      get api_resource_pool_cloud_tags_url(nil, rp), :params => { :expand => "resources" }
 
       expect_query_result(:tags, 2, Tag.count)
       expect_result_resources_to_include_data("resources", "name" => tag_paths)
     end
 
-    it "does not assign a tag to a Resource Pool without appropriate role" do
+    it "does not assign a tag to a Resource Pool Cloud without appropriate role" do
       api_basic_authorize
 
-      post(api_resource_pool_tags_url(nil, rp), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
-
+      post(api_resource_pool_cloud_tags_url(nil, rp), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+  
       expect(response).to have_http_status(:forbidden)
     end
-
-    it "assigns a tag to a Resource Pool" do
-      api_basic_authorize subcollection_action_identifier(:resource_pools, :tags, :assign)
-
-      post(api_resource_pool_tags_url(nil, rp), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
-
-      expect_tagging_result(tag1_results(api_resource_pool_url(nil, rp)))
+  
+    it "assigns a tag to a Resource Pool Cloud" do
+      api_basic_authorize subcollection_action_identifier(:resource_pool_clouds, :tags, :assign)
+  
+      post(api_resource_pool_cloud_tags_url(nil, rp), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+  
+      expect_tagging_result(tag1_results(api_resource_pool_cloud_url(nil, rp)))
     end
-
-    it "does not unassign a tag from a Resource Pool without appropriate role" do
+  
+    it "does not unassign a tag from a Resource Pool Cloud without appropriate role" do
       api_basic_authorize
-
-      post(api_resource_pool_tags_url(nil, rp), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
-
+  
+      post(api_resource_pool_cloud_tags_url(nil, rp), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+  
       expect(response).to have_http_status(:forbidden)
     end
-
-    it "unassigns a tag from a Resource Pool" do
-      api_basic_authorize subcollection_action_identifier(:resource_pools, :tags, :unassign)
+  
+    it "unassigns a tag from a Resource Pool Cloud" do
+      api_basic_authorize subcollection_action_identifier(:resource_pool_clouds, :tags, :unassign)
       classify_resource(rp)
+  
+      post(api_resource_pool_cloud_tags_url(nil, rp), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+  
+      expect_tagging_result(tag1_results(api_resource_pool_cloud_url(nil, rp)))
+      expect_resource_has_tags(rp, tag2[:path])
+    end
+  end
+  
+  context "Resource Pool Infra Tag subcollection" do
+    let(:rp) { FactoryBot.create(:resource_pool, :name => "Resource Pool 1", :type => "ManageIQ::Providers::InfraManager::ResourcePool") }
+  
+    it "queries all tags of a Resource Pool Infra and verifies tag category and names" do
+      api_basic_authorize
+      classify_resource(rp)
+  
+      get api_resource_pool_infra_tags_url(nil, rp), :params => { :expand => "resources" }
+  
+      expect_query_result(:tags, 2, Tag.count)
+      expect_result_resources_to_include_data("resources", "name" => tag_paths)
+    end
 
-      post(api_resource_pool_tags_url(nil, rp), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+    it "does not assign a tag to a Resource Pool Infra without appropriate role" do
+      api_basic_authorize
 
-      expect_tagging_result(tag1_results(api_resource_pool_url(nil, rp)))
+      post(api_resource_pool_infra_tags_url(nil, rp), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+  
+      expect(response).to have_http_status(:forbidden)
+    end
+  
+    it "assigns a tag to a Resource Pool Infra" do
+      api_basic_authorize subcollection_action_identifier(:resource_pool_infras, :tags, :assign)
+  
+      post(api_resource_pool_infra_tags_url(nil, rp), :params => gen_request(:assign, :category => tag1[:category], :name => tag1[:name]))
+  
+      expect_tagging_result(tag1_results(api_resource_pool_infra_url(nil, rp)))
+    end
+
+    it "does not unassign a tag from a Resource Pool Infra without appropriate role" do
+      api_basic_authorize
+  
+      post(api_resource_pool_infra_tags_url(nil, rp), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+  
+      expect(response).to have_http_status(:forbidden)
+    end
+  
+    it "unassigns a tag from a Resource Pool Infra" do
+      api_basic_authorize subcollection_action_identifier(:resource_pool_infras, :tags, :unassign)
+      classify_resource(rp)
+  
+      post(api_resource_pool_infra_tags_url(nil, rp), :params => gen_request(:unassign, :category => tag1[:category], :name => tag1[:name]))
+  
+      expect_tagging_result(tag1_results(api_resource_pool_infra_url(nil, rp)))
       expect_resource_has_tags(rp, tag2[:path])
     end
   end

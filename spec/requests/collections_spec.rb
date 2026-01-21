@@ -257,9 +257,14 @@ describe "Rest API Collections" do
       test_collection_query(:requests, api_requests_url, MiqRequest)
     end
 
-    it "query Resource Pools" do
+    it "query Cloud Resource Pool" do
       FactoryBot.create(:resource_pool)
-      test_collection_query(:resource_pools, api_resource_pools_url, ResourcePool)
+      test_collection_query(:resource_pool_clouds, api_resource_pool_clouds_url, ManageIQ::Providers::CloudManager::ResourcePool)
+    end
+
+    it "query Infra Resource Pool" do
+      FactoryBot.create(:resource_pool)
+      test_collection_query(:resource_pool_infras, api_resource_pool_infras_url, ManageIQ::Providers::InfraManager::ResourcePool)
     end
 
     it "query Roles" do
@@ -587,9 +592,14 @@ describe "Rest API Collections" do
       test_collection_bulk_query(:requests, api_requests_url, MiqRequest)
     end
 
-    it "bulk query Resource Pools" do
-      FactoryBot.create(:resource_pool)
-      test_collection_bulk_query(:resource_pools, api_resource_pools_url, ResourcePool)
+    it "bulk query Cloud Resource Pools" do
+      FactoryBot.create(:resource_pool, :type => 'ManageIQ::Providers::CloudManager::ResourcePool')
+      test_collection_bulk_query(:resource_pool_clouds, api_resource_pool_clouds_url, ManageIQ::Providers::CloudManager::ResourcePool)
+    end
+
+    it "bulk query Infra Resource Pools" do
+      FactoryBot.create(:resource_pool, :type => 'ManageIQ::Providers::InfraManager::ResourcePool')
+      test_collection_bulk_query(:resource_pool_infras, api_resource_pool_infras_url, ManageIQ::Providers::InfraManager::ResourcePool)
     end
 
     it "bulk query Roles" do
