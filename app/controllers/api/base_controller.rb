@@ -28,6 +28,7 @@ module Api
     before_action :validate_api_request, :except => [:product_info]
     before_action :validate_api_action, :except => [:product_info]
     before_action :validate_response_format, :except => [:destroy]
+    before_action :validate_pagination, :only => :index
     before_action :ensure_pagination, :only => :index
     after_action :log_api_response
 
@@ -162,6 +163,12 @@ module Api
 
       render :json => ErrorSerializer.new(type, error).serialize, :status => Rack::Utils.status_code(type)
       log_api_response
+    end
+
+    def validate_pagination
+      %w[limit offset].each do |param|
+        raise BadRequestError, "Non numeric parameter: #{param}" if params[param]&.match?(/[^0-9]/)
+      end
     end
 
     def ensure_pagination

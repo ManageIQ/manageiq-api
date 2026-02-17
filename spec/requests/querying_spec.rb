@@ -70,6 +70,36 @@ describe "Querying" do
       expect_result_resources_to_match_hash([{"name" => "ee"}])
     end
 
+    it "raises a BadRequestError for an invalid offset" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+
+      get api_vms_url, :params => { :offset => "0'" }
+
+      expected = {
+        'error' => a_hash_including(
+          'kind'    => 'bad_request',
+          'message' => "Non numeric parameter: offset"
+        )
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "raises a BadRequestError for an invalid limit" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+
+      get api_vms_url, :params => { :limit => "0'" }
+
+      expected = {
+        'error' => a_hash_including(
+          'kind'    => 'bad_request',
+          'message' => "Non numeric parameter: limit"
+        )
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:bad_request)
+    end
+
     it 'raises a BadRequestError for attributes that do not exist' do
       api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
 

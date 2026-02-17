@@ -184,8 +184,8 @@ module Api
         options = {:user => User.current_user}
         options[:order] = sort_options if sort_options.present?
         options[:filter] = miq_expression if miq_expression
-        options[:offset] = integer_param('offset') if params['offset']
-        options[:limit] = integer_param('limit') if params['limit']
+        options[:offset] = params['offset'] if params['offset']
+        options[:limit] = params['limit'] if params['limit']
         options[:extra_cols] = determine_extra_cols(klass)
         options[:include_for_find] = determine_include_for_find(klass)
 
@@ -665,13 +665,6 @@ module Api
         else
           :bad_request
         end
-      end
-
-      # currently, this is only called if it has a value
-      def integer_param(param_name)
-        value = params[param_name].to_s
-        raise(ArgumentError, "Non numeric #{param_name}") if value.match?(/[^0-9]/)
-        value
       end
     end
   end
