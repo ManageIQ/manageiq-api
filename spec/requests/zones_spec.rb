@@ -260,7 +260,8 @@ RSpec.describe "Zones" do
         expect {
           delete(
             api_zone_settings_url(nil, zone),
-            :params => %i[api authentication_timeout].to_json # => hack because Rails will interpret these as query params in a DELETE
+            :params => %w[api authentication_timeout],
+            :as     => :json
           )
         }.to change { zone.settings_for_resource["api"]["authentication_timeout"] }.from("7331.minutes").to("30.seconds")
 
@@ -273,7 +274,8 @@ RSpec.describe "Zones" do
         expect {
           delete(
             api_zone_settings_url(nil, zone),
-            :params => %i[api authentication_timeout].to_json # => hack because Rails will interpret these as query params in a DELETE
+            :params => %w[api authentication_timeout],
+            :as     => :json
           )
         }.not_to change { zone.settings_for_resource["api"]["authentication_timeout"] }
 
@@ -284,7 +286,8 @@ RSpec.describe "Zones" do
         expect {
           delete(
             api_zone_settings_url(nil, zone),
-            :params => %i[api authentication_timeout].to_json # => hack because Rails will interpret these as query params in a DELETE
+            :params => %w[api authentication_timeout],
+            :as     => :json
           )
         }.not_to change { zone.settings_for_resource["api"]["authentication_timeout"] }
 

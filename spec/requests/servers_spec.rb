@@ -261,7 +261,8 @@ RSpec.describe "Servers" do
         expect {
           delete(
             api_server_settings_url(nil, server),
-            :params => %i[api authentication_timeout].to_json # => hack because Rails will interpret these as query params in a DELETE
+            :params => %w[api authentication_timeout],
+            :as     => :json
           )
         }.to change { server.settings_for_resource["api"]["authentication_timeout"] }.from("7331.minutes").to("30.seconds")
 
@@ -274,7 +275,8 @@ RSpec.describe "Servers" do
         expect {
           delete(
             api_server_settings_url(nil, server),
-            :params => %i[api authentication_timeout].to_json # => hack because Rails will interpret these as query params in a DELETE
+            :params => %w[api authentication_timeout],
+            :as     => :json
           )
         }.not_to change { server.settings_for_resource["api"]["authentication_timeout"] }
 
@@ -285,7 +287,8 @@ RSpec.describe "Servers" do
         expect {
           delete(
             api_server_settings_url(nil, server),
-            :params => %i[api authentication_timeout].to_json # => hack because Rails will interpret these as query params in a DELETE
+            :params => %w[api authentication_timeout],
+            :as     => :json
           )
         }.not_to change { server.settings_for_resource["api"]["authentication_timeout"] }
 
