@@ -221,7 +221,8 @@ RSpec.describe "Regions API", :regions do
           expect {
             delete(
               api_region_settings_url(nil, region),
-              :params => %i[api authentication_timeout].to_json # => hack because Rails will interpret these as query params in a DELETE
+              :params => %w[api authentication_timeout],
+              :as     => :json
             )
           }.to change { region.settings_for_resource["api"]["authentication_timeout"] }.from("7331.minutes").to("30.seconds")
 
@@ -234,7 +235,8 @@ RSpec.describe "Regions API", :regions do
           expect {
             delete(
               api_region_settings_url(nil, region),
-              :params => %i[api authentication_timeout].to_json # => hack because Rails will interpret these as query params in a DELETE
+              :params => %w[api authentication_timeout],
+              :as     => :json
             )
           }.not_to change { region.settings_for_resource["api"]["authentication_timeout"] }
 
@@ -245,7 +247,8 @@ RSpec.describe "Regions API", :regions do
           expect {
             delete(
               api_region_settings_url(nil, region),
-              :params => %i[api authentication_timeout].to_json # => hack because Rails will interpret these as query params in a DELETE
+              :params => %w[api authentication_timeout],
+              :as     => :json
             )
           }.not_to change { region.settings_for_resource["api"]["authentication_timeout"] }
 
