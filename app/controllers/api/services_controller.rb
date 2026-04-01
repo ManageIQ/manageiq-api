@@ -90,7 +90,9 @@ module Api
       raise 'Must specify a valid provider href or id' unless provider_id
       provider = resource_search(provider_id, :providers)
 
-      task_id = service.add_provider_vms(provider, data['uid_ems']).miq_task_id
+      timeout = data['timeout'].to_i if data['timeout']
+
+      task_id = service.add_provider_vms(provider, data['uid_ems'], :timeout => timeout).miq_task_id
       action_result(true, "Adding provider vms for #{service_ident(service)}", :task_id => task_id)
     rescue => err
       action_result(false, err.to_s)
