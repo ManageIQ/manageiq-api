@@ -4,7 +4,15 @@ module Api
     def notifications_index_includes(scope)
       return scope unless @req.expand?(:resources)
 
-      scope.includes(:notification => {:notification_type => {}, :subject => [:miq_requests, :services]})
+      associations = {:notification => {:notification_type => {}, :subject => [:miq_requests, :services]}}
+
+      if scope.respond_to?(:includes)
+        scope.includes(associations)
+      else
+        # Preload instead when RBAC returns an Array (e.g., with belongsto filters)
+        MiqPreloader.preload(scope, associations)
+        scope
+      end
     end
 
     def notifications_search_conditions
