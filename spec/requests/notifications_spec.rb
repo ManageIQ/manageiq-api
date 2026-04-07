@@ -72,6 +72,30 @@ describe 'Notifications API' do
       expect(response_ids).to match_array(notification_ids)
       expect(response_ids & other_user_recipient_ids).to be_empty
     end
+
+    it "works for users with belongsto RBAC filters and expanded resources" do
+      role = FactoryBot.create(:miq_user_role)
+      entitlement = FactoryBot.create(:entitlement, :miq_user_role => role, :filters => {"managed" => [], "belongsto" => ["/managed/infra/1"]})
+      group = FactoryBot.create(:miq_group, :entitlement => entitlement)
+      user_with_filters = FactoryBot.create(:user, :miq_groups => [group])
+
+      notifications = FactoryBot.create_list(:notification, 3, :initiator => user_with_filters)
+      notification_ids = notifications.map { |n| n.notification_recipients.first.id.to_s }
+
+      api_basic_authorize(:user => user_with_filters.userid, :password => "dummy")
+
+      get api_notifications_url, :params => {
+        :expand     => "resources",
+        :attributes => "details",
+        :limit      => 100
+      }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("count" => 3)
+
+      response_ids = response.parsed_body["resources"].map { |r| r["id"] }
+      expect(response_ids).to match_array(notification_ids)
+    end
   end
 
   describe 'notification create' do
