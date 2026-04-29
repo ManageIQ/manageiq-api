@@ -1,13 +1,13 @@
+require 'json'
+require_relative 'parameter_builder'
+require_relative 'schema_builder'
+require_relative 'operation_builder'
+require_relative 'path_builder'
+
 module ManageIQ
   module Api
     module OpenApi
       class Generator
-        require 'json'
-        require_relative 'parameter_builder'
-        require_relative 'schema_builder'
-        require_relative 'operation_builder'
-        require_relative 'path_builder'
-
         OPENAPI_VERSION = "3.0.0".freeze
         PARAMETERS_PATH = "/components/parameters".freeze
         SCHEMAS_PATH    = "/components/schemas".freeze
