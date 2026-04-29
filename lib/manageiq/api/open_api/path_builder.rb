@@ -2,7 +2,7 @@ module ManageIQ
   module Api
     module OpenApi
       module PathBuilder
-        PARAMETERS_PATH = "/components/parameters".freeze
+        PARAMETERS_PATH = "#/components/parameters".freeze
 
         def self.build_paths(collections)
           paths = {}

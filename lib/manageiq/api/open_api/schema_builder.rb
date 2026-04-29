@@ -2,7 +2,7 @@ module ManageIQ
   module Api
     module OpenApi
       module SchemaBuilder
-        SCHEMAS_PATH = "/components/schemas".freeze
+        SCHEMAS_PATH = "#/components/schemas".freeze
 
         def self.build_common_schemas
           {
@@ -195,28 +195,9 @@ module ManageIQ
           }
         end
 
-        def self.build_standard_responses
+        def self.build_common_responses
           {
-            "200" => {
-              "description" => "Success"
-            },
-            "201" => {
-              "description" => "Created"
-            },
-            "204" => {
-              "description" => "No Content"
-            },
-            "400" => {
-              "description" => "Bad Request",
-              "content"     => {
-                "application/json" => {
-                  "schema" => {
-                    "$ref" => "#{SCHEMAS_PATH}/Error"
-                  }
-                }
-              }
-            },
-            "401" => {
+            "Unauthorized"        => {
               "description" => "Unauthorized",
               "content"     => {
                 "application/json" => {
@@ -226,7 +207,7 @@ module ManageIQ
                 }
               }
             },
-            "403" => {
+            "Forbidden"           => {
               "description" => "Forbidden",
               "content"     => {
                 "application/json" => {
@@ -236,7 +217,7 @@ module ManageIQ
                 }
               }
             },
-            "404" => {
+            "NotFound"            => {
               "description" => "Not Found",
               "content"     => {
                 "application/json" => {
@@ -246,7 +227,17 @@ module ManageIQ
                 }
               }
             },
-            "422" => {
+            "BadRequest"          => {
+              "description" => "Bad Request",
+              "content"     => {
+                "application/json" => {
+                  "schema" => {
+                    "$ref" => "#{SCHEMAS_PATH}/Error"
+                  }
+                }
+              }
+            },
+            "UnprocessableEntity" => {
               "description" => "Unprocessable Entity",
               "content"     => {
                 "application/json" => {
@@ -256,15 +247,37 @@ module ManageIQ
                 }
               }
             },
-            "500" => {
-              "description" => "Internal Server Error",
-              "content"     => {
-                "application/json" => {
-                  "schema" => {
-                    "$ref" => "#{SCHEMAS_PATH}/Error"
-                  }
-                }
-              }
+            "NoContent"           => {
+              "description" => "No Content"
+            }
+          }
+        end
+
+        def self.build_standard_responses
+          {
+            "200" => {
+              "description" => "Success"
+            },
+            "201" => {
+              "description" => "Created"
+            },
+            "204" => {
+              "$ref" => "#/components/responses/NoContent"
+            },
+            "400" => {
+              "$ref" => "#/components/responses/BadRequest"
+            },
+            "401" => {
+              "$ref" => "#/components/responses/Unauthorized"
+            },
+            "403" => {
+              "$ref" => "#/components/responses/Forbidden"
+            },
+            "404" => {
+              "$ref" => "#/components/responses/NotFound"
+            },
+            "422" => {
+              "$ref" => "#/components/responses/UnprocessableEntity"
             }
           }
         end

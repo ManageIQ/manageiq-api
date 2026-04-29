@@ -2,8 +2,8 @@ module ManageIQ
   module Api
     module OpenApi
       module OperationBuilder
-        SCHEMAS_PATH = "/components/schemas".freeze
-        PARAMETERS_PATH = "/components/parameters".freeze
+        SCHEMAS_PATH = "#/components/schemas".freeze
+        PARAMETERS_PATH = "#/components/parameters".freeze
 
         def self.build_collection_index_operation(collection_name, collection, model_schema_name)
           {
@@ -33,7 +33,7 @@ module ManageIQ
             "tags"        => [collection[:description] || collection_name.to_s.titleize],
             "parameters"  => [
               {
-                "$ref" => File.join(PARAMETERS_PATH, "resourceId")
+                "$ref" => "#{PARAMETERS_PATH}/resourceId"
               }
             ] + ParameterBuilder.resource_query_parameters,
             "responses"   => {
@@ -61,7 +61,7 @@ module ManageIQ
               "content"  => {
                 "application/json" => {
                   "schema" => {
-                    "$ref" => File.join(SCHEMAS_PATH, model_schema_name)
+                    "$ref" => "#{SCHEMAS_PATH}/#{model_schema_name}"
                   }
                 }
               }
@@ -88,14 +88,14 @@ module ManageIQ
             "operationId" => "update_#{collection_name.to_s.singularize}",
             "tags"        => [collection[:description] || collection_name.to_s.titleize],
             "parameters"  => [
-              {"$ref" => File.join(PARAMETERS_PATH, "resourceId")}
+              {"$ref" => "#{PARAMETERS_PATH}/resourceId"}
             ],
             "requestBody" => {
               "required" => true,
               "content"  => {
                 "application/json" => {
                   "schema" => {
-                    "$ref" => File.join(SCHEMAS_PATH, model_schema_name)
+                    "$ref" => "#{SCHEMAS_PATH}/#{model_schema_name}"
                   }
                 }
               }
@@ -122,7 +122,7 @@ module ManageIQ
             "operationId" => "delete_#{collection_name.to_s.singularize}",
             "tags"        => [collection[:description] || collection_name.to_s.titleize],
             "parameters"  => [
-              {"$ref" => File.join(PARAMETERS_PATH, "resourceId")}
+              {"$ref" => "#{PARAMETERS_PATH}/resourceId"}
             ],
             "responses"   => {
               "204" => SchemaBuilder.build_standard_responses["204"],
@@ -167,7 +167,7 @@ module ManageIQ
                         "required"   => ["action"]
                       },
                       {
-                        "$ref" => File.join(SCHEMAS_PATH, model_schema_name)
+                        "$ref" => "#{SCHEMAS_PATH}/#{model_schema_name}"
                       }
                     ]
                   }
@@ -185,7 +185,7 @@ module ManageIQ
                         "results" => {
                           "type"  => "array",
                           "items" => {
-                            "$ref" => File.join(SCHEMAS_PATH, model_schema_name)
+                            "$ref" => "#{SCHEMAS_PATH}/#{model_schema_name}"
                           }
                         }
                       }
@@ -206,7 +206,7 @@ module ManageIQ
             "operationId" => "action_#{collection_name.to_s.singularize}",
             "tags"        => [collection[:description] || collection_name.to_s.titleize],
             "parameters"  => [
-              {"$ref" => File.join(PARAMETERS_PATH, "resourceId")}
+              {"$ref" => "#{PARAMETERS_PATH}/resourceId"}
             ],
             "requestBody" => {
               "required" => true,
@@ -225,7 +225,7 @@ module ManageIQ
                         "required"   => ["action"]
                       },
                       {
-                        "$ref" => File.join(SCHEMAS_PATH, model_schema_name)
+                        "$ref" => "#{SCHEMAS_PATH}/#{model_schema_name}"
                       }
                     ]
                   }

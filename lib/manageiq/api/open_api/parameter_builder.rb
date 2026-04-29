@@ -2,7 +2,7 @@ module ManageIQ
   module Api
     module OpenApi
       module ParameterBuilder
-        PARAMETERS_PATH = "/components/parameters".freeze
+        PARAMETERS_PATH = "#/components/parameters".freeze
 
         def self.build_common_parameters
           {

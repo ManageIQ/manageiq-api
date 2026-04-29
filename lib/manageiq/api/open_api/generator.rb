@@ -9,8 +9,8 @@ module ManageIQ
     module OpenApi
       class Generator
         OPENAPI_VERSION = "3.0.0".freeze
-        PARAMETERS_PATH = "/components/parameters".freeze
-        SCHEMAS_PATH    = "/components/schemas".freeze
+        PARAMETERS_PATH = "#/components/parameters".freeze
+        SCHEMAS_PATH    = "#/components/schemas".freeze
 
         attr_reader :manageiq_api_path, :openapi_path, :openapi_spec
 
@@ -25,6 +25,7 @@ module ManageIQ
         def generate!
           openapi_spec["components"]["parameters"] = ParameterBuilder.build_common_parameters
           openapi_spec["components"]["schemas"] = build_schemas.merge(SchemaBuilder.build_common_schemas)
+          openapi_spec["components"]["responses"] = SchemaBuilder.build_common_responses
           openapi_spec["components"]["securitySchemes"] = build_security_schemes
           openapi_spec["paths"] = PathBuilder.build_paths(::Api::ApiConfig.collections)
           openapi_spec["security"] = build_security_requirements
@@ -84,7 +85,7 @@ module ManageIQ
             properties_value["format"] = "date-time"
           when :integer
             if key == model.primary_key || key.ends_with?("_id")
-              properties_value["$ref"] = "##{SCHEMAS_PATH}/ID"
+              properties_value["$ref"] = "#{SCHEMAS_PATH}/ID"
             else
               properties_value["type"] = "integer"
             end
