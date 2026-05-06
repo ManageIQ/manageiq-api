@@ -20,8 +20,25 @@ module Api
       # Since we are passing a custom hash to create_ems_resource (instead of data variable)
       # we need to manually remove it from data.
       data.delete('id')
-      create_ems_resource(type, {'ems_id' => manager_id, 'name' => data['name']}, :supports => true) do |_manager, klass|
-        {:task_id => klass.create_in_provider_queue(manager_id, data.deep_symbolize_keys)}
+
+      # Handle manual scm_type - create directly without provider queue
+      if data['scm_type'] == 'manual'
+        raise BadRequestError, _("Must specify name") unless data['name']
+        raise BadRequestError, _("Must specify manager_resource or ems_id") unless manager_id
+
+        # Create the script source directly
+        script_source = ConfigurationScriptSource.create!(
+          :name        => data['name'],
+          :description => data['description'],
+          :manager_id  => manager_id,
+          :scm_type    => 'manual'
+        )
+        script_source
+      else
+        # Use provider queue for git and other scm_types
+        create_ems_resource(type, {'ems_id' => manager_id, 'name' => data['name']}, :supports => true) do |_manager, klass|
+          {:task_id => klass.create_in_provider_queue(manager_id, data.deep_symbolize_keys)}
+        end
       end
     end
 
