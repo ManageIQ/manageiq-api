@@ -320,7 +320,7 @@ describe "Vms API" do
           :expand     => "resources",
           :attributes => "hardware.host.name,name"
         }
-      }.to make_database_queries(:count => 21, :matching => query_match)
+      }.to make_database_queries(:count => 15, :matching => query_match)
 
       expected = {
         "resources" => a_collection_including(
