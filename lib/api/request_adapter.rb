@@ -43,6 +43,37 @@ module Api
       @attributes ||= @params['attributes'].to_s.split(',')
     end
 
+    # Groups attributes by association path. Only supports one level deep (vms.name). TODO: support nested (vms.ipaddresses.address)
+    # Returns: { direct: [:name], associations: { "vms" => [:name, :cpu_count] } }
+    def grouped_attributes
+      @grouped_attributes ||= begin
+        result = {:direct => [], :associations => {}}
+        attributes.each do |attr|
+          parts = attr.split('.')
+          if parts.length == 1
+            result[:direct] << attr
+          else
+            association = parts[0]
+            attribute = parts[1]
+            result[:associations][association] ||= []
+            result[:associations][association] << attribute
+          end
+        end
+        result
+      end
+    end
+
+    # Returns attributes requested for a specific association
+    # Example: collection_attributes_for("vms") => [:name, :cpu_count]
+    def collection_attributes_for(association)
+      grouped_attributes[:associations][association.to_s] || []
+    end
+
+    # Returns true if any collection attributes are requested
+    def collection_attributes?
+      grouped_attributes[:associations].any?
+    end
+
     def base
       url.partition(fullpath)[0] # http://target
     end

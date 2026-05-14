@@ -1800,6 +1800,115 @@ describe "Providers API" do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(expected)
     end
+
+    it 'supports single attribute on has_many association' do
+      ems = FactoryBot.create(:ext_management_system, :name => "Test Provider")
+      vm1 = FactoryBot.create(:vm_amazon, :ext_management_system => ems, :name => "VM1")
+      vm2 = FactoryBot.create(:vm_amazon, :ext_management_system => ems, :name => "VM2")
+      api_basic_authorize collection_action_identifier(:providers, :read, :get)
+
+      get(api_providers_url, :params => {:expand => 'resources', :attributes => 'name,vms.name'})
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['name']).to eq('providers')
+      expect(response.parsed_body['resources'].length).to eq(1)
+
+      provider = response.parsed_body['resources'].first
+      expect(provider['href']).to eq(api_provider_url(nil, ems))
+      expect(provider['id']).to eq(ems.id.to_s)
+      expect(provider['name']).to eq('Test Provider')
+      expect(provider['vms']).to be_an(Array)
+      expect(provider['vms'].length).to eq(2)
+
+      # Check VMs are present (order-independent)
+      vm_ids = provider['vms'].map { |v| v['id'] }
+      expect(vm_ids).to contain_exactly(vm1.id.to_s, vm2.id.to_s)
+      provider['vms'].each do |vm|
+        expect(vm).to have_key('href')
+        expect(vm).to have_key('id')
+        expect(vm).to have_key('name')
+        expect(vm['href']).to match(%r{/api/vms/\d+})
+      end
+    end
+
+    it 'supports multiple attributes on has_many association' do
+      ems = FactoryBot.create(:ext_management_system, :name => "Test Provider")
+      vm1 = FactoryBot.create(:vm_amazon, :ext_management_system => ems, :name => "VM1", :vendor => "amazon")
+      vm2 = FactoryBot.create(:vm_amazon, :ext_management_system => ems, :name => "VM2", :vendor => "amazon")
+      api_basic_authorize collection_action_identifier(:providers, :read, :get)
+
+      get(api_providers_url, :params => {:expand => 'resources', :attributes => 'name,vms.name,vms.vendor'})
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body['name']).to eq('providers')
+      expect(response.parsed_body['resources'].length).to eq(1)
+
+      provider = response.parsed_body['resources'].first
+      expect(provider['href']).to eq(api_provider_url(nil, ems))
+      expect(provider['id']).to eq(ems.id.to_s)
+      expect(provider['name']).to eq('Test Provider')
+      expect(provider['vms']).to be_an(Array)
+      expect(provider['vms'].length).to eq(2)
+
+      # Check VMs have all requested attributes (order-independent)
+      vm_ids = provider['vms'].map { |v| v['id'] }
+      expect(vm_ids).to contain_exactly(vm1.id.to_s, vm2.id.to_s)
+      provider['vms'].each do |vm|
+        expect(vm).to have_key('href')
+        expect(vm).to have_key('id')
+        expect(vm).to have_key('name')
+        expect(vm).to have_key('vendor')
+        expect(vm['vendor']).to eq('amazon')
+        expect(vm['href']).to match(%r{/api/vms/\d+})
+      end
+    end
+
+    it 'returns empty array for provider with no vms' do
+      ems = FactoryBot.create(:ext_management_system, :name => "Empty Provider")
+      api_basic_authorize collection_action_identifier(:providers, :read, :get)
+
+      get(api_providers_url, :params => {:expand => 'resources', :attributes => 'name,vms.name'})
+
+      expected = {
+        'name'      => 'providers',
+        'resources' => [
+          a_hash_including(
+            'href' => api_provider_url(nil, ems),
+            'id'   => ems.id.to_s,
+            'name' => 'Empty Provider',
+            'vms'  => []
+          )
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+    end
+
+    it 'silently ignores non-existent attributes on collection' do
+      ems = FactoryBot.create(:ext_management_system, :name => "Test Provider")
+      vm = FactoryBot.create(:vm_amazon, :ext_management_system => ems, :name => "VM1")
+      api_basic_authorize collection_action_identifier(:providers, :read, :get)
+
+      get(api_providers_url, :params => {:expand => 'resources', :attributes => 'name,vms.name,vms.nonexistent_field'})
+
+      expected = {
+        'name'      => 'providers',
+        'resources' => [
+          a_hash_including(
+            'href' => api_provider_url(nil, ems),
+            'id'   => ems.id.to_s,
+            'name' => 'Test Provider',
+            'vms'  => [
+              a_hash_including('href' => api_vm_url(nil, vm), 'id' => vm.id.to_s, 'name' => 'VM1')
+            ]
+          )
+        ]
+      }
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(expected)
+      # Verify nonexistent_field is not in the response
+      expect(response.parsed_body['resources'].first['vms'].first).not_to have_key('nonexistent_field')
+    end
   end
 
   context 'Folders subcollection' do
