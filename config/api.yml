@@ -1948,6 +1948,10 @@
         :identifier: host_edit
       - :name: verify_credentials
         :identifier: host_edit
+      - :name: start
+        :identifier: host_start
+      - :name: stop
+        :identifier: host_stop
     :resource_actions:
       :get:
       - :name: read
@@ -1959,6 +1963,10 @@
         :identifier: host_edit
       - :name: delete
         :identifier: host_delete
+      - :name: start
+        :identifier: host_start
+      - :name: stop
+        :identifier: host_stop
     :tags_subcollection_actions:
       :post:
       - :name: assign
@@ -4735,6 +4743,8 @@
         :identifier: vm_scan
       - :name: delete
         :identifier: vm_delete
+      - :name: terminate
+        :identifier: vm_terminate
       - :name: assign_tags
         :identifier:
         - vm_tag
@@ -4805,6 +4815,8 @@
         - sui_vm_retire
       - :name: delete
         :identifier: vm_delete
+      - :name: terminate
+        :identifier: vm_terminate
       - :name: set_owner
         :identifier: vm_edit
       - :name: set_description

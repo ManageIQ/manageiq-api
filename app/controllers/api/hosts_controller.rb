@@ -34,5 +34,13 @@ module Api
     def check_compliance_resource(type, id, _data = nil)
       enqueue_ems_action(type, id, "Check Compliance for", :method_name => "check_compliance", :supports => true)
     end
+
+    def start_resource(type, id = nil, _data = nil)
+      enqueue_ems_action(type, id, "Starting", :method_name => "start", :supports => true)
+    end
+
+    def stop_resource(type, id = nil, _data = nil)
+      enqueue_ems_action(type, id, "Stopping", :method_name => "stop", :supports => true)
+    end
   end
 end

@@ -54,6 +54,10 @@ module Api
       enqueue_ems_action(type, id, "Deleting", :method_name => "destroy")
     end
 
+    def terminate_resource(type, id = nil, _data = nil)
+      enqueue_ems_action(type, id, "Terminating", :method_name => "vm_destroy", :supports => true)
+    end
+
     def set_owner_resource(type, id = nil, data = nil)
       api_resource(type, id, "Setting owner of") do |vm|
         owner = data.blank? ? "" : data["owner"].strip

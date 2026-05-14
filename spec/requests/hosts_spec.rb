@@ -1,4 +1,17 @@
 RSpec.describe "hosts API" do
+  include Spec::Support::SupportsHelper
+
+  let(:zone) { FactoryBot.create(:zone, :name => "api_zone") }
+  let(:ems) { FactoryBot.create(:ems_vmware, :zone => zone) }
+  let(:power_state) { "unknown" }
+  let(:host) { FactoryBot.create(:host, :ext_management_system => ems, :power_state => power_state) }
+  let(:host1) { FactoryBot.create(:host, :ext_management_system => ems) }
+  let(:host2) { FactoryBot.create(:host, :ext_management_system => ems) }
+  let(:host_url) { api_host_url(nil, host) }
+  let(:host1_url) { api_host_url(nil, host1) }
+  let(:host2_url) { api_host_url(nil, host2) }
+  let(:invalid_host_url) { api_host_url(nil, ApplicationRecord.id_in_region(999_999, ApplicationRecord.my_region_number)) }
+
   describe "editing a host's password" do
     context "with an appropriate role" do
       it "can edit the password on a host using new/react format" do
@@ -263,6 +276,126 @@ RSpec.describe "hosts API" do
       expect(response).to have_http_status(:ok)
       expect_result_resources_to_include_data("results", "value" => ["new value1", "new value2"])
       expect(host.reload.custom_attributes.pluck(:value).sort).to eq(["new value1", "new value2"])
+    end
+  end
+
+  describe "Host start action" do
+    let(:power_state) { "off" }
+
+    it "starting an invalid host fails with Not Found" do
+      api_basic_authorize action_identifier(:hosts, :start)
+
+      post(invalid_host_url, :params => gen_request(:start))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "starting a host without the appropriate role fails with Forbidden" do
+      api_basic_authorize
+
+      post(host_url, :params => gen_request(:start))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    context "with a powered on host" do
+      let(:power_state) { "on" }
+
+      it "fails due to invalid power state" do
+        api_basic_authorize action_identifier(:hosts, :start)
+
+        post(host_url, :params => gen_request(:start))
+
+        expect_bad_request(/not in power state off/)
+      end
+    end
+
+    context "with a powered off host" do
+      let(:power_state) { "off" }
+
+      it "starts a host" do
+        api_basic_authorize action_identifier(:hosts, :start)
+        stub_supports(host, :start)
+
+        post(host_url, :params => gen_request(:start))
+
+        expect_single_action_result(:success => true, :message => /Starting/i, :href => api_host_url(nil, host), :task => true)
+        expect(MiqQueue.where(:method_name => "start",
+                              :user_id     => @user.id,
+                              :group_id    => @user.current_group.id,
+                              :tenant_id   => @user.current_tenant.id).count).to eq(1)
+      end
+
+      it "starts multiple hosts" do
+        api_basic_authorize collection_action_identifier(:hosts, :start)
+        stub_supports(host1, :start)
+        stub_supports(host2, :start)
+
+        post(api_hosts_url, :params => gen_request(:start, [{"href" => host1_url}, {"href" => host2_url}]))
+
+        expect_multiple_action_result(2, :task => true)
+        expect_result_resources_to_include_hrefs("results", [host1_url, host2_url])
+      end
+    end
+  end
+
+  describe "Host stop action" do
+    let(:power_state) { "on" }
+
+    it "stopping an invalid host fails with Not Found" do
+      api_basic_authorize action_identifier(:hosts, :stop)
+
+      post(invalid_host_url, :params => gen_request(:stop))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "stopping a host without the appropriate role fails with Forbidden" do
+      api_basic_authorize
+
+      post(host_url, :params => gen_request(:stop))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    context "with a powered off host" do
+      let(:power_state) { "off" }
+
+      it "fails due to invalid power state" do
+        api_basic_authorize action_identifier(:hosts, :stop)
+
+        post(host_url, :params => gen_request(:stop))
+
+        expect_bad_request(/not in powered on/)
+      end
+    end
+
+    context "with a powered on host" do
+      let(:power_state) { "on" }
+
+      it "stops a host" do
+        api_basic_authorize action_identifier(:hosts, :stop)
+        stub_supports(host, :stop)
+
+        post(host_url, :params => gen_request(:stop))
+
+        expect_single_action_result(:success => true, :message => /Stopping/i, :href => api_host_url(nil, host), :task => true)
+        expect(MiqQueue.where(:method_name => "stop",
+                              :user_id     => @user.id,
+                              :group_id    => @user.current_group.id,
+                              :tenant_id   => @user.current_tenant.id).count).to eq(1)
+      end
+
+      it "stops multiple hosts" do
+        api_basic_authorize collection_action_identifier(:hosts, :stop)
+        stub_supports(host1, :stop)
+        stub_supports(host2, :stop)
+
+        post(api_hosts_url, :params => gen_request(:stop, [{"href" => host1_url}, {"href" => host2_url}]))
+
+        expect_multiple_action_result(2, :task => true)
+        expect_result_resources_to_include_hrefs("results", [host1_url, host2_url])
+      end
     end
   end
 

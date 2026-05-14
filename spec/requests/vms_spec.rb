@@ -1018,6 +1018,66 @@ describe "Vms API" do
     end
   end
 
+  describe "Vm terminate action" do
+    it "responds not found for an invalid Vm" do
+      api_basic_authorize action_identifier(:vms, :terminate)
+
+      post(invalid_vm_url, :params => gen_request(:terminate))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "responds forbidden for an invalid Vm without appropriate role" do
+      api_basic_authorize
+
+      post(invalid_vm_url, :params => gen_request(:terminate))
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "terminates a single valid Vm" do
+      api_basic_authorize action_identifier(:vms, :terminate)
+      stub_supports(vm, :vm_destroy)
+
+      post(vm_url, :params => gen_request(:terminate))
+
+      expect_single_action_result(
+        :success => true,
+        :message => /Terminating.*#{vm.id}/i,
+        :href    => api_vm_url(nil, vm)
+      )
+      expect(MiqQueue.where(:method_name => "vm_destroy",
+                            :user_id     => @user.id,
+                            :group_id    => @user.current_group.id,
+                            :tenant_id   => @user.current_tenant.id).count).to eq(1)
+    end
+
+    it "terminates multiple valid Vms" do
+      api_basic_authorize collection_action_identifier(:vms, :terminate)
+      stub_supports(vm1, :vm_destroy)
+      stub_supports(vm2, :vm_destroy)
+
+      post(api_vms_url, :params => gen_request(:terminate, [{"href" => vm1_url}, {"href" => vm2_url}]))
+
+      expected = {
+        "results" => a_collection_containing_exactly(
+          a_hash_including(
+            "message" => a_string_matching(/Terminating.*#{vm1.id}/i),
+            "success" => true,
+            "href"    => api_vm_url(nil, vm1)
+          ),
+          a_hash_including(
+            "message" => a_string_matching(/Terminating.*#{vm2.id}/i),
+            "success" => true,
+            "href"    => api_vm_url(nil, vm2)
+          )
+        )
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   context "Vm set_owner action" do
     it "set_owner to an invalid vm" do
       api_basic_authorize action_identifier(:vms, :set_owner)
