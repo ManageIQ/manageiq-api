@@ -607,10 +607,21 @@ module Api
 
       def determine_include_for_find(klass)
         attrs = virtual_attributes_for(klass) do |type, attr_name, attr_base|
+          # Case 1: Direct virtual attribute (e.g., "ram_size")(Not association.column format (dot notation), therefore attr_base is blank)
           if klass.virtual_includes(attr_name) && !klass.attribute_supported_by_sql?(attr_name) && attr_base.blank?
             attr_name
+          # Case 2: Direct association (e.g., "snapshots", "storage", "ems_cluster")
+          # Not dot notation, check if the requested attribute is a direct association and include it
+          elsif attr_base.blank?
+            reflection = klass.reflect_on_association(attr_name.to_sym)
+            if reflection && [:has_many, :has_one, :has_and_belongs_to_many, :belongs_to].include?(reflection.macro)
+              attr_name
+            else
+              next
+            end
+          # Case 3: Nested attribute (e.g., "hardware.host.name")
+          # Include the base path for eager loading with specific exceptions
           else
-            next if attr_base.blank?
             next if virtual_attribute_accessor(type, attr_name)
             next if attr_base_uses_rbac?(attr_base)
 
