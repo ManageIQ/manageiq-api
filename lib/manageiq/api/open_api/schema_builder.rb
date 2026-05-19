@@ -258,12 +258,6 @@ module ManageIQ
             "200" => {
               "description" => "Success"
             },
-            "201" => {
-              "description" => "Created"
-            },
-            "204" => {
-              "$ref" => "#/components/responses/NoContent"
-            },
             "400" => {
               "$ref" => "#/components/responses/BadRequest"
             },

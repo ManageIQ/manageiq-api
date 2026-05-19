@@ -56,9 +56,7 @@ module ManageIQ
                 "description" => "Deletes the #{collection[:description] || collection_name}",
                 "operationId" => "delete_#{collection_name}",
                 "tags"        => [collection[:description] || collection_name.to_s.titleize],
-                "responses"   => {
-                  "204" => SchemaBuilder.build_standard_responses["204"]
-                }.merge(OperationBuilder.error_responses)
+                "responses"   => OperationBuilder.error_responses
               }
             end
           end
@@ -226,7 +224,6 @@ module ManageIQ
                   {"$ref" => "#{PARAMETERS_PATH}/resourceId"}
                 ],
                 "responses"   => {
-                  "204" => SchemaBuilder.build_standard_responses["204"],
                   "404" => SchemaBuilder.build_standard_responses["404"]
                 }.merge(OperationBuilder.error_responses)
               },
@@ -316,14 +313,6 @@ module ManageIQ
                   }
                 },
                 "responses"   => {
-                  "201" => {
-                    "description" => "Created",
-                    "content"     => {
-                      "application/json" => {
-                        "schema" => SchemaBuilder.build_resource_response_schema(model_schema_name)
-                      }
-                    }
-                  },
                   "404" => SchemaBuilder.build_standard_responses["404"],
                   "422" => SchemaBuilder.build_standard_responses["422"]
                 }.merge(OperationBuilder.error_responses)
@@ -445,7 +434,6 @@ module ManageIQ
                   {"$ref" => "#{PARAMETERS_PATH}/subResourceId"}
                 ],
                 "responses"   => {
-                  "204" => SchemaBuilder.build_standard_responses["204"],
                   "404" => SchemaBuilder.build_standard_responses["404"]
                 }.merge(OperationBuilder.error_responses)
               }

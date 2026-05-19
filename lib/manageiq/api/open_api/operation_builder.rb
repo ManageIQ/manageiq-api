@@ -67,14 +67,6 @@ module ManageIQ
               }
             },
             "responses"   => {
-              "201" => {
-                "description" => "Created",
-                "content"     => {
-                  "application/json" => {
-                    "schema" => SchemaBuilder.build_resource_response_schema(model_schema_name)
-                  }
-                }
-              },
               "400" => SchemaBuilder.build_standard_responses["400"],
               "422" => SchemaBuilder.build_standard_responses["422"]
             }.merge(error_responses)
@@ -125,7 +117,6 @@ module ManageIQ
               {"$ref" => "#{PARAMETERS_PATH}/resourceId"}
             ],
             "responses"   => {
-              "204" => SchemaBuilder.build_standard_responses["204"],
               "404" => SchemaBuilder.build_standard_responses["404"]
             }.merge(error_responses)
           }
