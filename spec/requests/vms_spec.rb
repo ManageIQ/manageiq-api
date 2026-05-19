@@ -300,6 +300,74 @@ describe "Vms API" do
     end
   end
 
+  # Query count expectations for eager loading:
+  # - has_many associations: 6 queries
+  #   * 3 pagination queries (count filtered results, get page of IDs, recount for subquery)
+  #   * 1 total count query (for collection metadata)
+  #   * 2 data queries (get distinct IDs, fetch VMs with associations eagerly loaded)
+  # - belongs_to associations: 4 queries
+  #   * 2 pagination queries (count filtered results, get page of IDs)
+  #   * 1 total count query (for collection metadata)
+  #   * 1 data query (fetch VMs with association eagerly loaded via LEFT OUTER JOIN)
+  context "eager loads requested direct associations" do
+    let!(:vm_with_associations) do
+      FactoryBot.create(
+        :vm_vmware,
+        :host                  => host,
+        :ext_management_system => ems,
+        :ems_cluster           => FactoryBot.create(:ems_cluster, :ext_management_system => ems),
+        :storage               => FactoryBot.create(:storage),
+        :tags                  => [FactoryBot.create(:tag)],
+        :snapshots             => [FactoryBot.create(:snapshot)]
+      )
+    end
+
+    it "snapshots" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      query_match = query_match_regexp("vms", "snapshots")
+
+      expect do
+        get api_vms_url, :params => {:expand => "resources", :attributes => "snapshots", :filter => ["id=#{vm_with_associations.id}"]}
+      end.to make_database_queries(:count => 6, :matching => query_match) # 6 queries for has_many (see comment above)
+    end
+
+    it "storage" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      query_match = query_match_regexp("vms", "storages")
+
+      expect do
+        get api_vms_url, :params => {:expand => "resources", :attributes => "storage", :filter => ["id=#{vm_with_associations.id}"]}
+      end.to make_database_queries(:count => 4, :matching => query_match) # 4 queries for belongs_to (see comment above)
+    end
+
+    it "tags" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      query_match = query_match_regexp("vms", "taggings", "tags")
+
+      expect do
+        get api_vms_url, :params => {:expand => "resources", :attributes => "tags", :filter => ["id=#{vm_with_associations.id}"]}
+      end.to make_database_queries(:count => 6, :matching => query_match) # 6 queries for has_many (see comment above)
+    end
+
+    it "ems_cluster" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      query_match = query_match_regexp("vms", "ems_clusters")
+
+      expect do
+        get api_vms_url, :params => {:expand => "resources", :attributes => "ems_cluster", :filter => ["id=#{vm_with_associations.id}"]}
+      end.to make_database_queries(:count => 4, :matching => query_match) # 4 queries for belongs_to (see comment above)
+    end
+
+    it "multiple associations" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      query_match = query_match_regexp("vms", "snapshots", "storages", "taggings", "tags")
+
+      expect do
+        get api_vms_url, :params => {:expand => "resources", :attributes => "snapshots,storage,tags", :filter => ["id=#{vm_with_associations.id}"]}
+      end.to make_database_queries(:count => 6, :matching => query_match) # 6 queries when mixing has_many and belongs_to (see comment above)
+    end
+  end
+
   context "Vm index with nested indirect virtual attribute that participates in Rbac ('hardware.host.name')" do
     # Can't have `expect(Rbac).to receive(:filtered_object).never` in this block
     before do
