@@ -464,6 +464,43 @@ describe "Vms API" do
         get api_vms_url, :params => {:expand => "resources", :attributes => "host,ext_management_system,ems_cluster,storage"}
       end.to make_database_queries(:count => be <= 15, :matching => query_match)
     end
+
+    context "with restricted user" do
+      let(:tenant)         { FactoryBot.create(:tenant) }
+      let(:role)           { FactoryBot.create(:miq_user_role) }
+      let(:group)          { FactoryBot.create(:miq_group, :tenant => tenant, :miq_user_role => role) }
+      let(:other_group)    { FactoryBot.create(:miq_group) }
+      let!(:restricted_vm) { FactoryBot.create(:vm_vmware, :host => host, :ems_id => ems.id, :miq_group => other_group) }
+
+      before do
+        vm.update(:miq_group => group)
+        @user.update(:miq_groups => [group])
+        @role = role
+      end
+
+      it "applies RBAC to expanded associations" do
+        api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+
+        get api_vms_url, :params => {
+          :expand     => "resources",
+          :attributes => "name,host.name,ext_management_system.name"
+        }
+
+        resources = response.parsed_body.fetch("resources")
+        resource_ids = resources.map { |r| r["id"] }
+
+        expect(resource_ids).to include(vm.id.to_s)
+        expect(resource_ids).not_to include(restricted_vm.id.to_s)
+
+        allowed_resource = resources.detect { |resource| resource["id"] == vm.id.to_s }
+
+        expect(allowed_resource).to include(
+          "name"                  => vm.name,
+          "host"                  => {"name" => vm.host.name},
+          "ext_management_system" => {"name" => vm.ext_management_system.name}
+        )
+      end
+    end
   end
 
   context 'Vm edit' do
