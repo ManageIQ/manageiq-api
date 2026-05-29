@@ -611,7 +611,7 @@ module Api
           if klass.virtual_includes(attr_name) && !klass.attribute_supported_by_sql?(attr_name) && attr_base.blank?
             attr_name
           # Case 2: Direct association (e.g., "snapshots", "storage", "ems_cluster")
-          # Not dot notation, check if the requested attribute is a direct association and include it
+          # Eager load associations (RBAC participating or not) to reduce N+1 queries.
           elsif attr_base.blank?
             reflection = klass.reflect_on_association(attr_name.to_sym)
             if reflection && [:has_many, :has_one, :has_and_belongs_to_many, :belongs_to].include?(reflection.macro)
@@ -620,11 +620,10 @@ module Api
               next
             end
           # Case 3: Nested attribute (e.g., "hardware.host.name")
-          # Include the base path for eager loading with specific exceptions
+          # Eager load nested associations (RBAC participating or not) to reduce N+1 queries.
+          # Exception: custom virtual_attribute_accessor (handled via accessor).
           else
             next if virtual_attribute_accessor(type, attr_name)
-            next if attr_base_uses_rbac?(attr_base)
-
             attr_base
           end
         end
