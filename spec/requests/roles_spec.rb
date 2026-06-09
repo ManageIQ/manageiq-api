@@ -179,6 +179,56 @@ describe "Roles API" do
         expect(role2.allows?(**feature)).to be_truthy
       end
     end
+
+    it "supports role creation with service_templates restriction" do
+      api_basic_authorize collection_action_identifier(:roles, :create)
+
+      role_with_service_template_restriction = {
+        "name"     => "role_with_service_templates",
+        "settings" => {"restrictions" => {"service_templates" => "user"}},
+        "features" => [
+          {:identifier => "vm_explorer"}
+        ]
+      }
+
+      post(api_roles_url, :params => role_with_service_template_restriction)
+
+      expect(response).to have_http_status(:ok)
+      expect_result_resources_to_include_keys("results", expected_attributes)
+
+      role_id = response.parsed_body["results"].first["id"]
+      role = MiqUserRole.find(role_id)
+
+      expect(role.settings[:restrictions][:service_templates]).to eq(:user)
+    end
+
+    it "supports role creation with both vms and service_templates restrictions" do
+      api_basic_authorize collection_action_identifier(:roles, :create)
+
+      role_with_both_restrictions = {
+        "name"     => "role_with_both_restrictions",
+        "settings" => {
+          "restrictions" => {
+            "vms"               => "user",
+            "service_templates" => "user_or_group"
+          }
+        },
+        "features" => [
+          {:identifier => "vm_explorer"}
+        ]
+      }
+
+      post(api_roles_url, :params => role_with_both_restrictions)
+
+      expect(response).to have_http_status(:ok)
+      expect_result_resources_to_include_keys("results", expected_attributes)
+
+      role_id = response.parsed_body["results"].first["id"]
+      role = MiqUserRole.find(role_id)
+
+      expect(role.settings[:restrictions][:vms]).to eq(:user)
+      expect(role.settings[:restrictions][:service_templates]).to eq(:user_or_group)
+    end
   end
 
   describe "Roles edit" do
@@ -217,6 +267,61 @@ describe "Roles API" do
                                    "settings" => {"restrictions" => {"vms" => "user_or_group"}})
       expect(role.reload.name).to eq("updated role")
       expect(role.settings[:restrictions][:vms]).to eq(:user_or_group)
+    end
+
+    it "supports role edit with service_templates restriction" do
+      api_basic_authorize collection_action_identifier(:roles, :edit)
+
+      role = FactoryBot.create(:miq_user_role)
+
+      post(
+        api_role_url(nil, role),
+        :params => gen_request(
+          :edit,
+          "name"     => "updated role with service_templates",
+          "settings" => {"restrictions" => {"service_templates" => "user"}}
+        )
+      )
+
+      expect_single_resource_query("id"       => role.id.to_s,
+                                   "name"     => "updated role with service_templates",
+                                   "settings" => {"restrictions" => {"service_templates" => "user"}})
+      expect(role.reload.name).to eq("updated role with service_templates")
+      expect(role.settings[:restrictions][:service_templates]).to eq(:user)
+    end
+
+    it "supports role edit with both vms and service_templates restrictions" do
+      api_basic_authorize collection_action_identifier(:roles, :edit)
+
+      role = FactoryBot.create(:miq_user_role)
+
+      post(
+        api_role_url(nil, role),
+        :params => gen_request(
+          :edit,
+          "name"     => "updated role with both restrictions",
+          "settings" => {
+            "restrictions" => {
+              "vms"               => "user",
+              "service_templates" => "user_or_group"
+            }
+          }
+        )
+      )
+
+      expect_single_resource_query(
+        "id"       => role.id.to_s,
+        "name"     => "updated role with both restrictions",
+        "settings" => {
+          "restrictions" => {
+            "vms"               => "user",
+            "service_templates" => "user_or_group"
+          }
+        }
+      )
+      expect(role.reload.name).to eq("updated role with both restrictions")
+      expect(role.settings[:restrictions][:vms]).to eq(:user)
+      expect(role.settings[:restrictions][:service_templates]).to eq(:user_or_group)
     end
 
     it "supports multiple role edits" do

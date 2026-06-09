@@ -62,7 +62,12 @@ module Api
     end
 
     def get_role_settings(data)
-      restrictions = {:vms => data['settings']['restrictions']['vms'].to_sym}
+      restrictions = {}
+      if data['settings']['restrictions']
+        data['settings']['restrictions'].each do |key, value|
+          restrictions[key.to_sym] = value.to_sym
+        end
+      end
       data['settings'].delete('restrictions')
       restrictions
     end
