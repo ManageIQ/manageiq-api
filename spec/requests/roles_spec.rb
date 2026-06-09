@@ -229,6 +229,38 @@ describe "Roles API" do
       expect(role.settings[:restrictions][:vms]).to eq(:user)
       expect(role.settings[:restrictions][:service_templates]).to eq(:user_or_group)
     end
+
+    it "silently filters out unsupported restriction types" do
+      api_basic_authorize collection_action_identifier(:roles, :create)
+
+      role_with_unsupported_restriction = {
+        "name"     => "role_with_unsupported",
+        "settings" => {
+          "restrictions" => {
+            "vms"               => "user",
+            "unsupported_type"  => "some_value",
+            "service_templates" => "user_or_group"
+          }
+        },
+        "features" => [
+          {:identifier => "vm_explorer"}
+        ]
+      }
+
+      post(api_roles_url, :params => role_with_unsupported_restriction)
+
+      expect(response).to have_http_status(:ok)
+      expect_result_resources_to_include_keys("results", expected_attributes)
+
+      role_id = response.parsed_body["results"].first["id"]
+      role = MiqUserRole.find(role_id)
+
+      # Supported restrictions should be saved
+      expect(role.settings[:restrictions][:vms]).to eq(:user)
+      expect(role.settings[:restrictions][:service_templates]).to eq(:user_or_group)
+      # Unsupported restriction should be filtered out
+      expect(role.settings[:restrictions][:unsupported_type]).to be_nil
+    end
   end
 
   describe "Roles edit" do
