@@ -6,7 +6,8 @@
 #   /api/vms/:id
 #   /api/providers/:id
 #   /api/hosts/:id
-#   /api/resource_pools/:id
+#   /api/resource_pool_clouds/:id
+#   /api/resource_pool_infras/:id
 #   /api/clusters/:id
 #   /api/templates/:id
 #
@@ -22,7 +23,8 @@ describe "Policies Assignment API" do
   let(:cluster)    do
     FactoryBot.create(:ems_cluster, :ext_management_system => provider, :hosts => [host], :vms => [])
   end
-  let(:rp)         { FactoryBot.create(:resource_pool, :name => "Resource Pool 1") }
+  let(:rpc)         { FactoryBot.create(:resource_pool, :name => "Resource Pool 1", :type => ManageIQ::Providers::CloudManager::ResourcePool) }
+  let(:rpi)         { FactoryBot.create(:resource_pool, :name => "Resource Pool 1", :type => ManageIQ::Providers::InfraManager::ResourcePool) }
   let(:vm)         { FactoryBot.create(:vm) }
   let(:template)   do
     FactoryBot.create(:miq_template, :name => "Tmpl 1", :vendor => "vmware", :location => "tmpl_1.vmtx")
@@ -322,87 +324,171 @@ describe "Policies Assignment API" do
     end
   end
 
-  context "Resource Pool policies subcollection assignments" do
-    it "assign Resource Pool policy without appropriate role" do
-      test_policy_assign_no_role(api_resource_pool_policies_url(nil, rp))
+  context "Resource Pool Cloud policies subcollection assignments" do
+    it "assign Resource Pool Cloud policy without appropriate role" do
+      test_policy_assign_no_role(api_resource_pool_cloud_policies_url(nil, rpc))
     end
 
-    it "assign Resource Pool policy with invalid href" do
-      test_policy_assign_invalid_policy(api_resource_pool_policies_url(nil, rp), :resource_pools, :policies)
+    it "assign Resource Pool Cloud policy with invalid href" do
+      test_policy_assign_invalid_policy(api_resource_pool_cloud_policies_url(nil, rpc), :resource_pool_clouds, :policies)
     end
 
-    it "assign Resource Pool policy with invalid guid" do
-      test_policy_assign_invalid_policy_guid(api_resource_pool_url(nil, rp), api_resource_pool_policies_url(nil, rp), :resource_pools, :policies)
+    it "assign Resource Pool Cloud policy with invalid guid" do
+      test_policy_assign_invalid_policy_guid(api_resource_pool_cloud_url(nil, rpc), api_resource_pool_cloud_policies_url(nil, rpc), :resource_pool_clouds, :policies)
     end
 
-    it "assign Resource Pool multiple policies" do
-      test_assign_multiple_policies(api_resource_pool_url(nil, rp),
-                                    api_resource_pool_policies_url(nil, rp),
-                                    :resource_pools,
+    it "assign Resource Pool Cloud multiple policies" do
+      test_assign_multiple_policies(api_resource_pool_cloud_url(nil, rpc),
+                                    api_resource_pool_cloud_policies_url(nil, rpc),
+                                    :resource_pool_clouds,
                                     :policies,
-                                    :object   => rp,
+                                    :object   => rpc,
                                     :policies => [p1, p2])
     end
 
-    it "unassign Resource Pool policy without approriate role" do
-      test_policy_unassign_no_role(api_resource_pool_policies_url(nil, rp))
+    it "unassign Resource Pool Cloud policy without approriate role" do
+      test_policy_unassign_no_role(api_resource_pool_cloud_policies_url(nil, rpc))
     end
 
-    it "unassign Resource Pool policy with invalid href" do
-      test_policy_unassign_invalid_policy(api_resource_pool_policies_url(nil, rp), :resource_pools, :policies)
+    it "unassign Resource Pool Cloud policy with invalid href" do
+      test_policy_unassign_invalid_policy(api_resource_pool_cloud_policies_url(nil, rpc), :resource_pool_clouds, :policies)
     end
 
-    it "unassign Resource Pool policy with invalid guid" do
-      test_policy_unassign_invalid_policy_guid(api_resource_pool_url(nil, rp), api_resource_pool_policies_url(nil, rp), :resource_pools, :policies)
+    it "unassign Resource Pool Cloud policy with invalid guid" do
+      test_policy_unassign_invalid_policy_guid(api_resource_pool_cloud_url(nil, rpc), api_resource_pool_cloud_policies_url(nil, rpc), :resource_pool_clouds, :policies)
     end
 
-    it "unassign Resource Pool multiple policies" do
-      test_unassign_multiple_policies(api_resource_pool_policies_url(nil, rp), :resource_pools, :policies, :object => rp)
+    it "unassign Resource Pool Cloud multiple policies" do
+      test_unassign_multiple_policies(api_resource_pool_cloud_policies_url(nil, rpc), :resource_pool_clouds, :policies, :object => rpc)
     end
   end
 
-  context "Resource Pool policy profiles subcollection assignments" do
-    it "assign Resource Pool policy profile without approriate role" do
-      test_policy_assign_no_role(api_resource_pool_policy_profiles_url(nil, rp))
+  context "Resource Pool Cloud policy profiles subcollection assignments" do
+    it "assign Resource Pool Cloud policy profile without approriate role" do
+      test_policy_assign_no_role(api_resource_pool_cloud_policy_profiles_url(nil, rpc))
     end
 
-    it "assign Resource Pool policy profile with invalid href" do
-      test_policy_assign_invalid_policy(api_resource_pool_policy_profiles_url(nil, rp), :resource_pools, :policy_profiles)
+    it "assign Resource Pool Cloud policy profile with invalid href" do
+      test_policy_assign_invalid_policy(api_resource_pool_cloud_policy_profiles_url(nil, rpc), :resource_pool_clouds, :policy_profiles)
     end
 
-    it "assign Resource Pool policy profile with invalid guid" do
-      test_policy_assign_invalid_policy_guid(api_resource_pool_url(nil, rp), api_resource_pool_policy_profiles_url(nil, rp), :resource_pools, :policy_profiles)
+    it "assign Resource Pool Cloud policy profile with invalid guid" do
+      test_policy_assign_invalid_policy_guid(api_resource_pool_cloud_url(nil, rpc), api_resource_pool_cloud_policy_profiles_url(nil, rpc), :resource_pool_clouds, :policy_profiles)
     end
 
-    it "assign Resource Pool multiple policy profiles" do
-      test_assign_multiple_policies(api_resource_pool_url(nil, rp),
-                                    api_resource_pool_policy_profiles_url(nil, rp),
-                                    :resource_pools,
+    it "assign Resource Pool Cloud multiple policy profiles" do
+      test_assign_multiple_policies(api_resource_pool_cloud_url(nil, rpc),
+                                    api_resource_pool_cloud_policy_profiles_url(nil, rpc),
+                                    :resource_pool_clouds,
                                     :policy_profiles,
-                                    :object   => rp,
+                                    :object   => rpc,
                                     :policies => [ps1, ps2])
     end
 
-    it "unassign Resource Pool policy profile without approriate role" do
-      test_policy_unassign_no_role(api_resource_pool_policy_profiles_url(nil, rp))
+    it "unassign Resource Pool Cloud policy profile without approriate role" do
+      test_policy_unassign_no_role(api_resource_pool_cloud_policy_profiles_url(nil, rpc))
     end
 
-    it "unassign Resource Pool policy profile with invalid href" do
-      test_policy_unassign_invalid_policy(api_resource_pool_policy_profiles_url(nil, rp), :resource_pools, :policy_profiles)
+    it "unassign Resource Pool Cloud policy profile with invalid href" do
+      test_policy_unassign_invalid_policy(api_resource_pool_cloud_policy_profiles_url(nil, rpc), :resource_pool_clouds, :policy_profiles)
     end
 
-    it "unassign Resource Pool policy profile with invalid guid" do
-      test_policy_unassign_invalid_policy_guid(api_resource_pool_url(nil, rp),
-                                               api_resource_pool_policy_profiles_url(nil, rp),
-                                               :resource_pools,
+    it "unassign Resource Pool Cloud policy profile with invalid guid" do
+      test_policy_unassign_invalid_policy_guid(api_resource_pool_cloud_url(nil, rpc),
+                                               api_resource_pool_cloud_policy_profiles_url(nil, rpc),
+                                               :resource_pool_clouds,
                                                :policy_profiles)
     end
 
-    it "unassign Resource Pool multiple policy profiles" do
-      test_unassign_multiple_policy_profiles(api_resource_pool_policy_profiles_url(nil, rp),
-                                             :resource_pools,
+    it "unassign Resource Pool Cloud multiple policy profiles" do
+      test_unassign_multiple_policy_profiles(api_resource_pool_cloud_policy_profiles_url(nil, rpc),
+                                             :resource_pool_clouds,
                                              :policy_profiles,
-                                             :object => rp)
+                                             :object => rpc)
+    end
+  end
+
+  context "Resource Pool Infra policies subcollection assignments" do
+    it "assign Resource Pool Infra policy without appropriate role" do
+      test_policy_assign_no_role(api_resource_pool_infra_policies_url(nil, rpi))
+    end
+
+    it "assign Resource Pool Infra policy with invalid href" do
+      test_policy_assign_invalid_policy(api_resource_pool_infra_policies_url(nil, rpi), :resource_pool_infras, :policies)
+    end
+
+    it "assign Resource Pool Infra policy with invalid guid" do
+      test_policy_assign_invalid_policy_guid(api_resource_pool_infra_url(nil, rpi), api_resource_pool_infra_policies_url(nil, rpi), :resource_pool_infras, :policies)
+    end
+
+    it "assign Resource Pool Infra multiple policies" do
+      test_assign_multiple_policies(api_resource_pool_infra_url(nil, rpi),
+                                    api_resource_pool_infra_policies_url(nil, rpi),
+                                    :resource_pool_infras,
+                                    :policies,
+                                    :object   => rpi,
+                                    :policies => [p1, p2])
+    end
+
+    it "unassign Resource Pool Infra policy without approriate role" do
+      test_policy_unassign_no_role(api_resource_pool_infra_policies_url(nil, rpi))
+    end
+
+    it "unassign Resource Pool Infra policy with invalid href" do
+      test_policy_unassign_invalid_policy(api_resource_pool_infra_policies_url(nil, rpi), :resource_pool_infras, :policies)
+    end
+
+    it "unassign Resource Pool Infra policy with invalid guid" do
+      test_policy_unassign_invalid_policy_guid(api_resource_pool_infra_url(nil, rpi), api_resource_pool_infra_policies_url(nil, rpi), :resource_pool_infras, :policies)
+    end
+
+    it "unassign Resource Pool Infra multiple policies" do
+      test_unassign_multiple_policies(api_resource_pool_infra_policies_url(nil, rpi), :resource_pool_infras, :policies, :object => rpi)
+    end
+  end
+
+  context "Resource Pool Infra policy profiles subcollection assignments" do
+    it "assign Resource Pool Infra policy profile without approriate role" do
+      test_policy_assign_no_role(api_resource_pool_infra_policy_profiles_url(nil, rpi))
+    end
+
+    it "assign Resource Pool Infra policy profile with invalid href" do
+      test_policy_assign_invalid_policy(api_resource_pool_infra_policy_profiles_url(nil, rpi), :resource_pool_infras, :policy_profiles)
+    end
+
+    it "assign Resource Pool Infra policy profile with invalid guid" do
+      test_policy_assign_invalid_policy_guid(api_resource_pool_infra_url(nil, rpi), api_resource_pool_infra_policy_profiles_url(nil, rpi), :resource_pool_infras, :policy_profiles)
+    end
+
+    it "assign Resource Pool Infra multiple policy profiles" do
+      test_assign_multiple_policies(api_resource_pool_infra_url(nil, rpi),
+                                    api_resource_pool_infra_policy_profiles_url(nil, rpi),
+                                    :resource_pool_infras,
+                                    :policy_profiles,
+                                    :object   => rpi,
+                                    :policies => [ps1, ps2])
+    end
+
+    it "unassign Resource Pool Infra policy profile without approriate role" do
+      test_policy_unassign_no_role(api_resource_pool_infra_policy_profiles_url(nil, rpi))
+    end
+
+    it "unassign Resource Pool Infra policy profile with invalid href" do
+      test_policy_unassign_invalid_policy(api_resource_pool_infra_policy_profiles_url(nil, rpi), :resource_pool_infras, :policy_profiles)
+    end
+
+    it "unassign Resource Pool Infra policy profile with invalid guid" do
+      test_policy_unassign_invalid_policy_guid(api_resource_pool_infra_url(nil, rpi),
+                                               api_resource_pool_infra_policy_profiles_url(nil, rpi),
+                                               :resource_pool_infras,
+                                               :policy_profiles)
+    end
+
+    it "unassign Resource Pool Infra multiple policy profiles" do
+      test_unassign_multiple_policy_profiles(api_resource_pool_infra_policy_profiles_url(nil, rpi),
+                                             :resource_pool_infras,
+                                             :policy_profiles,
+                                             :object => rpi)
     end
   end
 
