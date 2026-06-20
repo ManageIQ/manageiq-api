@@ -14,6 +14,29 @@ module Api
       %w[include_encrypted_attributes]
     end
 
+    def create_resource(type, _id, data)
+      # Get source_id and manager_id from configuration_script_source if provided
+      source_id = parse_id(data.delete('configuration_script_source'), :configuration_script_sources)
+      manager_id = parse_id(data.delete('manager_resource'), :providers) || data.delete('ems_id')
+
+      raise BadRequestError, _("Must specify name") unless data['name']
+      raise BadRequestError, _("Must specify payload") unless data['payload']
+      raise BadRequestError, _("Must specify manager_resource or configuration_script_source") unless manager_id || source_id
+
+      # Get manager_id from source if not already provided
+      if source_id && !manager_id
+        source = resource_search(source_id, :configuration_script_sources)
+        manager_id = source.manager_id
+      end
+
+      payload_attrs = data.slice('name', 'description', 'payload', 'payload_type').deep_symbolize_keys
+      payload_attrs[:manager_id] = manager_id
+      payload_attrs[:configuration_script_source_id] = source_id if source_id
+      payload_attrs[:payload_type] ||= 'json'
+
+      ConfigurationScriptPayload.create!(payload_attrs)
+    end
+
     def edit_resource(type, id, data)
       resource = resource_search(id, type)
 
