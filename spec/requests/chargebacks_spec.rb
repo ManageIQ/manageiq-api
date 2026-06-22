@@ -6,6 +6,10 @@ RSpec.describe "chargebacks API" do
     FactoryBot.create(:chargeback_tier, :chargeback_rate_detail_id => chargeback_rate_detail.id, :start => 0, :finish => Float::INFINITY, :fixed_rate => 0.0, :variable_rate => 0.0)
   end
 
+  def query_match_regexp(*tables)
+    /SELECT.*FROM\s"(?:#{tables.flatten.join("|")})"/m
+  end
+
   def convert_to_response_hash(resource)
     resource.attributes.map do |attribute_name, attribute_value|
       attribute_value = attribute_value.to_s if attribute_value.present? && (attribute_name.include?("id") || attribute_value == Float::INFINITY)
@@ -88,6 +92,30 @@ RSpec.describe "chargebacks API" do
     )
 
     expect(response).to have_http_status(:ok)
+  end
+
+  it "avoids N+1 queries when fetching chargebacks with assigned_to attribute" do
+    # Create multiple chargeback rates with tag assignments
+    chargeback_rates = FactoryBot.create_list(:chargeback_rate, 3)
+
+    chargeback_rates.each do |rate|
+      temp = {:cb_rate => rate, :tag => [tag_classification, "vm"]}
+      ChargebackRate.set_assignments(:compute, [temp])
+    end
+
+    api_basic_authorize collection_action_identifier(:chargebacks, :read, :get)
+
+    query_match = query_match_regexp("chargeback_rates", "chargeback_rate_detail_currencies", "chargeback_rate_details", "chargeable_fields", "chargeback_rate_detail_measures", "chargeback_tiers", "chargeback_rate_detail_measure_units", "custom_attributes", "classifications", "tags")
+
+    # With eager loading, query count should be significantly reduced
+    # Without eager loading, it would be 40+ queries (base queries + 3 rates * N associations each)
+    # With eager loading, we expect around 25-30 queries (base system queries + optimized association loading)
+    expect do
+      get api_chargebacks_url, :params => {:expand => 'resources', :attributes => 'assigned_to'}
+    end.to make_database_queries(:count => be < 35, :matching => query_match)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body["resources"].size).to eq(3)
   end
 
   it "can fetch chargeback rate details" do
