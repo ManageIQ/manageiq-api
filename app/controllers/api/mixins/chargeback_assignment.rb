@@ -235,9 +235,29 @@ module Api
       def assigments_to_result(compute_assignments, assignment_keys = [:cb_rate])
         return [] if compute_assignments.empty?
 
+        # Preload tag associations to avoid N+1 queries
+        preload_tag_associations(compute_assignments)
+        preload_label_associations(compute_assignments)
+
         key = (compute_assignments.first.keys - assignment_keys).first
 
         compute_assignments.map { |x| result_assignment(x, key, assignment_keys == [:cb_rate]) }
+      end
+
+      def preload_tag_associations(assignments)
+        # Extract all tags from assignments
+        tags = assignments.filter_map { |a| a[:tag]&.first&.tag }
+        return if tags.empty?
+
+        MiqPreloader.preload(tags, [:classification, :category])
+      end
+
+      def preload_label_associations(assignments)
+        # Extract all labels (CustomAttributes) from assignments
+        labels = assignments.filter_map { |a| a[:label]&.first }
+        return if labels.empty?
+
+        MiqPreloader.preload(labels, :resource)
       end
 
       def fetch_rates_from_params(params_assignments)
