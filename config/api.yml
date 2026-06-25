@@ -3741,6 +3741,8 @@
         :identifier: dialog_edit_editor
       - :name: copy
         :identifier: dialog_copy_editor
+      - :name: export
+        :identifier: miq_ae_customization_explorer
       - :name: template_service_dialog
         :identifier: dialog_new_editor
     :resource_actions:
@@ -3758,6 +3760,8 @@
         :identifier: dialog_edit_editor
       - :name: copy
         :identifier: dialog_copy_editor
+      - :name: export
+        :identifier: miq_ae_customization_explorer
       - :name: template_service_dialog
         :identifier: dialog_new_editor
   :service_offerings:
