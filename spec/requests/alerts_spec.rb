@@ -186,4 +186,25 @@ describe "Alerts API" do
       )
     end
   end
+
+  describe "POST /api/alerts" do
+    it "rejects POST with a bad request error" do
+      api_basic_authorize
+
+      post(api_alerts_url)
+
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include_error_with_message("Unsupported HTTP Method post for the Collection alerts specified")
+    end
+
+    it "rejects POST to a resource with a bad request error" do
+      api_basic_authorize
+      alert_status = FactoryBot.create(:miq_alert_status)
+
+      post(api_alert_url(nil, alert_status))
+
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include_error_with_message("Unsupported HTTP Method post for the Collection alerts specified")
+    end
+  end
 end

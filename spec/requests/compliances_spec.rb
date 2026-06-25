@@ -79,5 +79,16 @@ RSpec.describe "Compliances API" do
         expect(response).to have_http_status(:forbidden)
       end
     end
+
+    describe "POST /api/vms/:c_id/compliances" do
+      it "rejects POST with a bad request error" do
+        api_basic_authorize
+
+        post(api_vm_compliances_url(nil, vm))
+
+        expect(response).to have_http_status(:bad_request)
+        expect(response.parsed_body).to include_error_with_message("Unsupported HTTP Method post for the Sub-Collection compliances specified")
+      end
+    end
   end
 end

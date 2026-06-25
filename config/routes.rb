@@ -59,6 +59,23 @@ Rails.application.routes.draw do
           end
         end
 
+        # Route POST to the controller for primary collections that don't support it so
+        # validate_api_request can return a proper JSON 400 instead of a routing error.
+        if collection.options.include?(:primary) && !collection.verbs.include?(:post)
+          root :action => :update, :via => :post, :as => nil
+        end
+
+        # Route POST to the controller for collections that don't support it so
+        # validate_api_request can return a proper JSON 400 instead of a routing error.
+        if collection.options.include?(:collection) && !collection.verbs.include?(:post)
+          if collection.options.include?(:arbitrary_resource_path)
+            match "(/*c_suffix)", :action => :update, :via => :post
+          else
+            post "/", :action => :create, :constraints => Api::CreateConstraint.new
+            post "(/:c_id)", :action => :update
+          end
+        end
+
         Array(collection.subcollections).each do |subcollection_name|
           # OPTIONS action for each subcollection
           match "/:c_id/#{subcollection_name}", :controller => collection_name, :action => :options, :via => :options, :as => nil, :subcollection => true
@@ -73,7 +90,8 @@ Rails.application.routes.draw do
           else
             subcollection_name_pluralized, subresource_name = Api::Routing.inflections_for_named_route_helpers(subcollection_name.to_s)
 
-            Api::ApiConfig.collections[subcollection_name].verbs.each do |verb|
+            subcollection_verbs = Api::ApiConfig.collections[subcollection_name].verbs
+            subcollection_verbs.each do |verb|
               case verb
               when :get
                 get "/:c_id/#{subcollection_name}", :action => :index, :as => "#{resource_name}_#{subcollection_name_pluralized}"
@@ -88,6 +106,12 @@ Rails.application.routes.draw do
                 post "/:c_id/#{subcollection_name}", :action => :create, :constraints => Api::CreateConstraint.new
                 post "/:c_id/#{subcollection_name}(/:s_id)", :action => :update
               end
+            end
+
+            # Route POST to the controller for subcollections that don't support it so
+            # validate_api_request can return a proper JSON 400 instead of a routing error.
+            unless subcollection_verbs.include?(:post)
+              post "/:c_id/#{subcollection_name}(/:s_id)", :action => :update
             end
           end
         end

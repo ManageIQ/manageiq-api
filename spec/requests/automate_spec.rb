@@ -97,4 +97,15 @@ describe "Automate API" do
       expect(response.parsed_body["resources"]).to match_array([{"name" => "System", "fqname" => "/Custom/Test/System"}])
     end
   end
+
+  describe "POST /api/automate" do
+    it "rejects POST with a bad request error" do
+      api_basic_authorize
+
+      post(api_automate_url(nil, "custom/test"))
+
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include_error_with_message("Unsupported HTTP Method post for the Collection automate specified")
+    end
+  end
 end
