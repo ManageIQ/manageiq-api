@@ -3,6 +3,7 @@ module Api
     include Api::Mixins::ResourceCancel
     include Api::Mixins::ResourceApproveDeny
     include Subcollections::RequestTasks
+    include Subcollections::RequestLogs
 
     def create_resource(type, _id, data)
       assert_id_not_specified(data, type)
