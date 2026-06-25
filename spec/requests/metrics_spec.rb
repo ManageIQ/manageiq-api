@@ -137,4 +137,28 @@ RSpec.describe 'Metrics API' do
       expect(response.parsed_body['links'].keys).to match_array(%w[self next first last])
     end
   end
+
+  describe "POST /api/metrics" do
+    it "rejects POST with a bad request error" do
+      api_basic_authorize
+
+      post(api_metrics_url)
+
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include_error_with_message("Unsupported HTTP Method post for the Collection metrics specified")
+    end
+  end
+
+  describe "POST /api/vms/:c_id/metrics" do
+    let(:vm) { FactoryBot.create(:vm_vmware) }
+
+    it "rejects POST as a subcollection with a bad request error" do
+      api_basic_authorize
+
+      post(api_vm_metrics_url(nil, vm))
+
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include_error_with_message("Unsupported HTTP Method post for the Sub-Collection metrics specified")
+    end
+  end
 end
