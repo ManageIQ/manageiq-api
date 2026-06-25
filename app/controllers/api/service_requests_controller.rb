@@ -1,5 +1,6 @@
 module Api
   class ServiceRequestsController < BaseController
+    include Subcollections::RequestLogs
     include Subcollections::RequestTasks
     include Api::Mixins::Pictures
     include Api::Mixins::ResourceCancel
