@@ -59,6 +59,12 @@ Rails.application.routes.draw do
           end
         end
 
+        # Route POST to the controller for primary collections that don't support it so
+        # validate_api_request can return a proper JSON 400 instead of a routing error.
+        if collection.options.include?(:primary) && !collection.verbs.include?(:post)
+          root :action => :update, :via => :post, :as => nil
+        end
+
         # Route POST to the controller for collections that don't support it so
         # validate_api_request can return a proper JSON 400 instead of a routing error.
         if collection.options.include?(:collection) && !collection.verbs.include?(:post)

@@ -499,4 +499,15 @@ describe "Authentication API" do
       end
     end
   end
+
+  describe "POST /api/auth" do
+    it "rejects POST with a bad request error" do
+      api_basic_authorize
+
+      post(api_auth_url)
+
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include_error_with_message("Unsupported HTTP Method post for the Collection auth specified")
+    end
+  end
 end
