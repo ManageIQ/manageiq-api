@@ -4,6 +4,7 @@ module Api
       assert_id_not_specified(data, type)
       begin
         data["expression"] = MiqExpression.new(data["expression"]) if data["expression"]
+        data["applies_to_exp"] = MiqExpression.new(data["applies_to_exp"]) if data["applies_to_exp"]
         super(type, id, data)
       rescue => err
         raise BadRequestError, "Failed to create a new condition - #{err}"
@@ -14,6 +15,7 @@ module Api
       raise BadRequestError, "Must specify an id for editing a #{type} resource" unless id
       begin
         data["expression"] = MiqExpression.new(data["expression"]) if data["expression"]
+        data["applies_to_exp"] = MiqExpression.new(data["applies_to_exp"]) if data["applies_to_exp"]
         super(type, id, data)
       rescue => err
         raise BadRequestError, "Failed to update condition - #{err}"

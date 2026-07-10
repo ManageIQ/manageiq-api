@@ -21,10 +21,11 @@ describe "Conditions API" do
   context "Condition CRUD" do
     let(:sample_condition) do
       {
-        :name        => "name",
-        :description => "description",
-        :expression  => {"=" => {"field" => "ContainerImage-architecture", "value" => "dsa"}},
-        :towhat      => "ExtManagementSystem"
+        :name           => "name",
+        :description    => "description",
+        :expression     => {"=" => {"field" => "ContainerImage-architecture", "value" => "dsa"}},
+        :applies_to_exp => {"=" => {"field" => "ExtManagementSystem-type", "value" => "openshift"}},
+        :towhat         => "ExtManagementSystem"
       }
     end
     let(:condition) { FactoryBot.create(:condition) }
@@ -74,6 +75,7 @@ describe "Conditions API" do
       condition_id = response.parsed_body["results"].first["id"]
 
       expect(Condition.find(condition_id).expression.class).to eq(MiqExpression)
+      expect(Condition.find(condition_id).applies_to_exp.class).to eq(MiqExpression)
     end
 
     it "creates new conditions" do
@@ -117,12 +119,18 @@ describe "Conditions API" do
 
     it "edits condition" do
       api_basic_authorize collection_action_identifier(:conditions, :edit)
-      post(api_condition_url(nil, condition), :params => gen_request(:edit, "description" => "change"))
+      edits = {
+        "description"    => "change",
+        "expression"     => {"=" => {"field" => "ContainerImage-architecture", "value" => "dsa"}},
+        "applies_to_exp" => {"=" => {"field" => "ExtManagementSystem-type", "value" => "openshift"}}
+      }
+      post(api_condition_url(nil, condition), :params => gen_request(:edit, edits))
 
       expect(response).to have_http_status(:ok)
 
       expect(Condition.find(condition.id).description).to eq("change")
       expect(Condition.find(condition.id).expression.class).to eq(MiqExpression)
+      expect(Condition.find(condition.id).applies_to_exp.class).to eq(MiqExpression)
     end
 
     it "edits conditions" do
