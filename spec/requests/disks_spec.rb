@@ -1,11 +1,11 @@
 RSpec.describe "Disks API" do
   let(:hw) { FactoryBot.create(:hardware) }
   let(:vm) { FactoryBot.create(:vm_vmware, :hardware => hw) }
-  let!(:disk) { FactoryBot.create(:disk, :hardware => hw) }
+  let!(:disk) { FactoryBot.create(:disk, :hardware => hw, :partitions_aligned => "True") }
 
   describe "as a subcollection of VMs" do
     describe "GET /api/vms/:c_id/disks" do
-      it "can list the snapshots of a VM" do
+      it "can list the disks of a VM" do
         api_basic_authorize(subcollection_action_identifier(:vms, :disks, :read, :get))
 
         _other_disk = FactoryBot.create(:disk)
@@ -24,6 +24,15 @@ RSpec.describe "Disks API" do
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)
       end
+
+      it "includes partitions_aligned when resources are expanded" do
+        api_basic_authorize(subcollection_action_identifier(:vms, :disks, :read, :get))
+
+        get(api_vm_disks_url(nil, vm), :params => {:expand => "resources"})
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["resources"].first).to include("partitions_aligned" => "True")
+      end
     end
 
     describe "GET /api/vms/:c_id/disks/:s_id" do
@@ -38,6 +47,15 @@ RSpec.describe "Disks API" do
         }
         expect(response.parsed_body).to include(expected)
         expect(response).to have_http_status(:ok)
+      end
+
+      it "includes partitions_aligned in the disk resource" do
+        api_basic_authorize(subcollection_action_identifier(:vms, :disks, :read, :get))
+
+        get(api_vm_disk_url(nil, vm, disk))
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("partitions_aligned" => "True")
       end
 
       it "will not show a disk unless authorized" do
