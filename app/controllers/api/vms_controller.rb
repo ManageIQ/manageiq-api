@@ -194,6 +194,11 @@ module Api
       enqueue_ems_action(type, id, "Check Compliance for", :method_name => "check_compliance", :supports => true)
     end
 
+    def show
+      @additional_attributes = %w(partitions_aligned) if @req.subcollection == "disks"
+      super
+    end
+
     def options
       return super unless @req.subcollection?
 

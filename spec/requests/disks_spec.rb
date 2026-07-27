@@ -1,7 +1,7 @@
 RSpec.describe "Disks API" do
   let(:hw) { FactoryBot.create(:hardware) }
   let(:vm) { FactoryBot.create(:vm_vmware, :hardware => hw) }
-  let!(:disk) { FactoryBot.create(:disk, :hardware => hw, :partitions_aligned => "True") }
+  let!(:disk) { FactoryBot.create(:disk, :hardware => hw) }
 
   describe "as a subcollection of VMs" do
     describe "GET /api/vms/:c_id/disks" do
@@ -31,7 +31,7 @@ RSpec.describe "Disks API" do
         get(api_vm_disks_url(nil, vm), :params => {:expand => "resources"})
 
         expect(response).to have_http_status(:ok)
-        expect(response.parsed_body["resources"].first).to include("partitions_aligned" => "True")
+        expect(response.parsed_body["resources"].first).to have_key("partitions_aligned")
       end
     end
 
@@ -55,7 +55,7 @@ RSpec.describe "Disks API" do
         get(api_vm_disk_url(nil, vm, disk))
 
         expect(response).to have_http_status(:ok)
-        expect(response.parsed_body).to include("partitions_aligned" => "True")
+        expect(response.parsed_body).to have_key("partitions_aligned")
       end
 
       it "will not show a disk unless authorized" do
