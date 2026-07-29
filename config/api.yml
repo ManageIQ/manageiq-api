@@ -1119,6 +1119,8 @@
       :post:
       - :name: check_compliance
         :identifier: container_group_check_compliance
+      - :name: logs
+        :identifier: container_group_logs
   :container_images:
     :description: Container Images
     :identifier: container_image
