@@ -55,7 +55,7 @@ module Api
     end
 
     def terminate_resource(type, id = nil, _data = nil)
-      enqueue_ems_action(type, id, "Terminating", :method_name => "vm_destroy", :supports => true)
+      enqueue_ems_action(type, id, "Terminating", :method_name => "vm_destroy", :supports => :terminate)
     end
 
     def set_owner_resource(type, id = nil, data = nil)

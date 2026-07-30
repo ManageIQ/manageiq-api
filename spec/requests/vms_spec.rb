@@ -1193,7 +1193,7 @@ describe "Vms API" do
 
     it "terminates a single valid Vm" do
       api_basic_authorize action_identifier(:vms, :terminate)
-      stub_supports(vm, :vm_destroy)
+      stub_supports(vm, :terminate)
 
       post(vm_url, :params => gen_request(:terminate))
 
@@ -1210,8 +1210,8 @@ describe "Vms API" do
 
     it "terminates multiple valid Vms" do
       api_basic_authorize collection_action_identifier(:vms, :terminate)
-      stub_supports(vm1, :vm_destroy)
-      stub_supports(vm2, :vm_destroy)
+      stub_supports(vm1, :terminate)
+      stub_supports(vm2, :terminate)
 
       post(api_vms_url, :params => gen_request(:terminate, [{"href" => vm1_url}, {"href" => vm2_url}]))
 
