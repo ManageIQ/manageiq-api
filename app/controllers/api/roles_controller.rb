@@ -2,6 +2,8 @@ module Api
   class RolesController < BaseController
     include Subcollections::Features
 
+    PERMITTED_ROLE_RESTRICTIONS = %i[service_templates vms].freeze
+
     def create_resource(type, _id = nil, data = {})
       assert_id_not_specified(data, type)
 
@@ -62,7 +64,12 @@ module Api
     end
 
     def get_role_settings(data)
-      restrictions = {:vms => data['settings']['restrictions']['vms'].to_sym}
+      restrictions = {}
+      data['settings']['restrictions']&.each do |key, value|
+        next unless PERMITTED_ROLE_RESTRICTIONS.include?(key.to_sym)
+
+        restrictions[key.to_sym] = value.to_sym
+      end
       data['settings'].delete('restrictions')
       restrictions
     end

@@ -71,14 +71,11 @@ RSpec.describe "Headers" do
 
       get(api_entrypoint_url)
 
-      expected = {
-        "X-Content-Type-Options"            => "nosniff",
-        "X-Download-Options"                => "noopen",
-        "X-Frame-Options"                   => "SAMEORIGIN",
-        "X-Permitted-Cross-Domain-Policies" => "none",
-        "X-XSS-Protection"                  => "1; mode=block"
-      }
-      expect(response.headers.to_h).to include(expected)
+      expect(response.headers["x-content-type-options"]).to eq("nosniff")
+      expect(response.headers["x-download-options"]).to eq("noopen")
+      expect(response.headers["x-frame-options"]).to eq("SAMEORIGIN")
+      expect(response.headers["x-permitted-cross-domain-policies"]).to eq("none")
+      expect(response.headers["x-xss-protection"]).to eq("1; mode=block")
       expect(content_security_policy_for("default-src")).to include("'self'")
       expect(content_security_policy_for("connect-src")).to include("'self'")
       expect(content_security_policy_for("frame-src") || content_security_policy_for("child-src")).to include("'self'")
@@ -87,7 +84,7 @@ RSpec.describe "Headers" do
     end
 
     def content_security_policy_for(src)
-      response.headers["Content-Security-Policy"].split(/\s*;\s*/).detect { |p| p.start_with?(src) }
+      response.headers["content-security-policy"].split(/\s*;\s*/).detect { |p| p.start_with?(src) }
     end
   end
 end

@@ -11,7 +11,7 @@ module Api
       }.freeze
 
       ALLOWED_TAG_PREFIXES = {
-        'Compute' => %w[vm container_image],
+        'Compute' => %w[vm container_image configured_system],
         'Storage' => %w[storage]
       }.freeze
 
