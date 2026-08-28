@@ -1224,7 +1224,7 @@
     :description: Container Volumes
     :identifier: persistent_volume
     :klass: ContainerVolume
-    :verbs: *gp
+    :verbs: *gpppd
     :options:
     - :collection
     - :custom_actions
@@ -1239,6 +1239,13 @@
       :get:
       - :name: read
         :identifier: persistent_volume_show
+      :post:
+      - :name: attach
+        :identifier: vm_common_add_volume
+      - :name: create_and_attach_volume
+        :identifier: vm_common_add_volume
+      - :name: detach
+        :identifier: vm_common_remove_volume
   :containers:
     :description: Containers
     :identifier: container
