@@ -43,6 +43,11 @@ module Api
       fetch_service_dialogs_content(service_dialog).first
     end
 
+    def export_resource(type, id, _data)
+      service_dialog = resource_search(id, type)
+      DialogSerializer.new.serialize([service_dialog]).first
+    end
+
     def copy_resource(type, id, data)
       service_dialog = resource_search(id, type)
       attributes = data.dup

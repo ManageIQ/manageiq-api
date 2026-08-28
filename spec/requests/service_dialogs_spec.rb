@@ -915,4 +915,52 @@ describe "Service Dialogs API" do
       expect(response).to have_http_status(:bad_request)
     end
   end
+
+  context 'Exports service dialogs' do
+    let(:dialog) { FactoryBot.create(:dialog_with_tab_and_group_and_field, :label => 'export_me') }
+
+    it 'forbids export without an appropriate role' do
+      api_basic_authorize
+
+      post(api_service_dialog_url(nil, dialog), :params => {:action => 'export'})
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'exports a single service dialog' do
+      api_basic_authorize collection_action_identifier(:service_dialogs, :export)
+
+      post(api_service_dialog_url(nil, dialog), :params => {:action => 'export'})
+
+      expected = {
+        'label'          => 'export_me',
+        'dialog_tabs'    => a_collection_including(anything),
+        'export_version' => DialogImportService::CURRENT_DIALOG_VERSION
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'exports multiple service dialogs' do
+      dialog2 = FactoryBot.create(:dialog_with_tab_and_group_and_field, :label => 'export_me_too')
+      api_basic_authorize collection_action_identifier(:service_dialogs, :export)
+
+      post(
+        api_service_dialogs_url,
+        :params => {
+          :action    => 'export',
+          :resources => [{:id => dialog.id}, {:id => dialog2.id}]
+        }
+      )
+
+      expected = {
+        'results' => a_collection_containing_exactly(
+          a_hash_including('label' => 'export_me',     'dialog_tabs' => anything),
+          a_hash_including('label' => 'export_me_too', 'dialog_tabs' => anything)
+        )
+      }
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
