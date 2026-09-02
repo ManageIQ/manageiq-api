@@ -6,7 +6,7 @@ module Api
 
         case @req.method
         when :patch
-          raise ForbiddenError, "You are not authorized to edit settings." unless super_admin?
+          raise ForbiddenError, "You are not authorized to edit settings." unless super_admin? || current_user.role_allows?(:identifier => 'ops_settings')
 
           begin
             resource.add_settings_for_resource(@req.json_body)
@@ -14,7 +14,7 @@ module Api
             raise BadRequestError, "Settings validation failed - #{err}"
           end
         when :delete
-          raise ForbiddenError, "You are not authorized to remove settings." unless super_admin?
+          raise ForbiddenError, "You are not authorized to remove settings." unless super_admin? || current_user.role_allows?(:identifier => 'ops_settings')
 
           resource.remove_settings_path_for_resource(*@req.json_body)
           head :no_content
