@@ -1,6 +1,7 @@
 module Api
   class TemplatesController < BaseController
     include Api::Mixins::Genealogy
+    include Subcollections::Disks
     include Subcollections::Policies
     include Subcollections::PolicyProfiles
     include Subcollections::Tags

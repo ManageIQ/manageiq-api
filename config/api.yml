@@ -4437,6 +4437,7 @@
     :verbs: *gpppd
     :klass: MiqTemplate
     :subcollections:
+    - :disks
     - :tags
     - :policies
     - :policy_profiles
@@ -4466,6 +4467,14 @@
         :identifier: miq_template_ownership
       - :name: delete
         :identifier: miq_template_delete
+    :disks_subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_template_show
+    :disks_subresource_actions:
+      :get:
+      - :name: read
+        :identifier: miq_template_show
     :tags_subcollection_actions:
       :post:
       - :name: assign
