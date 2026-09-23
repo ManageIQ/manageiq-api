@@ -23,6 +23,18 @@ module Api
         action_result(false, e.to_s)
       end
 
+      def snapshots_rename_snapshot_resource(parent, type, id, data)
+        raise "Must specify a new name for the snapshot" if data["name"].blank?
+        raise parent.unsupported_reason(:rename_snapshot) unless parent.supports?(:rename_snapshot)
+
+        snapshot = resource_search(id, type)
+        message = "Renaming snapshot #{snapshot.name} to #{data["name"]} for #{snapshot_ident(parent)}"
+        task_id = queue_object_action(parent, message, :method_name => "rename_snapshot", :role => "ems_operations", :args => [id, data["name"]])
+        action_result(true, message, :task_id => task_id)
+      rescue => e
+        action_result(false, e.to_s)
+      end
+
       def delete_resource_snapshots(parent, type, id, _data)
         snapshot = resource_search(id, type)
         begin
