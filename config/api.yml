@@ -2088,7 +2088,7 @@
         :identifier: cloud_volume_snapshot_view
       :post:
       - :name: rename_snapshot
-        :identifier: vm_snapshot_rename
+        :identifier: cloud_volume_snapshot_create
       - :name: delete
         :identifier: cloud_volume_snapshot_delete
     :custom_attributes_subcollection_actions:
@@ -4937,7 +4937,9 @@
       - :name: revert
         :identifier: vm_snapshot_revert
       - :name: rename_snapshot
-        :identifier: vm_snapshot_rename
+        :identifier:
+        - vm_snapshot_add
+        - sui_vm_snapshot_create
       - :name: delete
         :identifier:
         - vm_snapshot_delete
