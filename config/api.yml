@@ -2088,7 +2088,7 @@
         :identifier: cloud_volume_snapshot_view
       :post:
       - :name: rename_snapshot
-        :identifier: cloud_volume_snapshot_create
+        :identifier: cloud_volume_snapshot_control
       - :name: delete
         :identifier: cloud_volume_snapshot_delete
     :custom_attributes_subcollection_actions:
@@ -5027,4 +5027,3 @@
         :identifier: zone_edit
       - :name: delete
         :identifier: zone_delete
-  

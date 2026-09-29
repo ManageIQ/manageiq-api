@@ -31,7 +31,7 @@ module Api
         message = "Renaming snapshot #{snapshot.name} to #{data["name"]} for #{snapshot_ident(parent)}"
         task_id = queue_object_action(parent, message, :method_name => "rename_snapshot", :role => "ems_operations", :args => [id, data["name"]])
         action_result(true, message, :task_id => task_id)
-      rescue => e
+      rescue StandardError => e
         action_result(false, e.to_s)
       end
 
