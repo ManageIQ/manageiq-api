@@ -52,7 +52,7 @@ describe "Services API" do
     let(:search_attrs) do
       [
         "picture", "picture.image_href", "chargeback_report",
-        "evm_owner.userid", "v_total_vms", "power_state",
+        "evm_owner.userid", "v_total_vms", "v_total_direct_service_children", "power_state",
         "all_service_children", "tags"
       ]
     end
