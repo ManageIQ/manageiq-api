@@ -4937,9 +4937,7 @@
       - :name: revert
         :identifier: vm_snapshot_revert
       - :name: rename_snapshot
-        :identifier:
-        - vm_snapshot_add
-        - sui_vm_snapshot_create
+        :identifier: vm_snapshot_rename
       - :name: delete
         :identifier:
         - vm_snapshot_delete
