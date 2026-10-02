@@ -1,4 +1,6 @@
 RSpec.describe "Snapshots API" do
+  include Spec::Support::SupportsHelper
+
   describe "as a subcollection of VMs" do
     describe "GET /api/vms/:c_id/snapshots" do
       it "can list the snapshots of a VM" do
@@ -218,6 +220,8 @@ RSpec.describe "Snapshots API" do
         host = FactoryBot.create(:host, :ext_management_system => ems)
         vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
         snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
+
+        stub_supports(vm, :rename_snapshot)
 
         post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "rename_snapshot", :name => "renamed snapshot"})
 
@@ -580,6 +584,8 @@ RSpec.describe "Snapshots API" do
         host = FactoryBot.create(:host_openstack_infra, :ext_management_system => ems)
         instance = FactoryBot.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
         snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => instance)
+
+        stub_supports(instance, :rename_snapshot)
 
         post(api_instance_snapshot_url(nil, instance, snapshot), :params => {:action => "rename_snapshot", :name => "renamed snapshot"})
 
