@@ -604,11 +604,11 @@ describe "Groups API" do
   end
 
   describe 'GET /groups/:id/custom_button_events' do
-    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice') }
     let!(:custom_button_event) { FactoryBot.create(:custom_button_event, :target => group) }
 
     it 'returns with the custom button events for the given user' do
-      api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
+      api_basic_authorize(:user => super_admin.userid, :password => "dummy")
 
       get(api_group_custom_button_events_url(nil, group))
 

@@ -19,9 +19,9 @@ RSpec.describe "users API" do
   let(:role2)    { FactoryBot.create(:miq_user_role) }
   let(:group2)   { FactoryBot.create(:miq_group, :description => "Group2", :role => role2, :tenant => tenant1) }
 
-  let(:sample_user1) { {:userid => "user1", :name => "User1", :password => "password1", :group => {"id" => group1.id}} }
-  let(:sample_user2) { {:userid => "user2", :name => "User2", :password => "password2", :group => {"id" => group2.id}} }
-  let(:sample_user3) { {:userid => "user3", :name => "User3", :password => "password3", :miq_groups => [{"id" => group1.id}, {"id" => group2.id}]} }
+  let(:sample_user1) { {:userid => "user1", :name => "User1", :password => "Tr0ub4dor&3", :group => {"id" => group1.id}} }
+  let(:sample_user2) { {:userid => "user2", :name => "User2", :password => "Tr0ub4dor&3", :group => {"id" => group2.id}} }
+  let(:sample_user3) { {:userid => "user3", :name => "User3", :password => "Tr0ub4dor&3", :miq_groups => [{"id" => group1.id}, {"id" => group2.id}]} }
 
   let(:user1) { FactoryBot.create(:user, sample_user1.except(:group).merge(:miq_groups => [group1])) }
   let(:user2) { FactoryBot.create(:user, sample_user2.except(:group).merge(:miq_groups => [group2])) }
@@ -36,7 +36,7 @@ RSpec.describe "users API" do
       api_basic_authorize action_identifier(:users, :edit)
 
       expect do
-        post api_user_url(nil, @user), :params => gen_request(:edit, :password => "new_password")
+        post api_user_url(nil, @user), :params => gen_request(:edit, :password => "Tr0ub4dor&3")
       end.to change { @user.reload.password_digest }
 
       expect(response).to have_http_status(:ok)
@@ -47,7 +47,7 @@ RSpec.describe "users API" do
       user = FactoryBot.create(:user, :miq_groups => [group1], :current_group => group1)
 
       expect do
-        post api_user_url(nil, user), :params => gen_request(:edit, :password => "new_password")
+        post api_user_url(nil, user), :params => gen_request(:edit, :password => "Tr0ub4dor&3")
       end.to change { user.reload.password_digest }
 
       expect(response).to have_http_status(:ok)
@@ -59,7 +59,7 @@ RSpec.describe "users API" do
       api_basic_authorize
 
       expect do
-        post api_user_url(nil, @user), :params => gen_request(:edit, :password => "new_password")
+        post api_user_url(nil, @user), :params => gen_request(:edit, :password => "Tr0ub4dor&3")
       end.to change { @user.reload.password_digest }
 
       expect(response).to have_http_status(:ok)
@@ -591,11 +591,11 @@ RSpec.describe "users API" do
   end
 
   describe 'GET /users/:id/custom_button_events' do
-    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice') }
     let!(:custom_button_event) { FactoryBot.create(:custom_button_event, :target => user1) }
 
     it 'returns with the custom button events for the given user' do
-      api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
+      api_basic_authorize(:user => super_admin.userid, :password => "dummy")
 
       get(api_user_custom_button_events_url(nil, user1))
 

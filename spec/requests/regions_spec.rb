@@ -151,12 +151,12 @@ RSpec.describe "Regions API", :regions do
       let(:zone) { FactoryBot.create(:zone, :id => id) }
       let!(:server) { EvmSpecHelper.remote_miq_server(:id => id, :zone => zone) }
       let(:original_timeout) { region.settings_for_resource[:api][:authentication_timeout] }
-      let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+      let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice') }
       let(:ops_settings_user) do
         EvmSpecHelper.seed_specific_product_features('ops_settings')
         role  = FactoryBot.create(:miq_user_role, :miq_product_features => MiqProductFeature.where(:identifier => 'ops_settings').to_a)
         group = FactoryBot.create(:miq_group, :miq_user_role => role)
-        FactoryBot.create(:user, :miq_groups => [group], :userid => 'bob', :password => 'bobpassword')
+        FactoryBot.create(:user, :miq_groups => [group], :userid => 'bob')
       end
 
       it "shows the settings to an authenticated user with the proper role" do
@@ -187,7 +187,7 @@ RSpec.describe "Regions API", :regions do
       end
 
       it "permits updates to settings for an authenticated super-admin user" do
-        api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
+        api_basic_authorize(:user => super_admin.userid, :password => "dummy")
 
         expect {
           patch(api_region_settings_url(nil, region), :params => {:api => {:authentication_timeout => "1337.minutes"}})
@@ -198,7 +198,7 @@ RSpec.describe "Regions API", :regions do
       end
 
       it "permits updates to settings for a user with the ops_settings role" do
-        api_basic_authorize(:user => ops_settings_user.userid, :password => ops_settings_user.password)
+        api_basic_authorize(:user => ops_settings_user.userid, :password => "dummy")
 
         expect do
           patch(api_region_settings_url(nil, region), :params => {:api => {:authentication_timeout => "1337.minutes"}})
@@ -231,7 +231,7 @@ RSpec.describe "Regions API", :regions do
         end
 
         it "allows an authenticated super-admin user to delete settings" do
-          api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
+          api_basic_authorize(:user => super_admin.userid, :password => "dummy")
           expect(region.settings_for_resource["api"]["authentication_timeout"]).to eq("7331.minutes")
 
           expect {
@@ -246,7 +246,7 @@ RSpec.describe "Regions API", :regions do
         end
 
         it "allows a user with the ops_settings role to delete settings" do
-          api_basic_authorize(:user => ops_settings_user.userid, :password => ops_settings_user.password)
+          api_basic_authorize(:user => ops_settings_user.userid, :password => "dummy")
           expect(region.settings_for_resource["api"]["authentication_timeout"]).to eq("7331.minutes")
 
           expect do
