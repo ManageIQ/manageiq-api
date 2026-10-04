@@ -34,7 +34,7 @@ module Api
         log_request("Request", @req.to_hash)
         unfiltered_params = request.query_parameters
                                    .merge(params.slice(:action, :controller, :format).permit!)
-                                   .merge("body" => @req.json_body)
+        unfiltered_params["body"] = @req.json_body unless collection_option?(:binary_body)
         log_request("Parameters", @parameter_filter.filter(unfiltered_params))
         log_request_body
       end
