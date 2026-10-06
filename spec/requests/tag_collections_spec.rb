@@ -1443,6 +1443,106 @@ describe "Tag Collections API" do
     end
   end
 
+  context 'Cloud Volumes assign_tags action' do
+    let(:volume1) { FactoryBot.create(:cloud_volume) }
+    let(:volume2) { FactoryBot.create(:cloud_volume) }
+
+    it 'can bulk assign tags to multiple cloud volumes' do
+      api_basic_authorize collection_action_identifier(:cloud_volumes, :assign_tags)
+
+      request_body = {
+        'action'    => 'assign_tags',
+        'resources' => [
+          { 
+            'id'   => volume1.id,
+            'tags' => [{
+              'category' => tag1[:category],
+              'name'     => tag1[:name]
+            }]
+          },
+          { 
+            'id'   => volume2.id,
+            'tags' => [{
+              'category' => tag2[:category],
+              'name'     => tag2[:name]
+            }]
+          }
+        ]
+      }
+
+      post(api_cloud_volumes_url, :params => request_body)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["results"]).to include(
+        a_hash_including(
+          "success"      => true,
+          "tag_category" => tag1[:category],
+          "tag_name"     => tag1[:name]
+        )
+      )
+    end
+
+    it 'fails without an appropriate role' do
+      api_basic_authorize
+
+      post(api_cloud_volumes_url, :params => {:action => 'assign_tags'})
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
+  context 'Cloud Volumes unassign_tags action' do
+    let(:volume1) { FactoryBot.create(:cloud_volume) }
+    let(:volume2) { FactoryBot.create(:cloud_volume) }
+
+    before do
+      classify_resource(volume1)
+      classify_resource(volume2)
+    end
+
+    it 'can bulk unassign tags on multiple cloud volumes' do
+      api_basic_authorize collection_action_identifier(:cloud_volumes, :unassign_tags)
+
+      request_body = {
+        'action'    => 'unassign_tags',
+        'resources' => [
+          {
+            'id'   => volume1.id,
+            'tags' => [{
+              'category' => tag1[:category],
+              'name' => tag1[:name]
+            }]
+          },
+          {
+            'id'   => volume2.id,
+            'tags' => [{
+              'category' => tag2[:category],
+              'name' => tag2[:name]
+            }]
+          }
+        ]
+      }
+
+      post(api_cloud_volumes_url, :params => request_body)
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["results"]).to include(
+        a_hash_including(
+          "success"      => true,
+          "tag_category" => tag1[:category],
+          "tag_name"     => tag1[:name]
+        )
+      )
+    end
+
+    it 'fails without an appropriate role' do
+      api_basic_authorize
+
+      post(api_cloud_volumes_url, :params => {:action => 'unassign_tags'})
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   context "Cloud Volume Tag subcollection" do
     let(:cloud_volume) { FactoryBot.create(:cloud_volume) }
 

@@ -842,6 +842,10 @@
         :identifier: cloud_volume_delete
       - :name: safe_delete
         :identifier: cloud_volume_safe_delete
+      - :name: assign_tags
+        :identifier: cloud_volume_tag
+      - :name: unassign_tags
+        :identifier: cloud_volume_tag
     :resource_actions:
       :get:
       - :name: read
