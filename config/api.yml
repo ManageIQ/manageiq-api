@@ -1443,6 +1443,13 @@
     - :subcollection
     :verbs: *g
     :klass: Disk
+  :endpoints:
+    :description: Endpoints
+    :options:
+    - :collection
+    - :subcollection
+    :verbs: *g
+    :klass: Endpoint
   :enterprises:
     :description: Enterprises
     :options:

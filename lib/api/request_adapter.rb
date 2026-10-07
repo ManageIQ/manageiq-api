@@ -43,6 +43,26 @@ module Api
       @attributes ||= @params['attributes'].to_s.split(',')
     end
 
+    # Returns the attributes requested for a specific association (e.g., "vms" => ["name", "vendor"])
+    # Only supports one level deep (vms.name). TODO: support nested (vms.ipaddresses.address)
+    def association_attributes
+      @association_attributes ||= attributes.each_with_object({}) do |attr, result|
+        association, sub_attr = attr.split(".", 2)
+        next unless sub_attr
+
+        result[association] ||= []
+        result[association] << sub_attr
+      end
+    end
+
+    def association_attributes_for(association)
+      association_attributes[association.to_s] || []
+    end
+
+    def association_attributes?
+      association_attributes.any?
+    end
+
     def base
       url.partition(fullpath)[0] # http://target
     end

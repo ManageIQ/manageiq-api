@@ -93,7 +93,7 @@ module Api
         collection_class = collection_class(type)
 
         # Ensures hrefs are consistent with those of the collection they were requested from
-        return reftype if collection_class == rclass || collection_class.descendants.include?(rclass)
+        return reftype if collection_class && (collection_class == rclass || collection_class.descendants.include?(rclass))
 
         collection_config.name_for_klass(rclass) || collection_config.name_for_subclass(rclass)
       end
@@ -313,12 +313,48 @@ module Api
 
       def fetch_indirect_virtual_attribute(_type, resource, base, attr, object_hash)
         query_related_objects(base, resource, object_hash)
-        return unless attr_accessible?(object_hash[base], attr)
-        value  = virtual_attribute_search(object_hash[base], attr)
-        result = {attr => normalize_attr(attr, value)}
-        # set nil vtype above to "#{type}/#{resource.id}/#{base.tr('.', '/')}/#{attr}" to support id normalization
-        base.split(".").reverse_each { |level| result = {level => result} }
-        [value, result]
+        related_obj = object_hash[base]
+
+        if collection_association?(related_obj) && @req.association_attributes_for(base).any?
+          fetch_collection_attributes(base, related_obj)
+        else
+          return unless attr_accessible?(related_obj, attr)
+          value  = virtual_attribute_search(related_obj, attr)
+          result = {attr => normalize_attr(attr, value)}
+          base.split(".").reverse_each { |level| result = {level => result} }
+          [value, result]
+        end
+      end
+
+      def fetch_collection_attributes(association, collection)
+        collection_type = collection_type_for(collection)
+        requested_attrs = @req.association_attributes_for(association)
+        return [nil, {}] if collection_type.nil? || requested_attrs.empty?
+
+        # TODO: Only physical attributes supported. Virtual attributes on associations (vms.v_total_snapshots)
+        # would cause N+1 queries - one per associated record even with eager loading. Consider adding
+        # aggregated virtuals to primary model instead (e.g., provider.v_total_vms_snapshots).
+        attrs_to_render = (requested_attrs + ['id']).uniq
+        items = collection.map { |item| normalize_hash(collection_type, item, :render_attributes => attrs_to_render) }
+        [items, {association => items}]
+      end
+
+      # ActiveRecord CollectionProxy and Relation respond to .loaded?; plain Arrays do not
+      def collection_association?(obj)
+        obj.respond_to?(:loaded?)
+      end
+
+      def collection_type_for(collection)
+        klass = if collection_association?(collection)
+                  collection.klass
+                elsif collection.kind_of?(Array) && collection.first
+                  collection.first.class
+                end
+
+        return nil unless klass
+
+        base_klass = klass.respond_to?(:base_model) ? klass.base_model : klass
+        collection_config.name_for_klass(base_klass)&.to_sym
       end
 
       #
@@ -606,38 +642,50 @@ module Api
       end
 
       def determine_include_for_find(klass)
-        attrs = virtual_attributes_for(klass) do |type, attr_name, attr_base|
-          # Case 1: Direct virtual attribute (e.g., "ram_size")(Not association.column format (dot notation), therefore attr_base is blank)
-          if klass.virtual_includes(attr_name) && !klass.attribute_supported_by_sql?(attr_name) && attr_base.blank?
-            attr_name
-          # Case 2: Direct association (e.g., "snapshots", "storage", "ems_cluster")
-          # Eager load associations (RBAC participating or not) to reduce N+1 queries.
-          elsif attr_base.blank?
-            reflection = klass.reflect_on_association(attr_name.to_sym)
-            if reflection && [:has_many, :has_one, :has_and_belongs_to_many, :belongs_to].include?(reflection.macro)
-              attr_name
-            else
-              next
-            end
-          # Case 3: Nested attribute (e.g., "hardware.host.name")
-          # Eager load nested associations (RBAC participating or not) to reduce N+1 queries.
-          # Exception: custom virtual_attribute_accessor (handled via accessor).
+        includes = virtual_attr_includes_for(klass).to_a + association_attr_includes_for(klass)
+        return unless includes.any?
+
+        includes.each_with_object({}) do |key, include_for_find|
+          if (virtual_includes = klass.virtual_includes(key))
+            ActiveRecord::Base.merge_includes(include_for_find, virtual_includes)
           else
-            next if virtual_attribute_accessor(type, attr_name)
+            nested = include_for_find
+            key.to_s.split(".").each { |k| nested = nested[k] ||= {} }
+          end
+        end
+      end
+
+      def virtual_attr_includes_for(klass)
+        virtual_attributes_for(klass) do |type, attr_name, attr_base|
+          if attr_base.blank?
+            attr_name if virtual_with_includes?(klass, attr_name) || real_association?(klass, attr_name)
+          elsif !virtual_attribute_accessor(type, attr_name)
+            # Nested attribute (e.g., "hardware.host.name"): eager-load the base association,
+            # unless it's handled by a custom virtual_attribute_accessor.
             attr_base
           end
         end
+      end
 
-        # Handle nested relationships and convert to a hash
-        if attrs
-          attrs.each_with_object({}) do |key, include_for_find|
-            if (virtual_includes = klass.virtual_includes(key))
-              ActiveRecord::Base.merge_includes(include_for_find, virtual_includes)
-            else
-              nested = include_for_find
-              key.split(".").each { |k| nested = nested[k] ||= {} }
-            end
-          end
+      # Returns true if the attribute is a virtual attribute that requires eager-loading
+      # its associated data (i.e., it has virtual_includes and cannot be computed in SQL).
+      # Example: ram_size, which is backed by the hardware association.
+      def virtual_with_includes?(klass, attr_name)
+        klass.virtual_includes(attr_name) && !klass.attribute_supported_by_sql?(attr_name)
+      end
+
+      # Returns true if the attribute is a real AR association (has_many, has_one, belongs_to, habtm).
+      # Note: virtual associations (virtual_has_many etc.) without uses: are intentionally excluded here.
+      def real_association?(klass, attr_name)
+        klass.reflect_on_association(attr_name.to_sym)&.macro&.in?([:has_many, :has_one, :has_and_belongs_to_many, :belongs_to])
+      end
+
+      # Associations with sub-attributes requested (e.g., vms.name) need to be eager-loaded
+      def association_attr_includes_for(klass)
+        return [] unless @req.association_attributes?
+
+        @req.association_attributes.filter_map do |association, _sub_attrs|
+          association if klass.reflect_on_association(association.to_sym)
         end
       end
 

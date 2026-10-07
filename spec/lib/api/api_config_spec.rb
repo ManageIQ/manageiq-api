@@ -16,7 +16,7 @@ describe 'API configuration (config/api.yml)' do
           v.options.index(:collection) &&
             v.collection_actions&.[](:get)&.find { |h| h[:name] == 'read' }&.identifier.nil?
         end.map(&:first).sort
-        expect(whitelisted).to eq(%i[automate_workspaces currencies features measures notifications pictures])
+        expect(whitelisted).to eq(%i[automate_workspaces currencies endpoints features measures notifications pictures])
       end
 
       it 'actions have associated options' do
