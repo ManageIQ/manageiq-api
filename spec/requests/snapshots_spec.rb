@@ -1,4 +1,6 @@
 RSpec.describe "Snapshots API" do
+  include Spec::Support::SupportsHelper
+
   describe "as a subcollection of VMs" do
     describe "GET /api/vms/:c_id/snapshots" do
       it "can list the snapshots of a VM" do
@@ -206,6 +208,62 @@ RSpec.describe "Snapshots API" do
         snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
 
         post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "revert"})
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "POST /api/vms/:c_id/snapshots/:s_id with rename_snapshot action" do
+      it "can queue a VM for renaming a snapshot" do
+        api_basic_authorize(action_identifier(:vms, :rename_snapshot, :snapshots_subresource_actions))
+        ems = FactoryBot.create(:ext_management_system)
+        host = FactoryBot.create(:host, :ext_management_system => ems)
+        vm = FactoryBot.create(:vm_vmware, :name => "Alice's VM", :host => host, :ext_management_system => ems)
+        snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => vm)
+
+        stub_supports(vm, :rename_snapshot)
+
+        post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "rename_snapshot", :name => "renamed snapshot"})
+
+        expected = {
+          "message"   => "Renaming snapshot Alice's snapshot to renamed snapshot for Virtual Machine id:#{vm.id} name:'Alice's VM'",
+          "success"   => true,
+          "task_href" => a_string_matching(api_tasks_url),
+          "task_id"   => anything
+        }
+
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+
+        queue_item = MiqQueue.find_by(:class_name => vm.class.name, :method_name => "rename_snapshot")
+        expect(queue_item).to have_attributes(
+          :zone       => ems.zone_name,
+          :queue_name => ems.queue_name_for_ems_operations,
+          :args       => [snapshot.id, "renamed snapshot"]
+        )
+      end
+
+      it "requires a name for renaming" do
+        api_basic_authorize(action_identifier(:vms, :rename_snapshot, :snapshots_subresource_actions))
+        vm = FactoryBot.create(:vm_vmware)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
+
+        post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "rename_snapshot"})
+
+        expected = {
+          "success" => false,
+          "message" => "Must specify a new name for the snapshot"
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it "will not rename a snapshot unless authorized" do
+        api_basic_authorize
+        vm = FactoryBot.create(:vm_vmware)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => vm)
+
+        post(api_vm_snapshot_url(nil, vm, snapshot), :params => {:action => "rename_snapshot", :name => "renamed snapshot"})
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -513,6 +571,40 @@ RSpec.describe "Snapshots API" do
         instance = FactoryBot.create(:vm_openstack)
 
         post(api_instance_snapshots_url(nil, instance), :params => {:description => "Alice's snapshot"})
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "POST /api/instances/:c_id/snapshots/:s_id with rename_snapshot action" do
+      it "can queue an Instance for renaming a snapshot" do
+        api_basic_authorize(action_identifier(:instances, :rename_snapshot, :snapshots_subresource_actions))
+
+        ems = FactoryBot.create(:ems_openstack_infra)
+        host = FactoryBot.create(:host_openstack_infra, :ext_management_system => ems)
+        instance = FactoryBot.create(:vm_openstack, :name => "Alice's Instance", :ext_management_system => ems, :host => host)
+        snapshot = FactoryBot.create(:snapshot, :name => "Alice's snapshot", :vm_or_template => instance)
+
+        stub_supports(instance, :rename_snapshot)
+
+        post(api_instance_snapshot_url(nil, instance, snapshot), :params => {:action => "rename_snapshot", :name => "renamed snapshot"})
+
+        expected = {
+          "message"   => "Renaming snapshot Alice's snapshot to renamed snapshot for Instance id:#{instance.id} name:'Alice's Instance'",
+          "success"   => true,
+          "task_href" => a_string_matching(api_tasks_url),
+          "task_id"   => anything
+        }
+        expect(response.parsed_body).to include(expected)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "will not rename an instance snapshot unless authorized" do
+        api_basic_authorize
+        instance = FactoryBot.create(:vm_openstack)
+        snapshot = FactoryBot.create(:snapshot, :vm_or_template => instance)
+
+        post(api_instance_snapshot_url(nil, instance, snapshot), :params => {:action => "rename_snapshot", :name => "renamed snapshot"})
 
         expect(response).to have_http_status(:forbidden)
       end

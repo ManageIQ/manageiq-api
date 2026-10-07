@@ -842,6 +842,10 @@
         :identifier: cloud_volume_delete
       - :name: safe_delete
         :identifier: cloud_volume_safe_delete
+      - :name: assign_tags
+        :identifier: cloud_volume_tag
+      - :name: unassign_tags
+        :identifier: cloud_volume_tag
     :resource_actions:
       :get:
       - :name: read
@@ -2087,6 +2091,8 @@
       - :name: read
         :identifier: cloud_volume_snapshot_view
       :post:
+      - :name: rename_snapshot
+        :identifier: cloud_volume_snapshot_control
       - :name: delete
         :identifier: cloud_volume_snapshot_delete
     :custom_attributes_subcollection_actions:
@@ -4949,6 +4955,8 @@
       :post:
       - :name: revert
         :identifier: vm_snapshot_revert
+      - :name: rename_snapshot
+        :identifier: vm_snapshot_rename
       - :name: delete
         :identifier:
         - vm_snapshot_delete
