@@ -9,7 +9,8 @@
 #   /api/vms/:id/policies
 #   /api/providers/:id/policies
 #   /api/hosts/:id/policies
-#   /api/resource_pools/:id/policies
+#   /api/resource_pool_clouds/:id/policies
+#   /api/resource_pool_infras/:id/policies
 #   /api/clusters/:id/policies
 #   /api/templates/:id/policies
 #   /api/policy_profiles/:id/policies
@@ -18,7 +19,8 @@
 #   /api/vms/:id/policy_profiles
 #   /api/providers/:id/policy_profiles
 #   /api/hosts/:id/policy_profiles
-#   /api/resource_pools/:id/policy_profiles
+#   /api/resource_pool_clouds/:id/policy_profiles
+#   /api/resource_pool_infras/:id/policy_profiles
 #   /api/clusters/:id/policy_profiles
 #   /api/templates/:id/policy_profiles
 #
@@ -334,27 +336,51 @@ describe "Policies API" do
     end
   end
 
-  context "Resource Pool policies subcollection" do
-    let(:rp) { FactoryBot.create(:resource_pool, :name => "Resource Pool 1") }
+  context "Resource Pool Cloud policies subcollection" do
+    let(:rp) { FactoryBot.create(:resource_pool, :name => "Resource Pool 1", :type => ManageIQ::Providers::CloudManager::ResourcePool) }
 
-    it "query Resource Pool policies with no policies defined" do
-      test_no_policy_query(api_resource_pool_policies_url(nil, rp))
+    it "query Resource Pool Cloud policies with no policies defined" do
+      test_no_policy_query(api_resource_pool_cloud_policies_url(nil, rp))
     end
 
-    it "query Resource Pool policy profiles with no policy profiles defined" do
-      test_no_policy_profile_query(api_resource_pool_policy_profiles_url(nil, rp))
+    it "query Resource Pool Cloud policy profiles with no policy profiles defined" do
+      test_no_policy_profile_query(api_resource_pool_cloud_policy_profiles_url(nil, rp))
     end
 
-    it "query Resource Pool policies with one policy defined" do
-      test_single_policy_query(rp, api_resource_pool_policies_url(nil, rp))
+    it "query Resource Pool Cloud policies with one policy defined" do
+      test_single_policy_query(rp, api_resource_pool_cloud_policies_url(nil, rp))
     end
 
-    it "query Resource Pool policies with multiple policies defined" do
-      test_multiple_policy_query(rp, api_resource_pool_policies_url(nil, rp))
+    it "query Resource Pool Cloud policies with multiple policies defined" do
+      test_multiple_policy_query(rp, api_resource_pool_cloud_policies_url(nil, rp))
     end
 
-    it "query Resource Pool policy profiles" do
-      test_policy_profile_query(rp, api_resource_pool_policy_profiles_url(nil, rp))
+    it "query Resource Pool Cloud policy profiles" do
+      test_policy_profile_query(rp, api_resource_pool_cloud_policy_profiles_url(nil, rp))
+    end
+  end
+
+  context "Resource Pool Infra policies subcollection" do
+    let(:rp) { FactoryBot.create(:resource_pool, :name => "Resource Pool 1", :type => ManageIQ::Providers::InfraManager::ResourcePool) }
+
+    it "query Resource Pool Infra policies with no policies defined" do
+      test_no_policy_query(api_resource_pool_infra_policies_url(nil, rp))
+    end
+
+    it "query Resource Pool Infra policy profiles with no policy profiles defined" do
+      test_no_policy_profile_query(api_resource_pool_infra_policy_profiles_url(nil, rp))
+    end
+
+    it "query Resource Pool Infra policies with one policy defined" do
+      test_single_policy_query(rp, api_resource_pool_infra_policies_url(nil, rp))
+    end
+
+    it "query Resource Pool Infra policies with multiple policies defined" do
+      test_multiple_policy_query(rp, api_resource_pool_infra_policies_url(nil, rp))
+    end
+
+    it "query Resource Pool Infra policy profiles" do
+      test_policy_profile_query(rp, api_resource_pool_infra_policy_profiles_url(nil, rp))
     end
   end
 
