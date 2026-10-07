@@ -23,7 +23,7 @@ module Api
           group = User.current_user.current_group
           log_request("Authorization", :user   => User.current_user.userid,
                                        :group  => group.description,
-                                       :role   => group.miq_user_role_name,
+                                       :role   => group.miq_user_role.name,
                                        :tenant => group.tenant.name)
         end
       end

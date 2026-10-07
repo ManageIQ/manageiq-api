@@ -99,8 +99,13 @@ module Api
         Environment.user_token_service.token_mgr('api')
       end
 
-      def auth_user(userid)
-        auth_user_obj = User.lookup_by_identity(userid)
+      def auth_user(user_or_id)
+        auth_user_obj = if user_or_id.kind_of?(User)
+                          user_or_id
+                        else
+                          User.lookup_by_identity(user_or_id, lookup_scope: :api_includes)
+                        end
+
         authorize_user_group(auth_user_obj)
         validate_user_identity(auth_user_obj)
         User.current_user = auth_user_obj
@@ -172,8 +177,8 @@ module Api
 
       def basic_authentication(username, password)
         timeout = ::Settings.api.authentication_timeout.to_i_with_method
-        user = User.authenticate(username, password, request, :require_user => true, :timeout => timeout)
-        auth_user(user.userid)
+        user = User.authenticate(username, password, request, :require_user => true, :timeout => timeout, :lookup_scope => :api_includes)
+        auth_user(user)
       rescue MiqException::MiqEVMLoginError => e
         raise AuthenticationError, e.message
       end
