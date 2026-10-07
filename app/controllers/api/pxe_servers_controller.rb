@@ -49,6 +49,15 @@ module Api
       end
     end
 
+    def verify_credentials_resource(_type, id = nil, data = {})
+      zone_name = data.delete('zone_name')
+      data['id'] = id if id
+      task_id = PxeServer.verify_depot_settings_queue(User.current_user.userid, zone_name, data)
+      action_result(true, "Credentials sent for verification", :task_id => task_id)
+    rescue => err
+      action_result(false, err.to_s)
+    end
+
     private
 
     def validate_data_for(klass, data)
