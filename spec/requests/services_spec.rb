@@ -573,6 +573,7 @@ describe "Services API" do
 
       st1.resource_actions = [ra1]
       svc1.service_template_id = st1.id
+      svc1.lifecycle_state = "provisioned"
       svc1.save
 
       get api_service_url(nil, svc1)
@@ -586,6 +587,7 @@ describe "Services API" do
 
       st1.resource_actions = [ra1]
       svc1.service_template_id = st1.id
+      svc1.lifecycle_state = "provisioned"
       svc1.save
 
       post(api_service_url(nil, svc1), :params => gen_request(:reconfigure, "text1" => "updated_text"))
