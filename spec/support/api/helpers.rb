@@ -15,11 +15,10 @@ module Spec
           @user  = FactoryBot.create(:user,
                                       :name       => "API User",
                                       :userid     => "api_user_id",
-                                      :password   => "api_user_password",
                                       :miq_groups => [@group])
         end
 
-        def api_basic_authorize(*identifiers, user: @user.userid, password: @user.password)
+        def api_basic_authorize(*identifiers, user: @user.userid, password: "dummy")
           identifiers = identifiers.flatten.compact.map(&:to_s)
           if identifiers.present?
             EvmSpecHelper.seed_specific_product_features(*identifiers)

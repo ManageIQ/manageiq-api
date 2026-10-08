@@ -294,11 +294,11 @@ RSpec.describe "tenants API" do
 
   describe 'GET /tenants/:id/custom_button_events' do
     let(:tenant) { FactoryBot.create(:tenant, :parent => root_tenant) }
-    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice', :password => 'alicepassword') }
+    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'alice') }
     let!(:custom_button_event) { FactoryBot.create(:custom_button_event, :target => tenant) }
 
     it 'returns with the custom button events for the given user' do
-      api_basic_authorize(:user => super_admin.userid, :password => super_admin.password)
+      api_basic_authorize(:user => super_admin.userid, :password => "dummy")
 
       get(api_tenant_custom_button_events_url(nil, tenant))
 

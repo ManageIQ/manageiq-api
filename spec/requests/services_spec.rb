@@ -601,7 +601,7 @@ describe "Services API" do
     let(:hw2) { FactoryBot.build(:hardware, :cpu_total_cores => 4) }
     let(:vm2) { FactoryBot.create(:vm_vmware, :hardware => hw2, :evm_owner_id => @user.id) }
 
-    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'admin', :password => 'adminpassword') }
+    let(:super_admin) { FactoryBot.create(:user, :role => 'super_administrator', :userid => 'admin') }
     let(:hw3) { FactoryBot.build(:hardware, :cpu_total_cores => 6) }
     let(:vm3) { FactoryBot.create(:vm_vmware, :hardware => hw3, :evm_owner_id => super_admin.id) }
 
@@ -664,7 +664,7 @@ describe "Services API" do
     end
 
     it "can query all vms as subcollection via expand as admin user" do
-      request_headers['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(super_admin.userid, super_admin.password)
+      request_headers['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(super_admin.userid, "dummy")
       get api_service_url(nil, svc1), :params => { :expand => "vms" }
       expect_single_resource_query("href" => api_service_url(nil, svc1))
       expect_result_resources_to_include_hrefs("vms",
