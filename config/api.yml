@@ -3346,6 +3346,8 @@
         :identifier: miq_request_approval
       - :name: deny
         :identifier: miq_request_approval
+      - :name: delete
+        :identifier: miq_request_delete
   :resource_actions:
     :description: Resource Actions
     :options:

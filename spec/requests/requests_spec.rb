@@ -469,6 +469,27 @@ RSpec.describe "Requests API" do
     end
   end
 
+  context "Requests delete" do
+    let(:service1)     { FactoryBot.create(:service, :name => "service1") }
+    let(:request1)     { ServiceReconfigureRequest.create_request({ :src_id => service1.id }, @user, false) }
+    let(:request1_url) { api_request_url(nil, request1) }
+
+    it "supports deleting a request" do
+      api_basic_authorize collection_action_identifier(:requests, :delete)
+
+      post(request1_url, :params => gen_request(:delete))
+
+      expected_msg = /Deleting Request id: #{request1.id}/
+      expect_single_action_result(
+        :success => true,
+        :message => expected_msg,
+        :href    => api_request_url(nil, request1)
+      )
+
+      expect(MiqRequest.exists?(request1.id)).to be_falsey
+    end
+  end
+
   context "resource hrefs" do
     it "returns the requests href reference for objects of different subclasses" do
       provision_request = FactoryBot.create(:service_template_provision_request, :requester => @user)
