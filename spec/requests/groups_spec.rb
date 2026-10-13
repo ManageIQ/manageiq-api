@@ -364,7 +364,7 @@ describe "Groups API" do
       expect(group1.entitlement.filter_expression.exp).to eq(filter_expression["exp"])
     end
 
-    it "clears filter_expression when updating group with filter_expression as nil" do
+    it "switches from filter_expression to managed tag filters when filter_expression is set to nil" do
       @user.miq_groups << group1
       expression = MiqExpression.new("CONTAINS" => {"tag" => "managed-location", "value" => "ny"})
       group1.create_entitlement(:filter_expression => expression)
@@ -391,6 +391,37 @@ describe "Groups API" do
       expect(response).to have_http_status(:ok)
       group1.reload
       expect(group1.entitlement.filters).to eq(filters)
+      expect(group1.entitlement.filter_expression).to be_nil
+    end
+
+    it "switches from managed tag filters to filter_expression when filters is set to nil" do
+      @user.miq_groups << group1
+      group1.create_entitlement(:filters => {"managed" => [["/managed/area/1"]]})
+      api_basic_authorize collection_action_identifier(:groups, :edit)
+
+      filter_expression = {"exp" => {"CONTAINS" => {"tag" => "managed-location", "value" => "ny"}}}
+
+      post(api_group_url(nil, group1), :params => gen_request(:edit, "filters" => nil, "filter_expression" => filter_expression))
+
+      expect(response).to have_http_status(:ok)
+      group1.reload
+      expect(group1.entitlement.filters).to eq({})
+      expect(group1.entitlement.filter_expression).to be_a(MiqExpression)
+      expect(group1.entitlement.filter_expression.exp).to eq(filter_expression["exp"])
+    end
+
+    it "clears both filters and filter_expression when both are set to nil" do
+      @user.miq_groups << group1
+      expression = MiqExpression.new("CONTAINS" => {"tag" => "managed-location", "value" => "ny"})
+      group1.create_entitlement(:filters           => {"belongsto" => ["/managed/infra/1"]},
+                                :filter_expression => expression)
+      api_basic_authorize collection_action_identifier(:groups, :edit)
+
+      post(api_group_url(nil, group1), :params => gen_request(:edit, "filters" => nil, "filter_expression" => nil))
+
+      expect(response).to have_http_status(:ok)
+      group1.reload
+      expect(group1.entitlement.filters).to eq({})
       expect(group1.entitlement.filter_expression).to be_nil
     end
 
