@@ -144,6 +144,48 @@ RSpec.describe 'CustomButtonSets API' do
       expect(response.parsed_body).to include(request.except('action'))
     end
 
+    it 'can assign a custom button to a custom button set' do
+      button = FactoryBot.create(:custom_button, :applies_to_class => 'Service')
+      api_basic_authorize action_identifier(:custom_button_sets, :assign_custom_button, :resource_actions, :post)
+
+      post(api_custom_button_set_url(nil, cb_set), :params => { :action => 'assign_custom_button', :button_id => button.id })
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include('message' => 'Button assigned to group')
+      expect(cb_set.reload.set_data[:button_order]).to include(button.id)
+    end
+
+    it 'is idempotent when assigning a custom button to a custom button set' do
+      button = FactoryBot.create(:custom_button, :applies_to_class => 'Service')
+      api_basic_authorize action_identifier(:custom_button_sets, :assign_custom_button, :resource_actions, :post)
+
+      2.times do
+        post(api_custom_button_set_url(nil, cb_set), :params => { :action => 'assign_custom_button', :button_id => button.id })
+        expect(response).to have_http_status(:ok)
+      end
+
+      expect(cb_set.reload.set_data[:button_order]).to eq([button.id])
+    end
+
+    it 'is forbidden to assign a custom button to a custom button set without the appropriate role' do
+      button = FactoryBot.create(:custom_button, :applies_to_class => 'Service')
+      api_basic_authorize
+
+      post(api_custom_button_set_url(nil, cb_set), :params => { :action => 'assign_custom_button', :button_id => button.id })
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'returns not found for an invalid custom button set id when assigning a custom button' do
+      button = FactoryBot.create(:custom_button, :applies_to_class => 'Service')
+      api_basic_authorize action_identifier(:custom_button_sets, :assign_custom_button, :resource_actions, :post)
+
+      post(api_custom_button_set_url(nil, 999_999), :params => { :action => 'assign_custom_button', :button_id => button.id })
+
+      expect(response).to have_http_status(:not_found)
+      expect(response.parsed_body).to include('error' => a_hash_including('kind' => 'not_found'))
+    end
+
     it 'can delete a custom button set by id' do
       api_basic_authorize action_identifier(:custom_button_sets, :delete)
 
