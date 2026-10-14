@@ -5,10 +5,8 @@ module Api
     end
 
     def logs_resource(type, id, data)
-      api_action(type, id) do
-        container_group = resource_search(id, type, ContainerGroup)
-        task_id = container_group.logs_queue(User.current_user.userid, data || {})
-        action_result(true, "Fetching logs for Pod #{container_group.name}", :task_id => task_id)
+      api_resource(type, id, "Fetching logs for", :supports => :logs) do |container_group|
+        {:task_id => container_group.logs_queue(User.current_user.userid, data || {})}
       end
     end
   end
