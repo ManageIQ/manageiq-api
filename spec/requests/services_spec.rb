@@ -1467,6 +1467,21 @@ describe "Services API" do
   end
 
   describe 'queue_chargeback_report' do
+    context "with no reporting server-role" do
+      it 'will not queue chargeback without reporting server role' do
+        api_basic_authorize collection_action_identifier(:services, :queue_chargeback_report)
+
+        post(api_service_url(nil, svc1), :params => {:action => 'queue_chargeback_report'})
+
+        expected = {
+          'message' => 'Could not queue chargeback report generation - Reporting role not enabled',
+          'success' => false
+        }
+        expect(response).to have_http_status(:bad_request)
+        expect(response.parsed_body).to eq(expected)
+      end
+    end
+
     context "with reporting server-role enabled" do
       before { EvmSpecHelper.assign_role("reporting") }
 
