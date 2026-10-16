@@ -65,6 +65,7 @@ describe "Container Groups API" do
 
     it 'queues fetching the logs and returns a task id' do
       api_basic_authorize(action_identifier(:container_groups, :logs, :resource_actions, :post))
+      stub_supports(container_group, :logs)
 
       post(api_container_group_url(nil, container_group), :params => {:action => "logs", :tail_lines => 10})
 
