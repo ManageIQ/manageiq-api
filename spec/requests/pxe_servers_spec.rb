@@ -250,4 +250,29 @@ RSpec.describe 'PxeServers API' do
       expect(response).to have_http_status(:forbidden)
     end
   end
+
+  describe 'post /api/pxe_servers with verify_credentials action' do
+    it 'queues the request to verify the credentials' do
+      api_basic_authorize collection_action_identifier(:pxe_servers, :verify_credentials)
+      request = {
+        "action"    => "verify_credentials",
+        "zone_name" => "zone",
+        "resource"  => {:name => "test", :uri => "smb://tmp/foo", :username => "test", :password => "foo"}
+      }
+      post(api_pxe_servers_url, :params => request)
+      expected = {
+        "results" => a_collection_containing_exactly(
+          a_hash_including(
+            "message"   => a_string_matching(/Credentials sent for verification/),
+            "success"   => true,
+            "task_href" => a_string_matching(api_tasks_url),
+            "task_id"   => a_kind_of(String)
+          )
+        )
+      }
+
+      expect(response.parsed_body).to include(expected)
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
