@@ -1467,53 +1467,57 @@ describe "Services API" do
   end
 
   describe 'queue_chargeback_report' do
-    it 'will not queue chargeback without an appropriate role' do
-      api_basic_authorize
+    context "with reporting server-role enabled" do
+      before { EvmSpecHelper.assign_role("reporting") }
 
-      post(api_services_url, :params => {:action => 'queue_chargeback_report', :resource => 'all'})
+      it 'will not queue chargeback without an appropriate role' do
+        api_basic_authorize
 
-      expect(response).to have_http_status(:forbidden)
-    end
+        post(api_services_url, :params => {:action => 'queue_chargeback_report', :resource => 'all'})
 
-    it 'can queue chargeback reports for multiple resources' do
-      api_basic_authorize collection_action_identifier(:services, :queue_chargeback_report)
+        expect(response).to have_http_status(:forbidden)
+      end
 
-      post(api_services_url, :params => {:action => 'queue_chargeback_report', :resources => [{:id => svc1.id}, {:href => api_service_url(nil, svc2)}]})
+      it 'can queue chargeback reports for multiple resources' do
+        api_basic_authorize collection_action_identifier(:services, :queue_chargeback_report)
 
-      expected = {
-        'results' => [a_hash_including('success' => true, 'message' => /Queued chargeback report generation for Service/, 'task_href' => a_string_including(api_tasks_url)),
-                      a_hash_including('success' => true, 'message' => /Queued chargeback report generation for Service/, 'task_href' => a_string_including(api_tasks_url))]
-      }
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include(expected)
-    end
+        post(api_services_url, :params => {:action => 'queue_chargeback_report', :resources => [{:id => svc1.id}, {:href => api_service_url(nil, svc2)}]})
 
-    it 'can queue chargeback report for a single resource' do
-      api_basic_authorize action_identifier(:services, :queue_chargeback_report)
+        expected = {
+          'results' => [a_hash_including('success' => true, 'message' => /Queued chargeback report generation for Service/, 'task_href' => a_string_including(api_tasks_url)),
+                        a_hash_including('success' => true, 'message' => /Queued chargeback report generation for Service/, 'task_href' => a_string_including(api_tasks_url))]
+        }
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include(expected)
+      end
 
-      post(api_service_url(nil, svc1), :params => {:action => 'queue_chargeback_report'})
+      it 'can queue chargeback report for a single resource' do
+        api_basic_authorize action_identifier(:services, :queue_chargeback_report)
 
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body).to include('success' => true, 'message' => /Queued chargeback report generation for Service/, 'task_id' => a_kind_of(String))
-    end
+        post(api_service_url(nil, svc1), :params => {:action => 'queue_chargeback_report'})
 
-    it 'will not queue chargeback report for a resource without an appropriate role' do
-      api_basic_authorize
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include('success' => true, 'message' => /Queued chargeback report generation for Service/, 'task_id' => a_kind_of(String))
+      end
 
-      post(api_service_url(nil, svc1), :params => { :action => 'queue_chargeback_report' })
+      it 'will not queue chargeback report for a resource without an appropriate role' do
+        api_basic_authorize
 
-      expect(response).to have_http_status(:forbidden)
-    end
+        post(api_service_url(nil, svc1), :params => { :action => 'queue_chargeback_report' })
 
-    it 'can queue chargeback report for the current user' do
-      api_basic_authorize action_identifier(:services, :queue_chargeback_report)
+        expect(response).to have_http_status(:forbidden)
+      end
 
-      post(api_service_url(nil, svc1), :params => {:action => 'queue_chargeback_report'})
+      it 'can queue chargeback report for the current user' do
+        api_basic_authorize action_identifier(:services, :queue_chargeback_report)
 
-      expect(response).to have_http_status(:ok)
+        post(api_service_url(nil, svc1), :params => {:action => 'queue_chargeback_report'})
 
-      q = MiqQueue.where(:class_name  => "Service", :method_name => "generate_chargeback_report").take
-      expect(q.args).to eq([{:userid=>"api_user_id"}])
+        expect(response).to have_http_status(:ok)
+
+        q = MiqQueue.where(:class_name  => "Service", :method_name => "generate_chargeback_report").take
+        expect(q.args).to eq([{:userid=>"api_user_id"}])
+      end
     end
   end
 end
