@@ -1196,6 +1196,8 @@
         :identifier: container_project_new
       - :name: delete
         :identifier: container_project_delete
+      - :name: set_ownership
+        :identifier: container_project_ownership
     :resource_actions:
       :get:
       - :name: read
@@ -1205,6 +1207,8 @@
         :identifier: container_project_edit
       - :name: delete
         :identifier: container_project_delete
+      - :name: set_ownership
+        :identifier: container_project_ownership
   :container_templates:
     :description: Container Templates
     :identifier: container_template
