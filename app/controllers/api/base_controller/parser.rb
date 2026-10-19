@@ -111,11 +111,22 @@ module Api
         parse_id(resource, :tenants) unless resource.blank?
       end
 
+      # An owner or group given with a blank id (e.g. {"owner" => {"id" => ""}}) clears that
+      # field, while an omitted or unresolvable one is left unchanged.
       def parse_ownership(data)
+        return if data.blank?
+
         {
-          :owner => collection_class(:users).find_by(:id => parse_owner(data["owner"])),
-          :group => collection_class(:groups).find_by(:id => parse_group(data["group"]))
-        }.compact if data.present?
+          :owner => parse_ownership_value(data["owner"], :users) { |resource| parse_owner(resource) },
+          :group => parse_ownership_value(data["group"], :groups) { |resource| parse_group(resource) }
+        }.reject { |_key, value| value == :unchanged }
+      end
+
+      def parse_ownership_value(resource, collection)
+        return nil if resource.kind_of?(Hash) && resource.key?("id") && resource["id"].blank?
+
+        record = collection_class(collection).find_by(:id => yield(resource))
+        record || :unchanged
       end
 
       # RBAC Aware type specific resource fetches
