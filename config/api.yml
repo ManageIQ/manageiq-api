@@ -345,6 +345,7 @@
     :klass: AutomationRequest
     :subcollections:
     - :request_tasks
+    - :request_logs
     :collection_actions:
       :get:
       - :name: read
@@ -2999,6 +3000,7 @@
     :klass: MiqProvisionRequest
     :subcollections:
     - :request_tasks
+    - :request_logs
     :collection_actions:
       :get:
       - :name: read
@@ -3253,6 +3255,20 @@
       :post:
       - :name: delete
         :identifier: saved_report_delete
+  :request_logs:
+    :description: Request Logs
+    :options:
+    - :subcollection
+    :verbs: *g
+    :klass: RequestLog
+    :subcollection_actions:
+      :get:
+      - :name: read
+        :identifier: miq_request_show_logs
+    :subresource_actions:
+      :get:
+      - :name: read
+        :identifier: miq_request_show_logs
   :request_tasks:
     :description: Request Tasks
     :options:
@@ -3295,6 +3311,7 @@
     :klass: MiqRequest
     :subcollections:
     - :request_tasks
+    - :request_logs
     :collection_actions:
       :get:
       - :name: read
@@ -3869,6 +3886,7 @@
     :klass: ServiceTemplateProvisionRequest
     :subcollections:
     - :request_tasks
+    - :request_logs
     :collection_actions:
       :get:
       - :name: read

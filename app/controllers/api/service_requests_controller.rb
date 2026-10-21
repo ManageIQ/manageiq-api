@@ -1,6 +1,7 @@
 module Api
   class ServiceRequestsController < BaseController
     include Subcollections::RequestTasks
+    include Subcollections::RequestLogs
     include Api::Mixins::Pictures
     include Api::Mixins::ResourceCancel
     include Api::Mixins::ResourceApproveDeny
