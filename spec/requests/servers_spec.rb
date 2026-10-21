@@ -178,6 +178,16 @@ RSpec.describe "Servers" do
       FactoryBot.create(:user, :miq_groups => [group], :userid => 'bob')
     end
 
+    it "returns settings as YAML when Accept: application/yaml is requested" do
+      api_basic_authorize(:ops_settings)
+
+      get(api_server_settings_url(nil, server), :headers => {"Accept" => "application/yaml"})
+
+      expect(response).to have_http_status(:ok)
+      expect(response.content_type).to include("application/yaml")
+      expect { YAML.safe_load(response.body) }.not_to raise_error
+      expect { JSON.parse(response.body) }.to raise_error(JSON::ParserError)
+    end
 
     it "shows the settings to an authenticated user with the proper role" do
       api_basic_authorize(:ops_settings)

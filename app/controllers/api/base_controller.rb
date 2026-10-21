@@ -136,8 +136,13 @@ module Api
 
     def validate_response_format
       accept = request.headers["Accept"]
-      return if accept.blank? || accept.include?("json") || accept.include?("*/*")
+      return if accept.blank? || accept.include?("json") || accept.include?("*/*") || accept.include?("yaml")
+
       raise UnsupportedMediaTypeError, "Invalid Response Format #{accept} requested"
+    end
+
+    def yaml_request?
+      request.headers["Accept"].to_s.include?("yaml")
     end
 
     def set_access_control_headers
