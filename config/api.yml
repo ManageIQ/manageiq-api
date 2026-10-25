@@ -399,6 +399,17 @@
         :identifier: availability_zone_tag
       - :name: unassign
         :identifier: availability_zone_tag
+  :binary_blobs:
+    :description: Binary Blobs
+    :options:
+    - :arbitrary_resource_path
+    - :binary_body
+    - :collection
+    - :presigned
+    :verbs:
+    - :get
+    - :put
+    - :delete
   :categories:
     :description: Categories
     :identifier: ops_settings
