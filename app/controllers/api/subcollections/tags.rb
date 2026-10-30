@@ -34,7 +34,11 @@ module Api
           tag.as_json.tap do |hash|
             hash['id_value'] = tag.id
             extra_attrs.each do |attr|
-              hash[attr] = tag.public_send(attr) if tag.respond_to?(attr)
+              if attr == "description"
+                hash[attr] = tag.classification&.description
+              elsif tag.respond_to?(attr)
+                hash[attr] = tag.public_send(attr)
+              end
             end
           end
         end
