@@ -73,8 +73,8 @@ RSpec.describe "categories API" do
   end
 
   context "tag_attributes parameter" do
-    let(:classification) { FactoryBot.create(:classification_tag, :description => "New York") }
-    let(:category)       { FactoryBot.create(:category, :children => [classification]) }
+    let!(:classification) { FactoryBot.create(:classification_tag, :description => "New York") }
+    let!(:category)       { FactoryBot.create(:category, :children => [classification]) }
 
     before { api_basic_authorize collection_action_identifier(:categories, :read, :get) }
 
