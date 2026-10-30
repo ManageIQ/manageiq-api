@@ -1326,7 +1326,7 @@
         :identifier: ab_group_edit
       - :name: delete
         :identifier: ab_group_delete
-      - :name: assign_custom_button
+      - :name: add_custom_button
         :identifier: ab_button_new
   :custom_buttons:
     :description: Custom Buttons
@@ -4036,7 +4036,7 @@
         :identifier: svc_catalog_archive
       - :name: unarchive
         :identifier: svc_catalog_unarchive
-      - :name: assign_custom_button
+      - :name: add_custom_button
         :identifier: ab_button_new
       - :name: set_ownership
         :identifier: catalogitem_ownership

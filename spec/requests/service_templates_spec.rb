@@ -831,25 +831,25 @@ describe "Service Templates API" do
     end
   end
 
-  describe "Service Templates assign custom button" do
+  describe "Service Templates add custom button" do
     let(:service_template) { FactoryBot.create(:service_template, :with_provision_resource_action_and_dialog) }
     let(:button) { FactoryBot.create(:custom_button, :applies_to => service_template, :userid => @user.userid) }
 
-    it "can assign a custom button to a service template" do
-      api_basic_authorize action_identifier(:service_templates, :assign_custom_button, :resource_actions, :post)
+    it "can add a custom button to a service template" do
+      api_basic_authorize action_identifier(:service_templates, :add_custom_button, :resource_actions, :post)
 
-      post(api_service_template_url(nil, service_template), :params => { :action => "assign_custom_button", :button_id => button.id })
+      post(api_service_template_url(nil, service_template), :params => {:action => "add_custom_button", :button_id => button.id})
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include("message" => "Button added to Service Template order")
       expect(service_template.reload.options[:button_order]).to include("cb-#{button.id}")
     end
 
-    it "is idempotent when assigning a custom button to a service template" do
-      api_basic_authorize action_identifier(:service_templates, :assign_custom_button, :resource_actions, :post)
+    it "is idempotent when adding a custom button to a service template" do
+      api_basic_authorize action_identifier(:service_templates, :add_custom_button, :resource_actions, :post)
 
       2.times do
-        post(api_service_template_url(nil, service_template), :params => { :action => "assign_custom_button", :button_id => button.id })
+        post(api_service_template_url(nil, service_template), :params => {:action => "add_custom_button", :button_id => button.id})
         expect(response).to have_http_status(:ok)
       end
 
@@ -859,18 +859,34 @@ describe "Service Templates API" do
     it "is forbidden without appropriate role" do
       api_basic_authorize
 
-      post(api_service_template_url(nil, service_template), :params => { :action => "assign_custom_button", :button_id => button.id })
+      post(api_service_template_url(nil, service_template), :params => {:action => "add_custom_button", :button_id => button.id})
 
       expect(response).to have_http_status(:forbidden)
     end
 
-    it "returns not found for an invalid service template id" do
-      api_basic_authorize action_identifier(:service_templates, :assign_custom_button, :resource_actions, :post)
+    it "fails for an invalid service template id" do
+      api_basic_authorize action_identifier(:service_templates, :add_custom_button, :resource_actions, :post)
 
-      post(api_service_template_url(nil, 999_999), :params => { :action => "assign_custom_button", :button_id => button.id })
+      post(api_service_template_url(nil, 999_999), :params => {:action => "add_custom_button", :button_id => button.id})
 
-      expect(response).to have_http_status(:not_found)
-      expect(response.parsed_body).to include("error" => a_hash_including("kind" => "not_found"))
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include(
+        "success" => false,
+        "message" => a_string_including("Could not add custom button to Service Template")
+      )
+    end
+
+    it "fails when adding a custom button without a button_id" do
+      api_basic_authorize action_identifier(:service_templates, :add_custom_button, :resource_actions, :post)
+
+      post(api_service_template_url(nil, service_template), :params => {:action => "add_custom_button"})
+
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to include(
+        "success" => false,
+        "message" => a_string_including("Must specify a button_id")
+      )
+      expect(service_template.reload.options[:button_order]).to be_blank
     end
   end
 
