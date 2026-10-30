@@ -22,7 +22,26 @@ module Api
       end
 
       def tags_query_resource(object)
-        object ? object.tags.where(Tag.arel_table[:name].matches "#{Api::BaseController::TAG_NAMESPACE}%") : {}
+        return {} unless object
+
+        tags = object.tags.where(Tag.arel_table[:name].matches("#{Api::BaseController::TAG_NAMESPACE}%"))
+
+        tag_attrs = params['tag_attributes'].to_s.split(',').map(&:strip).reject(&:blank?)
+        extra_attrs = tag_attrs - %w[id name href]
+        return tags if extra_attrs.blank?
+
+        tags.includes(:classification).map do |tag|
+          tag.as_json.tap do |hash|
+            hash['id_value'] = tag.id
+            extra_attrs.each do |attr|
+              if attr == "description"
+                hash[attr] = tag.classification&.description
+              elsif tag.respond_to?(attr)
+                hash[attr] = tag.public_send(attr)
+              end
+            end
+          end
+        end
       end
 
       def tags_assign_resource(object, _type, id = nil, data = nil)
