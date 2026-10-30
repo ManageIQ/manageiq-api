@@ -87,10 +87,11 @@ RSpec.describe "categories API" do
 
       expect(response).to have_http_status(:ok)
       tags = response.parsed_body["resources"]
-               .detect { |r| r["id"] == category.id.to_s }
-               .fetch("tags", [])
+                     .detect { |r| r["id"] == category.id.to_s }
+                     .fetch("tags", [])
 
       expect(tags).not_to be_empty
+      puts "\nTAGS: #{tags.inspect}\n"
       expect(tags.first["description"]).to eq("New York")
       expect(tags.first["id_value"]).to be_present
     end
@@ -103,8 +104,8 @@ RSpec.describe "categories API" do
 
       expect(response).to have_http_status(:ok)
       tags = response.parsed_body["resources"]
-               .detect { |r| r["id"] == category.id.to_s }
-               .fetch("tags", [])
+                     .detect { |r| r["id"] == category.id.to_s }
+                     .fetch("tags", [])
 
       expect(tags.first).not_to have_key("description")
     end
@@ -118,8 +119,8 @@ RSpec.describe "categories API" do
 
       expect(response).to have_http_status(:ok)
       tags = response.parsed_body["resources"]
-               .detect { |r| r["id"] == category.id.to_s }
-               .fetch("tags", [])
+                     .detect { |r| r["id"] == category.id.to_s }
+                     .fetch("tags", [])
 
       expect(tags.first).not_to have_key("categorization")
     end
