@@ -49,6 +49,16 @@ module Api
       action_result(false, "Could not unarchive Service Template - #{err}")
     end
 
+    def add_custom_button_resource(type, id, data)
+      raise BadRequestError, "Must specify a button_id" unless data["button_id"]
+
+      service_template = resource_search(id, type)
+      service_template.add_custom_button(data["button_id"])
+      action_result(true, "Button added to Service Template order")
+    rescue StandardError => err
+      action_result(false, "Could not add custom button to Service Template - #{err}")
+    end
+
     private
 
     def set_additional_attributes
