@@ -72,6 +72,59 @@ RSpec.describe "categories API" do
     expect(response).to have_http_status(:ok)
   end
 
+  context "tag_attributes parameter" do
+    let(:classification) { FactoryBot.create(:classification_tag, :description => "New York") }
+    let(:category)       { FactoryBot.create(:category, :children => [classification]) }
+
+    before { api_basic_authorize collection_action_identifier(:categories, :read, :get) }
+
+    it "returns tag description when tag_attributes includes description" do
+      get api_categories_url, :params => {
+        :expand         => "resources,tags",
+        :attributes     => "id,name,description",
+        :tag_attributes => "id,name,description"
+      }
+
+      expect(response).to have_http_status(:ok)
+      tags = response.parsed_body["resources"]
+               .find { |r| r["id"] == category.id.to_s }
+               .fetch("tags", [])
+
+      expect(tags).not_to be_empty
+      expect(tags.first["description"]).to eq("New York")
+      expect(tags.first["id_value"]).to be_present
+    end
+
+    it "does not return description when tag_attributes is not specified" do
+      get api_categories_url, :params => {
+        :expand     => "resources,tags",
+        :attributes => "id,name,description"
+      }
+
+      expect(response).to have_http_status(:ok)
+      tags = response.parsed_body["resources"]
+               .find { |r| r["id"] == category.id.to_s }
+               .fetch("tags", [])
+
+      expect(tags.first).not_to have_key("description")
+    end
+
+    it "does not return categorization when tag_attributes only includes description" do
+      get api_categories_url, :params => {
+        :expand         => "resources,tags",
+        :attributes     => "id,name,description",
+        :tag_attributes => "id,name,description"
+      }
+
+      expect(response).to have_http_status(:ok)
+      tags = response.parsed_body["resources"]
+               .find { |r| r["id"] == category.id.to_s }
+               .fetch("tags", [])
+
+      expect(tags.first).not_to have_key("categorization")
+    end
+  end
+
   context "with an appropriate role" do
     it "can create a category" do
       api_basic_authorize collection_action_identifier(:categories, :create)
