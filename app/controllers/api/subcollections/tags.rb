@@ -30,7 +30,7 @@ module Api
         extra_attrs = tag_attrs - %w[id name href]
         return tags if extra_attrs.blank?
 
-        tags.map do |tag|
+        tags.includes(:classification).map do |tag|
           tag.as_json.tap do |hash|
             hash['id_value'] = tag.id
             extra_attrs.each do |attr|

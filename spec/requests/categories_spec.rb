@@ -91,9 +91,11 @@ RSpec.describe "categories API" do
                      .fetch("tags", [])
 
       expect(tags).not_to be_empty
-      puts "\nTAGS: #{tags.inspect}\n"
-      expect(tags.first["description"]).to eq("New York")
-      expect(tags.first["id_value"]).to be_present
+      tag = tags.detect { |t| t["name"].end_with?("/#{classification.name}") }
+
+      expect(tag).to be_present
+      expect(tag["description"]).to eq("New York")
+      expect(tag["id_value"]).to be_present
     end
 
     it "does not return description when tag_attributes is not specified" do
