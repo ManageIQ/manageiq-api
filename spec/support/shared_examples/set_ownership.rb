@@ -103,6 +103,50 @@ RSpec.shared_examples "endpoints with set_ownership action" do |collection_name,
     expect_set_ownership_success(resource, subject, @user)
   end
 
+  # A cleared group is nil, or the tenant's default group for models that include TenancyMixin.
+  context "clearing ownership" do
+    before { resource.update!(:evm_owner => @user, :miq_group => @group) }
+
+    it "clears the owner with a blank owner id" do
+      api_basic_authorize action_identifier(collection_name, :set_ownership)
+
+      post(subject, :params => gen_request(:set_ownership, "owner" => {"id" => ""}, "group" => {"id" => @group.id.to_s}))
+
+      expect_single_action_result(:success => true, :message => "setting ownership", :href => subject)
+      expect(resource.reload.evm_owner).to be_nil
+      expect(resource.miq_group).to eq(@group)
+    end
+
+    it "clears the group with a blank group id" do
+      api_basic_authorize action_identifier(collection_name, :set_ownership)
+
+      post(subject, :params => gen_request(:set_ownership, "owner" => {"id" => @user.id.to_s}, "group" => {"id" => ""}))
+
+      expect_single_action_result(:success => true, :message => "setting ownership", :href => subject)
+      expect(resource.reload.evm_owner).to eq(@user)
+      expect(resource.miq_group).not_to eq(@group)
+    end
+
+    it "clears both with blank owner and group ids" do
+      api_basic_authorize action_identifier(collection_name, :set_ownership)
+
+      post(subject, :params => gen_request(:set_ownership, "owner" => {"id" => ""}, "group" => {"id" => ""}))
+
+      expect_single_action_result(:success => true, :message => "setting ownership", :href => subject)
+      expect(resource.reload.evm_owner).to be_nil
+      expect(resource.miq_group).not_to eq(@group)
+    end
+
+    it "leaves an omitted owner or group unchanged" do
+      api_basic_authorize action_identifier(collection_name, :set_ownership)
+
+      post(subject, :params => gen_request(:set_ownership, "owner" => {"id" => ""}))
+
+      expect(resource.reload.evm_owner).to be_nil
+      expect(resource.miq_group).to eq(@group)
+    end
+  end
+
   it "to multiple #{collection_name}" do
     api_basic_authorize action_identifier(collection_name, :set_ownership)
 
