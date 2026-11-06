@@ -21,7 +21,10 @@ module Api
           return
         end
 
-        render_resource :settings, resource_settings(resource)
+        settings = resource_settings(resource)
+        return render(:plain => settings.to_yaml, :content_type => "application/yaml") if yaml_request?
+
+        render_resource(:settings, settings)
       end
 
       def settings_query_resource(resource)
