@@ -47,7 +47,7 @@ module Api
       # REST APIs Authenticator and Redirector
       #
       def require_api_user_or_token
-        authenticate_user
+        collection_option?(:presigned) ? authenticate_with_presigned_token : authenticate_user
       rescue AuthenticationError => e
         api_log_error("AuthenticationError: #{e.message}")
         response.headers["Content-Type"] = "application/json"
@@ -104,6 +104,14 @@ module Api
         authorize_user_group(auth_user_obj)
         validate_user_identity(auth_user_obj)
         User.current_user = auth_user_obj
+      end
+
+      def authenticate_with_presigned_token
+        Presigner.verify!(
+          :method => request.method,
+          :path   => @req.c_suffix,
+          :params => request.query_parameters
+        )
       end
 
       def authenticate_with_user_token(auth_token)

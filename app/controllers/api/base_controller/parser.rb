@@ -34,7 +34,8 @@ module Api
       end
 
       def validate_api_action
-        return if @req.collection.blank? || ignore_http_method_validation?
+        return if @req.collection.blank? || ignore_http_method_validation? || collection_option?(:presigned)
+
         case @req.method
         when :post
           type, target = request_type_target
