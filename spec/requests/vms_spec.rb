@@ -358,6 +358,15 @@ describe "Vms API" do
       end.to make_database_queries(:count => 4, :matching => query_match)
     end
 
+    it "hardware (has_one)" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      query_match = query_match_regexp("vms", "hardwares")
+
+      expect do
+        get api_vms_url, :params => {:expand => "resources", :attributes => "hardware", :filter => ["id=#{vm_with_associations.id}"]}
+      end.to make_database_queries(:count => 4, :matching => query_match)
+    end
+
     it "multiple associations" do
       api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
       query_match = query_match_regexp("vms", "snapshots", "storages", "taggings", "tags")
@@ -365,6 +374,61 @@ describe "Vms API" do
       expect do
         get api_vms_url, :params => {:expand => "resources", :attributes => "snapshots,storage,tags", :filter => ["id=#{vm_with_associations.id}"]}
       end.to make_database_queries(:count => 6, :matching => query_match)
+    end
+  end
+
+  context "does not eager load when no join is needed" do
+    before { add_hardware_and_os_to_vms }
+
+    # provisioned_storage is a SQL-computable virtual column (attribute_supported_by_sql? == true),
+    # so virtual_with_includes? returns false and no eager load join should be added.
+    it "SQL-computable virtual column (provisioned_storage) does not add an extra join" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      query_match = query_match_regexp("vms")
+
+      expect {
+        get api_vms_url, :params => {
+          :expand     => "resources",
+          :attributes => "provisioned_storage,name"
+        }
+      }.to make_database_queries(:count => 3, :matching => query_match)
+
+      expect(response.parsed_body["resources"].first).to include("provisioned_storage", "name")
+    end
+
+    # active is a plain virtual column computed entirely from other columns -- no virtual_includes,
+    # not a real association -- so neither virtual_with_includes? nor real_association? fires.
+    it "plain virtual column with no includes (active) does not add an extra join" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      query_match = query_match_regexp("vms")
+
+      expect {
+        get api_vms_url, :params => {
+          :expand     => "resources",
+          :attributes => "active,name"
+        }
+      }.to make_database_queries(:count => 3, :matching => query_match)
+
+      expect(response.parsed_body["resources"].first).to include("active", "name")
+    end
+
+    # direct_service is a virtual_has_one without uses:, so reflect_on_association returns nil
+    # (it is not a real AR association) and virtual_includes returns nil (no uses:).
+    # Neither virtual_with_includes? nor real_association? fires -- no eager load join is added.
+    # This documents the current behavior: if this test fails, something changed the eager-load
+    # decision for no-uses: virtual associations (e.g., switching to reflection_with_virtual).
+    it "virtual_has_one without uses: (direct_service) does not add an extra join" do
+      api_basic_authorize action_identifier(:vms, :read, :resource_actions, :get)
+      query_match = query_match_regexp("vms")
+
+      expect {
+        get api_vms_url, :params => {
+          :expand     => "resources",
+          :attributes => "direct_service,name"
+        }
+      }.to make_database_queries(:count => 3, :matching => query_match)
+
+      expect(response.parsed_body["resources"].first).to include("direct_service", "name")
     end
   end
 
