@@ -2,6 +2,7 @@ module Api
   class RequestsController < BaseController
     include Api::Mixins::ResourceCancel
     include Api::Mixins::ResourceApproveDeny
+    include Subcollections::RequestLogs
     include Subcollections::RequestTasks
 
     def create_resource(type, _id, data)
