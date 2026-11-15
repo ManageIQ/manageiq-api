@@ -1,5 +1,11 @@
 module Api
   class BaseController < ActionController::API
+    after_action :skip_session_write
+
+    def skip_session_write
+      request.session_options[:skip] = true if %w[GET HEAD OPTIONS].include?(request.request_method)
+    end
+
     TAG_NAMESPACE = "/managed".freeze
 
     #
