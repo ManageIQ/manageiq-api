@@ -1,12 +1,16 @@
+require 'json'
+require_relative 'parameter_builder'
+require_relative 'schema_builder'
+require_relative 'operation_builder'
+require_relative 'path_builder'
+
 module ManageIQ
   module Api
     module OpenApi
       class Generator
-        require 'json'
-
         OPENAPI_VERSION = "3.0.0".freeze
-        PARAMETERS_PATH = "/components/parameters".freeze
-        SCHEMAS_PATH    = "/components/schemas".freeze
+        PARAMETERS_PATH = "#/components/parameters".freeze
+        SCHEMAS_PATH    = "#/components/schemas".freeze
 
         attr_reader :manageiq_api_path, :openapi_path, :openapi_spec
 
@@ -19,7 +23,14 @@ module ManageIQ
         end
 
         def generate!
-          openapi_spec["components"]["schemas"] = build_schemas
+          openapi_spec["components"]["parameters"] = ParameterBuilder.build_common_parameters
+          openapi_spec["components"]["schemas"] = build_schemas.merge(SchemaBuilder.build_common_schemas)
+          openapi_spec["components"]["responses"] = SchemaBuilder.build_common_responses
+          openapi_spec["components"]["securitySchemes"] = build_security_schemes
+          openapi_spec["paths"] = PathBuilder.build_paths(::Api::ApiConfig.collections)
+          openapi_spec["security"] = build_security_requirements
+          openapi_spec["servers"] = build_servers
+
           openapi_path.write("#{JSON.pretty_generate(openapi_spec)}\n")
         end
 
@@ -74,7 +85,7 @@ module ManageIQ
             properties_value["format"] = "date-time"
           when :integer
             if key == model.primary_key || key.ends_with?("_id")
-              properties_value["$ref"] = "##{SCHEMAS_PATH}/ID"
+              properties_value["$ref"] = "#{SCHEMAS_PATH}/ID"
             else
               properties_value["type"] = "integer"
             end
@@ -100,6 +111,50 @@ module ManageIQ
           end
 
           properties_value
+        end
+
+        def build_security_schemes
+          {
+            "basicAuth"  => {
+              "type"        => "http",
+              "scheme"      => "basic",
+              "description" => "HTTP Basic Authentication"
+            },
+            "bearerAuth" => {
+              "type"        => "http",
+              "scheme"      => "bearer",
+              "description" => "Bearer token authentication"
+            },
+            "tokenAuth"  => {
+              "type"        => "apiKey",
+              "in"          => "header",
+              "name"        => "X-Auth-Token",
+              "description" => "Token-based authentication"
+            }
+          }
+        end
+
+        def build_security_requirements
+          [
+            {"basicAuth" => []},
+            {"bearerAuth" => []},
+            {"tokenAuth" => []}
+          ]
+        end
+
+        def build_servers
+          [
+            {
+              "url"         => "https://{hostname}",
+              "description" => "ManageIQ API Server",
+              "variables"   => {
+                "hostname" => {
+                  "default"     => "localhost",
+                  "description" => "ManageIQ server hostname"
+                }
+              }
+            }
+          ]
         end
 
         def skeletal_openapi_spec
