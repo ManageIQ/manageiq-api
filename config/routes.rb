@@ -31,9 +31,9 @@ Rails.application.routes.draw do
             case verb
             when :get
               root :action => :index, :as => collection_name_pluralized
-              get "/*c_suffix", :action => :show, :as => resource_name
+              get "/*c_suffix", :action => :show, :as => resource_name, :format => false
             else
-              match "(/*c_suffix)", :action => Api::Routing::VERBS_ACTIONS_MAP[verb], :via => verb
+              match "(/*c_suffix)", :action => Api::Routing::VERBS_ACTIONS_MAP[verb], :via => verb, :format => false
             end
           else
             case verb
