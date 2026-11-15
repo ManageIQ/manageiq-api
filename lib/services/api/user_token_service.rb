@@ -23,9 +23,13 @@ module Api
       @api_config ||= ::Settings[base_config[:module]].to_hash
     end
 
-    def generate_token(userid, requester_type, token_ttl: nil)
-      userid = userid.downcase
-      validate_userid(userid)
+    def generate_token(user_or_id, requester_type, token_ttl: nil)
+      if user_or_id.kind_of?(User)
+        userid = user_or_id.userid.downcase
+      else
+        userid = user_or_id.downcase
+        validate_userid(userid)
+      end
       validate_requester_type(requester_type)
 
       # Additional Requester type token ttl's for authentication
