@@ -4666,6 +4666,12 @@
         :identifier: rbac_user_tags_edit
       - :name: unassign
         :identifier: rbac_user_tags_edit
+  :logs:
+    :description: VM Live Logs
+    :identifier: vm_fetch_logs
+    :options:
+    - :subcollection
+    :verbs: *g
   :vms:
     :description: Virtual Machines
     :identifier: vm
@@ -4675,6 +4681,7 @@
     :verbs: *gpd
     :klass: Vm
     :subcollections:
+    - :logs
     - :cdroms
     - :disks
     - :tags
@@ -4785,6 +4792,8 @@
         - vm_show
         - sui_vm_details_view
       :post:
+      - :name: fetch_logs
+        :identifier: vm_fetch_logs
       - :name: edit
         :identifier: vm_edit
       - :name: add_event
