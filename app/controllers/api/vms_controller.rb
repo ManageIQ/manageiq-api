@@ -16,6 +16,7 @@ module Api
     include Subcollections::Snapshots
     include Subcollections::Software
     include Subcollections::Tags
+    include Subcollections::Logs
 
     def start_resource(type, id = nil, _data = nil)
       enqueue_ems_action(type, id, "Starting", :method_name => "start", :supports => true)
@@ -229,6 +230,29 @@ module Api
       end
     rescue => err
       action_result(false, err.to_s)
+    end
+
+    def fetch_logs_resource(type, id, data = nil)
+      raise BadRequestError, "Must specify an id for fetching logs from a #{type}" unless id
+
+      lines = (data&.dig("lines") || 200).to_i.clamp(1, 2000)
+      api_action(type, id) do |klass|
+        vm = resource_search(id, type, klass)
+        log_text = vm.fetch_live_logs(lines)
+        action_result(
+          true,
+          "Fetched live logs for #{vm.name}",
+          :result => {
+            :vm_id   => vm.id,
+            :vm_name => vm.name,
+            :vmid    => vm.ems_ref.to_s.split("/").last,
+            :lines   => lines,
+            :logs    => log_text
+          }
+        )
+      end
+    rescue StandardError => err
+      action_result(false, err.message)
     end
   end
 end
